@@ -1,0 +1,6 @@
+{
+    "name" : "Image Loader",
+    "menuName" : "Image (.png, .jpg)",
+    "version" : "1",
+    "dependencies" : ["Points"]
+}
