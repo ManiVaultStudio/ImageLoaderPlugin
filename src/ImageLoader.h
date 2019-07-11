@@ -2,9 +2,9 @@
 
 #include <LoaderPlugin.h>
 
-// ND was hier using namespace hdps::plugin;
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
+//using namespace hdps::plugin;
 
 // =============================================================================
 // View

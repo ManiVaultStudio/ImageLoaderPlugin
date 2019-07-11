@@ -1,4 +1,5 @@
 #include "ImageLoader.h"
+
 #include <FreeImage.h>
 
 #include "PointsPlugin.h"
@@ -10,10 +11,6 @@
 #include <QFileDialog>
 #include <vector>
 #include <QInputDialog>
-
-	// #define  FREEIMAGE_LIB
-
-#define FreeImageNamespace 
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoader")
 
@@ -33,22 +30,23 @@ void ImageLoader::init()
 
 void ImageLoader::loadData()
 {
-    QString fileName = QFileDialog::getOpenFileName(Q_NULLPTR, "Load Image", "", "Image Files (*.csv *)");
+	/*
+    QString fileName = QFileDialog::getOpenFileName(Q_NULLPTR, "Load Image", "", "Image Files");
     
     // Don't try to load a file if the dialog was cancelled or the file name is empty
     if (fileName.isNull() || fileName.isEmpty())
         return;
 
     qDebug() << "Loading image file: " << fileName;
-
+	
     QFile file(fileName);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         throw DataLoadException(fileName, "File was not found at location.");
 	
-	FreeImageNamespace::FREE_IMAGE_FORMAT formato = FreeImageNamespace::FreeImage_GetFileType(fileName.toUtf8(), 0);//Automatocally detects the format(from over 20 formats!)
+	// FreeImageNamespace::FREE_IMAGE_FORMAT formato = FreeImageNamespace::FreeImage_GetFileType(fileName.toUtf8(), 0);//Automatocally detects the format(from over 20 formats!)
 	
-	/*
+	
 	FIBITMAP* imagen = FreeImage_Load(formato, "image.png");
 	
 	FIBITMAP* temp = imagen;
