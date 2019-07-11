@@ -28,7 +28,7 @@ public:
 
 class ImageLoaderFactory : public LoaderPluginFactory
 {
-	Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::LoaderPluginFactory)
+	Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
     Q_OBJECT
     Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoader"
                       FILE  "ImageLoader.json")
