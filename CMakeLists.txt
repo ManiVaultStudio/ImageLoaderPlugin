@@ -7,6 +7,8 @@ PROJECT(${PROJECT})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 if(MSVC)
@@ -23,17 +25,27 @@ find_package(FreeImage REQUIRED)
 set(SOURCES
     src/ImageLoader.h
     src/ImageLoader.cpp
-    src/ImageLoader.json
+	src/ImageSequence.h
+    src/ImageSequence.cpp
+	src/ImageSequences.h
+    src/ImageSequences.cpp
+	src/SequencesTreeModel.h
+    src/SequencesTreeModel.cpp
+	src/TreeItem.h
+    src/TreeItem.cpp
+	src/SequenceDialog.h
+    src/SequenceDialog.cpp
 )
 
-#set(FREEIMAGE_ROOT_DIR path)
+set(UIS src/SequenceDialog.ui)
+set(AUX src/ImageLoader.json)
 
-source_group(Plugin FILES ${SOURCES})
+source_group(Plugin FILES ${SOURCES} ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 
-add_library(${PROJECT} SHARED ${SOURCES})
+add_library(${PROJECT} SHARED ${SOURCES} ${UIS})
 
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
