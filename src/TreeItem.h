@@ -17,6 +17,7 @@ public:
 	QVariant data(int column) const;
 	int row() const;
 	TreeItem *parentItem();
+	void removeChildren();
 
 private:
 	QVector<TreeItem*> m_childItems;

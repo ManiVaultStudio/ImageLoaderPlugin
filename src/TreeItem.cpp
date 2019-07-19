@@ -43,6 +43,13 @@ TreeItem *TreeItem::parentItem()
 	return m_parentItem;
 }
 
+void TreeItem::removeChildren()
+{
+	qDeleteAll(m_childItems);
+
+	m_childItems.clear();
+}
+
 int TreeItem::row() const
 {
 	if (m_parentItem)

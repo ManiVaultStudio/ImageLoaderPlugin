@@ -1,31 +1,46 @@
 #pragma once
 
+#include <QObject>
 #include <QSize>
 #include <QMap>
 
 #include <QMetaType>
 
-class ImageSequence
+class ImageSequence : public QObject
 {
+	Q_OBJECT
+
 public:
 	ImageSequence();
 	ImageSequence(const ImageSequence &other);
 	~ImageSequence();
 
-	ImageSequence(const QSize &size, const QString &type, const QString &directory);
+	ImageSequence(const QString &directory, const QSize &imageSize, const QString &imageType);
 
-	QSize	size() const;
-	QString	type() const;
 	QString	directory() const;
-	QStringList	files() const;
+	QString	imageType() const;
+	QSize	imageSize() const;
+	QStringList	imageFilePaths() const;
 
+	void setDirectory(const QString &directory);
+	void setImageType(const QString &imageType);
+	void setImageSize(const QSize &imageSize);
+
+	void scan();
 	void addFile(const QString &imageFilePath);
 
+signals:
+	void directoryChanged(const QString &directory);
+	void imageTypeChanged(const QString &imageType);
+	void imageSizeChanged(const QSize &imageSize);
+	void imageFilePathsChanged(const QStringList &imageFilePaths);
+
 private:
-	QSize		_size;
-	QString		_type;
-	QString		_directory;
-	QStringList	_files;
+	QString			_directory;
+	QString			_imageType;
+	QSize			_imageSize;
+	QStringList		_imageFilePaths;
+	bool			_dirty;
 };
 
 Q_DECLARE_METATYPE(ImageSequence);

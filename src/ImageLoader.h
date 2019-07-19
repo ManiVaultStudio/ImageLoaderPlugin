@@ -19,6 +19,11 @@ public:
     void init();
 
     void loadData() Q_DECL_OVERRIDE;
+
+	void AddSequence(const QString &name, const QStringList &imageFilePaths);
+
+protected:
+	void LoadSequenceImage(const QString & imageFilePath);
 };
 
 

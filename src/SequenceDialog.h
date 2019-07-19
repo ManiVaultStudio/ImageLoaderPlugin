@@ -7,24 +7,31 @@
 #include <QSortFilterProxyModel>
 
 #include "SequencesTreeModel.h"
+#include "ImageSequence.h"
 
 namespace Ui {
 	class SequenceDialog;
 }
 
+class ImageLoader;
+
 class SequenceDialog: public QDialog
 {
 public:
-	SequenceDialog();
+	SequenceDialog(ImageLoader *imageLoader);
 	~SequenceDialog();
 
 	void PickDirectory();
-	void UpdateImageTree();
+	void Scan();
+
+protected:
+	void ScanDirectoryForImages(const QString& rootPath, const QString &imageType, const QSize &size);
+	void ScanDir(const QString &directory);
 
 private:
-	std::unique_ptr<Ui::SequenceDialog> _ui;
-	QString								_directory;
-	QFileSystemModel					_treeModel;
-	QSortFilterProxyModel				_FilteredImagesTreeModel;
+	ImageLoader*							_imageLoaderPlugin;
+	std::unique_ptr<Ui::SequenceDialog>		_ui;
+	TreeModel								_treeModel;
+	ImageSequence							_imageSequence;
 };
 

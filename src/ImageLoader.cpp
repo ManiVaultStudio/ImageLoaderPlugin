@@ -34,7 +34,7 @@ void ImageLoader::init()
 
 void ImageLoader::loadData()
 {
-	SequenceDialog dialog;
+	SequenceDialog dialog(this);
 
 	
 	dialog.exec();
@@ -266,6 +266,191 @@ void ImageLoader::loadData()
 		qDebug() << fileName << " loaded";
 	}
 	*/
+}
+
+void ImageLoader::AddSequence(const QString &name, const QStringList &imageFilePaths)
+{
+	foreach(const QString &imageFilePath, imageFilePaths) {
+		QString name = _core->addData("Points", name);
+
+		LoadSequenceImage(imageFilePath);
+	}
+}
+
+void ImageLoader::LoadSequenceImage(const QString & imageFilePath)
+{
+	fipImage image;
+
+	qDebug() << "Loading image file: " << imageFilePath;
+
+	if (image.load(imageFilePath.toUtf8())) {
+		/*
+		const auto colorType = image.getColorType();
+
+		int noColorChannels = 0;
+
+		switch (colorType)
+		{
+		case FIC_MINISBLACK:
+		case FIC_MINISWHITE:
+		case FIC_PALETTE: {
+			noColorChannels = 1;
+			break;
+		}
+		case FIC_RGB: {
+			noColorChannels = 3;
+			break;
+		}
+		case FIC_RGBALPHA:
+		case FIC_CMYK: {
+			noColorChannels = 4;
+			break;
+		}
+		default:
+			break;
+		}
+
+		qDebug() << "Number of color channels: " << noColorChannels;
+
+		if (convertToGrayscale) {
+			qDebug() << "Converting image to grayscale";
+
+			image.convertToGrayscale();
+
+			noColorChannels = 1;
+		}
+		*/
+
+		image.convertToGrayscale();
+
+		// const auto imageWidth	= image.getWidth();
+		// const auto imageHeight	= image.getHeight();
+
+		// qDebug() << "Image dimensions: " << imageWidth << " x " << imageHeight;
+
+		// const auto noPixels = _imageSize.width() * _imageSize.height();
+		// const auto numDimensions = noPixels;
+
+		// QFileInfo fileInfo(imageFilePath);
+
+		// QString dataSetName(fileInfo.fileName());
+
+		/*
+		if (!dataSetName.isEmpty()) {
+			QString name = _core->addData("Points", dataSetName);
+
+			const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
+
+			PointsPlugin& points = set.getData();
+
+			std::vector<float> data;
+
+			const auto noDataElements = noPixels * numDimensions;
+
+			//data.resize(noDataElements);
+			points.data.resize(noDataElements);
+
+			unsigned x, y;
+
+			for (y = 0; y < imageHeight; y++) {
+				FIRGBAF* bits = (FIRGBAF*)image.getScanLine(y);
+
+				for (x = 0; x < imageHeight; x++) {
+					const auto pixelIndex = y * imageWidth + x;
+
+					// data[pixelIndex + 0] = x;
+					// data[pixelIndex + 1] = y;
+					data.push_back(x);
+					data.push_back(y);
+
+					switch (noColorChannels)
+					{
+					case 3: {
+						data.push_back(bits[y].red);
+						data.push_back(bits[y].green);
+						data.push_back(bits[y].blue);
+						// data[pixelIndex * 3 + 2] = bits[y].red;
+						// data[pixelIndex * 3 + 3] = bits[y].green;
+						// data[pixelIndex * 3 + 4] = bits[y].blue;
+						break;
+					}
+					case 4: {
+						data.push_back(bits[y].red);
+						data.push_back(bits[y].green);
+						data.push_back(bits[y].blue);
+						data.push_back(bits[y].alpha);
+						// dapush_back(ta[pixelIndex * 4 + 2] = bits[y].red;
+						// dapush_back(ta[pixelIndex * 4 + 3] = bits[y].green;
+						// data[pixelIndex * 4 + 4] = bits[y].blue;
+						// data[pixelIndex * 4 + 5] = bits[y].alpha;
+						break;
+					}
+					default:
+						break;
+					}
+				}
+			}
+
+			qDebug() << data;
+
+			for (int i = 0; i < points.data.size(); i++) {
+				points.data[i] = data[i];
+			}
+
+
+			std::vector<QString> dimNames;
+
+			switch (noColorChannels)
+			{
+				case 3: {
+					dimNames = { "X", "Y", "Red", "Green", "Blue" };
+					break;
+				}
+				case 4: {
+					dimNames = { "X", "Y", "Red", "Green", "Blue", "Aplha" };
+					break;
+				}
+				default:
+					break;
+			}
+
+			points.dimNames = dimNames;
+			points.numDimensions = numDimensions;
+
+			_core->notifyDataAdded(name);
+
+			qDebug() << name << " added with " << points.numDimensions << " dimensions and " << points.getNumPoints() << " points";
+		}
+		*/
+		/*
+		bool converted = false;
+
+		if (noColorChannels == 1) {
+			image.convertToFloat();
+		}
+		else
+		{
+			switch (noColorChannels)
+			{
+			case 3: {
+				converted = image.convertToRGBF();
+				break;
+			}
+			case 4: {
+				converted = image.convertToRGBAF();
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		*/
+		/*
+		if (converted) {
+
+		}
+		*/
+	}
 }
 
 // =============================================================================
