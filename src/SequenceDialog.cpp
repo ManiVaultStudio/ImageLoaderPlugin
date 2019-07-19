@@ -47,7 +47,7 @@ void SequenceDialog::onBecameDirty()
 
 void SequenceDialog::onBeginScan()
 {
-	_ui->infoLineEdit->setText(QString("Scanning for image files...").arg(_imageSequence.imageFilePaths().size()));
+	_ui->infoLineEdit->setText(QString("Scanning for image files..."));
 	_ui->scanPushButton->setText("Scanning");
 	_ui->scanPushButton->setEnabled(false);
 }
@@ -78,6 +78,11 @@ void SequenceDialog::onDirectoryChanged(const QString &directory)
 
 void SequenceDialog::onLoadSequence()
 {
+	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
+	_imageSequence.start();
+
+	//_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), _imageSequence.imageFilePaths());
+	//_ui->loadSequencePushButton->setEnabled(false);
 }
 
 void SequenceDialog::onImageWidthChanged(int imageWidth)
@@ -92,6 +97,7 @@ void SequenceDialog::onImageHeightChanged(int imageHeight)
 
 void SequenceDialog::onScan()
 {
+	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.start();
 }
 

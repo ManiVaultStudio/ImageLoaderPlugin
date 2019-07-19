@@ -1,14 +1,8 @@
 #pragma once
-
 #include <LoaderPlugin.h>
 
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
-//using namespace hdps::plugin;
-
-// =============================================================================
-// View
-// =============================================================================
 
 class ImageLoader : public LoaderPlugin
 {
@@ -20,16 +14,11 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void AddSequence(const QString &name, const QStringList &imageFilePaths);
+	void addSequence(const QString &name, const QStringList &imageFilePaths);
 
 protected:
-	void LoadSequenceImage(const QString & imageFilePath);
+	void loadSequenceImage(const QString & imageFilePath);
 };
-
-
-// =============================================================================
-// Factory
-// =============================================================================
 
 class ImageLoaderFactory : public LoaderPluginFactory
 {

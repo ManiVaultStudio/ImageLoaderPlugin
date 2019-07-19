@@ -4,7 +4,10 @@
 #include <QDir>
 #include <QImageReader>
 
+#include <FreeImagePlus.h>
+
 ImageSequence::ImageSequence() :
+	_runMode(RunMode::Scan),
 	_directory(""),
 	_imageType("jpg"),
 	_imageSize(28, 28),
@@ -13,6 +16,7 @@ ImageSequence::ImageSequence() :
 }
 
 ImageSequence::ImageSequence(const ImageSequence &other) :
+	_runMode(RunMode::Scan),
 	_directory(other._directory),
 	_imageType(other._imageType),
 	_imageSize(other._imageSize),
@@ -24,12 +28,9 @@ ImageSequence::~ImageSequence()
 {
 }
 
-ImageSequence::ImageSequence(const QString &directory, const QSize &imageSize, const QString &imageType) :
-	_directory(directory),
-	_imageType(imageType),
-	_imageSize(imageSize),
-	_imageFilePaths()
+ImageSequence::RunMode ImageSequence::runMode() const
 {
+	return _runMode;
 }
 
 QString ImageSequence::directory() const
@@ -50,6 +51,11 @@ QSize ImageSequence::imageSize() const
 QStringList ImageSequence::imageFilePaths() const
 {
 	return _imageFilePaths;
+}
+
+void ImageSequence::setRunMode(const RunMode & runMode)
+{
+	_runMode = runMode;
 }
 
 void ImageSequence::setDirectory(const QString & directory)
@@ -80,11 +86,6 @@ void ImageSequence::addFile(const QString &imageFilePath) {
 	_imageFilePaths.append(imageFilePath);
 
 	emit foundImageFile(imageFilePath);
-}
-
-void ImageSequence::scan() {
-
-	start();
 }
 
 void ImageSequence::scanDir(const QString &directory)
@@ -128,19 +129,223 @@ void ImageSequence::scanDir(const QString &directory)
 
 void ImageSequence::run()
 {
-	if (_directory.isEmpty() || _imageType.isEmpty() || _imageSize.isEmpty()) {
-		return;
+	switch (_runMode)
+	{
+		case RunMode::Scan: {
+			if (_directory.isEmpty() || _imageType.isEmpty() || _imageSize.isEmpty()) {
+				return;
+			}
+
+			qDebug() << "Scanning for images in " << _directory;
+
+			emit beginScan();
+
+			_imageFilePaths.clear();
+
+			scanDir(_directory);
+
+			emit endScan();
+
+			break;
+		}
+		
+		case RunMode::Load: {
+			qDebug() << "Loading images ";
+
+			emit beginLoad();
+
+			foreach(const QString &imageFilePath, _imageFilePaths) {
+				loadImage(imageFilePath);
+				qDebug() << _imageFilePaths.indexOf(imageFilePath);
+			}
+			// _imageFilePaths.clear();
+			// scanDir(_directory);
+
+			emit endLoad();
+
+			break;
+		}
+
+		default:
+			break;
 	}
+	
+}
 
-	qDebug() << "Scanning " << _directory;
+void ImageSequence::loadImage(const QString & imageFilePath)
+{
+	fipImage image;
 
-	emit beginScan();
+	// qDebug() << "Loading image file: " << imageFilePath;
 
-	_imageFilePaths.clear();
+	if (image.load(imageFilePath.toUtf8())) {
+		/*
+		const auto colorType = image.getColorType();
 
-	scanDir(_directory);
+		int noColorChannels = 0;
 
-	emit endScan();
+		switch (colorType)
+		{
+		case FIC_MINISBLACK:
+		case FIC_MINISWHITE:
+		case FIC_PALETTE: {
+			noColorChannels = 1;
+			break;
+		}
+		case FIC_RGB: {
+			noColorChannels = 3;
+			break;
+		}
+		case FIC_RGBALPHA:
+		case FIC_CMYK: {
+			noColorChannels = 4;
+			break;
+		}
+		default:
+			break;
+		}
+
+		qDebug() << "Number of color channels: " << noColorChannels;
+
+		if (convertToGrayscale) {
+			qDebug() << "Converting image to grayscale";
+
+			image.convertToGrayscale();
+
+			noColorChannels = 1;
+		}
+		*/
+
+		image.convertToGrayscale();
+
+		// const auto imageWidth	= image.getWidth();
+		// const auto imageHeight	= image.getHeight();
+
+		// qDebug() << "Image dimensions: " << imageWidth << " x " << imageHeight;
+
+		// const auto noPixels = _imageSize.width() * _imageSize.height();
+		// const auto numDimensions = noPixels;
+
+		// QFileInfo fileInfo(imageFilePath);
+
+		// QString dataSetName(fileInfo.fileName());
+
+		/*
+		if (!dataSetName.isEmpty()) {
+			QString name = _core->addData("Points", dataSetName);
+
+			const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
+
+			PointsPlugin& points = set.getData();
+
+			std::vector<float> data;
+
+			const auto noDataElements = noPixels * numDimensions;
+
+			//data.resize(noDataElements);
+			points.data.resize(noDataElements);
+
+			unsigned x, y;
+
+			for (y = 0; y < imageHeight; y++) {
+				FIRGBAF* bits = (FIRGBAF*)image.getScanLine(y);
+
+				for (x = 0; x < imageHeight; x++) {
+					const auto pixelIndex = y * imageWidth + x;
+
+					// data[pixelIndex + 0] = x;
+					// data[pixelIndex + 1] = y;
+					data.push_back(x);
+					data.push_back(y);
+
+					switch (noColorChannels)
+					{
+					case 3: {
+						data.push_back(bits[y].red);
+						data.push_back(bits[y].green);
+						data.push_back(bits[y].blue);
+						// data[pixelIndex * 3 + 2] = bits[y].red;
+						// data[pixelIndex * 3 + 3] = bits[y].green;
+						// data[pixelIndex * 3 + 4] = bits[y].blue;
+						break;
+					}
+					case 4: {
+						data.push_back(bits[y].red);
+						data.push_back(bits[y].green);
+						data.push_back(bits[y].blue);
+						data.push_back(bits[y].alpha);
+						// dapush_back(ta[pixelIndex * 4 + 2] = bits[y].red;
+						// dapush_back(ta[pixelIndex * 4 + 3] = bits[y].green;
+						// data[pixelIndex * 4 + 4] = bits[y].blue;
+						// data[pixelIndex * 4 + 5] = bits[y].alpha;
+						break;
+					}
+					default:
+						break;
+					}
+				}
+			}
+
+			qDebug() << data;
+
+			for (int i = 0; i < points.data.size(); i++) {
+				points.data[i] = data[i];
+			}
+
+
+			std::vector<QString> dimNames;
+
+			switch (noColorChannels)
+			{
+				case 3: {
+					dimNames = { "X", "Y", "Red", "Green", "Blue" };
+					break;
+				}
+				case 4: {
+					dimNames = { "X", "Y", "Red", "Green", "Blue", "Aplha" };
+					break;
+				}
+				default:
+					break;
+			}
+
+			points.dimNames = dimNames;
+			points.numDimensions = numDimensions;
+
+			_core->notifyDataAdded(name);
+
+			qDebug() << name << " added with " << points.numDimensions << " dimensions and " << points.getNumPoints() << " points";
+		}
+		*/
+		/*
+		bool converted = false;
+
+		if (noColorChannels == 1) {
+			image.convertToFloat();
+		}
+		else
+		{
+			switch (noColorChannels)
+			{
+			case 3: {
+				converted = image.convertToRGBF();
+				break;
+			}
+			case 4: {
+				converted = image.convertToRGBAF();
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		*/
+		/*
+		if (converted) {
+
+		}
+		*/
+	}
 }
 
 QDebug operator<<(QDebug dbg, const ImageSequence &sequence)
