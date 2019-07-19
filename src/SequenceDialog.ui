@@ -55,6 +55,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="scanPushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Scan</string>
        </property>
@@ -62,6 +65,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="loadSequencePushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Load</string>
        </property>

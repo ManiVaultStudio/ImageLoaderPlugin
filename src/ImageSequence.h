@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QObject>
+#include <QThread>
 #include <QSize>
 #include <QMap>
 
 #include <QMetaType>
 
-class ImageSequence : public QObject
+class ImageSequence : public QThread
 {
 	Q_OBJECT
 
@@ -27,9 +27,19 @@ public:
 	void setImageSize(const QSize &imageSize);
 
 	void scan();
+	
+protected:
+	void scanDir(const QString &directory);
 	void addFile(const QString &imageFilePath);
 
+protected:
+	void run() override;
+
 signals:
+	void becameDirty();
+	void beginScan();
+	void endScan();
+	void foundImageFile(const QString& imageFilePath);
 	void directoryChanged(const QString &directory);
 	void imageTypeChanged(const QString &imageType);
 	void imageSizeChanged(const QSize &imageSize);
@@ -40,7 +50,6 @@ private:
 	QString			_imageType;
 	QSize			_imageSize;
 	QStringList		_imageFilePaths;
-	bool			_dirty;
 };
 
 Q_DECLARE_METATYPE(ImageSequence);

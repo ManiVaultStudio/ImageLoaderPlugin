@@ -42,26 +42,17 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 
 	connect(_ui->scanPushButton, &QPushButton::clicked, [this]
 	{
-		_imageSequence.scan();
+		_imageSequence.start();
 	});
 
-	connect(_ui->loadSequencePushButton, &QPushButton::clicked, [this]
-	{
-		// _imageLoaderPlugin->AddSequence(_ui->datasetNameLineEdit->text(), _imageFilePaths);
-	});
-
-	connect(_ui->imageWidthSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this](int val) {
-		_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-	});
-
-	connect(_ui->imageHeightSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, [this](int val) {
-		_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-	});
-
-	connect(&_imageSequence, static_cast<void (ImageSequence::*)(const QString &)>(&ImageSequence::directoryChanged), this, [this](const QString &directory) {
-		_ui->directoryLineEdit->setText(directory);
-		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
-	});
+	connect(_ui->imageWidthSpinBox, qOverload<int>(&QSpinBox::valueChanged), this, &SequenceDialog::onImageWidthChanged);
+	connect(_ui->imageHeightSpinBox, qOverload<int>(&QSpinBox::valueChanged), this, &SequenceDialog::onImageHeightChanged);
+	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &SequenceDialog::onLoadSequence);
+	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &SequenceDialog::onDirectoryChanged);
+	connect(&_imageSequence, &ImageSequence::foundImageFile, this, &SequenceDialog::onFoundImageFile);
+	connect(&_imageSequence, &ImageSequence::becameDirty, this, &SequenceDialog::onBecameDirty);
+	connect(&_imageSequence, &ImageSequence::beginScan, this, &SequenceDialog::onBeginScan);
+	connect(&_imageSequence, &ImageSequence::endScan, this, &SequenceDialog::onEndScan);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
@@ -72,75 +63,52 @@ SequenceDialog::~SequenceDialog()
 {
 }
 
-void SequenceDialog::Scan() {
-	/*
-	qDebug() << "Scan";
-
-	const auto imageSize = QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value());
-
-	ScanDirectoryForImages(_directory, _ui->imageTypeComboBox->currentText(), imageSize);
-	*/
+void SequenceDialog::onBecameDirty()
+{
+	_ui->scanPushButton->setEnabled(true);
 }
 
-void SequenceDialog::ScanDirectoryForImages(const QString& rootPath, const QString &imageType, const QSize &imageSize)
+void SequenceDialog::onBeginScan()
 {
-	/*
-	_rootPath	= rootPath;
-	_imageType	= imageType;
-	_imageSize	= imageSize;
-
-	// _ui->infoLineEdit->setText("Scanning for " + _imageType + " images at " + imageSize.width() + "x" + imageSize.height() + " ...");
-	
-	qDebug() << "Scanning: " << rootPath;
-
-	_imageFilePaths.clear();
-
-	ScanDir(_rootPath);
-
-	_ui->infoLineEdit->setText("Found " + QString::number(_imageFilePaths.size()) + " images");
-
-	qDebug() << "Found " << _imageFilePaths.size() << " images";
-	*/
+	_ui->infoLineEdit->setText(QString("Scanning for image files...").arg(_imageSequence.imageFilePaths().size()));
+	_ui->scanPushButton->setText("Scanning");
+	_ui->scanPushButton->setEnabled(false);
 }
 
-void SequenceDialog::ScanDir(const QString &directory)
+void SequenceDialog::onEndScan()
 {
-	/*
-	auto subDirectories = QDir(directory);
-
-	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-	const auto dirList = subDirectories.entryList();
-
-	for (int i = 0; i < dirList.size(); ++i)
-	{
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
-
-		qDebug() << "Found directory: " << dirList.at(i);
-
-		ScanDir(path);
+	if (_imageSequence.imageFilePaths().size() == 0) {
+		_ui->infoLineEdit->setText("No images were found, try changing the directory, image type or dimensions");
+	} 
+	else {
+		_ui->infoLineEdit->setText(QString("Found %1 images").arg(_imageSequence.imageFilePaths().size()));
 	}
 
-	auto imageFiles = QDir(directory);
+	_ui->loadSequencePushButton->setEnabled(true);
+	_ui->scanPushButton->setText("Scan");
+}
 
-	imageFiles.setFilter(QDir::Files);
-	imageFiles.setNameFilters(QStringList() << "*." + _imageType);
+void SequenceDialog::onFoundImageFile(const QString &imageFilePath)
+{
+	_ui->infoLineEdit->setText(QString("Found %1").arg(imageFilePath));
+}
 
-	const auto fileList = imageFiles.entryList();
+void SequenceDialog::onDirectoryChanged(const QString &directory)
+{
+	_ui->directoryLineEdit->setText(directory);
+	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+}
 
-	for (int i = 0; i < fileList.size(); ++i)
-	{
-		const auto path = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
+void SequenceDialog::onLoadSequence()
+{
+}
 
-		QImageReader imageReader(path);
+void SequenceDialog::onImageWidthChanged(int imageWidth)
+{
+	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
+}
 
-		if (imageReader.size() == _imageSize) {
-			// qDebug() << "Found image: " << fileList.at(i);
-
-			_imageFilePaths.append(path);
-
-			ScanDir(path);
-		}
-	}
-	*/
+void SequenceDialog::onImageHeightChanged(int imageHeight)
+{
+	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
 }

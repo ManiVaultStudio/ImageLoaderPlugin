@@ -21,12 +21,15 @@ public:
 	SequenceDialog(ImageLoader *imageLoader);
 	~SequenceDialog();
 
-	void PickDirectory();
-	void Scan();
-
-protected:
-	void ScanDirectoryForImages(const QString& rootPath, const QString &imageType, const QSize &size);
-	void ScanDir(const QString &directory);
+private slots:
+	void onBecameDirty();
+	void onBeginScan();
+	void onEndScan();
+	void onFoundImageFile(const QString &imageFilePath);
+	void onDirectoryChanged(const QString &directory);
+	void onLoadSequence();
+	void onImageWidthChanged(int width);
+	void onImageHeightChanged(int height);
 
 private:
 	ImageLoader*							_imageLoaderPlugin;
