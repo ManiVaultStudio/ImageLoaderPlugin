@@ -3,14 +3,7 @@
 #include "ui_SequenceDialog.h"
 
 #include <QDebug>
-#include <QMessageBox>
 #include <QFileDialog>
-#include <QImageReader>
-
-#include <FreeImagePlus.h>
-
-#include "PointsPlugin.h"
-#include "Set.h"
 
 #include "ImageLoader.h"
 
@@ -22,29 +15,13 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 {
 	_ui->setupUi(this);
 
-	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]
-	{
-		const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image directory");
-
-		if (!_directory.isNull() || !_directory.isEmpty()) {
-			_imageSequence.setDirectory(_directory);
-		}
-	});
-
 	_ui->imageTypeComboBox->setCurrentText(_imageSequence.imageType());
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
 	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
 
-	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, [this]
-	{
-		_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());
-	});
-
-	connect(_ui->scanPushButton, &QPushButton::clicked, [this]
-	{
-		_imageSequence.start();
-	});
-
+	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &SequenceDialog::onImageTypeChanged);
+	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &SequenceDialog::onPickDirectory);
+	connect(_ui->scanPushButton, &QPushButton::clicked, this, &SequenceDialog::onScan);
 	connect(_ui->imageWidthSpinBox, qOverload<int>(&QSpinBox::valueChanged), this, &SequenceDialog::onImageWidthChanged);
 	connect(_ui->imageHeightSpinBox, qOverload<int>(&QSpinBox::valueChanged), this, &SequenceDialog::onImageHeightChanged);
 	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &SequenceDialog::onLoadSequence);
@@ -90,7 +67,7 @@ void SequenceDialog::onEndScan()
 
 void SequenceDialog::onFoundImageFile(const QString &imageFilePath)
 {
-	_ui->infoLineEdit->setText(QString("Found %1").arg(imageFilePath));
+	_ui->infoLineEdit->setText(QString("Found %1").arg(QFileInfo(imageFilePath).fileName()));
 }
 
 void SequenceDialog::onDirectoryChanged(const QString &directory)
@@ -111,4 +88,23 @@ void SequenceDialog::onImageWidthChanged(int imageWidth)
 void SequenceDialog::onImageHeightChanged(int imageHeight)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
+}
+
+void SequenceDialog::onScan()
+{
+	_imageSequence.start();
+}
+
+void SequenceDialog::onPickDirectory()
+{
+	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image directory");
+
+	if (!_directory.isNull() || !_directory.isEmpty()) {
+		_imageSequence.setDirectory(_directory);
+	}
+}
+
+void SequenceDialog::onImageTypeChanged(const QString & imageType)
+{
+	_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());
 }

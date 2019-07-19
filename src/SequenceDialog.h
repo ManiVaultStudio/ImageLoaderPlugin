@@ -30,6 +30,9 @@ private slots:
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
 	void onImageHeightChanged(int height);
+	void onScan();
+	void onPickDirectory();
+	void onImageTypeChanged(const QString &imageType);
 
 private:
 	ImageLoader*							_imageLoaderPlugin;
