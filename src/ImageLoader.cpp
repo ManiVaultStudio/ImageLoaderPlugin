@@ -18,12 +18,10 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoader")
 
 ImageLoader::~ImageLoader(void)
 {
-    
 }
 
 void ImageLoader::init()
 {
-
 }
 
 void ImageLoader::loadData()
@@ -33,14 +31,25 @@ void ImageLoader::loadData()
 	dialog.exec();
 }
 
-void ImageLoader::addSequence(const QString &name, const QStringList &imageFilePaths)
+void ImageLoader::addSequence(const QString &name, const int &noDimensions, const std::vector<float> &pointsData)
 {
 	qDebug() << "Adding sequence " << name;
 
 	const auto datasetName = _core->addData("Points", name);
 
-	
-	/**/
+	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
+
+	PointsPlugin& points = set.getData();
+
+	points.data.resize(pointsData.size());
+
+	for (int i = 0; i < points.data.size(); i++) {
+		points.data[i] = pointsData[i];
+	}
+
+	points.numDimensions = noDimensions;
+
+	_core->notifyDataAdded(datasetName);
 }
 
 LoaderPlugin* ImageLoaderFactory::produce()

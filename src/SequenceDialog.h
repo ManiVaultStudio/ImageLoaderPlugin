@@ -25,7 +25,7 @@ private slots:
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
-	void onFoundImageFile(const QString &imageFilePath);
+	void onMessage(const QString &message);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
@@ -33,6 +33,8 @@ private slots:
 	void onScan();
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
+	void onBeginLoad();
+	void onEndLoad();
 
 private:
 	ImageLoader*							_imageLoaderPlugin;

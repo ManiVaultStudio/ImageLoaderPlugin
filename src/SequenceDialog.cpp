@@ -26,14 +26,18 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 	connect(_ui->imageHeightSpinBox, qOverload<int>(&QSpinBox::valueChanged), this, &SequenceDialog::onImageHeightChanged);
 	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &SequenceDialog::onLoadSequence);
 	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &SequenceDialog::onDirectoryChanged);
-	connect(&_imageSequence, &ImageSequence::foundImageFile, this, &SequenceDialog::onFoundImageFile);
+	connect(&_imageSequence, &ImageSequence::message, this, &SequenceDialog::onMessage);
 	connect(&_imageSequence, &ImageSequence::becameDirty, this, &SequenceDialog::onBecameDirty);
 	connect(&_imageSequence, &ImageSequence::beginScan, this, &SequenceDialog::onBeginScan);
 	connect(&_imageSequence, &ImageSequence::endScan, this, &SequenceDialog::onEndScan);
+	connect(&_imageSequence, &ImageSequence::beginLoad, this, &SequenceDialog::onBeginLoad);
+	connect(&_imageSequence, &ImageSequence::endLoad, this, &SequenceDialog::onEndLoad);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
 	_ui->imageTypeComboBox->addItem("bmp");
+
+	onPickDirectory();
 }
 
 SequenceDialog::~SequenceDialog()
@@ -65,9 +69,11 @@ void SequenceDialog::onEndScan()
 	_ui->scanPushButton->setText("Scan");
 }
 
-void SequenceDialog::onFoundImageFile(const QString &imageFilePath)
+void SequenceDialog::onMessage(const QString &message)
 {
-	_ui->infoLineEdit->setText(QString("Found %1").arg(QFileInfo(imageFilePath).fileName()));
+	qDebug() << message;
+
+	_ui->infoLineEdit->setText(message);
 }
 
 void SequenceDialog::onDirectoryChanged(const QString &directory)
@@ -81,8 +87,7 @@ void SequenceDialog::onLoadSequence()
 	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
 	_imageSequence.start();
 
-	//_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), _imageSequence.imageFilePaths());
-	//_ui->loadSequencePushButton->setEnabled(false);
+	_ui->loadSequencePushButton->setEnabled(false);
 }
 
 void SequenceDialog::onImageWidthChanged(int imageWidth)
@@ -103,14 +108,31 @@ void SequenceDialog::onScan()
 
 void SequenceDialog::onPickDirectory()
 {
-	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image directory");
+	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory");
 
 	if (!_directory.isNull() || !_directory.isEmpty()) {
 		_imageSequence.setDirectory(_directory);
+
+		_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
+		_imageSequence.start();
 	}
 }
 
 void SequenceDialog::onImageTypeChanged(const QString & imageType)
 {
 	_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());
+}
+
+void SequenceDialog::onBeginLoad()
+{
+	_ui->loadSequencePushButton->setText("Loading");
+}
+
+void SequenceDialog::onEndLoad()
+{
+	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), this->_imageSequence.noDimenions(), this->_imageSequence.pointsData());
+
+	_ui->loadSequencePushButton->setText("Load");
+
+	// close();
 }

@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QImageReader>
 
-#include <FreeImagePlus.h>
+#include <FreeImage.h>
 
 ImageSequence::ImageSequence() :
 	_runMode(RunMode::Scan),
@@ -53,6 +53,16 @@ QStringList ImageSequence::imageFilePaths() const
 	return _imageFilePaths;
 }
 
+const std::vector<float>& ImageSequence::pointsData() const
+{
+	return _pointsData;
+}
+
+int ImageSequence::noDimenions() const
+{
+	return _imageSize.width() * _imageSize.height();
+}
+
 void ImageSequence::setRunMode(const RunMode & runMode)
 {
 	_runMode = runMode;
@@ -82,10 +92,11 @@ void ImageSequence::setImageSize(const QSize & imageSize)
 	emit becameDirty();
 }
 
-void ImageSequence::addFile(const QString &imageFilePath) {
+void ImageSequence::addFile(const QString &imageFilePath)
+{
 	_imageFilePaths.append(imageFilePath);
 
-	emit foundImageFile(imageFilePath);
+	emit message(QString("Found %1").arg(QFileInfo(imageFilePath).fileName()));
 }
 
 void ImageSequence::scanDir(const QString &directory)
@@ -119,8 +130,6 @@ void ImageSequence::scanDir(const QString &directory)
 		QImageReader imageReader(path);
 
 		if (imageReader.size() == _imageSize) {
-			// qDebug() << "Found image: " << fileList.at(i);
-
 			addFile(path);
 			scanDir(path);
 		}
@@ -154,12 +163,20 @@ void ImageSequence::run()
 
 			emit beginLoad();
 
+			_pointsData.clear();
+
+			const auto total = _imageFilePaths.size();
+
 			foreach(const QString &imageFilePath, _imageFilePaths) {
 				loadImage(imageFilePath);
-				qDebug() << _imageFilePaths.indexOf(imageFilePath);
+
+				const auto done			= _imageFilePaths.indexOf(imageFilePath);
+				const auto percentage	= 100.0f * (done / (float)total);
+				
+				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
-			// _imageFilePaths.clear();
-			// scanDir(_directory);
+
+			emit message(QString("%1 images loaded").arg(total));
 
 			emit endLoad();
 
@@ -169,182 +186,119 @@ void ImageSequence::run()
 		default:
 			break;
 	}
-	
 }
 
 void ImageSequence::loadImage(const QString & imageFilePath)
 {
-	fipImage image;
+	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
+	
+	auto *image = FreeImage_ConvertToGreyscale(FreeImage_Load(format, imageFilePath.toUtf8()));
+	
+	unsigned x, y;
 
-	// qDebug() << "Loading image file: " << imageFilePath;
+	const auto image_type = FreeImage_GetImageType(image);
 
-	if (image.load(imageFilePath.toUtf8())) {
-		/*
-		const auto colorType = image.getColorType();
-
-		int noColorChannels = 0;
-
-		switch (colorType)
-		{
-		case FIC_MINISBLACK:
-		case FIC_MINISWHITE:
-		case FIC_PALETTE: {
-			noColorChannels = 1;
-			break;
-		}
-		case FIC_RGB: {
-			noColorChannels = 3;
-			break;
-		}
-		case FIC_RGBALPHA:
-		case FIC_CMYK: {
-			noColorChannels = 4;
-			break;
-		}
-		default:
-			break;
-		}
-
-		qDebug() << "Number of color channels: " << noColorChannels;
-
-		if (convertToGrayscale) {
-			qDebug() << "Converting image to grayscale";
-
-			image.convertToGrayscale();
-
-			noColorChannels = 1;
-		}
-		*/
-
-		image.convertToGrayscale();
-
-		// const auto imageWidth	= image.getWidth();
-		// const auto imageHeight	= image.getHeight();
-
-		// qDebug() << "Image dimensions: " << imageWidth << " x " << imageHeight;
-
-		// const auto noPixels = _imageSize.width() * _imageSize.height();
-		// const auto numDimensions = noPixels;
-
-		// QFileInfo fileInfo(imageFilePath);
-
-		// QString dataSetName(fileInfo.fileName());
-
-		/*
-		if (!dataSetName.isEmpty()) {
-			QString name = _core->addData("Points", dataSetName);
-
-			const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
-
-			PointsPlugin& points = set.getData();
-
-			std::vector<float> data;
-
-			const auto noDataElements = noPixels * numDimensions;
-
-			//data.resize(noDataElements);
-			points.data.resize(noDataElements);
-
-			unsigned x, y;
-
-			for (y = 0; y < imageHeight; y++) {
-				FIRGBAF* bits = (FIRGBAF*)image.getScanLine(y);
-
-				for (x = 0; x < imageHeight; x++) {
-					const auto pixelIndex = y * imageWidth + x;
-
-					// data[pixelIndex + 0] = x;
-					// data[pixelIndex + 1] = y;
-					data.push_back(x);
-					data.push_back(y);
-
-					switch (noColorChannels)
-					{
-					case 3: {
-						data.push_back(bits[y].red);
-						data.push_back(bits[y].green);
-						data.push_back(bits[y].blue);
-						// data[pixelIndex * 3 + 2] = bits[y].red;
-						// data[pixelIndex * 3 + 3] = bits[y].green;
-						// data[pixelIndex * 3 + 4] = bits[y].blue;
-						break;
-					}
-					case 4: {
-						data.push_back(bits[y].red);
-						data.push_back(bits[y].green);
-						data.push_back(bits[y].blue);
-						data.push_back(bits[y].alpha);
-						// dapush_back(ta[pixelIndex * 4 + 2] = bits[y].red;
-						// dapush_back(ta[pixelIndex * 4 + 3] = bits[y].green;
-						// data[pixelIndex * 4 + 4] = bits[y].blue;
-						// data[pixelIndex * 4 + 5] = bits[y].alpha;
-						break;
-					}
-					default:
-						break;
+	switch (image_type) {
+		case FIT_BITMAP:
+			if (FreeImage_GetBPP(image) == 8) {
+				for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+					BYTE *bits = (BYTE *)FreeImage_GetScanLine(image, y);
+					for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+						_pointsData.push_back((float)bits[x] / 256.f);
 					}
 				}
 			}
+			break;
 
-			qDebug() << data;
-
-			for (int i = 0; i < points.data.size(); i++) {
-				points.data[i] = data[i];
-			}
-
-
-			std::vector<QString> dimNames;
-
-			switch (noColorChannels)
-			{
-				case 3: {
-					dimNames = { "X", "Y", "Red", "Green", "Blue" };
-					break;
+		case FIT_UINT16:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				unsigned short *bits = (unsigned short *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);
 				}
-				case 4: {
-					dimNames = { "X", "Y", "Red", "Green", "Blue", "Aplha" };
-					break;
+			}
+			break;
+
+		case FIT_INT16:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				short *bits = (short *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);
 				}
-				default:
-					break;
 			}
+			break;
 
-			points.dimNames = dimNames;
-			points.numDimensions = numDimensions;
-
-			_core->notifyDataAdded(name);
-
-			qDebug() << name << " added with " << points.numDimensions << " dimensions and " << points.getNumPoints() << " points";
-		}
-		*/
-		/*
-		bool converted = false;
-
-		if (noColorChannels == 1) {
-			image.convertToFloat();
-		}
-		else
-		{
-			switch (noColorChannels)
-			{
-			case 3: {
-				converted = image.convertToRGBF();
-				break;
+		case FIT_UINT32:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				DWORD *bits = (DWORD *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);
+				}
 			}
-			case 4: {
-				converted = image.convertToRGBAF();
-				break;
-			}
-			default:
-				break;
-			}
-		}
-		*/
-		/*
-		if (converted) {
+			break;
 
-		}
-		*/
+		case FIT_INT32:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				LONG *bits = (LONG *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);;
+				}
+			}
+			break;
+			
+		case FIT_FLOAT:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				float *bits = (float *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);
+				}
+			}
+			break;
+
+		case FIT_DOUBLE:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				double *bits = (double*)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x] / 256.f);
+				}
+			}
+			break;
+			
+		case FIT_RGB16:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				FIRGB16 *bits = (FIRGB16 *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x].red / 256.f);
+				}
+			}
+			break;
+
+		case FIT_RGBF:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				FIRGBF *bits = (FIRGBF *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x].red / 256.f);
+				}
+			}
+			break;
+
+		case FIT_RGBA16:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				FIRGBA16 *bits = (FIRGBA16 *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x].red / 256.f);
+				}
+			}
+			break;
+
+		case FIT_RGBAF:
+			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
+				FIRGBAF *bits = (FIRGBAF *)FreeImage_GetScanLine(image, y);
+				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+					_pointsData.push_back((float)bits[x].red / 256.f);
+				}
+			}
+			break;
 	}
 }
 

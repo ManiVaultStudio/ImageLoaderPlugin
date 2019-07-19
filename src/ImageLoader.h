@@ -14,10 +14,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addSequence(const QString &name, const QStringList &imageFilePaths);
-
-protected:
-	void loadSequenceImage(const QString & imageFilePath);
+	void addSequence(const QString &name, const int &noDimensions, const std::vector<float> &pointsData);
 };
 
 class ImageLoaderFactory : public LoaderPluginFactory

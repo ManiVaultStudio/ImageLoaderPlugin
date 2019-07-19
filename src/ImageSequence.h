@@ -26,6 +26,8 @@ public:
 	QString	imageType() const;
 	QSize	imageSize() const;
 	QStringList	imageFilePaths() const;
+	const std::vector<float>& pointsData() const;
+	int noDimenions() const;
 
 	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
@@ -46,7 +48,7 @@ signals:
 	void becameDirty();
 	void beginScan();
 	void endScan();
-	void foundImageFile(const QString& imageFilePath);
+	void message(const QString& message);
 	void directoryChanged(const QString &directory);
 	void imageTypeChanged(const QString &imageType);
 	void imageSizeChanged(const QSize &imageSize);
