@@ -18,6 +18,7 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
 	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
 
+	connect(_ui->loaderTypeComboBox, SIGNAL(activated(int)), _ui->loaderPagesStackedWidget, SLOT(setCurrentIndex(int)));
 	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &SequenceDialog::onImageTypeChanged);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &SequenceDialog::onPickDirectory);
 	connect(_ui->scanPushButton, &QPushButton::clicked, this, &SequenceDialog::onScan);
@@ -36,7 +37,7 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 	_ui->imageTypeComboBox->addItem("png");
 	_ui->imageTypeComboBox->addItem("bmp");
 
-	onPickDirectory();
+	// onPickDirectory();
 }
 
 SequenceDialog::~SequenceDialog()
