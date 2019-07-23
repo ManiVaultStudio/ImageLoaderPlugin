@@ -10,8 +10,7 @@
 SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 	:
 	_imageLoaderPlugin(imageLoader),
-	_ui{std::make_unique<Ui::SequenceDialog>()},
-	_treeModel()
+	_ui{std::make_unique<Ui::SequenceDialog>()}
 {
 	_ui->setupUi(this);
 
@@ -71,7 +70,7 @@ void SequenceDialog::onEndScan()
 
 void SequenceDialog::onMessage(const QString &message)
 {
-	qDebug() << message;
+	// qDebug() << message;
 
 	_ui->infoLineEdit->setText(message);
 }

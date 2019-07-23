@@ -27,12 +27,6 @@ set(SOURCES
     src/ImageLoader.cpp
 	src/ImageSequence.h
     src/ImageSequence.cpp
-	src/ImageSequences.h
-    src/ImageSequences.cpp
-	src/SequencesTreeModel.h
-    src/SequencesTreeModel.cpp
-	src/TreeItem.h
-    src/TreeItem.cpp
 	src/SequenceDialog.h
     src/SequenceDialog.cpp
 )

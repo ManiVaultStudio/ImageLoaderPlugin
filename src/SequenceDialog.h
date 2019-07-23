@@ -6,7 +6,6 @@
 #include <QFileSystemModel>
 #include <QSortFilterProxyModel>
 
-#include "SequencesTreeModel.h"
 #include "ImageSequence.h"
 
 namespace Ui {
@@ -39,7 +38,6 @@ private slots:
 private:
 	ImageLoader*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::SequenceDialog>		_ui;
-	TreeModel								_treeModel;
 	ImageSequence							_imageSequence;
 };
 
