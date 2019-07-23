@@ -26,7 +26,7 @@ public:
 	QString	imageType() const;
 	QSize	imageSize() const;
 	QStringList	imageFilePaths() const;
-	const std::vector<float>& pointsData() const;
+	std::vector<float>& pointsData();
 	int noDimenions() const;
 
 	void setRunMode(const RunMode &runMode);

@@ -31,7 +31,7 @@ void ImageLoader::loadData()
 	dialog.exec();
 }
 
-void ImageLoader::addSequence(const QString &name, const int &noDimensions, const std::vector<float> &pointsData)
+void ImageLoader::addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData)
 {
 	qDebug() << "Adding sequence " << name;
 
@@ -41,11 +41,11 @@ void ImageLoader::addSequence(const QString &name, const int &noDimensions, cons
 
 	PointsPlugin& points = set.getData();
 
-	points.data.resize(pointsData.size());
-
-	for (int i = 0; i < points.data.size(); i++) {
-		points.data[i] = pointsData[i];
-	}
+	//points.data.resize(pointsData.size());
+	points.data.swap(pointsData);
+	//for (int i = 0; i < points.data.size(); i++) {
+	//	points.data[i] = pointsData[i];
+	//}
 
 	points.numDimensions = noDimensions;
 

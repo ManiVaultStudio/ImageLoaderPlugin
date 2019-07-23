@@ -1,6 +1,6 @@
 {
-    "name" : "Image Loader",
-    "menuName" : "Image (.png, .jpg)",
+    "name" : "Image sequence loader",
+    "menuName" : "Image sequence",
     "version" : "1",
     "dependencies" : ["Points"]
 }

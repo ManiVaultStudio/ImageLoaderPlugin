@@ -53,7 +53,7 @@ QStringList ImageSequence::imageFilePaths() const
 	return _imageFilePaths;
 }
 
-const std::vector<float>& ImageSequence::pointsData() const
+std::vector<float>& ImageSequence::pointsData()
 {
 	return _pointsData;
 }
@@ -170,13 +170,15 @@ void ImageSequence::run()
 			foreach(const QString &imageFilePath, _imageFilePaths) {
 				loadImage(imageFilePath);
 
-				const auto done			= _imageFilePaths.indexOf(imageFilePath);
+				const auto done			= _imageFilePaths.indexOf(imageFilePath) + 1;
 				const auto percentage	= 100.0f * (done / (float)total);
 				
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
 
-			emit message(QString("%1 images loaded").arg(total));
+			// qDebug() << _pointsData;
+
+			emit message(QString("%1 image(s) loaded").arg(total));
 
 			emit endLoad();
 
@@ -198,13 +200,15 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 
 	const auto image_type = FreeImage_GetImageType(image);
 
+	// qDebug() << image_type;
+
 	switch (image_type) {
 		case FIT_BITMAP:
 			if (FreeImage_GetBPP(image) == 8) {
 				for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 					BYTE *bits = (BYTE *)FreeImage_GetScanLine(image, y);
 					for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-						_pointsData.push_back((float)bits[x] / 256.f);
+						_pointsData.push_back((float)bits[x]);
 					}
 				}
 			}
@@ -214,7 +218,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				unsigned short *bits = (unsigned short *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -223,7 +227,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				short *bits = (short *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -232,7 +236,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				DWORD *bits = (DWORD *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -241,7 +245,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				LONG *bits = (LONG *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);;
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -250,7 +254,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				float *bits = (float *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -259,7 +263,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				double *bits = (double*)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x] / 256.f);
+					_pointsData.push_back((float)bits[x]);
 				}
 			}
 			break;
@@ -268,7 +272,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				FIRGB16 *bits = (FIRGB16 *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x].red / 256.f);
+					_pointsData.push_back((float)bits[x].red);
 				}
 			}
 			break;
@@ -277,7 +281,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				FIRGBF *bits = (FIRGBF *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x].red / 256.f);
+					_pointsData.push_back((float)bits[x].red);
 				}
 			}
 			break;
@@ -286,7 +290,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				FIRGBA16 *bits = (FIRGBA16 *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x].red / 256.f);
+					_pointsData.push_back((float)bits[x].red);
 				}
 			}
 			break;
@@ -295,7 +299,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			for (y = 0; y <  FreeImage_GetHeight(image); y++) {
 				FIRGBAF *bits = (FIRGBAF *)FreeImage_GetScanLine(image, y);
 				for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-					_pointsData.push_back((float)bits[x].red / 256.f);
+					_pointsData.push_back((float)bits[x].red);
 				}
 			}
 			break;
