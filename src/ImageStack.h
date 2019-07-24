@@ -24,7 +24,6 @@ public:
 	RunMode	runMode() const;
 	QString	directory() const;
 	QStringList	imageTypes() const;
-	QSize	imageSize() const;
 	QStringList	imageFilePaths() const;
 	std::vector<float>& pointsData();
 	int noDimenions() const;
@@ -32,7 +31,6 @@ public:
 	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
 	void setImageTypes(const QStringList &imageTypes);
-	void setImageSize(const QSize &imageSize);
 
 	void scan();
 	
@@ -60,7 +58,6 @@ private:
 	RunMode				_runMode;
 	QString				_directory;
 	QStringList			_imageTypes;
-	QSize				_imageSize;
 	QStringList			_imageFilePaths;
 	std::vector<float>	_pointsData;
 };

@@ -25,9 +25,6 @@ private slots:
 	void onMessage(const QString &message);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
-	void onImageWidthChanged(int width);
-	void onImageHeightChanged(int height);
-
 	void onPickDirectory();
 	void onBeginLoad();
 	void onEndLoad();

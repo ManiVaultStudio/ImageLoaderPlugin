@@ -9,8 +9,7 @@
 ImageStack::ImageStack() :
 	_runMode(RunMode::Scan),
 	_directory(""),
-	_imageTypes("jpg"),
-	_imageSize(28, 28),
+	_imageTypes(),
 	_imageFilePaths()
 {
 }
@@ -19,7 +18,6 @@ ImageStack::ImageStack(const ImageStack &other) :
 	_runMode(RunMode::Scan),
 	_directory(other._directory),
 	_imageTypes(other._imageTypes),
-	_imageSize(other._imageSize),
 	_imageFilePaths(other._imageFilePaths)
 {
 }
@@ -43,10 +41,6 @@ QStringList ImageStack::imageTypes() const
 	return _imageTypes;
 
 }
-QSize ImageStack::imageSize() const
-{
-	return _imageSize;
-}
 
 QStringList ImageStack::imageFilePaths() const
 {
@@ -60,7 +54,7 @@ std::vector<float>& ImageStack::pointsData()
 
 int ImageStack::noDimenions() const
 {
-	return _imageSize.width() * _imageSize.height();
+	return 100;// _imageSize.width() * _imageSize.height();
 }
 
 void ImageStack::setRunMode(const RunMode & runMode)
@@ -80,14 +74,6 @@ void ImageStack::setImageTypes(const QStringList & imageTypes)
 {
 	_imageTypes = imageTypes;
 
-	emit becameDirty();
-}
-
-void ImageStack::setImageSize(const QSize & imageSize)
-{
-	_imageSize = imageSize;
-
-	emit imageSizeChanged(_imageSize);
 	emit becameDirty();
 }
 
@@ -136,6 +122,8 @@ void ImageStack::scanDir(const QString &directory)
 
 		QImageReader imageReader(path);
 
+		qDebug() << imageReader.size();
+
 		addFile(path);
 		scanDir(path);
 	}
@@ -146,7 +134,7 @@ void ImageStack::run()
 	switch (_runMode)
 	{
 		case RunMode::Scan: {
-			if (_directory.isEmpty() || _imageTypes.isEmpty() || _imageSize.isEmpty()) {
+			if (_directory.isEmpty() || _imageTypes.isEmpty()) {
 				return;
 			}
 
@@ -313,7 +301,7 @@ void ImageStack::loadImage(const QString & imageFilePath)
 
 QDebug operator<<(QDebug dbg, const ImageStack &sequence)
 {
-	dbg << sequence.imageSize() << ", " << sequence.imageTypes() << ", " << sequence.directory();
+	dbg << ", " << sequence.imageTypes() << ", " << sequence.directory();
 
 	return dbg;
 }

@@ -29,6 +29,12 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	imageTypes  << "jpg" << "png" << "bmp" << "tif";
 
 	_imageStack.setImageTypes(imageTypes);
+
+	_ui->datasetNameLabel->setEnabled(false);
+	_ui->datasetNameLineEdit->setEnabled(false);
+	_ui->stacksLabel->setEnabled(false);
+	_ui->stacksComboBox->setEnabled(false);
+	_ui->stackListView->setEnabled(false);
 }
 
 ImageStackWidget::~ImageStackWidget()
@@ -84,6 +90,13 @@ void ImageStackWidget::onPickDirectory()
 
 		_imageStack.setRunMode(ImageStack::RunMode::Scan);
 		_imageStack.start();
+
+		_ui->datasetNameLabel->setEnabled(true);
+		_ui->datasetNameLineEdit->setEnabled(true);
+		_ui->stacksLabel->setEnabled(true);
+		_ui->stacksComboBox->setEnabled(true);
+		_ui->stacksComboBox->setEnabled(true);
+		_ui->stackListView->setEnabled(true);
 	}
 }
 
