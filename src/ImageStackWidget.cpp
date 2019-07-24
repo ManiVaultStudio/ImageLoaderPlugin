@@ -12,7 +12,7 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	_ui{ std::make_unique<Ui::ImageStackWidget>() }
 {
 	_ui->setupUi(this);
-	
+
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
@@ -23,6 +23,12 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(&_imageStack, &ImageStack::endScan, this, &ImageStackWidget::onEndScan);
 	connect(&_imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
 	connect(&_imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
+
+	auto imageTypes = QStringList();
+	
+	imageTypes  << "jpg" << "png" << "bmp" << "tif";
+
+	_imageStack.setImageTypes(imageTypes);
 }
 
 ImageStackWidget::~ImageStackWidget()

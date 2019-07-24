@@ -9,7 +9,7 @@
 ImageStack::ImageStack() :
 	_runMode(RunMode::Scan),
 	_directory(""),
-	_imageType("jpg"),
+	_imageTypes("jpg"),
 	_imageSize(28, 28),
 	_imageFilePaths()
 {
@@ -18,7 +18,7 @@ ImageStack::ImageStack() :
 ImageStack::ImageStack(const ImageStack &other) :
 	_runMode(RunMode::Scan),
 	_directory(other._directory),
-	_imageType(other._imageType),
+	_imageTypes(other._imageTypes),
 	_imageSize(other._imageSize),
 	_imageFilePaths(other._imageFilePaths)
 {
@@ -38,9 +38,9 @@ QString ImageStack::directory() const
 	return _directory;
 }
 
-QString ImageStack::imageType() const
+QStringList ImageStack::imageTypes() const
 {
-	return _imageType;
+	return _imageTypes;
 
 }
 QSize ImageStack::imageSize() const
@@ -76,11 +76,10 @@ void ImageStack::setDirectory(const QString & directory)
 	emit becameDirty();
 }
 
-void ImageStack::setImageType(const QString & imageType)
+void ImageStack::setImageTypes(const QStringList & imageTypes)
 {
-	_imageType = imageType;
+	_imageTypes = imageTypes;
 
-	emit imageTypeChanged(_imageType);
 	emit becameDirty();
 }
 
@@ -119,7 +118,15 @@ void ImageStack::scanDir(const QString &directory)
 	auto imageFiles = QDir(directory);
 
 	imageFiles.setFilter(QDir::Files);
-	imageFiles.setNameFilters(QStringList() << "*." + _imageType);
+
+	auto nameFilters = QStringList();
+
+	foreach(QString imageType, _imageTypes)
+	{
+		nameFilters << "*." + imageType;
+	}
+
+	imageFiles.setNameFilters(nameFilters);
 
 	const auto fileList = imageFiles.entryList();
 
@@ -129,10 +136,8 @@ void ImageStack::scanDir(const QString &directory)
 
 		QImageReader imageReader(path);
 
-		if (imageReader.size() == _imageSize) {
-			addFile(path);
-			scanDir(path);
-		}
+		addFile(path);
+		scanDir(path);
 	}
 }
 
@@ -141,7 +146,7 @@ void ImageStack::run()
 	switch (_runMode)
 	{
 		case RunMode::Scan: {
-			if (_directory.isEmpty() || _imageType.isEmpty() || _imageSize.isEmpty()) {
+			if (_directory.isEmpty() || _imageTypes.isEmpty() || _imageSize.isEmpty()) {
 				return;
 			}
 
@@ -308,7 +313,7 @@ void ImageStack::loadImage(const QString & imageFilePath)
 
 QDebug operator<<(QDebug dbg, const ImageStack &sequence)
 {
-	dbg << sequence.imageSize() << ", " << sequence.imageType() << ", " << sequence.directory();
+	dbg << sequence.imageSize() << ", " << sequence.imageTypes() << ", " << sequence.directory();
 
 	return dbg;
 }

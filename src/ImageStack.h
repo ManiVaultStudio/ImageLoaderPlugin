@@ -23,7 +23,7 @@ public:
 
 	RunMode	runMode() const;
 	QString	directory() const;
-	QString	imageType() const;
+	QStringList	imageTypes() const;
 	QSize	imageSize() const;
 	QStringList	imageFilePaths() const;
 	std::vector<float>& pointsData();
@@ -31,7 +31,7 @@ public:
 
 	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
-	void setImageType(const QString &imageType);
+	void setImageTypes(const QStringList &imageTypes);
 	void setImageSize(const QSize &imageSize);
 
 	void scan();
@@ -50,7 +50,6 @@ signals:
 	void endScan();
 	void message(const QString& message);
 	void directoryChanged(const QString &directory);
-	void imageTypeChanged(const QString &imageType);
 	void imageSizeChanged(const QSize &imageSize);
 	void imageFilePathsChanged(const QStringList &imageFilePaths);
 	void beginLoad();
@@ -60,7 +59,7 @@ signals:
 private:
 	RunMode				_runMode;
 	QString				_directory;
-	QString				_imageType;
+	QStringList			_imageTypes;
 	QSize				_imageSize;
 	QStringList			_imageFilePaths;
 	std::vector<float>	_pointsData;
