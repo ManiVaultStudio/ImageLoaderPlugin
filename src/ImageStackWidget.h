@@ -19,7 +19,6 @@ public:
 	~ImageStackWidget();
 
 private slots:
-	/*
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
@@ -28,15 +27,13 @@ private slots:
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
 	void onImageHeightChanged(int height);
-	void onScan();
+
 	void onPickDirectory();
-	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad();
-	*/
 
 private:
 	ImageLoader*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
-	ImageStack								_imageSequence;
+	ImageStack								_imageStack;
 };	

@@ -38,7 +38,6 @@ set(SOURCES
 )
 
 set(UIS 
-	src/ImageLoaderDialog.ui
 	src/ImageSequenceWidget.ui
 	src/ImageStackWidget.ui
 )

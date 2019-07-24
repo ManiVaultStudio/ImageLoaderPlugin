@@ -39,6 +39,9 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
 	_imageSequenceWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	_imageStackWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
+	setMinimumWidth(640);
+	setMinimumHeight(480);
+
 	//setMinimumHeight(0);
 
 	//_mainLayout->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);

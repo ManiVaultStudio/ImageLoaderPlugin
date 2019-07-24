@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>loadImageStackForm</class>
- <widget class="QWidget" name="loadImageStackForm">
+ <class>ImageStackWidget</class>
+ <widget class="QWidget" name="ImageStackWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>253</height>
+    <height>304</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -26,7 +32,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="4" column="0" colspan="3">
+   <item row="3" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="infoLineEdit">
@@ -56,6 +62,13 @@
      </item>
     </layout>
    </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="directoryLabel">
+     <property name="text">
+      <string>Directory</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="2">
     <widget class="QPushButton" name="directoryPushButton">
      <property name="sizePolicy">
@@ -84,13 +97,6 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="directoryLabel">
-     <property name="text">
-      <string>Directory</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="1">
     <widget class="QLineEdit" name="directoryLineEdit">
      <property name="enabled">
@@ -104,35 +110,21 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="datasetNameLabel">
-     <property name="text">
-      <string>Data set name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="imageTypeLabel">
-     <property name="text">
-      <string>Image type(s)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
+   <item row="1" column="1" colspan="2">
     <widget class="QLineEdit" name="datasetNameLineEdit">
      <property name="toolTip">
       <string>The name of the data set in the HDPS GUI</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="2">
-    <widget class="QComboBox" name="imageTypeComboBox">
-     <property name="toolTip">
-      <string>Image type to search for</string>
+   <item row="1" column="0">
+    <widget class="QLabel" name="datasetNameLabel">
+     <property name="text">
+      <string>Data set name</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
+   <item row="2" column="0" colspan="3">
     <widget class="QListWidget" name="listWidget"/>
    </item>
   </layout>
