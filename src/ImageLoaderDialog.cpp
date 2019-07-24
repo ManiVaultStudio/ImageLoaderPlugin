@@ -1,24 +1,56 @@
-#include "SequenceDialog.h"
-
-#include "ui_SequenceDialog.h"
+#include "ImageLoaderDialog.h"
 
 #include <QDebug>
-#include <QFileDialog>
+#include <QVBoxLayout>
+#include <QComboBox>
 
 #include "ImageLoader.h"
+#include "ImageSequenceWidget.h"
+#include "ImageStackWidget.h"
 
-SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
-	:
+ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
 	_imageLoaderPlugin(imageLoader),
-	_ui{std::make_unique<Ui::SequenceDialog>()}
+	_mainLayout{std::make_unique<QVBoxLayout>()},
+	_typesComboBox{std::make_unique<QComboBox>()},
+	_pagesStackedWidget{std::make_unique<StackedWidget>()},
+	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoader)},
+	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoader)}
 {
-	_ui->setupUi(this);
+	setLayout(_mainLayout.get());
 
+	_mainLayout->addWidget(_typesComboBox.get());
+	_mainLayout->addWidget(_pagesStackedWidget.get());
+	//_mainLayout->addWidget(QSpacerItem(nullptr, .get());
+	_mainLayout->addStretch(1);
+
+	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());
+	_pagesStackedWidget->addWidget(_imageStackWidget.get());
+
+	_typesComboBox->addItem("Sequence of images");
+	_typesComboBox->addItem("Stack of images");
+
+	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimenions is defined by the number of pixels", Qt::ToolTipRole);
+	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
+
+	connect(_typesComboBox.get(), SIGNAL(activated(int)), _pagesStackedWidget.get(), SLOT(setCurrentIndex(int)));
+	connect(_pagesStackedWidget.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged()));
+
+	//_pagesStackedWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	_imageSequenceWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+	_imageStackWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+	//setMinimumHeight(0);
+
+	//_mainLayout->setSizeConstraint(QLayout::SizeConstraint::SetMinimumSize);
+	//setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+	//setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+	/*
 	_ui->imageTypeComboBox->setCurrentText(_imageSequence.imageType());
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
 	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
 
-	connect(_ui->loaderTypeComboBox, SIGNAL(activated(int)), _ui->loaderPagesStackedWidget, SLOT(setCurrentIndex(int)));
+	
 	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &SequenceDialog::onImageTypeChanged);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &SequenceDialog::onPickDirectory);
 	connect(_ui->scanPushButton, &QPushButton::clicked, this, &SequenceDialog::onScan);
@@ -38,25 +70,34 @@ SequenceDialog::SequenceDialog(ImageLoader *imageLoader)
 	_ui->imageTypeComboBox->addItem("bmp");
 
 	// onPickDirectory();
+	*/
 }
 
-SequenceDialog::~SequenceDialog()
+ImageLoaderDialog::~ImageLoaderDialog()
 {
 }
 
-void SequenceDialog::onBecameDirty()
+void ImageLoaderDialog::onTypeChanged()
+{
+	// _pagesStackedWidget->adjustSize();
+
+	//adjustSize();
+}
+
+/*
+void ImageLoaderDialog::onBecameDirty()
 {
 	_ui->scanPushButton->setEnabled(true);
 }
 
-void SequenceDialog::onBeginScan()
+void ImageLoaderDialog::onBeginScan()
 {
 	_ui->infoLineEdit->setText(QString("Scanning for image files..."));
 	_ui->scanPushButton->setText("Scanning");
 	_ui->scanPushButton->setEnabled(false);
 }
 
-void SequenceDialog::onEndScan()
+void ImageLoaderDialog::onEndScan()
 {
 	if (_imageSequence.imageFilePaths().size() == 0) {
 		_ui->infoLineEdit->setText("No images were found, try changing the directory, image type or dimensions");
@@ -69,20 +110,20 @@ void SequenceDialog::onEndScan()
 	_ui->scanPushButton->setText("Scan");
 }
 
-void SequenceDialog::onMessage(const QString &message)
+void ImageLoaderDialog::onMessage(const QString &message)
 {
 	// qDebug() << message;
 
 	_ui->infoLineEdit->setText(message);
 }
 
-void SequenceDialog::onDirectoryChanged(const QString &directory)
+void ImageLoaderDialog::onDirectoryChanged(const QString &directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 }
 
-void SequenceDialog::onLoadSequence()
+void ImageLoaderDialog::onLoadSequence()
 {
 	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
 	_imageSequence.start();
@@ -90,23 +131,23 @@ void SequenceDialog::onLoadSequence()
 	_ui->loadSequencePushButton->setEnabled(false);
 }
 
-void SequenceDialog::onImageWidthChanged(int imageWidth)
+void ImageLoaderDialog::onImageWidthChanged(int imageWidth)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
 }
 
-void SequenceDialog::onImageHeightChanged(int imageHeight)
+void ImageLoaderDialog::onImageHeightChanged(int imageHeight)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
 }
 
-void SequenceDialog::onScan()
+void ImageLoaderDialog::onScan()
 {
 	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.start();
 }
 
-void SequenceDialog::onPickDirectory()
+void ImageLoaderDialog::onPickDirectory()
 {
 	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory");
 
@@ -118,21 +159,34 @@ void SequenceDialog::onPickDirectory()
 	}
 }
 
-void SequenceDialog::onImageTypeChanged(const QString & imageType)
+void ImageLoaderDialog::onImageTypeChanged(const QString & imageType)
 {
 	_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());
 }
 
-void SequenceDialog::onBeginLoad()
+void ImageLoaderDialog::onBeginLoad()
 {
 	_ui->loadSequencePushButton->setText("Loading");
 }
 
-void SequenceDialog::onEndLoad()
+void ImageLoaderDialog::onEndLoad()
 {
 	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), this->_imageSequence.noDimenions(), this->_imageSequence.pointsData());
 
 	_ui->loadSequencePushButton->setText("Load");
 
 	// close();
+}
+*/
+
+inline QSize StackedWidget::sizeHint() const
+{
+	qDebug() << "sizeHint" << currentWidget()->sizeHint();
+	return currentWidget()->sizeHint();
+}
+
+inline QSize StackedWidget::minimumSizeHint() const
+{
+	qDebug() << "minimumSizeHint" << currentWidget()->minimumSizeHint();
+	return currentWidget()->minimumSizeHint();
 }

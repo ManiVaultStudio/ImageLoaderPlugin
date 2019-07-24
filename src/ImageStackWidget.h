@@ -2,25 +2,24 @@
 
 #include <memory>
 
-#include <QDialog>
-#include <QFileSystemModel>
-#include <QSortFilterProxyModel>
+#include <QWidget>
 
-#include "ImageSequence.h"
+#include "ImageStack.h"
 
 namespace Ui {
-	class SequenceDialog;
+	class ImageStackWidget;
 }
 
 class ImageLoader;
 
-class SequenceDialog: public QDialog
+class ImageStackWidget : public QWidget
 {
 public:
-	SequenceDialog(ImageLoader *imageLoader);
-	~SequenceDialog();
+	ImageStackWidget(ImageLoader *imageLoader);
+	~ImageStackWidget();
 
 private slots:
+	/*
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
@@ -34,10 +33,10 @@ private slots:
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad();
+	*/
 
 private:
 	ImageLoader*							_imageLoaderPlugin;
-	std::unique_ptr<Ui::SequenceDialog>		_ui;
-	ImageSequence							_imageSequence;
-};
-
+	std::unique_ptr<Ui::ImageStackWidget>	_ui;
+	ImageStack								_imageSequence;
+};	

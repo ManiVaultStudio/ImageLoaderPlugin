@@ -12,7 +12,7 @@
 #include <vector>
 #include <QInputDialog>
 
-#include "SequenceDialog.h"
+#include "ImageLoaderDialog.h"
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoader")
 
@@ -26,7 +26,7 @@ void ImageLoader::init()
 
 void ImageLoader::loadData()
 {
-	SequenceDialog dialog(this);
+	ImageLoaderDialog dialog(this);
 	
 	dialog.exec();
 }

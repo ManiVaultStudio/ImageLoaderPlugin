@@ -27,11 +27,22 @@ set(SOURCES
     src/ImageLoader.cpp
 	src/ImageSequence.h
     src/ImageSequence.cpp
-	src/SequenceDialog.h
-    src/SequenceDialog.cpp
+	src/ImageStack.h
+    src/ImageStack.cpp
+	src/ImageLoaderDialog.h
+    src/ImageLoaderDialog.cpp
+	src/ImageSequenceWidget.h
+    src/ImageSequenceWidget.cpp
+	src/ImageStackWidget.h
+    src/ImageStackWidget.cpp
 )
 
-set(UIS src/SequenceDialog.ui)
+set(UIS 
+	src/ImageLoaderDialog.ui
+	src/ImageSequenceWidget.ui
+	src/ImageStackWidget.ui
+)
+
 set(AUX src/ImageLoader.json)
 
 source_group(Plugin FILES ${SOURCES} ${AUX})
