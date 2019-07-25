@@ -4,7 +4,7 @@
 
 #include <QWidget>
 
-#include "ImageStack.h"
+#include "ImageStacks.h"
 
 namespace Ui {
 	class ImageStackWidget;
@@ -26,11 +26,11 @@ private slots:
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onPickDirectory();
-	void onBeginLoad();
-	void onEndLoad();
+	void onBeginLoad(ImageStack* imageStack);
+	void onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData);
 
 private:
 	ImageLoader*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
-	ImageStack								_imageStack;
+	ImageStacks								_imageStacks;
 };	

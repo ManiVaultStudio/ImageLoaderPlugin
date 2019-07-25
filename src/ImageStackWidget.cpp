@@ -1,6 +1,6 @@
 #include "ImageStackWidget.h"
 
-#include "ui_ImageStackWidget.h"
+#include "ui_imageStackWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -16,19 +16,19 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
-	connect(&_imageStack, &ImageStacks::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStack, &ImageStacks::message, this, &ImageStackWidget::onMessage);
-	connect(&_imageStack, &ImageStacks::becameDirty, this, &ImageStackWidget::onBecameDirty);
-	connect(&_imageStack, &ImageStacks::beginScan, this, &ImageStackWidget::onBeginScan);
-	connect(&_imageStack, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
-	connect(&_imageStack, &ImageStacks::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	connect(&_imageStack, &ImageStacks::endLoad, this, &ImageStackWidget::onEndLoad);
+	connect(&_imageStacks, &ImageStacks::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
+	connect(&_imageStacks, &ImageStacks::message, this, &ImageStackWidget::onMessage);
+	connect(&_imageStacks, &ImageStacks::becameDirty, this, &ImageStackWidget::onBecameDirty);
+	connect(&_imageStacks, &ImageStacks::beginScan, this, &ImageStackWidget::onBeginScan);
+	connect(&_imageStacks, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
+	// connect(&_imageStacks, &ImageStacks::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	// connect(&_imageStacks, &ImageStacks::endLoad, this, &ImageStackWidget::onEndLoad);
 
 	auto imageTypes = QStringList();
 	
 	imageTypes  << "jpg" << "png" << "bmp" << "tif";
 
-	_imageStack.setImageTypes(imageTypes);
+	_imageStacks.setImageTypes(imageTypes);
 
 	_ui->datasetNameLabel->setEnabled(false);
 	_ui->datasetNameLineEdit->setEnabled(false);
@@ -47,20 +47,20 @@ void ImageStackWidget::onBecameDirty()
 
 void ImageStackWidget::onBeginScan()
 {
-	_ui->infoLineEdit->setText(QString("Scanning for image files..."));
+	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
 }
 
 void ImageStackWidget::onEndScan()
 {
-	if (_imageStack.imageFilePaths().size() == 0) {
-		_ui->infoLineEdit->setText("No images were found, try changing the directory");
+	if (_imageStacks.stacks().size() == 0) {
+		_ui->infoLineEdit->setText("No image stacks were found, try changing the directory");
 	}
 	else {
-		_ui->infoLineEdit->setText(QString("Found %1 images").arg(_imageStack.imageFilePaths().size()));
+		_ui->infoLineEdit->setText(QString("Found %1 image stack(s)").arg(_imageStacks.stacks().size()));
 	}
 
 	_ui->stacksComboBox->clear();
-	_ui->stacksComboBox->addItems(_imageStack.stacks().keys());
+	_ui->stacksComboBox->addItems(_imageStacks.stacks().keys());
 	_ui->loadPushButton->setEnabled(true);
 }
 
@@ -77,10 +77,19 @@ void ImageStackWidget::onDirectoryChanged(const QString &directory)
 
 void ImageStackWidget::onLoadSequence()
 {
-	_imageStack.setRunMode(ImageStack::RunMode::Load);
-	_imageStack.start();
-
 	_ui->loadPushButton->setEnabled(false);
+
+	const auto stackName = _ui->stacksComboBox->currentText();
+
+	if (!_imageStacks.stacks().contains(stackName))
+		return;
+	
+	auto imageStack = _imageStacks.stacks()[_ui->stacksComboBox->currentText()];
+
+	connect(&imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	connect(&imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
+
+	imageStack.load();
 }
 
 void ImageStackWidget::onPickDirectory()
@@ -88,10 +97,9 @@ void ImageStackWidget::onPickDirectory()
 	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory");
 
 	if (!_directory.isNull() || !_directory.isEmpty()) {
-		_imageStack.setDirectory(_directory);
+		_imageStacks.setDirectory(_directory);
 
-		_imageStack.setRunMode(ImageStack::RunMode::Scan);
-		_imageStack.start();
+		_imageStacks.start();
 
 		_ui->datasetNameLabel->setEnabled(true);
 		_ui->datasetNameLineEdit->setEnabled(true);
@@ -101,14 +109,21 @@ void ImageStackWidget::onPickDirectory()
 	}
 }
 
-void ImageStackWidget::onBeginLoad()
+void ImageStackWidget::onBeginLoad(ImageStack* imageStack)
 {
+	qDebug() << "Begin loading";
+
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad()
+void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData)
 {
-	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), this->_imageStack.noDimenions(), this->_imageStack.pointsData());
+	qDebug() << "End loading";
+
+	disconnect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
+	
+	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), imageStack->noDimensions(), pointsData);
 
 	_ui->loadPushButton->setText("Load");
 }
