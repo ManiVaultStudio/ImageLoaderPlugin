@@ -91,6 +91,9 @@
      <property name="toolTip">
       <string>Image width to search for</string>
      </property>
+     <property name="maximum">
+      <number>2048</number>
+     </property>
      <property name="value">
       <number>28</number>
      </property>
@@ -100,6 +103,9 @@
     <widget class="QSpinBox" name="imageHeightSpinBox">
      <property name="toolTip">
       <string>Image height to search for</string>
+     </property>
+     <property name="maximum">
+      <number>2048</number>
      </property>
      <property name="value">
       <number>28</number>

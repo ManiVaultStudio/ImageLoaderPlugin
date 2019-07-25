@@ -6,6 +6,36 @@
 
 #include <FreeImage.h>
 
+QString Layer::imageName() const {
+	return "Temp";
+}
+
+ImageStackModel::ImageStackModel() :
+	QAbstractListModel()
+{
+	//_layers = layers;
+}
+
+int ImageStackModel::rowCount(const QModelIndex& parent) const {
+	return _layers.size();
+}
+
+QVariant ImageStackModel::data(const QModelIndex& index, int role) const {
+	// Check that the index is valid and within the correct range first:
+	if (!index.isValid()) return QVariant();
+	
+	//if (index.row() >= decks_.size()) return QVariant();
+
+	if (role == Qt::DisplayRole) {
+		// Only returns something for the roles you support (DisplayRole is a minimum)
+		// Here we assume that the "Employee" class has a "lastName" method but of course any string can be returned
+		return QVariant(_layers.at(index.row())->imageName());
+	}
+	else {
+		return QVariant();
+	}
+}
+
 ImageStack::ImageStack() :
 	_runMode(RunMode::Scan),
 	_directory(""),
@@ -47,9 +77,19 @@ QStringList ImageStack::imageFilePaths() const
 	return _imageFilePaths;
 }
 
+QMap<QString, QStringList> ImageStack::stacks() const
+{
+	return _stacks;
+}
+
 std::vector<float>& ImageStack::pointsData()
 {
 	return _pointsData;
+}
+
+ImageStackModel& ImageStack::model()
+{
+	return _model;
 }
 
 int ImageStack::noDimenions() const
@@ -122,8 +162,18 @@ void ImageStack::scanDir(const QString &directory)
 
 		QImageReader imageReader(path);
 
-		qDebug() << imageReader.size();
+		// qDebug() << imageReader.size();
 
+		if (!imageReader.size().isEmpty()) {
+			const auto sizeString = QString("(%1,%2)").arg(QString::number(imageReader.size().width()), QString::number(imageReader.size().height()));
+
+			if (_stacks.contains(sizeString)) {
+				_stacks[sizeString] = QStringList();
+			}
+
+			_stacks[sizeString] << path;
+		}
+		
 		addFile(path);
 		scanDir(path);
 	}

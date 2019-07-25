@@ -24,6 +24,8 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(&_imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
 	connect(&_imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
 
+	_ui->stackListView->setModel(&_imageStack.model());
+
 	auto imageTypes = QStringList();
 	
 	imageTypes  << "jpg" << "png" << "bmp" << "tif";
@@ -60,6 +62,10 @@ void ImageStackWidget::onEndScan()
 	}
 
 	_ui->loadSequencePushButton->setEnabled(true);
+
+	qDebug() << _imageStack.stacks().keys();
+
+	//_ui->stacksComboBox->add
 }
 
 void ImageStackWidget::onMessage(const QString &message)

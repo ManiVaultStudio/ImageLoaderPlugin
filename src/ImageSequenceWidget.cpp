@@ -36,6 +36,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoader *imageLoader) :
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
 	_ui->imageTypeComboBox->addItem("bmp");
+	_ui->imageTypeComboBox->addItem("tif");
 
 	// onPickDirectory();
 }

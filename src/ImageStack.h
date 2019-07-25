@@ -3,11 +3,30 @@
 #include <QThread>
 #include <QSize>
 #include <QMap>
+#include <QAbstractListModel>
 
 #include <QMetaType>
 
-class ImageStack : public QThread
-{
+class Layer {
+public:
+	QString	imageName() const;
+};
+
+class ImageStackModel : public QAbstractListModel {
+
+	Q_OBJECT
+
+public:
+	explicit ImageStackModel();
+
+	int rowCount(const QModelIndex &parent = QModelIndex()) const;
+	QVariant data(const QModelIndex &index, int role) const;
+
+private:
+	std::vector<Layer*> _layers;
+};
+
+class ImageStack : public QThread {
 	Q_OBJECT
 
 public:
@@ -15,8 +34,7 @@ public:
 	ImageStack(const ImageStack &other);
 	~ImageStack();
 
-	enum RunMode
-	{
+	enum RunMode {
 		Scan,
 		Load
 	};
@@ -25,7 +43,9 @@ public:
 	QString	directory() const;
 	QStringList	imageTypes() const;
 	QStringList	imageFilePaths() const;
+	QMap<QString, QStringList> stacks() const;
 	std::vector<float>& pointsData();
+	ImageStackModel& model();
 	int noDimenions() const;
 
 	void setRunMode(const RunMode &runMode);
@@ -55,11 +75,13 @@ signals:
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 
 private:
-	RunMode				_runMode;
-	QString				_directory;
-	QStringList			_imageTypes;
-	QStringList			_imageFilePaths;
-	std::vector<float>	_pointsData;
+	RunMode						_runMode;
+	QString						_directory;
+	QStringList					_imageTypes;
+	QStringList					_imageFilePaths;
+	QMap<QString, QStringList>	_stacks;
+	std::vector<float>			_pointsData;
+	ImageStackModel				_model;
 };
 
 Q_DECLARE_METATYPE(ImageStack);
