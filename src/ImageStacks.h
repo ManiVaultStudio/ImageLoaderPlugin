@@ -8,14 +8,13 @@
 #include <QStringList>
 #include <QMetaType>
 
-using ImageStackMap = QMap<QString, ImageStack>;
+using ImageStackMap = QMap<QString, QSharedPointer<ImageStack>>;
 
 class ImageStacks : public QThread {
 	Q_OBJECT
 
 public:
 	ImageStacks();
-	ImageStacks(const ImageStacks &other);
 	~ImageStacks();
 
 	QString	directory() const;
@@ -38,7 +37,6 @@ signals:
 	void becameDirty();
 	void beginScan();
 	void endScan();
-	void message(const QString& message);
 	void directoryChanged(const QString &directory);
 
 private:
@@ -47,6 +45,6 @@ private:
 	ImageStackMap	_stacks;
 };
 
-Q_DECLARE_METATYPE(ImageStacks);
+// Q_DECLARE_METATYPE(ImageStacks);
 
 QDebug operator<<(QDebug dbg, const class ImageStacks &sequence);

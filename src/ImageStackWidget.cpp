@@ -17,7 +17,6 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
 	connect(&_imageStacks, &ImageStacks::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStacks, &ImageStacks::message, this, &ImageStackWidget::onMessage);
 	connect(&_imageStacks, &ImageStacks::becameDirty, this, &ImageStackWidget::onBecameDirty);
 	connect(&_imageStacks, &ImageStacks::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_imageStacks, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
@@ -84,12 +83,13 @@ void ImageStackWidget::onLoadSequence()
 	if (!_imageStacks.stacks().contains(stackName))
 		return;
 	
-	auto imageStack = _imageStacks.stacks()[_ui->stacksComboBox->currentText()];
+	auto imageStack = _imageStacks.stacks()[_ui->stacksComboBox->currentText()].data();
 
-	connect(&imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	connect(&imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
+	connect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	connect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
+	connect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
 
-	imageStack.load();
+	imageStack->load();
 }
 
 void ImageStackWidget::onPickDirectory()
@@ -122,7 +122,8 @@ void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& poi
 
 	disconnect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
 	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
-	
+	disconnect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
+
 	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), imageStack->noDimensions(), pointsData);
 
 	_ui->loadPushButton->setText("Load");

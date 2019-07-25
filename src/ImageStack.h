@@ -9,28 +9,25 @@ class ImageStack : public QThread {
 
 public:
 	ImageStack(const QSize& size = QSize());
-	ImageStack(const ImageStack &other);
-	~ImageStack();
 
-	ImageStack& operator = (const ImageStack& other)
-	{
-		return ImageStack(other);
-	}
-
+	QSize size() const;
 	QStringList	imageFilePaths() const;
 	
 	int noDimensions() const;
+	int noImages() const;
+	int noPixels() const;
 
 	void add(const QString& imageFilePath);
 	void load();
 	
 protected:
-	void loadImage(const QString& imageFilePath, std::vector<float>& pointsData);
+	void loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData);
 
 signals:
 	void beginLoad(ImageStack* imageStack);
 	void endLoad(ImageStack* imageStack, std::vector<float>& pointsData);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
+	void message(const QString& message);
 
 private:
 	QSize			_size;

@@ -12,12 +12,6 @@ ImageStacks::ImageStacks() :
 {
 }
 
-ImageStacks::ImageStacks(const ImageStacks &other) :
-	_directory(other._directory),
-	_imageTypes(other._imageTypes)
-{
-}
-
 ImageStacks::~ImageStacks()
 {
 }
@@ -93,14 +87,16 @@ void ImageStacks::scanDir(const QString &directory)
 
 		// qDebug() << imageReader.size();
 
-		if (!imageReader.size().isEmpty()) {
+		const auto size = imageReader.size();
+
+		if (size.width() > 0 && size.height() > 0) {
 			const auto sizeString = QString("%1x%2").arg(QString::number(imageReader.size().width()), QString::number(imageReader.size().height()));
 
-			if (_stacks.contains(sizeString)) {
-				_stacks[sizeString] = ImageStack(imageReader.size());
+			if (!_stacks.contains(sizeString)) {
+				_stacks.insert(sizeString, QSharedPointer<ImageStack>(new ImageStack(imageReader.size())));
 			}
 
-			_stacks[sizeString].add(path);
+			_stacks[sizeString]->add(path);
 		}
 		
 		scanDir(path);
