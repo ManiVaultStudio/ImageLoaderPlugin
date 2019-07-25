@@ -19,19 +19,19 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoader *imageLoader) :
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
 	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
 
-	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &SequenceDialog::onImageTypeChanged);
-	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &SequenceDialog::onPickDirectory);
-	connect(_ui->scanPushButton, &QPushButton::clicked, this, &SequenceDialog::onScan);
-	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &SequenceDialog::onImageWidthChanged);
-	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &SequenceDialog::onImageHeightChanged);
-	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &SequenceDialog::onLoadSequence);
-	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &SequenceDialog::onDirectoryChanged);
-	connect(&_imageSequence, &ImageSequence::message, this, &SequenceDialog::onMessage);
-	connect(&_imageSequence, &ImageSequence::becameDirty, this, &SequenceDialog::onBecameDirty);
-	connect(&_imageSequence, &ImageSequence::beginScan, this, &SequenceDialog::onBeginScan);
-	connect(&_imageSequence, &ImageSequence::endScan, this, &SequenceDialog::onEndScan);
-	connect(&_imageSequence, &ImageSequence::beginLoad, this, &SequenceDialog::onBeginLoad);
-	connect(&_imageSequence, &ImageSequence::endLoad, this, &SequenceDialog::onEndLoad);
+	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &ImageSequenceWidget::onImageTypeChanged);
+	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onPickDirectory);
+	connect(_ui->scanPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onScan);
+	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
+	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
+	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadSequence);
+	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
+	connect(&_imageSequence, &ImageSequence::message, this, &ImageSequenceWidget::onMessage);
+	connect(&_imageSequence, &ImageSequence::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
+	connect(&_imageSequence, &ImageSequence::beginScan, this, &ImageSequenceWidget::onBeginScan);
+	connect(&_imageSequence, &ImageSequence::endScan, this, &ImageSequenceWidget::onEndScan);
+	connect(&_imageSequence, &ImageSequence::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
+	connect(&_imageSequence, &ImageSequence::endLoad, this, &ImageSequenceWidget::onEndLoad);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");

@@ -29,6 +29,8 @@ set(SOURCES
     src/ImageSequence.cpp
 	src/ImageStack.h
     src/ImageStack.cpp
+	src/ImageStacks.h
+    src/ImageStacks.cpp
 	src/ImageLoaderDialog.h
     src/ImageLoaderDialog.cpp
 	src/ImageSequenceWidget.h

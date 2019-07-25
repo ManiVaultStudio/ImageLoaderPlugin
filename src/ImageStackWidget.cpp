@@ -14,17 +14,15 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	_ui->setupUi(this);
 
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
-	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
+	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
-	connect(&_imageStack, &ImageStack::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
-	connect(&_imageStack, &ImageStack::becameDirty, this, &ImageStackWidget::onBecameDirty);
-	connect(&_imageStack, &ImageStack::beginScan, this, &ImageStackWidget::onBeginScan);
-	connect(&_imageStack, &ImageStack::endScan, this, &ImageStackWidget::onEndScan);
-	connect(&_imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	connect(&_imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
-
-	_ui->stackListView->setModel(&_imageStack.model());
+	connect(&_imageStack, &ImageStacks::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
+	connect(&_imageStack, &ImageStacks::message, this, &ImageStackWidget::onMessage);
+	connect(&_imageStack, &ImageStacks::becameDirty, this, &ImageStackWidget::onBecameDirty);
+	connect(&_imageStack, &ImageStacks::beginScan, this, &ImageStackWidget::onBeginScan);
+	connect(&_imageStack, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
+	connect(&_imageStack, &ImageStacks::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	connect(&_imageStack, &ImageStacks::endLoad, this, &ImageStackWidget::onEndLoad);
 
 	auto imageTypes = QStringList();
 	
@@ -36,7 +34,7 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	_ui->datasetNameLineEdit->setEnabled(false);
 	_ui->stacksLabel->setEnabled(false);
 	_ui->stacksComboBox->setEnabled(false);
-	_ui->stackListView->setEnabled(false);
+	_ui->loadPushButton->setEnabled(false);
 }
 
 ImageStackWidget::~ImageStackWidget()
@@ -61,11 +59,9 @@ void ImageStackWidget::onEndScan()
 		_ui->infoLineEdit->setText(QString("Found %1 images").arg(_imageStack.imageFilePaths().size()));
 	}
 
-	_ui->loadSequencePushButton->setEnabled(true);
-
-	qDebug() << _imageStack.stacks().keys();
-
-	//_ui->stacksComboBox->add
+	_ui->stacksComboBox->clear();
+	_ui->stacksComboBox->addItems(_imageStack.stacks().keys());
+	_ui->loadPushButton->setEnabled(true);
 }
 
 void ImageStackWidget::onMessage(const QString &message)
@@ -84,7 +80,7 @@ void ImageStackWidget::onLoadSequence()
 	_imageStack.setRunMode(ImageStack::RunMode::Load);
 	_imageStack.start();
 
-	_ui->loadSequencePushButton->setEnabled(false);
+	_ui->loadPushButton->setEnabled(false);
 }
 
 void ImageStackWidget::onPickDirectory()
@@ -102,18 +98,17 @@ void ImageStackWidget::onPickDirectory()
 		_ui->stacksLabel->setEnabled(true);
 		_ui->stacksComboBox->setEnabled(true);
 		_ui->stacksComboBox->setEnabled(true);
-		_ui->stackListView->setEnabled(true);
 	}
 }
 
 void ImageStackWidget::onBeginLoad()
 {
-	_ui->loadSequencePushButton->setText("Loading");
+	_ui->loadPushButton->setText("Loading");
 }
 
 void ImageStackWidget::onEndLoad()
 {
 	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), this->_imageStack.noDimenions(), this->_imageStack.pointsData());
 
-	_ui->loadSequencePushButton->setText("Load");
+	_ui->loadPushButton->setText("Load");
 }

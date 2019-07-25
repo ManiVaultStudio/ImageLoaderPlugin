@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>304</height>
+    <height>106</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,35 +32,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="1" column="1" colspan="2">
-    <widget class="QLineEdit" name="datasetNameLineEdit">
-     <property name="toolTip">
-      <string>The name of the data set in the HDPS GUI</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="stacksLabel">
-     <property name="text">
-      <string>Stacks</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="datasetNameLabel">
-     <property name="text">
-      <string>Data set name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="directoryLabel">
-     <property name="text">
-      <string>Directory</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="3">
+   <item row="3" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLineEdit" name="infoLineEdit">
@@ -76,7 +48,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="loadSequencePushButton">
+      <widget class="QPushButton" name="loadPushButton">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -89,6 +61,30 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="stacksComboBox"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="directoryLabel">
+     <property name="text">
+      <string>Directory</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QLineEdit" name="datasetNameLineEdit">
+     <property name="toolTip">
+      <string>The name of the data set in the HDPS GUI</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="datasetNameLabel">
+     <property name="text">
+      <string>Dataset name</string>
+     </property>
+    </widget>
    </item>
    <item row="0" column="2">
     <widget class="QPushButton" name="directoryPushButton">
@@ -118,9 +114,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QComboBox" name="stacksComboBox"/>
-   </item>
    <item row="0" column="1">
     <widget class="QLineEdit" name="directoryLineEdit">
      <property name="enabled">
@@ -134,8 +127,12 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QListView" name="stackListView"/>
+   <item row="2" column="0">
+    <widget class="QLabel" name="stacksLabel">
+     <property name="text">
+      <string>Stacks</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
