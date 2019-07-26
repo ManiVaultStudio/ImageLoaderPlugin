@@ -15,7 +15,7 @@ class ImageLoader;
 class ImageStackWidget : public QWidget
 {
 public:
-	ImageStackWidget(ImageLoader *imageLoader);
+	ImageStackWidget(ImageLoader* imageLoader);
 	~ImageStackWidget();
 
 private slots:

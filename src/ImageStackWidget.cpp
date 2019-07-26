@@ -20,8 +20,6 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(&_imageStacks, &ImageStacks::becameDirty, this, &ImageStackWidget::onBecameDirty);
 	connect(&_imageStacks, &ImageStacks::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_imageStacks, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
-	// connect(&_imageStacks, &ImageStacks::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	// connect(&_imageStacks, &ImageStacks::endLoad, this, &ImageStackWidget::onEndLoad);
 
 	auto imageTypes = QStringList();
 	

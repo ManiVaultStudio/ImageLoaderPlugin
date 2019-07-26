@@ -41,14 +41,9 @@ void ImageLoader::addSequence(const QString &name, const int &noDimensions, std:
 
 	PointsPlugin& points = set.getData();
 
-	//points.data.resize(pointsData.size());
-	points.data.swap(pointsData);
-	//for (int i = 0; i < points.data.size(); i++) {
-	//	points.data[i] = pointsData[i];
-	//}
-
 	points.numDimensions = noDimensions;
-
+	points.data.swap(pointsData);
+	
 	_core->notifyDataAdded(datasetName);
 }
 

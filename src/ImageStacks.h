@@ -45,6 +45,4 @@ private:
 	ImageStackMap	_stacks;
 };
 
-// Q_DECLARE_METATYPE(ImageStacks);
-
 QDebug operator<<(QDebug dbg, const class ImageStacks &sequence);

@@ -35,7 +35,6 @@ public:
 	~ImageLoaderDialog();
 
 private slots:
-	void onTypeChanged();
 
 private:
 	ImageLoader*							_imageLoaderPlugin;

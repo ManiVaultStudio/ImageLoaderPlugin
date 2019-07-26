@@ -11,9 +11,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoader *imageLoader) :
 	_imageLoaderPlugin(imageLoader),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() }
 {
-
 	_ui->setupUi(this);
-
 	
 	_ui->imageTypeComboBox->setCurrentText(_imageSequence.imageType());
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());

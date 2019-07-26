@@ -21,7 +21,6 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
 
 	_mainLayout->addWidget(_typesComboBox.get());
 	_mainLayout->addWidget(_pagesStackedWidget.get());
-	//_mainLayout->addWidget(QSpacerItem(nullptr, .get());
 	_mainLayout->addStretch(1);
 
 	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());
@@ -34,9 +33,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
 	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
 
 	connect(_typesComboBox.get(), SIGNAL(activated(int)), _pagesStackedWidget.get(), SLOT(setCurrentIndex(int)));
-	connect(_pagesStackedWidget.get(), SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeChanged()));
 
-	//_pagesStackedWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	_imageSequenceWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	_imageStackWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -46,11 +43,4 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
 
 ImageLoaderDialog::~ImageLoaderDialog()
 {
-}
-
-void ImageLoaderDialog::onTypeChanged()
-{
-	// _pagesStackedWidget->adjustSize();
-
-	//adjustSize();
 }
