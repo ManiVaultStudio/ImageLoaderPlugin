@@ -4,11 +4,11 @@
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
 
-class ImageLoader : public LoaderPlugin
+class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-	ImageLoader() : LoaderPlugin("Image Loader") { }
-    ~ImageLoader(void);
+	ImageLoaderPlugin() : LoaderPlugin("Image Loader") { }
+    ~ImageLoaderPlugin(void);
     
     void init();
 
@@ -17,16 +17,16 @@ public:
 	void addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData);
 };
 
-class ImageLoaderFactory : public LoaderPluginFactory
+class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
 	Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoader"
-                      FILE  "ImageLoader.json")
+    Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin"
+                      FILE  "ImageLoaderPlugin.json")
     
 public:
-	ImageLoaderFactory(void) {}
-    ~ImageLoaderFactory(void) {}
+	ImageLoaderPluginFactory(void) {}
+    ~ImageLoaderPluginFactory(void) {}
     
 	LoaderPlugin* produce();
 };

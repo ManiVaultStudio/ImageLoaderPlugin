@@ -5,10 +5,10 @@
 #include <QDebug>
 #include <QFileDialog>
 
-#include "ImageLoader.h"
+#include "ImageLoaderPlugin.h"
 
-ImageSequenceWidget::ImageSequenceWidget(ImageLoader *imageLoader) :
-	_imageLoaderPlugin(imageLoader),
+ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
+	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() }
 {
 	_ui->setupUi(this);

@@ -5,10 +5,10 @@
 #include <QDebug>
 #include <QFileDialog>
 
-#include "ImageLoader.h"
+#include "ImageLoaderPlugin.h"
 
-ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
-	_imageLoaderPlugin(imageLoader),
+ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
+	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() }
 {
 	_ui->setupUi(this);
@@ -22,8 +22,8 @@ ImageStackWidget::ImageStackWidget(ImageLoader *imageLoader) :
 	connect(&_imageStacks, &ImageStacks::endScan, this, &ImageStackWidget::onEndScan);
 
 	auto imageTypes = QStringList();
-	
-	imageTypes  << "jpg" << "png" << "bmp" << "tif";
+
+	imageTypes << "jpg" << "png" << "bmp" << "tif";
 
 	_imageStacks.setImageTypes(imageTypes);
 
@@ -80,7 +80,7 @@ void ImageStackWidget::onLoadSequence()
 
 	if (!_imageStacks.stacks().contains(stackName))
 		return;
-	
+
 	auto imageStack = _imageStacks.stacks()[_ui->stacksComboBox->currentText()].data();
 
 	connect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);

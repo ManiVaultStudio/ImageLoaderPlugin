@@ -11,7 +11,7 @@ class QVBoxLayout;
 class QComboBox;
 class QStackedWidget;
 
-class ImageLoader;
+class ImageLoaderPlugin;
 class ImageSequenceWidget;
 class ImageStackWidget;
 
@@ -31,13 +31,13 @@ class StackedWidget : public QStackedWidget
 class ImageLoaderDialog : public QDialog
 {
 public:
-	ImageLoaderDialog(ImageLoader *imageLoader);
+	ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageLoaderDialog();
 
 private slots:
 
 private:
-	ImageLoader*							_imageLoaderPlugin;
+	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<QVBoxLayout>			_mainLayout;
 	std::unique_ptr<QComboBox>				_typesComboBox;
 	std::unique_ptr<StackedWidget>			_pagesStackedWidget;

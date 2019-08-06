@@ -10,12 +10,12 @@ namespace Ui {
 	class ImageSequenceWidget;
 }
 
-class ImageLoader;
+class ImageLoaderPlugin;
 
 class ImageSequenceWidget : public QWidget
 {
 public:
-	ImageSequenceWidget(ImageLoader *imageLoader);
+	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget();
 
 private slots:
@@ -34,7 +34,7 @@ private slots:
 	void onEndLoad();
 
 private:
-	ImageLoader*								_imageLoaderPlugin;
+	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
 	ImageSequence								_imageSequence;
 };

@@ -23,8 +23,8 @@ find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 find_package(FreeImage REQUIRED)
 
 set(SOURCES
-    src/ImageLoader.h
-    src/ImageLoader.cpp
+    src/ImageLoaderPlugin.h
+    src/ImageLoaderPlugin.cpp
 	src/ImageSequence.h
     src/ImageSequence.cpp
 	src/ImageStack.h
@@ -44,7 +44,7 @@ set(UIS
 	src/ImageStackWidget.ui
 )
 
-set(AUX src/ImageLoader.json)
+set(AUX src/ImageLoaderPlugin.json)
 
 source_group(Plugin FILES ${SOURCES} ${AUX})
 

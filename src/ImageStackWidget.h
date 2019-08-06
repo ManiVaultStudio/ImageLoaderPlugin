@@ -10,12 +10,12 @@ namespace Ui {
 	class ImageStackWidget;
 }
 
-class ImageLoader;
+class ImageLoaderPlugin;
 
 class ImageStackWidget : public QWidget
 {
 public:
-	ImageStackWidget(ImageLoader* imageLoader);
+	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageStackWidget();
 
 private slots:
@@ -30,7 +30,7 @@ private slots:
 	void onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData);
 
 private:
-	ImageLoader*							_imageLoaderPlugin;
+	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
 	ImageStacks								_imageStacks;
 };	

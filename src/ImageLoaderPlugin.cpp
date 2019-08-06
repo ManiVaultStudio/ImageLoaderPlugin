@@ -1,4 +1,4 @@
-#include "ImageLoader.h"
+#include "ImageLoaderPlugin.h"
 
 #include "ImageSequence.h"
 
@@ -14,24 +14,24 @@
 
 #include "ImageLoaderDialog.h"
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoader")
+Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
-ImageLoader::~ImageLoader(void)
+ImageLoaderPlugin::~ImageLoaderPlugin(void)
 {
 }
 
-void ImageLoader::init()
+void ImageLoaderPlugin::init()
 {
 }
 
-void ImageLoader::loadData()
+void ImageLoaderPlugin::loadData()
 {
 	ImageLoaderDialog dialog(this);
 	
 	dialog.exec();
 }
 
-void ImageLoader::addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData)
+void ImageLoaderPlugin::addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData)
 {
 	qDebug() << "Adding sequence " << name;
 
@@ -47,7 +47,7 @@ void ImageLoader::addSequence(const QString &name, const int &noDimensions, std:
 	_core->notifyDataAdded(datasetName);
 }
 
-LoaderPlugin* ImageLoaderFactory::produce()
+LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
-    return new ImageLoader();
+    return new ImageLoaderPlugin();
 }

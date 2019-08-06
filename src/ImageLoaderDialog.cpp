@@ -5,17 +5,17 @@
 #include <QStackedWidget>
 #include <QComboBox>
 
-#include "ImageLoader.h"
+#include "ImageLoaderPlugin.h"
 #include "ImageSequenceWidget.h"
 #include "ImageStackWidget.h"
 
-ImageLoaderDialog::ImageLoaderDialog(ImageLoader *imageLoader) :
-	_imageLoaderPlugin(imageLoader),
+ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
+	_imageLoaderPlugin(imageLoaderPlugin),
 	_mainLayout{std::make_unique<QVBoxLayout>()},
 	_typesComboBox{std::make_unique<QComboBox>()},
 	_pagesStackedWidget{std::make_unique<StackedWidget>()},
-	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoader)},
-	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoader)}
+	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoaderPlugin)},
+	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoaderPlugin)}
 {
 	setLayout(_mainLayout.get());
 
