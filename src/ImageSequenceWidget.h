@@ -18,7 +18,7 @@ public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget();
 
-private slots:
+private:
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();

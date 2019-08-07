@@ -34,8 +34,6 @@ public:
 	ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageLoaderDialog();
 
-private slots:
-
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<QVBoxLayout>			_mainLayout;
