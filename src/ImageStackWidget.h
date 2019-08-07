@@ -18,7 +18,7 @@ public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageStackWidget();
 
-private slots:
+private:
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
