@@ -8,9 +8,9 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
 	ImageLoaderPlugin() : LoaderPlugin("Image Loader") { }
-    ~ImageLoaderPlugin(void);
+    ~ImageLoaderPlugin(void) override;
     
-    void init();
+    void init() override;
 
     void loadData() Q_DECL_OVERRIDE;
 
@@ -26,7 +26,7 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
     
 public:
 	ImageLoaderPluginFactory(void) {}
-    ~ImageLoaderPluginFactory(void) {}
+    ~ImageLoaderPluginFactory(void) override {}
     
-	LoaderPlugin* produce();
+	LoaderPlugin* produce() override;
 };

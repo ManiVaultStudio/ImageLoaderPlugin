@@ -15,7 +15,7 @@ class ImageStacks : public QThread {
 
 public:
 	ImageStacks();
-	~ImageStacks();
+	~ImageStacks() override;
 
 	QString	directory() const;
 	QStringList	imageTypes() const;
