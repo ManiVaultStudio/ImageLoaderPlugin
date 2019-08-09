@@ -14,7 +14,13 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData);
+	enum ImageCollectionType
+	{
+		Sequence,
+		Stack
+	};
+
+	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

@@ -122,7 +122,7 @@ void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& poi
 	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
 	disconnect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
 
-	_imageLoaderPlugin->addSequence(_ui->datasetNameLineEdit->text(), imageStack->noDimensions(), pointsData);
+	_imageLoaderPlugin->addSequence(ImageLoaderPlugin::ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData);
 
 	_ui->loadPushButton->setText("Load");
 }

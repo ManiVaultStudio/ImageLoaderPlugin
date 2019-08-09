@@ -63,6 +63,11 @@ int ImageSequence::noDimenions() const
 	return _imageSize.width() * _imageSize.height();
 }
 
+int ImageSequence::noImages() const
+{
+	return _imageFilePaths.size();
+}
+
 void ImageSequence::setRunMode(const RunMode & runMode)
 {
 	_runMode = runMode;

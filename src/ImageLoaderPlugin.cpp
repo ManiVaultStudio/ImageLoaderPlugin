@@ -31,7 +31,7 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addSequence(const QString &name, const int &noDimensions, std::vector<float> &pointsData)
+void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData)
 {
 	qDebug() << "Adding sequence " << name;
 
@@ -44,6 +44,21 @@ void ImageLoaderPlugin::addSequence(const QString &name, const int &noDimensions
 	points.numDimensions = noDimensions;
 	points.data.swap(pointsData);
 	
+	switch (imageCollectionType) {
+		case ImageCollectionType::Sequence:
+			points.setMetaProperty("type", "SEQUENCE");
+			break;
+		case ImageCollectionType::Stack:
+			points.setMetaProperty("type", "STACK");
+			break;
+
+		default:
+			break;
+	}
+	
+	points.setMetaProperty("NO_IMAGES", noImages);
+	points.setMetaProperty("IMAGE_SIZE", size);
+
 	_core->notifyDataAdded(datasetName);
 }
 

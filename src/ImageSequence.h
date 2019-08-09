@@ -24,10 +24,11 @@ public:
 	RunMode	runMode() const;
 	QString	directory() const;
 	QString	imageType() const;
-	QSize	imageSize() const;
+	QSize imageSize() const;
 	QStringList	imageFilePaths() const;
 	std::vector<float>& pointsData();
 	int noDimenions() const;
+	int noImages() const;
 
 	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
