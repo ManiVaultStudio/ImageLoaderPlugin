@@ -16,7 +16,7 @@ class ImageStackWidget : public QWidget
 {
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageStackWidget();
+	~ImageStackWidget() override;
 
 private:
 	void onBecameDirty();
