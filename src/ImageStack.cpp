@@ -56,7 +56,7 @@ void ImageStack::load()
 	foreach(const QString &imageFilePath, _imageFilePaths) {
 		const auto imageIndex	= _imageFilePaths.indexOf(imageFilePath);
 		const auto done			= imageIndex + 1;
-		const auto percentage	= 100.0f * (done / (float)noImages());
+		const auto percentage	= 100.0f * (done / static_cast<float>(noImages()));
 
 		loadImage(imageFilePath, imageIndex, pointsData);
 
@@ -88,12 +88,12 @@ void ImageStack::loadImage(const QString & imageFilePath, const int& imageIndex,
 		case FIT_BITMAP:
 			if (FreeImage_GetBPP(image) == 8) {
 				for (y = 0; y < imageHeight; y++) {
-					BYTE *bits = (BYTE *)FreeImage_GetScanLine(image, y);
+					BYTE *bits = FreeImage_GetScanLine(image, y);
 					for (x = 0; x < imageWidth; x++) {
 						const auto pixelId = y * imageWidth + x;
 						const auto pointId = (pixelId * noDimensions()) + imageIndex;
 
-						pointsData[pointId] = (float)bits[x];
+						pointsData[pointId] = static_cast<float>(bits[x]);
 					}
 				}
 			}
