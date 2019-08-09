@@ -171,7 +171,7 @@ void ImageSequence::run()
 				loadImage(imageFilePath);
 
 				const auto done			= _imageFilePaths.indexOf(imageFilePath) + 1;
-				const auto percentage	= 100.0f * (done / (float)total);
+				const auto percentage	= 100.0f * (done / static_cast<float>(total));
 				
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
@@ -206,9 +206,9 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 		case FIT_BITMAP:
 			if (FreeImage_GetBPP(image) == 8) {
 				for (y = 0; y <  FreeImage_GetHeight(image); y++) {
-					BYTE *bits = (BYTE *)FreeImage_GetScanLine(image, y);
+					BYTE *bits = FreeImage_GetScanLine(image, y);
 					for (x = 0; x <  FreeImage_GetWidth(image); x++) {
-						_pointsData.push_back((float)bits[x]);
+						_pointsData.push_back(static_cast<float>(bits[x]));
 					}
 				}
 			}
