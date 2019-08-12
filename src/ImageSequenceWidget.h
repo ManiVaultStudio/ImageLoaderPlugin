@@ -16,7 +16,7 @@ class ImageSequenceWidget : public QWidget
 {
 public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageSequenceWidget();
+	~ImageSequenceWidget() override;
 
 private:
 	void onBecameDirty();

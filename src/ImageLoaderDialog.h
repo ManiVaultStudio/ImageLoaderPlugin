@@ -17,12 +17,12 @@ class ImageStackWidget;
 
 class StackedWidget : public QStackedWidget
 {
-	QSize sizeHint() const
+	QSize sizeHint() const override
 	{
 		return currentWidget()->sizeHint();
 	}
 
-	QSize minimumSizeHint() const
+	QSize minimumSizeHint() const override
 	{
 		return currentWidget()->minimumSizeHint();
 	}
@@ -32,7 +32,7 @@ class ImageLoaderDialog : public QDialog
 {
 public:
 	ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageLoaderDialog();
+	~ImageLoaderDialog() override;
 
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;

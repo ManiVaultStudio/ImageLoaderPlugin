@@ -13,7 +13,7 @@ class ImageSequence : public QThread
 public:
 	ImageSequence();
 	ImageSequence(const ImageSequence &other);
-	~ImageSequence();
+	~ImageSequence() override;
 
 	enum RunMode
 	{
