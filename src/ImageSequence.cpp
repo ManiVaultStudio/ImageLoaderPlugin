@@ -196,8 +196,6 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 	
 	auto *image = FreeImage_ConvertToGreyscale(FreeImage_Load(format, imageFilePath.toUtf8()));
 	
-	unsigned x, y;
-
 	const auto image_type = FreeImage_GetImageType(image);
 
 	// qDebug() << image_type;
@@ -205,9 +203,9 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 	switch (image_type) {
 		case FIT_BITMAP:
 			if (FreeImage_GetBPP(image) == 8) {
-				for (y = 0; y <  FreeImage_GetHeight(image); y++) {
-					BYTE *bits = FreeImage_GetScanLine(image, y);
-					for (x = 0; x <  FreeImage_GetWidth(image); x++) {
+				for (unsigned y = 0; y <  FreeImage_GetHeight(image); y++) {
+					const BYTE *const bits = FreeImage_GetScanLine(image, y);
+					for (unsigned x = 0; x <  FreeImage_GetWidth(image); x++) {
 						_pointsData.push_back(static_cast<float>(bits[x]));
 					}
 				}
