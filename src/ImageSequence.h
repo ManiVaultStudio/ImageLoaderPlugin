@@ -27,7 +27,7 @@ public:
 	QSize imageSize() const;
 	QStringList	imageFilePaths() const;
 	std::vector<float>& pointsData();
-	int noDimenions() const;
+	int noDimensions() const;
 	int noImages() const;
 
 	void setRunMode(const RunMode &runMode);

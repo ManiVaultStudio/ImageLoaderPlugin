@@ -129,7 +129,7 @@ void ImageSequenceWidget::onBeginLoad()
 
 void ImageSequenceWidget::onEndLoad()
 {
-	_imageLoaderPlugin->addSequence(ImageLoaderPlugin::ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimenions(), _imageSequence.pointsData());
+	_imageLoaderPlugin->addSequence(ImageLoaderPlugin::ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData());
 
 	_ui->loadSequencePushButton->setText("Load");
 

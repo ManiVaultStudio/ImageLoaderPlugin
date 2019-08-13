@@ -58,7 +58,7 @@ std::vector<float>& ImageSequence::pointsData()
 	return _pointsData;
 }
 
-int ImageSequence::noDimenions() const
+int ImageSequence::noDimensions() const
 {
 	return _imageSize.width() * _imageSize.height();
 }
@@ -169,6 +169,8 @@ void ImageSequence::run()
 			emit beginLoad();
 
 			_pointsData.clear();
+
+			_pointsData.reserve(noImages() * noDimensions());
 
 			const auto total = _imageFilePaths.size();
 
