@@ -56,8 +56,8 @@ void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionTy
 			break;
 	}
 	
-	points.setMetaProperty("NO_IMAGES", noImages);
-	points.setMetaProperty("IMAGE_SIZE", size);
+	points.setMetaProperty("noImages", noImages);
+	points.setMetaProperty("imageSize", size);
 
 	_core->notifyDataAdded(datasetName);
 }
