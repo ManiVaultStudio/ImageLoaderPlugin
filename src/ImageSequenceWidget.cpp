@@ -13,6 +13,11 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 {
 	_ui->setupUi(this);
 	
+	const auto width	= _imageLoaderPlugin->_settings.value("stack/width", QVariant(28)).toInt();
+	const auto height	= _imageLoaderPlugin->_settings.value("stack/height", QVariant(28)).toInt();
+
+	_imageSequence.setImageSize(QSize(width, height));
+
 	_ui->imageTypeComboBox->setCurrentText(_imageSequence.imageType());
 	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
 	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
@@ -75,10 +80,12 @@ void ImageSequenceWidget::onMessage(const QString &message)
 	_ui->infoLineEdit->setText(message);
 }
 
-void ImageSequenceWidget::onDirectoryChanged(const QString &directory)
+void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+
+	_imageLoaderPlugin->_settings.setValue("sequence/directory", directory);
 }
 
 void ImageSequenceWidget::onLoadSequence()
@@ -92,11 +99,15 @@ void ImageSequenceWidget::onLoadSequence()
 void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
+
+	_imageLoaderPlugin->_settings.setValue("stack/width", imageWidth);
 }
 
 void ImageSequenceWidget::onImageHeightChanged(int imageHeight)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
+
+	_imageLoaderPlugin->_settings.setValue("stack/height", imageHeight);
 }
 
 void ImageSequenceWidget::onScan()
@@ -107,10 +118,11 @@ void ImageSequenceWidget::onScan()
 
 void ImageSequenceWidget::onPickDirectory()
 {
-	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory");
+	const auto initialDirectory = _imageLoaderPlugin->_settings.value("sequence/directory").toString();
+	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
-	if (!_directory.isNull() || !_directory.isEmpty()) {
-		_imageSequence.setDirectory(_directory);
+	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+		_imageSequence.setDirectory(pickedDirectory);
 
 		_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 		_imageSequence.start();

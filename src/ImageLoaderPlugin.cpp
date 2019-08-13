@@ -16,6 +16,12 @@
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
+ImageLoaderPlugin::ImageLoaderPlugin() :
+	LoaderPlugin("Image Loader"),
+	_settings("HDPS", "ImageViewer")
+{
+}
+
 ImageLoaderPlugin::~ImageLoaderPlugin(void)
 {
 }

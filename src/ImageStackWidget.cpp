@@ -70,6 +70,8 @@ void ImageStackWidget::onDirectoryChanged(const QString &directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+
+	_imageLoaderPlugin->_settings.setValue("stack/directory", directory);
 }
 
 void ImageStackWidget::onLoadSequence()
@@ -92,10 +94,11 @@ void ImageStackWidget::onLoadSequence()
 
 void ImageStackWidget::onPickDirectory()
 {
-	const auto _directory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory");
+	const auto initialDirectory = _imageLoaderPlugin->_settings.value("stack/directory").toString();
+	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
-	if (!_directory.isNull() || !_directory.isEmpty()) {
-		_imageStacks.setDirectory(_directory);
+	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+		_imageStacks.setDirectory(pickedDirectory);
 
 		_imageStacks.start();
 

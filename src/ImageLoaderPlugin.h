@@ -1,5 +1,8 @@
 #pragma once
+
 #include <LoaderPlugin.h>
+
+#include <QSettings>
 
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
@@ -7,7 +10,7 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-	ImageLoaderPlugin() : LoaderPlugin("Image Loader") { }
+	ImageLoaderPlugin();
     ~ImageLoaderPlugin(void) override;
     
     void init() override;
@@ -21,6 +24,8 @@ public:
 	};
 
 	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData);
+
+	QSettings _settings;
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory
