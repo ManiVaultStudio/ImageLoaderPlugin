@@ -46,18 +46,18 @@ void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionTy
 	
 	switch (imageCollectionType) {
 		case ImageCollectionType::Sequence:
-			points.setMetaProperty("type", "SEQUENCE");
+			points.setProperty("type", "SEQUENCE");
 			break;
 		case ImageCollectionType::Stack:
-			points.setMetaProperty("type", "STACK");
+			points.setProperty("type", "STACK");
 			break;
 
 		default:
 			break;
 	}
 	
-	points.setMetaProperty("noImages", noImages);
-	points.setMetaProperty("imageSize", size);
+	points.setProperty("noImages", noImages);
+	points.setProperty("imageSize", size);
 
 	_core->notifyDataAdded(datasetName);
 }
