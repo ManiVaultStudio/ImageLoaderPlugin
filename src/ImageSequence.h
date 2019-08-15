@@ -36,8 +36,6 @@ public:
 	void setImageType(const QString &imageType);
 	void setImageSize(const QSize &imageSize);
 
-	void scan();
-	
 protected:
 	void scanDir(const QString &directory);
 	void addFile(const QString &imageFilePath);

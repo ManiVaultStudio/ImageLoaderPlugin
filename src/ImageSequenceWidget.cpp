@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QDir>
 
 #include "ImageLoaderPlugin.h"
 
@@ -41,7 +42,11 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->imageTypeComboBox->addItem("bmp");
 	_ui->imageTypeComboBox->addItem("tif");
 
-	// onPickDirectory();
+	const auto directory = _imageLoaderPlugin->_settings.value("sequence/directory", "").toString();
+
+	if (QDir(directory).exists()) {
+		_imageSequence.setDirectory(directory);
+	}
 }
 
 ImageSequenceWidget::~ImageSequenceWidget()
@@ -86,6 +91,9 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+
+	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
+	_imageSequence.start();
 
 	_imageLoaderPlugin->_settings.setValue("sequence/directory", directory);
 }

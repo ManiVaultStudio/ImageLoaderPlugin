@@ -32,6 +32,12 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->stacksLabel->setEnabled(false);
 	_ui->stacksComboBox->setEnabled(false);
 	_ui->loadPushButton->setEnabled(false);
+
+	const auto directory = _imageLoaderPlugin->_settings.value("stack/directory", "").toString();
+
+	if (QDir(directory).exists()) {
+		_imageStacks.setDirectory(directory);
+	}
 }
 
 ImageStackWidget::~ImageStackWidget()
@@ -49,15 +55,25 @@ void ImageStackWidget::onBeginScan()
 
 void ImageStackWidget::onEndScan()
 {
+	_ui->stacksComboBox->clear();
+
+	_ui->stacksComboBox->setEnabled(false);
+
 	if (_imageStacks.stacks().size() == 0) {
 		_ui->infoLineEdit->setText("No image stacks were found, try changing the directory");
 	}
 	else {
 		_ui->infoLineEdit->setText(QString("Found %1 image stack(s)").arg(_imageStacks.stacks().size()));
+
+		_ui->stacksComboBox->addItems(_imageStacks.stacks().keys());
+		
+		_ui->datasetNameLabel->setEnabled(true);
+		_ui->datasetNameLineEdit->setEnabled(true);
+		_ui->stacksLabel->setEnabled(true);
+		_ui->stacksComboBox->setEnabled(true);
+		_ui->stacksComboBox->setEnabled(true);
 	}
 
-	_ui->stacksComboBox->clear();
-	_ui->stacksComboBox->addItems(_imageStacks.stacks().keys());
 	_ui->loadPushButton->setEnabled(true);
 }
 
@@ -70,6 +86,8 @@ void ImageStackWidget::onDirectoryChanged(const QString &directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+
+	_imageStacks.start();
 
 	_imageLoaderPlugin->_settings.setValue("stack/directory", directory);
 }
@@ -101,12 +119,6 @@ void ImageStackWidget::onPickDirectory()
 		_imageStacks.setDirectory(pickedDirectory);
 
 		_imageStacks.start();
-
-		_ui->datasetNameLabel->setEnabled(true);
-		_ui->datasetNameLineEdit->setEnabled(true);
-		_ui->stacksLabel->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
 	}
 }
 
