@@ -53,6 +53,17 @@ QStringList ImageSequence::imageFilePaths() const
 	return _imageFilePaths;
 }
 
+QStringList ImageSequence::dimensionNames() const
+{
+	auto dimensionNames = QStringList();
+
+	for (int i = 1; i <= noDimensions(); i++) {
+		dimensionNames << QString("dim_%1").arg(i);
+	}
+
+	return dimensionNames;
+}
+
 std::vector<float>& ImageSequence::pointsData()
 {
 	return _pointsData;

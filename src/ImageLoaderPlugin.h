@@ -23,7 +23,7 @@ public:
 		Stack
 	};
 
-	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData);
+	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames = QStringList());
 
 	QSettings _settings;
 };

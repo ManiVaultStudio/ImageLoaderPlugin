@@ -12,6 +12,7 @@ public:
 
 	QSize size() const;
 	QStringList	imageFilePaths() const;
+	QStringList	dimensionNames() const;
 	
 	int noDimensions() const;
 	int noImages() const;

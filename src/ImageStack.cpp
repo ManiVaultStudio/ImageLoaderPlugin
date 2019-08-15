@@ -21,6 +21,17 @@ QStringList ImageStack::imageFilePaths() const
 	return _imageFilePaths;
 }
 
+QStringList ImageStack::dimensionNames() const
+{
+	auto dimensionNames = QStringList();
+
+	foreach(const QString& imageFilePath, _imageFilePaths) {
+		dimensionNames << QFileInfo(imageFilePath).fileName();
+	}
+
+	return dimensionNames;
+}
+
 int ImageStack::noDimensions() const
 {
 	return noImages();
