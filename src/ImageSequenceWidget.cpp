@@ -62,14 +62,16 @@ void ImageSequenceWidget::onBeginScan()
 
 void ImageSequenceWidget::onEndScan()
 {
-	if (_imageSequence.imageFilePaths().size() == 0) {
+	const auto noImages = _imageSequence.imageFilePaths().size();
+
+	if (noImages <= 0) {
 		_ui->infoLineEdit->setText("No images were found, try changing the directory, image type or dimensions");
 	}
 	else {
-		_ui->infoLineEdit->setText(QString("Found %1 images").arg(_imageSequence.imageFilePaths().size()));
+		_ui->infoLineEdit->setText(QString("Found %1 images").arg(noImages));
+		_ui->loadSequencePushButton->setEnabled(true);
 	}
-
-	_ui->loadSequencePushButton->setEnabled(true);
+	
 	_ui->scanPushButton->setText("Scan");
 }
 
