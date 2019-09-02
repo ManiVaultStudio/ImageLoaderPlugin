@@ -37,6 +37,7 @@ set(SOURCES
     src/ImageSequenceWidget.cpp
 	src/ImageStackWidget.h
     src/ImageStackWidget.cpp
+    src/Common.h
 )
 
 set(UIS 
