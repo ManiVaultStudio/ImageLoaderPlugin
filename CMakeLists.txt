@@ -22,32 +22,51 @@ find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 find_package(FreeImage REQUIRED)
 
-set(SOURCES
+set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
+	src/ImageLoaderDialog.h
+    src/ImageLoaderDialog.cpp
+	src/ImageUtilities.h
+    src/ImageUtilities.cpp
+    src/Common.h
+)
+
+set(IMAGE_SEQUENCE_SOURCES
 	src/ImageSequence.h
     src/ImageSequence.cpp
+	src/ImageSequenceWidget.h
+    src/ImageSequenceWidget.cpp
+)
+
+set(IMAGE_STACK_SOURCES
 	src/ImageStack.h
     src/ImageStack.cpp
 	src/ImageStacks.h
     src/ImageStacks.cpp
-	src/ImageLoaderDialog.h
-    src/ImageLoaderDialog.cpp
-	src/ImageSequenceWidget.h
-    src/ImageSequenceWidget.cpp
 	src/ImageStackWidget.h
     src/ImageStackWidget.cpp
-    src/Common.h
 )
+
+set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
+	src/MultiPartImageSequenceWidget.h
+	src/MultiPartImageSequenceWidget.cpp
+)
+
+set(SOURCES ${PLUGIN_SOURCES} ${IMAGE_SEQUENCE_SOURCES} ${IMAGE_STACK_SOURCES} ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
 
 set(UIS 
 	src/ImageSequenceWidget.ui
 	src/ImageStackWidget.ui
+	src/MultipartImageSequenceWidget.ui
 )
 
 set(AUX src/ImageLoaderPlugin.json)
 
-source_group(Plugin FILES ${SOURCES} ${AUX})
+source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
+source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
+source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
+source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")

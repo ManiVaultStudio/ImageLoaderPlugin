@@ -26,11 +26,13 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());
 	_pagesStackedWidget->addWidget(_imageStackWidget.get());
 
-	_typesComboBox->addItem("Sequence of images");
-	_typesComboBox->addItem("Stack of images");
+	_typesComboBox->addItem("Sequence");
+	_typesComboBox->addItem("Stack");
+	//_typesComboBox->addItem("Multipart");
 
 	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimenions is defined by the number of pixels", Qt::ToolTipRole);
 	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
+	//_typesComboBox->setItemData(1, "Load in one or more multipart TIFF images", Qt::ToolTipRole);
 
 	connect(_typesComboBox.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),
 		_pagesStackedWidget.get(), &QStackedWidget::setCurrentIndex);

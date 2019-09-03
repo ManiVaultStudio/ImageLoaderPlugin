@@ -1,9 +1,10 @@
 #include "ImageStack.h"
+#include "ImageUtilities.h"
 
 #include <QDebug>
 #include <QFileInfo>
 
-#include <FreeImage.h>
+//#include <FreeImage.h>
 
 ImageStack::ImageStack(const QSize& size /*= QSize()*/) :
 	_size(size),
@@ -85,7 +86,7 @@ void ImageStack::loadImage(const QString & imageFilePath, const int& imageIndex,
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
-	auto* image = FreeImage_ConvertToGreyscale(FreeImage_Load(format, imageFilePath.toUtf8()));
+	auto* image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
 
 	const auto image_type	= FreeImage_GetImageType(image);
 	const auto imageWidth	= FreeImage_GetWidth(image);

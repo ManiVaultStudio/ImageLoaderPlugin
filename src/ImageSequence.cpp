@@ -1,4 +1,5 @@
 #include "ImageSequence.h"
+#include "ImageUtilities.h"
 
 #include <QDebug>
 #include <QDir>
@@ -212,7 +213,7 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 	
-	auto *image = FreeImage_ConvertToGreyscale(FreeImage_Load(format, imageFilePath.toUtf8()));
+	auto *image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
 	
 	const auto image_type = FreeImage_GetImageType(image);
 
