@@ -14,6 +14,7 @@ class QStackedWidget;
 class ImageLoaderPlugin;
 class ImageSequenceWidget;
 class ImageStackWidget;
+class MultiPartImageSequenceWidget;
 
 class StackedWidget : public QStackedWidget
 {
@@ -35,10 +36,11 @@ public:
 	~ImageLoaderDialog() override;
 
 private:
-	ImageLoaderPlugin*						_imageLoaderPlugin;
-	std::unique_ptr<QVBoxLayout>			_mainLayout;
-	std::unique_ptr<QComboBox>				_typesComboBox;
-	std::unique_ptr<StackedWidget>			_pagesStackedWidget;
-	std::unique_ptr<ImageSequenceWidget>	_imageSequenceWidget;
-	std::unique_ptr<ImageStackWidget>		_imageStackWidget;
+	ImageLoaderPlugin*								_imageLoaderPlugin;
+	std::unique_ptr<QVBoxLayout>					_mainLayout;
+	std::unique_ptr<QComboBox>						_typesComboBox;
+	std::unique_ptr<StackedWidget>					_pagesStackedWidget;
+	std::unique_ptr<ImageSequenceWidget>			_imageSequenceWidget;
+	std::unique_ptr<ImageStackWidget>				_imageStackWidget;
+	std::unique_ptr<MultiPartImageSequenceWidget>	_multiPartImageSequenceWidget;
 };

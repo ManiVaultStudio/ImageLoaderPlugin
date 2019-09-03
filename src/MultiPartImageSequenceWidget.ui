@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>151</height>
+    <width>379</width>
+    <height>466</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,91 +32,147 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="2" column="1" colspan="4">
-    <widget class="QLineEdit" name="datasetNameLineEdit">
-     <property name="toolTip">
-      <string>The name of the data set in the HDPS GUI</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1" colspan="4">
-    <widget class="QComboBox" name="imageTypeComboBox">
-     <property name="toolTip">
-      <string>Image type to search for</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="imageTypeLabel">
+   <item row="0" column="0">
+    <widget class="QLabel" name="directoryLabel">
      <property name="text">
-      <string>Image type(s)</string>
+      <string>Directory</string>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="imageResolutionLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Image resolution</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
     <widget class="QLabel" name="datasetNameLabel">
      <property name="text">
       <string>Data set name</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="5">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="infoLineEdit">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Info</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="scanPushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Scan directory for sequence images</string>
-       </property>
-       <property name="text">
-        <string>Scan</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadSequencePushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Load image sequence</string>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <item row="2" column="0">
+    <widget class="QLabel" name="imagesLabel">
+     <property name="text">
+      <string>Image(s)</string>
+     </property>
+    </widget>
    </item>
-   <item row="0" column="4">
+   <item row="5" column="0" colspan="4">
+    <widget class="QGroupBox" name="subsamplingGroupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Subsampling configuration</string>
+     </property>
+     <property name="title">
+      <string>Subsampling</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="subsamplingGridLayout">
+        <item row="1" column="0">
+         <widget class="QLabel" name="resamplingFilterLabel">
+          <property name="text">
+           <string>Resampling filter</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="subsamplingRatioLabel">
+          <property name="text">
+           <string>Ratio (%)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1" colspan="2">
+         <widget class="QComboBox" name="resamplingFilterComboBox">
+          <property name="toolTip">
+           <string>The type of resampling filter to use</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Box</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Bilinear</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>B-spline</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Bicubic</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Carmull-rom</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Lanczos</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QDoubleSpinBox" name="subsamplingRatioSpinBox">
+          <property name="toolTip">
+           <string>Subsampling ratio </string>
+          </property>
+          <property name="minimum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>10.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="3">
+    <widget class="QLineEdit" name="datasetNameLineEdit">
+     <property name="toolTip">
+      <string>The name of the data set in the HDPS GUI</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="3">
+    <widget class="QListWidget" name="imagesListWidget">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QLineEdit" name="directoryLineEdit">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
     <widget class="QPushButton" name="directoryPushButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -144,80 +200,35 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="directoryLabel">
-     <property name="text">
-      <string>Directory</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" colspan="4">
-    <layout class="QHBoxLayout" name="imageSizeHorizontalLayout">
+   <item row="6" column="0" colspan="4">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QSpinBox" name="imageWidthSpinBox">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
+      <widget class="QLineEdit" name="infoLineEdit">
+       <property name="enabled">
+        <bool>false</bool>
        </property>
        <property name="toolTip">
-        <string>Image width to search for</string>
+        <string>Info</string>
        </property>
-       <property name="maximum">
-        <number>2048</number>
-       </property>
-       <property name="value">
-        <number>28</number>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="imageHeightSpinBox">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
+      <widget class="QPushButton" name="loadSequencePushButton">
+       <property name="enabled">
+        <bool>false</bool>
        </property>
        <property name="toolTip">
-        <string>Image height to search for</string>
+        <string>Load image sequence</string>
        </property>
-       <property name="maximum">
-        <number>2048</number>
-       </property>
-       <property name="value">
-        <number>28</number>
+       <property name="text">
+        <string>Load</string>
        </property>
       </widget>
-     </item>
-     <item>
-      <spacer name="imageSizeHorizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
-   </item>
-   <item row="0" column="1" colspan="3">
-    <widget class="QLineEdit" name="directoryLineEdit">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
    </item>
   </layout>
  </widget>
