@@ -88,18 +88,18 @@ void MultiPartImageSequenceWidget::onMessage(const QString &message)
 
 	_ui->infoLineEdit->setText(message);
 }
-
+*/
 void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
-	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-	_imageSequence.start();
+	//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
+	//_imageSequence.start();
 
-	_imageLoaderPlugin->_settings.setValue("sequence/directory", directory);
+	_imageLoaderPlugin->_settings.setValue("multipart/directory", directory);
 }
-
+/*
 void MultiPartImageSequenceWidget::onLoadSequence()
 {
 	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
@@ -127,20 +127,20 @@ void MultiPartImageSequenceWidget::onScan()
 	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.start();
 }
-
+*/
 void MultiPartImageSequenceWidget::onPickDirectory()
 {
-	const auto initialDirectory = _imageLoaderPlugin->_settings.value("sequence/directory").toString();
-	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
+	const auto initialDirectory = _imageLoaderPlugin->_settings.value("multipart/directory").toString();
+	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_imageSequence.setDirectory(pickedDirectory);
+		//_imageSequence.setDirectory(pickedDirectory);
 
-		_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-		_imageSequence.start();
+		//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
+		//_imageSequence.start();
 	}
 }
-
+/*
 void MultiPartImageSequenceWidget::onImageTypeChanged(const QString & imageType)
 {
 	_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());

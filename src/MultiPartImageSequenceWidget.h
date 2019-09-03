@@ -19,7 +19,6 @@ public:
 	~MultiPartImageSequenceWidget() override;
 
 private:
-	/*
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
@@ -33,7 +32,6 @@ private:
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad();
-	*/
 
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
