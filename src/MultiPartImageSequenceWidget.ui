@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>379</width>
-    <height>466</height>
+    <width>563</width>
+    <height>389</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,126 +32,7 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="6" column="0" colspan="4">
-    <widget class="QGroupBox" name="subsamplingGroupBox">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Subsampling configuration</string>
-     </property>
-     <property name="title">
-      <string>Subsampling</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <layout class="QGridLayout" name="subsamplingGridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="resamplingFilterLabel">
-          <property name="text">
-           <string>Resampling filter</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="subsamplingRatioLabel">
-          <property name="text">
-           <string>Ratio (%)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QComboBox" name="resamplingFilterComboBox">
-          <property name="toolTip">
-           <string>The type of resampling filter to use</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Box</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Bilinear</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>B-spline</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Bicubic</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Carmull-rom</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Lanczos</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QDoubleSpinBox" name="subsamplingRatioSpinBox">
-          <property name="toolTip">
-           <string>Subsampling ratio </string>
-          </property>
-          <property name="minimum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>10.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="4">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLineEdit" name="infoLineEdit">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Info</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadSequencePushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Load image sequence</string>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="0" colspan="4">
+   <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="imagesGroupBox">
      <property name="minimumSize">
       <size>
@@ -232,7 +113,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>200</height>
+            <height>150</height>
            </size>
           </property>
          </widget>
@@ -248,6 +129,36 @@
       </item>
      </layout>
     </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLineEdit" name="infoLineEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Info</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loadSequencePushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Load image sequence</string>
+       </property>
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

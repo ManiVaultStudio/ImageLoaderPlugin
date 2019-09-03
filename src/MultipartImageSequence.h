@@ -1,70 +1,46 @@
 #pragma once
 
-#include <QThread>
+#include <QObject>
 #include <QSize>
 #include <QMap>
 #include <QMetaType>
 
-class ImageSequence : public QThread
+class MultipartImageSequence : public QObject
 {
 	Q_OBJECT
 
 public:
-	ImageSequence();
-	ImageSequence(const ImageSequence &other);
-	~ImageSequence() override;
+	MultipartImageSequence();
+	MultipartImageSequence(const MultipartImageSequence &other);
+	~MultipartImageSequence();
 
-	enum RunMode
-	{
-		Scan,
-		Load
-	};
-
-	RunMode	runMode() const;
 	QString	directory() const;
-	QString	imageType() const;
-	QSize imageSize() const;
 	QStringList	imageFilePaths() const;
 	QStringList	dimensionNames() const;
 	std::vector<float>& pointsData();
 	int noDimensions() const;
 	int noImages() const;
-
-	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
-	void setImageType(const QString &imageType);
-	void setImageSize(const QSize &imageSize);
 
 protected:
 	void scanDir(const QString &directory);
 	void addFile(const QString &imageFilePath);
 	void loadImage(const QString & imageFilePath);
 
-protected:
-	void run() override;
-
 signals:
 	void becameDirty();
-	void beginScan();
-	void endScan();
-	void message(const QString& message);
 	void directoryChanged(const QString &directory);
-	void imageTypeChanged(const QString &imageType);
-	void imageSizeChanged(const QSize &imageSize);
 	void imageFilePathsChanged(const QStringList &imageFilePaths);
 	void beginLoad();
 	void endLoad();
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 
 private:
-	RunMode				_runMode;
 	QString				_directory;
-	QString				_imageType;
-	QSize				_imageSize;
 	QStringList			_imageFilePaths;
 	std::vector<float>	_pointsData;
 };
 
-Q_DECLARE_METATYPE(ImageSequence);
+Q_DECLARE_METATYPE(MultipartImageSequence);
 
 QDebug operator<<(QDebug dbg, const class ImageSequence &sequence);

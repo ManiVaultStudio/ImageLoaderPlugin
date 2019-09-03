@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Common.h"
+#include "ResampleImageSettings.h"
+
 #include <LoaderPlugin.h>
 
 #include <QSettings>
@@ -17,15 +20,16 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	enum ImageCollectionType
-	{
-		Sequence,
-		Stack
-	};
-
 	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames = QStringList());
 
-	QSettings _settings;
+public:
+	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
+	void setSetting(const QString& name, const QVariant& value);
+	ResampleImageSettings& resampleImageSettings();
+
+private:
+	QSettings				_settings;
+	ResampleImageSettings	_resampleImageSettings;
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

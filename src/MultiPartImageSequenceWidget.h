@@ -4,7 +4,7 @@
 
 #include <QWidget>
 
-#include "ImageSequence.h"
+#include "MultipartImageSequence.h"
 
 namespace Ui {
 	class MultiPartImageSequenceWidget;
@@ -36,5 +36,5 @@ private:
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
-	//ImageSequence								_imageSequence;
+	MultipartImageSequence								_multipartImageSequence;
 };

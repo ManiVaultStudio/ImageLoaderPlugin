@@ -33,7 +33,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->stacksComboBox->setEnabled(false);
 	_ui->loadPushButton->setEnabled(false);
 
-	const auto directory = _imageLoaderPlugin->_settings.value("stack/directory", "").toString();
+	const auto directory = _imageLoaderPlugin->setting("stack/directory", "").toString();
 
 	if (QDir(directory).exists()) {
 		_imageStacks.setDirectory(directory);
@@ -89,7 +89,7 @@ void ImageStackWidget::onDirectoryChanged(const QString &directory)
 
 	_imageStacks.start();
 
-	_imageLoaderPlugin->_settings.setValue("stack/directory", directory);
+	_imageLoaderPlugin->setSetting("stack/directory", directory);
 }
 
 void ImageStackWidget::onLoadSequence()
@@ -112,7 +112,7 @@ void ImageStackWidget::onLoadSequence()
 
 void ImageStackWidget::onPickDirectory()
 {
-	const auto initialDirectory = _imageLoaderPlugin->_settings.value("stack/directory").toString();
+	const auto initialDirectory = _imageLoaderPlugin->setting("stack/directory").toString();
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
@@ -137,7 +137,7 @@ void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& poi
 	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
 	disconnect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
 
-	_imageLoaderPlugin->addSequence(ImageLoaderPlugin::ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
+	_imageLoaderPlugin->addSequence(ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
 
 	_ui->loadPushButton->setText("Load");
 }

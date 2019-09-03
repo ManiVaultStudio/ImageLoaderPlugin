@@ -9,6 +9,7 @@
 #include "ImageSequenceWidget.h"
 #include "ImageStackWidget.h"
 #include "MultiPartImageSequenceWidget.h"
+#include "ResampleImageSettingsWidget.h"
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
@@ -17,12 +18,14 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_pagesStackedWidget{std::make_unique<StackedWidget>()},
 	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoaderPlugin)},
 	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoaderPlugin)},
-	_multiPartImageSequenceWidget{std::make_unique<MultiPartImageSequenceWidget>(imageLoaderPlugin)}
+	_multiPartImageSequenceWidget{std::make_unique<MultiPartImageSequenceWidget>(imageLoaderPlugin)},
+	_resampleWidget{std::make_unique<ResampleImageSettingsWidget>(imageLoaderPlugin)}
 {
 	setLayout(_mainLayout.get());
 
 	_mainLayout->addWidget(_typesComboBox.get());
 	_mainLayout->addWidget(_pagesStackedWidget.get());
+	_mainLayout->addWidget(_resampleWidget.get());
 	_mainLayout->addStretch(1);
 
 	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());

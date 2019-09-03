@@ -15,6 +15,7 @@ class ImageLoaderPlugin;
 class ImageSequenceWidget;
 class ImageStackWidget;
 class MultiPartImageSequenceWidget;
+class ResampleImageSettingsWidget;
 
 class StackedWidget : public QStackedWidget
 {
@@ -43,4 +44,5 @@ private:
 	std::unique_ptr<ImageSequenceWidget>			_imageSequenceWidget;
 	std::unique_ptr<ImageStackWidget>				_imageStackWidget;
 	std::unique_ptr<MultiPartImageSequenceWidget>	_multiPartImageSequenceWidget;
+	std::unique_ptr<ResampleImageSettingsWidget>	_resampleWidget;
 };

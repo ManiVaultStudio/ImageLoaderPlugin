@@ -1,5 +1,4 @@
 #include "ImageLoaderPlugin.h"
-
 #include "ImageSequence.h"
 
 #include "PointsPlugin.h"
@@ -18,7 +17,8 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader"),
-	_settings("HDPS", "ImageViewer")
+	_settings("HDPS", "ImageViewer"),
+	_resampleImageSettings(this)
 {
 }
 
@@ -28,6 +28,21 @@ ImageLoaderPlugin::~ImageLoaderPlugin(void)
 
 void ImageLoaderPlugin::init()
 {
+}
+
+QVariant ImageLoaderPlugin::setting(const QString& name, const QVariant& defaultValue) const
+{
+	return _settings.value(name, defaultValue).toString();
+}
+
+void ImageLoaderPlugin::setSetting(const QString& name, const QVariant& value)
+{
+	_settings.setValue(name, value);
+}
+
+ResampleImageSettings & ImageLoaderPlugin::resampleImageSettings()
+{
+	return _resampleImageSettings;
 }
 
 void ImageLoaderPlugin::loadData()

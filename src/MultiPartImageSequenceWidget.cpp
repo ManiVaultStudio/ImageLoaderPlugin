@@ -13,41 +13,27 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() }
 {
 	_ui->setupUi(this);
-	/*
-	const auto width	= _imageLoaderPlugin->_settings.value("stack/width", QVariant(28)).toInt();
-	const auto height	= _imageLoaderPlugin->_settings.value("stack/height", QVariant(28)).toInt();
-
-	_imageSequence.setImageSize(QSize(width, height));
-
-	_ui->imageTypeComboBox->setCurrentText(_imageSequence.imageType());
-	_ui->imageWidthSpinBox->setValue(_imageSequence.imageSize().width());
-	_ui->imageHeightSpinBox->setValue(_imageSequence.imageSize().height());
-
-	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &MultiPartImageSequenceWidget::onImageTypeChanged);
+	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
-	connect(_ui->scanPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onScan);
-	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MultiPartImageSequenceWidget::onImageWidthChanged);
-	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MultiPartImageSequenceWidget::onImageHeightChanged);
-	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadSequence);
-	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
+	//connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadSequence);
+	connect(&_multipartImageSequence, &MultipartImageSequence::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
+	/*
 	connect(&_imageSequence, &ImageSequence::message, this, &MultiPartImageSequenceWidget::onMessage);
 	connect(&_imageSequence, &ImageSequence::becameDirty, this, &MultiPartImageSequenceWidget::onBecameDirty);
-	connect(&_imageSequence, &ImageSequence::beginScan, this, &MultiPartImageSequenceWidget::onBeginScan);
 	connect(&_imageSequence, &ImageSequence::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 	connect(&_imageSequence, &ImageSequence::beginLoad, this, &MultiPartImageSequenceWidget::onBeginLoad);
 	connect(&_imageSequence, &ImageSequence::endLoad, this, &MultiPartImageSequenceWidget::onEndLoad);
+	*/
 
-	_ui->imageTypeComboBox->addItem("jpg");
-	_ui->imageTypeComboBox->addItem("png");
-	_ui->imageTypeComboBox->addItem("bmp");
-	_ui->imageTypeComboBox->addItem("tif");
-
-	const auto directory = _imageLoaderPlugin->_settings.value("sequence/directory", "").toString();
+	const auto directory = _imageLoaderPlugin->setting("multipart/directory", "").toString();
 
 	if (QDir(directory).exists()) {
-		_imageSequence.setDirectory(directory);
+		_multipartImageSequence.setDirectory(directory);
 	}
-	*/
+
+	const auto subsamplingRatio = _imageLoaderPlugin->setting("multipart/subsampling/ratio", "").toDouble();
+
+
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()
@@ -97,7 +83,7 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	//_imageSequence.start();
 
-	_imageLoaderPlugin->_settings.setValue("multipart/directory", directory);
+	_imageLoaderPlugin->setSetting("multipart/directory", directory);
 }
 /*
 void MultiPartImageSequenceWidget::onLoadSequence()
@@ -130,11 +116,11 @@ void MultiPartImageSequenceWidget::onScan()
 */
 void MultiPartImageSequenceWidget::onPickDirectory()
 {
-	const auto initialDirectory = _imageLoaderPlugin->_settings.value("multipart/directory").toString();
+	const auto initialDirectory = _imageLoaderPlugin->setting("multipart/directory").toString();
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		//_imageSequence.setDirectory(pickedDirectory);
+		_multipartImageSequence.setDirectory(pickedDirectory);
 
 		//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 		//_imageSequence.start();
