@@ -2,8 +2,8 @@
 
 #include <QDebug>
 #include <QVBoxLayout>
-#include <QStackedWidget>
 #include <QComboBox>
+#include <QStatusBar>
 
 #include "ImageLoaderPlugin.h"
 #include "ImageSequenceWidget.h"
@@ -19,14 +19,16 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoaderPlugin)},
 	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoaderPlugin)},
 	_multiPartImageSequenceWidget{std::make_unique<MultiPartImageSequenceWidget>(imageLoaderPlugin)},
-	_resampleWidget{std::make_unique<ResampleImageSettingsWidget>(imageLoaderPlugin)}
+	//_resampleWidget{std::make_unique<ResampleImageSettingsWidget>(imageLoaderPlugin)},
+	_statusBar{std::make_unique<QStatusBar>()}
 {
 	setLayout(_mainLayout.get());
 
 	_mainLayout->addWidget(_typesComboBox.get());
 	_mainLayout->addWidget(_pagesStackedWidget.get());
-	_mainLayout->addWidget(_resampleWidget.get());
+	//_mainLayout->addWidget(_resampleWidget.get());
 	_mainLayout->addStretch(1);
+	_mainLayout->addWidget(_statusBar.get());
 
 	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());
 	_pagesStackedWidget->addWidget(_imageStackWidget.get());

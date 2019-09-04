@@ -15,14 +15,14 @@ class ImageLoaderPlugin;
 class ResampleImageSettingsWidget : public QWidget
 {
 public:
-	ResampleImageSettingsWidget(ImageLoaderPlugin* imageLoaderPlugin);
+	ResampleImageSettingsWidget(QWidget* parent);
 	~ResampleImageSettingsWidget() override;
 
-private:
-	ResampleImageSettings& resampleImageSettings();
+	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::ResampleImageSettingsWidget>	_ui;
-	//ImageStacks								_imageStacks;
+	ResampleImageSettings								_settings;
+	//ImageStacks										_imageStacks;
 };	

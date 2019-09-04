@@ -10,6 +10,7 @@
 class QVBoxLayout;
 class QComboBox;
 class QStackedWidget;
+class QStatusBar;
 
 class ImageLoaderPlugin;
 class ImageSequenceWidget;
@@ -44,5 +45,6 @@ private:
 	std::unique_ptr<ImageSequenceWidget>			_imageSequenceWidget;
 	std::unique_ptr<ImageStackWidget>				_imageStackWidget;
 	std::unique_ptr<MultiPartImageSequenceWidget>	_multiPartImageSequenceWidget;
-	std::unique_ptr<ResampleImageSettingsWidget>	_resampleWidget;
+	//std::unique_ptr<ResampleImageSettingsWidget>	_resampleWidget;
+	std::unique_ptr<QStatusBar>						_statusBar;
 };

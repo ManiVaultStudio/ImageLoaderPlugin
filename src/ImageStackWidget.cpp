@@ -33,6 +33,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->stacksComboBox->setEnabled(false);
 	_ui->loadPushButton->setEnabled(false);
 
+	_ui->resampleImageSettingsWidget->initialize(_imageLoaderPlugin);
+
 	const auto directory = _imageLoaderPlugin->setting("stack/directory", "").toString();
 
 	if (QDir(directory).exists()) {

@@ -17,8 +17,7 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader"),
-	_settings("HDPS", "ImageViewer"),
-	_resampleImageSettings(this)
+	_settings("HDPS", "ImageViewer")
 {
 }
 
@@ -38,11 +37,6 @@ QVariant ImageLoaderPlugin::setting(const QString& name, const QVariant& default
 void ImageLoaderPlugin::setSetting(const QString& name, const QVariant& value)
 {
 	_settings.setValue(name, value);
-}
-
-ResampleImageSettings & ImageLoaderPlugin::resampleImageSettings()
-{
-	return _resampleImageSettings;
 }
 
 void ImageLoaderPlugin::loadData()

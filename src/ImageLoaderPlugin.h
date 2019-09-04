@@ -25,11 +25,9 @@ public:
 public:
 	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
 	void setSetting(const QString& name, const QVariant& value);
-	ResampleImageSettings& resampleImageSettings();
 
 private:
 	QSettings				_settings;
-	ResampleImageSettings	_resampleImageSettings;
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

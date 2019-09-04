@@ -10,7 +10,9 @@ class ResampleImageSettings : public QObject {
 	Q_OBJECT
 
 public:
-	 ResampleImageSettings(ImageLoaderPlugin* imageLoaderPlugin);
+	 ResampleImageSettings();
+
+	 void initialize(ImageLoaderPlugin* imageLoaderPlugin, const QString& category);
 
 signals:
 	void resamplingRatioChanged(const double&);
@@ -24,7 +26,11 @@ public:
 	QStringList filterNames() const;
 
 private:
+	QString settingPath(const QString& name) const;
+
+private:
 	ImageLoaderPlugin*		_imageLoaderPlugin;
+	QString					_category;
 	double					_ratio;
 	ImageResamplingFilter	_filter;
 	QStringList				_filterNames;
