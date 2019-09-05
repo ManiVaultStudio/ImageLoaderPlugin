@@ -32,5 +32,5 @@ private:
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
-	ImageStacks								_imageStacks;
+	//ImageStacks								_imageStacks;
 };	

@@ -14,20 +14,12 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
 	ImageLoaderPlugin();
-    ~ImageLoaderPlugin(void) override;
     
     void init() override;
 
     void loadData() Q_DECL_OVERRIDE;
 
 	void addSequence(const ImageCollection::Type& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames = QStringList());
-
-public:
-	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
-	void setSetting(const QString& name, const QVariant& value);
-
-private:
-	QSettings				_settings;
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

@@ -18,11 +18,12 @@ public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget() override;
 
+	ImageSequence& imageSequence();
+
 private:
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
-	void onMessage(const QString &message);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onImageWidthChanged(int width);

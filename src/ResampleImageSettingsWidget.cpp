@@ -8,28 +8,25 @@
 #include "ImageLoaderPlugin.h"
 
 ResampleImageSettingsWidget::ResampleImageSettingsWidget(QWidget* parent) :
-	_imageLoaderPlugin(nullptr),
-	_ui{ std::make_unique<Ui::ResampleImageSettingsWidget>() }
+	_ui{ std::make_unique<Ui::ResampleImageSettingsWidget>() },
+	_resampleImageSettings(nullptr)
 {
 	_ui->setupUi(this);
-	
 }
 
 ResampleImageSettingsWidget::~ResampleImageSettingsWidget()
 {
 }
 
-void ResampleImageSettingsWidget::initialize(ImageLoaderPlugin * imageLoaderPlugin)
+void ResampleImageSettingsWidget::initialize(ResampleImageSettings* resampleImageSettings)
 {
-	/*
-	_imageLoaderPlugin = imageLoaderPlugin;
+	_resampleImageSettings = resampleImageSettings;
 
-	_ui->resamplingFilterComboBox->addItems(_settings.filterNames());
+	_ui->resamplingFilterComboBox->addItems(_resampleImageSettings->filterNames());
 
-	_ui->resamplingRatioSpinBox->setValue(_settings.ratio());
-	_ui->resamplingFilterComboBox->setCurrentIndex(static_cast<int>(_settings.filter()));
+	_ui->resamplingRatioSpinBox->setValue(_resampleImageSettings->ratio());
+	_ui->resamplingFilterComboBox->setCurrentIndex(static_cast<int>(_resampleImageSettings->filter()));
 
-	connect(_ui->resamplingRatioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), &_settings, &ResampleImageSettings::setRatio);
-	connect(_ui->resamplingFilterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int currentIndex) { _settings.setFilter(ImageResamplingFilter(currentIndex)); });
-	*/
+	connect(_ui->resamplingRatioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _resampleImageSettings, &ResampleImageSettings::setRatio);
+	connect(_ui->resamplingFilterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int currentIndex) { _resampleImageSettings->setFilter(ImageResamplingFilter(currentIndex)); });
 }

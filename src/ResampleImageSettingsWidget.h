@@ -10,7 +10,7 @@ namespace Ui {
 	class ResampleImageSettingsWidget;
 }
 
-class ImageLoaderPlugin;
+class ResampleImageSettings;
 
 class ResampleImageSettingsWidget : public QWidget
 {
@@ -18,9 +18,9 @@ public:
 	ResampleImageSettingsWidget(QWidget* parent);
 	~ResampleImageSettingsWidget() override;
 
-	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
+	void initialize(ResampleImageSettings* resampleImageSettings);
 
 private:
-	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::ResampleImageSettingsWidget>	_ui;
+	ResampleImageSettings*								_resampleImageSettings;
 };	

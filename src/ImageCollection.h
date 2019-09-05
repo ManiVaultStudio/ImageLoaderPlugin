@@ -20,13 +20,18 @@ public:
 
 	static QString typeName(const Type& type);
 
-	virtual Type type() const;
-	virtual QStringList	imageFilePaths() const;
-	virtual int noImages() const;
+	Type type() const;
+	QStringList	imageFilePaths() const;
+	int noImages() const;
+	ResampleImageSettings& resampleImageSettings();
 
 	virtual int noDimensions() const = 0;
 	virtual QStringList	dimensionNames() const = 0;
 	virtual void load() = 0;
+
+public:
+	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
+	void setSetting(const QString& name, const QVariant& value);
 
 protected:
 	virtual void loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData) = 0;

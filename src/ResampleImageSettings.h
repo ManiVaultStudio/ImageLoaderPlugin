@@ -14,8 +14,8 @@ public:
 	 ResampleImageSettings(QSettings* settings);
 
 signals:
-	void resamplingRatioChanged(const double&);
-	void imageResamplingFilterChanged(const ImageResamplingFilter&);
+	void ratioChanged(const double&);
+	void filterChanged(const ImageResamplingFilter&);
 
 public:
 	double ratio() const;

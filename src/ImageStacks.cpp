@@ -7,12 +7,9 @@
 #include <FreeImage.h>
 
 ImageStacks::ImageStacks() :
+	ImageCollection(ImageCollection::Type::Stack),
 	_directory(""),
 	_imageTypes()
-{
-}
-
-ImageStacks::~ImageStacks()
 {
 }
 
@@ -45,6 +42,14 @@ void ImageStacks::setImageTypes(const QStringList & imageTypes)
 	_imageTypes = imageTypes;
 
 	emit becameDirty();
+}
+
+void ImageStacks::scan()
+{
+}
+
+void ImageStacks::load()
+{
 }
 
 void ImageStacks::scanDir(const QString &directory)
@@ -102,7 +107,7 @@ void ImageStacks::scanDir(const QString &directory)
 		scanDir(path);
 	}
 }
-
+/*
 void ImageStacks::run()
 {
 	if (_directory.isEmpty() || _imageTypes.isEmpty()) {
@@ -119,7 +124,7 @@ void ImageStacks::run()
 
 	emit endScan();
 }
-
+*/
 QDebug operator<<(QDebug dbg, const ImageStacks &sequence)
 {
 	dbg << ", " << sequence.imageTypes() << ", " << sequence.directory();

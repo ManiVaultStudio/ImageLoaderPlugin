@@ -16,24 +16,23 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
 	//connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadSequence);
-	connect(&_multipartImageSequence, &MultipartImageSequence::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
+	//connect(&_multipartImageSequence, &MultipartImageSequence::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
 	/*
 	connect(&_imageSequence, &ImageSequence::message, this, &MultiPartImageSequenceWidget::onMessage);
 	connect(&_imageSequence, &ImageSequence::becameDirty, this, &MultiPartImageSequenceWidget::onBecameDirty);
 	connect(&_imageSequence, &ImageSequence::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 	connect(&_imageSequence, &ImageSequence::beginLoad, this, &MultiPartImageSequenceWidget::onBeginLoad);
 	connect(&_imageSequence, &ImageSequence::endLoad, this, &MultiPartImageSequenceWidget::onEndLoad);
-	*/
+	
 
 	const auto directory = _imageLoaderPlugin->setting("multipart/directory", "").toString();
 
 	if (QDir(directory).exists()) {
 		_multipartImageSequence.setDirectory(directory);
 	}
-
+	
 	const auto subsamplingRatio = _imageLoaderPlugin->setting("multipart/subsampling/ratio", "").toDouble();
-
-
+	*/
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()
@@ -83,7 +82,7 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	//_imageSequence.start();
 
-	_imageLoaderPlugin->setSetting("multipart/directory", directory);
+	//_imageLoaderPlugin->setSetting("multipart/directory", directory);
 }
 /*
 void MultiPartImageSequenceWidget::onLoadSequence()
@@ -116,6 +115,7 @@ void MultiPartImageSequenceWidget::onScan()
 */
 void MultiPartImageSequenceWidget::onPickDirectory()
 {
+	/*
 	const auto initialDirectory = _imageLoaderPlugin->setting("multipart/directory").toString();
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
 
@@ -125,6 +125,7 @@ void MultiPartImageSequenceWidget::onPickDirectory()
 		//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 		//_imageSequence.start();
 	}
+	*/
 }
 /*
 void MultiPartImageSequenceWidget::onImageTypeChanged(const QString & imageType)

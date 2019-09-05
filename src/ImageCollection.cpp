@@ -26,6 +26,21 @@ int ImageCollection::noImages() const
 	return _imageFilePaths.size();
 }
 
+ResampleImageSettings & ImageCollection::resampleImageSettings()
+{
+	return _resampleImageSettings;
+}
+
+QVariant ImageCollection::setting(const QString& name, const QVariant& defaultValue) const
+{
+	return _settings.value(name, defaultValue).toString();
+}
+
+void ImageCollection::setSetting(const QString& name, const QVariant& value)
+{
+	_settings.setValue(name, value);
+}
+
 QString ImageCollection::typeName(const Type& type)
 {
 	switch (type)

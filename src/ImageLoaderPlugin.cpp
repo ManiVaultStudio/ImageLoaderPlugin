@@ -16,27 +16,12 @@
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
-	LoaderPlugin("Image Loader"),
-	_settings("HDPS", "ImageLoader")
-{
-}
-
-ImageLoaderPlugin::~ImageLoaderPlugin(void)
+	LoaderPlugin("Image Loader")
 {
 }
 
 void ImageLoaderPlugin::init()
 {
-}
-
-QVariant ImageLoaderPlugin::setting(const QString& name, const QVariant& defaultValue) const
-{
-	return _settings.value(name, defaultValue).toString();
-}
-
-void ImageLoaderPlugin::setSetting(const QString& name, const QVariant& value)
-{
-	_settings.setValue(name, value);
 }
 
 void ImageLoaderPlugin::loadData()

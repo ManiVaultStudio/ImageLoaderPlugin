@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ImageStack.h"
+#include "ImageCollection.h"
 
-#include <QThread>
 #include <QSize>
 #include <QMap>
 #include <QStringList>
@@ -10,12 +10,11 @@
 
 using ImageStackMap = QMap<QString, QSharedPointer<ImageStack>>;
 
-class ImageStacks : public QThread {
+class ImageStacks : public ImageCollection {
 	Q_OBJECT
 
 public:
 	ImageStacks();
-	~ImageStacks() override;
 
 	QString	directory() const;
 	QStringList	imageTypes() const;
@@ -26,12 +25,11 @@ public:
 	void setImageTypes(const QStringList &imageTypes);
 
 	void scan();
-	
+	void load();
+
 protected:
 	void scanDir(const QString &directory);
 
-protected:
-	void run() override;
 
 signals:
 	void becameDirty();

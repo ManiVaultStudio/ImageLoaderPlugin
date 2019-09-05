@@ -26,7 +26,7 @@ void ResampleImageSettings::setRatio(const double& ratio)
 
 	_ratio = ratio;
 
-	emit resamplingRatioChanged(_ratio);
+	emit ratioChanged(_ratio);
 
 	_settings->setValue(settingPath("ratio"), _ratio);
 }
@@ -44,7 +44,7 @@ void ResampleImageSettings::setFilter(const ImageResamplingFilter& filter)
 
 	_filter = filter;
 
-	emit imageResamplingFilterChanged(_filter);
+	emit filterChanged(_filter);
 
 	_settings->setValue(settingPath("filter"), filterIndex);
 }

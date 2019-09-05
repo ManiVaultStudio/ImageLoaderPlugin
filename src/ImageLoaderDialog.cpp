@@ -14,6 +14,7 @@
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_mainLayout{std::make_unique<QVBoxLayout>()},
+	_settingsLayout{std::make_unique<QVBoxLayout>()},
 	_typesComboBox{std::make_unique<QComboBox>()},
 	_pagesStackedWidget{std::make_unique<StackedWidget>()},
 	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoaderPlugin)},
@@ -22,12 +23,16 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	//_resampleWidget{std::make_unique<ResampleImageSettingsWidget>(imageLoaderPlugin)},
 	_statusBar{std::make_unique<QStatusBar>()}
 {
+	_mainLayout->setMargin(0);
+
 	setLayout(_mainLayout.get());
 
-	_mainLayout->addWidget(_typesComboBox.get());
-	_mainLayout->addWidget(_pagesStackedWidget.get());
-	//_mainLayout->addWidget(_resampleWidget.get());
-	_mainLayout->addStretch(1);
+	_settingsLayout->setMargin(11);
+	_settingsLayout->addWidget(_typesComboBox.get());
+	_settingsLayout->addWidget(_pagesStackedWidget.get());
+	_settingsLayout->addStretch(1);
+
+	_mainLayout->addLayout(_settingsLayout.get());
 	_mainLayout->addWidget(_statusBar.get());
 
 	_pagesStackedWidget->addWidget(_imageSequenceWidget.get());
@@ -49,8 +54,17 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	setMinimumWidth(640);
 	setMinimumHeight(480);
+
+	connect(&_imageSequenceWidget->imageSequence(), &ImageSequence::message, this, &ImageLoaderDialog::onMessage);
+	
+	_statusBar->showMessage("Ready");
 }
 
 ImageLoaderDialog::~ImageLoaderDialog()
 {
+}
+
+void ImageLoaderDialog::onMessage(const QString& message)
+{
+	_statusBar->showMessage(message);
 }

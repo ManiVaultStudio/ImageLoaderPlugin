@@ -13,8 +13,8 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 {
 	_ui->setupUi(this);
 	
-	const auto width	= _imageLoaderPlugin->setting("stack/width", QVariant(28)).toInt();
-	const auto height	= _imageLoaderPlugin->setting("stack/height", QVariant(28)).toInt();
+	const auto width	= _imageSequence.setting("ImageWidth", QVariant(28)).toInt();
+	const auto height	= _imageSequence.setting("ImageHeight", QVariant(28)).toInt();
 
 	_imageSequence.setImageSize(QSize(width, height));
 
@@ -29,7 +29,6 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
 	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadSequence);
 	connect(&_imageSequence, &ImageSequence::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
-	connect(&_imageSequence, &ImageSequence::message, this, &ImageSequenceWidget::onMessage);
 	connect(&_imageSequence, &ImageSequence::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
 	connect(&_imageSequence, &ImageSequence::beginScan, this, &ImageSequenceWidget::onBeginScan);
 	connect(&_imageSequence, &ImageSequence::endScan, this, &ImageSequenceWidget::onEndScan);
@@ -41,15 +40,22 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->imageTypeComboBox->addItem("bmp");
 	_ui->imageTypeComboBox->addItem("tif");
 
-	const auto directory = _imageLoaderPlugin->setting("sequence/directory", "").toString();
+	const auto directory = _imageSequence.setting("Directory", "").toString();
 
 	if (QDir(directory).exists()) {
 		_imageSequence.setDirectory(directory);
 	}
+
+	_ui->resampleImageSettingsWidget->initialize(&_imageSequence.resampleImageSettings());
 }
 
 ImageSequenceWidget::~ImageSequenceWidget()
 {
+}
+
+ImageSequence & ImageSequenceWidget::imageSequence()
+{
+	return _imageSequence;
 }
 
 void ImageSequenceWidget::onBecameDirty()
@@ -59,7 +65,6 @@ void ImageSequenceWidget::onBecameDirty()
 
 void ImageSequenceWidget::onBeginScan()
 {
-	_ui->infoLineEdit->setText(QString("Scanning for image files..."));
 	_ui->scanPushButton->setText("Scanning");
 	_ui->scanPushButton->setEnabled(false);
 }
@@ -69,21 +74,13 @@ void ImageSequenceWidget::onEndScan()
 	const auto noImages = _imageSequence.imageFilePaths().size();
 
 	if (noImages <= 0) {
-		_ui->infoLineEdit->setText("No images were found, try changing the directory, image type or dimensions");
+		
 	}
 	else {
-		_ui->infoLineEdit->setText(QString("Found %1 images").arg(noImages));
 		_ui->loadSequencePushButton->setEnabled(true);
 	}
 	
 	_ui->scanPushButton->setText("Scan");
-}
-
-void ImageSequenceWidget::onMessage(const QString &message)
-{
-	// qDebug() << message;
-
-	_ui->infoLineEdit->setText(message);
 }
 
 void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
@@ -94,7 +91,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.scan();
 
-	_imageLoaderPlugin->setSetting("sequence/directory", directory);
+	_imageSequence.setSetting("Directory", directory);
 }
 
 void ImageSequenceWidget::onLoadSequence()
@@ -109,14 +106,14 @@ void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
 
-	_imageLoaderPlugin->setSetting("stack/width", imageWidth);
+	_imageSequence.setSetting("ImageWidth", imageWidth);
 }
 
 void ImageSequenceWidget::onImageHeightChanged(int imageHeight)
 {
 	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
 
-	_imageLoaderPlugin->setSetting("stack/height", imageHeight);
+	_imageSequence.setSetting("ImageHeight", imageHeight);
 }
 
 void ImageSequenceWidget::onScan()
@@ -127,7 +124,7 @@ void ImageSequenceWidget::onScan()
 
 void ImageSequenceWidget::onPickDirectory()
 {
-	const auto initialDirectory = _imageLoaderPlugin->setting("sequence/directory").toString();
+	const auto initialDirectory = _imageSequence.setting("Directory").toString();
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {

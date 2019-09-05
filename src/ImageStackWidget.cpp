@@ -12,7 +12,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui{ std::make_unique<Ui::ImageStackWidget>() }
 {
 	_ui->setupUi(this);
-
+	/*
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
@@ -40,6 +40,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	if (QDir(directory).exists()) {
 		_imageStacks.setDirectory(directory);
 	}
+	*/
 }
 
 ImageStackWidget::~ImageStackWidget()
@@ -57,6 +58,7 @@ void ImageStackWidget::onBeginScan()
 
 void ImageStackWidget::onEndScan()
 {
+	/*
 	_ui->stacksComboBox->clear();
 
 	_ui->stacksComboBox->setEnabled(false);
@@ -77,6 +79,7 @@ void ImageStackWidget::onEndScan()
 	}
 
 	_ui->loadPushButton->setEnabled(true);
+	*/
 }
 
 void ImageStackWidget::onMessage(const QString &message)
@@ -86,16 +89,19 @@ void ImageStackWidget::onMessage(const QString &message)
 
 void ImageStackWidget::onDirectoryChanged(const QString &directory)
 {
+	/*
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
 	_imageStacks.start();
 
 	_imageLoaderPlugin->setSetting("stack/directory", directory);
+	*/
 }
 
 void ImageStackWidget::onLoadSequence()
 {
+	/*
 	_ui->loadPushButton->setEnabled(false);
 
 	const auto stackName = _ui->stacksComboBox->currentText();
@@ -110,10 +116,12 @@ void ImageStackWidget::onLoadSequence()
 	connect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
 
 	imageStack->load();
+	*/
 }
 
 void ImageStackWidget::onPickDirectory()
 {
+	/*
 	const auto initialDirectory = _imageLoaderPlugin->setting("stack/directory").toString();
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
@@ -122,6 +130,7 @@ void ImageStackWidget::onPickDirectory()
 
 		_imageStacks.start();
 	}
+	*/
 }
 
 void ImageStackWidget::onBeginLoad(ImageStack* imageStack)
@@ -133,6 +142,7 @@ void ImageStackWidget::onBeginLoad(ImageStack* imageStack)
 
 void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData)
 {
+	/*
 	qDebug() << "End loading";
 
 	disconnect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
@@ -142,4 +152,5 @@ void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& poi
 	_imageLoaderPlugin->addSequence(ImageCollection::Type::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
 
 	_ui->loadPushButton->setText("Load");
+	*/
 }

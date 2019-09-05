@@ -36,5 +36,5 @@ private:
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
-	MultipartImageSequence								_multipartImageSequence;
+	//MultipartImageSequence								_multipartImageSequence;
 };

@@ -38,13 +38,16 @@ public:
 	~ImageLoaderDialog() override;
 
 private:
+	void onMessage(const QString& message);
+
+private:
 	ImageLoaderPlugin*								_imageLoaderPlugin;
 	std::unique_ptr<QVBoxLayout>					_mainLayout;
+	std::unique_ptr<QVBoxLayout>					_settingsLayout;
 	std::unique_ptr<QComboBox>						_typesComboBox;
 	std::unique_ptr<StackedWidget>					_pagesStackedWidget;
 	std::unique_ptr<ImageSequenceWidget>			_imageSequenceWidget;
 	std::unique_ptr<ImageStackWidget>				_imageStackWidget;
 	std::unique_ptr<MultiPartImageSequenceWidget>	_multiPartImageSequenceWidget;
-	//std::unique_ptr<ResampleImageSettingsWidget>	_resampleWidget;
 	std::unique_ptr<QStatusBar>						_statusBar;
 };
