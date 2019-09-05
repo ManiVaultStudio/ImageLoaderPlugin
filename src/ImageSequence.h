@@ -2,7 +2,6 @@
 
 #include "ImageCollection.h"
 
-#include <QThread>
 #include <QSize>
 
 class ImageSequence : public ImageCollection
