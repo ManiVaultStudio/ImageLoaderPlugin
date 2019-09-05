@@ -44,10 +44,10 @@ signals:
 	void message(const QString& message);
 
 protected:
+	QSettings				_settings;
 	QStringList				_imageFilePaths;
 
 private:
-	QSettings				_settings;
 	Type					_type;
 	ResampleImageSettings	_resampleImageSettings;
 };

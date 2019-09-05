@@ -35,6 +35,8 @@ set(PLUGIN_SOURCES
 	src/ResampleImageSettingsWidget.cpp
 	src/ImageCollection.h
 	src/ImageCollection.cpp
+	src/ImageScan.h
+	src/ImageScan.cpp
     src/Common.h
 )
 
@@ -48,8 +50,8 @@ set(IMAGE_SEQUENCE_SOURCES
 set(IMAGE_STACK_SOURCES
 	src/ImageStack.h
     src/ImageStack.cpp
-	src/ImageStacks.h
-    src/ImageStacks.cpp
+    src/ImageStackScan.h
+    src/ImageStackScan.cpp
 	src/ImageStackWidget.h
     src/ImageStackWidget.cpp
 )

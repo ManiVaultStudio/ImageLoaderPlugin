@@ -2,36 +2,12 @@
 #include "ImageUtilities.h"
 
 #include <QDebug>
-#include <QFileInfo>
+#include <QDir>
 
 ImageStack::ImageStack() :
-	ImageCollection(ImageCollection::Type::Stack)
+	ImageCollection(ImageCollection::Type::Stack),
+	_scan(_settings)
 {
-}
-
-QString ImageStack::directory() const
-{
-	return _directory;
-}
-
-void ImageStack::setDirectory(const QString& directory)
-{
-	_directory = directory;
-
-	emit directoryChanged(_directory);
-	emit becameDirty();
-}
-
-QStringList ImageStack::imageTypes() const
-{
-	return _imageTypes;
-}
-
-void ImageStack::setImageTypes(const QStringList & imageTypes)
-{
-	_imageTypes = imageTypes;
-
-	emit becameDirty();
 }
 
 QStringList ImageStack::dimensionNames() const
@@ -53,86 +29,6 @@ int ImageStack::noDimensions() const
 void ImageStack::add(const QString & imageFilePath)
 {
 //	_imageFilePaths.append(imageFilePath);
-}
-
-void ImageStack::scan()
-{
-	emit beginScan();
-
-	emit message("Scanning for images...");
-
-	/*
-	reset();
-
-	scanDir(_directory);
-
-	if (noImages() > 0) {
-		emit message(QString("Found %1 images").arg(noImages()));
-	}
-	else {
-		emit message("No images were found, try changing the directory, image type or dimensions");
-	}
-	*/
-
-	emit endScan();
-}
-
-void ImageStack::scanDir(const QString &directory)
-{
-	/*
-	auto subDirectories = QDir(directory);
-
-	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-	const auto dirList = subDirectories.entryList();
-
-	for (int i = 0; i < dirList.size(); ++i)
-	{
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
-
-		qDebug() << "Found directory: " << dirList.at(i);
-
-		scanDir(path);
-	}
-
-	auto imageFiles = QDir(directory);
-
-	imageFiles.setFilter(QDir::Files);
-
-	auto nameFilters = QStringList();
-
-	foreach(QString imageType, _imageTypes)
-	{
-		nameFilters << "*." + imageType;
-	}
-
-	imageFiles.setNameFilters(nameFilters);
-
-	const auto fileList = imageFiles.entryList();
-
-	for (int i = 0; i < fileList.size(); ++i)
-	{
-		const auto path = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
-
-		QImageReader imageReader(path);
-
-		// qDebug() << imageReader.size();
-
-		const auto size = imageReader.size();
-
-		if (size.width() > 0 && size.height() > 0) {
-			const auto sizeString = QString("%1x%2").arg(QString::number(imageReader.size().width()), QString::number(imageReader.size().height()));
-
-			if (!_stacks.contains(sizeString)) {
-				_stacks.insert(sizeString, QSharedPointer<ImageStack>(new ImageStack(imageReader.size())));
-			}
-
-			_stacks[sizeString]->add(path);
-		}
-
-		scanDir(path);
-	}
-	*/
 }
 
 void ImageStack::load()
