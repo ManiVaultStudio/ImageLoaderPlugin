@@ -8,6 +8,7 @@
 #include <FreeImage.h>
 
 ImageSequence::ImageSequence() :
+	ImageCollection(ImageCollection::Type::Sequence),
 	_runMode(RunMode::Scan),
 	_directory(""),
 	_imageType("jpg"),
@@ -17,15 +18,12 @@ ImageSequence::ImageSequence() :
 }
 
 ImageSequence::ImageSequence(const ImageSequence &other) :
+	ImageCollection(ImageCollection::Type::Sequence),
 	_runMode(RunMode::Scan),
 	_directory(other._directory),
 	_imageType(other._imageType),
 	_imageSize(other._imageSize),
 	_imageFilePaths(other._imageFilePaths)
-{
-}
-
-ImageSequence::~ImageSequence()
 {
 }
 
@@ -49,11 +47,6 @@ QSize ImageSequence::imageSize() const
 	return _imageSize;
 }
 
-QStringList ImageSequence::imageFilePaths() const
-{
-	return _imageFilePaths;
-}
-
 QStringList ImageSequence::dimensionNames() const
 {
 	auto dimensionNames = QStringList();
@@ -73,11 +66,6 @@ std::vector<float>& ImageSequence::pointsData()
 int ImageSequence::noDimensions() const
 {
 	return _imageSize.width() * _imageSize.height();
-}
-
-int ImageSequence::noImages() const
-{
-	return _imageFilePaths.size();
 }
 
 void ImageSequence::setRunMode(const RunMode & runMode)
@@ -107,6 +95,14 @@ void ImageSequence::setImageSize(const QSize & imageSize)
 
 	emit imageSizeChanged(_imageSize);
 	emit becameDirty();
+}
+
+void ImageSequence::scan()
+{
+}
+
+void ImageSequence::load()
+{
 }
 
 void ImageSequence::addFile(const QString &imageFilePath)
@@ -153,6 +149,7 @@ void ImageSequence::scanDir(const QString &directory)
 	}
 }
 
+/*
 void ImageSequence::run()
 {
 	switch (_runMode)
@@ -208,6 +205,7 @@ void ImageSequence::run()
 			break;
 	}
 }
+*/
 
 void ImageSequence::loadImage(const QString & imageFilePath)
 {
@@ -231,6 +229,10 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 			}
 			break;
 	}
+}
+
+void ImageSequence::loadImage(const QString & imageFilePath, const int & imageIndex, std::vector<float>& pointsData)
+{
 }
 
 QDebug operator<<(QDebug dbg, const ImageSequence &sequence)

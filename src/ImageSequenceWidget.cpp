@@ -92,7 +92,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
 	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-	_imageSequence.start();
+	_imageSequence.scan();
 
 	_imageLoaderPlugin->setSetting("sequence/directory", directory);
 }
@@ -100,7 +100,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 void ImageSequenceWidget::onLoadSequence()
 {
 	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
-	_imageSequence.start();
+	_imageSequence.scan();
 
 	_ui->loadSequencePushButton->setEnabled(false);
 }
@@ -122,7 +122,7 @@ void ImageSequenceWidget::onImageHeightChanged(int imageHeight)
 void ImageSequenceWidget::onScan()
 {
 	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-	_imageSequence.start();
+	_imageSequence.scan();
 }
 
 void ImageSequenceWidget::onPickDirectory()
@@ -134,7 +134,7 @@ void ImageSequenceWidget::onPickDirectory()
 		_imageSequence.setDirectory(pickedDirectory);
 
 		_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-		_imageSequence.start();
+		_imageSequence.scan();
 	}
 }
 

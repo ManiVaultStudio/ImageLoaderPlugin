@@ -21,6 +21,11 @@ QStringList ImageCollection::imageFilePaths() const
 	return _imageFilePaths;
 }
 
+int ImageCollection::noImages() const
+{
+	return _imageFilePaths.size();
+}
+
 QString ImageCollection::typeName(const Type& type)
 {
 	switch (type)

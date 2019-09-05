@@ -1,18 +1,19 @@
 #pragma once
 
+#include "ImageCollection.h"
+
 #include <QThread>
 #include <QSize>
 #include <QMap>
 #include <QMetaType>
 
-class ImageSequence : public QThread
+class ImageSequence : public ImageCollection
 {
 	Q_OBJECT
 
 public:
 	ImageSequence();
 	ImageSequence(const ImageSequence &other);
-	~ImageSequence() override;
 
 	enum RunMode
 	{
@@ -24,36 +25,32 @@ public:
 	QString	directory() const;
 	QString	imageType() const;
 	QSize imageSize() const;
-	QStringList	imageFilePaths() const;
 	QStringList	dimensionNames() const;
 	std::vector<float>& pointsData();
 	int noDimensions() const;
-	int noImages() const;
 
 	void setRunMode(const RunMode &runMode);
 	void setDirectory(const QString &directory);
 	void setImageType(const QString &imageType);
 	void setImageSize(const QSize &imageSize);
 
+	void scan();
+	void load();
+
 protected:
 	void scanDir(const QString &directory);
 	void addFile(const QString &imageFilePath);
 	void loadImage(const QString & imageFilePath);
-
-protected:
-	void run() override;
+	void loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData);
 
 signals:
 	void becameDirty();
 	void beginScan();
 	void endScan();
-	void message(const QString& message);
 	void directoryChanged(const QString &directory);
 	void imageTypeChanged(const QString &imageType);
 	void imageSizeChanged(const QSize &imageSize);
 	void imageFilePathsChanged(const QStringList &imageFilePaths);
-	void beginLoad();
-	void endLoad();
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 
 private:
