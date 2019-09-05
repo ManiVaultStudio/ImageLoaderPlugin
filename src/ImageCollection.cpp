@@ -31,6 +31,11 @@ ResampleImageSettings & ImageCollection::resampleImageSettings()
 	return _resampleImageSettings;
 }
 
+void ImageCollection::reset()
+{
+	_imageFilePaths.clear();
+}
+
 QVariant ImageCollection::setting(const QString& name, const QVariant& defaultValue) const
 {
 	return _settings.value(name, defaultValue).toString();

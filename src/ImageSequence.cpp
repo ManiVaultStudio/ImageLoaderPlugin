@@ -9,27 +9,18 @@
 
 ImageSequence::ImageSequence() :
 	ImageCollection(ImageCollection::Type::Sequence),
-	_runMode(RunMode::Scan),
 	_directory(""),
 	_imageType("jpg"),
-	_imageSize(28, 28),
-	_imageFilePaths()
+	_imageSize(28, 28)
 {
 }
 
 ImageSequence::ImageSequence(const ImageSequence &other) :
 	ImageCollection(ImageCollection::Type::Sequence),
-	_runMode(RunMode::Scan),
 	_directory(other._directory),
 	_imageType(other._imageType),
-	_imageSize(other._imageSize),
-	_imageFilePaths(other._imageFilePaths)
+	_imageSize(other._imageSize)
 {
-}
-
-ImageSequence::RunMode ImageSequence::runMode() const
-{
-	return _runMode;
 }
 
 QString ImageSequence::directory() const
@@ -58,19 +49,9 @@ QStringList ImageSequence::dimensionNames() const
 	return dimensionNames;
 }
 
-std::vector<float>& ImageSequence::pointsData()
-{
-	return _pointsData;
-}
-
 int ImageSequence::noDimensions() const
 {
 	return _imageSize.width() * _imageSize.height();
-}
-
-void ImageSequence::setRunMode(const RunMode & runMode)
-{
-	_runMode = runMode;
 }
 
 void ImageSequence::setDirectory(const QString & directory)
@@ -100,7 +81,10 @@ void ImageSequence::setImageSize(const QSize & imageSize)
 void ImageSequence::scan()
 {
 	emit beginScan();
+	
 	emit message("Scanning for image files...");
+
+	reset();
 
 	scanDir(_directory);
 
@@ -115,6 +99,30 @@ void ImageSequence::scan()
 
 void ImageSequence::load()
 {
+	emit beginLoad();
+
+	emit message(QString("Loading %1 images").arg(noImages()));
+
+	FloatVector pointsData;
+
+	pointsData.clear();
+
+	pointsData.reserve(noImages() * noDimensions());
+
+	const auto total = noImages();
+
+	foreach(const QString &imageFilePath, _imageFilePaths) {
+		loadImage(imageFilePath, _imageFilePaths.indexOf(imageFilePath), pointsData);
+
+		const auto done = _imageFilePaths.indexOf(imageFilePath) + 1;
+		const auto percentage = 100.0f * (done / static_cast<float>(total));
+
+		emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
+	}
+
+	emit message(QString("%1 image(s) loaded").arg(total));
+
+	emit endLoad(pointsData);
 }
 
 void ImageSequence::addFile(const QString &imageFilePath)
@@ -161,65 +169,7 @@ void ImageSequence::scanDir(const QString &directory)
 	}
 }
 
-/*
-void ImageSequence::run()
-{
-	switch (_runMode)
-	{
-		case RunMode::Scan: {
-			if (_directory.isEmpty() || _imageType.isEmpty() || _imageSize.isEmpty()) {
-				return;
-			}
-
-			qDebug() << "Scanning for images in " << _directory;
-
-			emit beginScan();
-
-			_imageFilePaths.clear();
-
-			scanDir(_directory);
-
-			emit endScan();
-
-			break;
-		}
-		
-		case RunMode::Load: {
-			qDebug() << "Loading images ";
-
-			emit beginLoad();
-
-			_pointsData.clear();
-
-			_pointsData.reserve(noImages() * noDimensions());
-
-			const auto total = _imageFilePaths.size();
-
-			foreach(const QString &imageFilePath, _imageFilePaths) {
-				loadImage(imageFilePath);
-
-				const auto done			= _imageFilePaths.indexOf(imageFilePath) + 1;
-				const auto percentage	= 100.0f * (done / static_cast<float>(total));
-				
-				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
-			}
-
-			// qDebug() << _pointsData;
-
-			emit message(QString("%1 image(s) loaded").arg(total));
-
-			emit endLoad();
-
-			break;
-		}
-
-		default:
-			break;
-	}
-}
-*/
-
-void ImageSequence::loadImage(const QString & imageFilePath)
+void ImageSequence::loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 	
@@ -235,16 +185,12 @@ void ImageSequence::loadImage(const QString & imageFilePath)
 				for (unsigned y = 0; y <  FreeImage_GetHeight(image); y++) {
 					const BYTE *const bits = FreeImage_GetScanLine(image, y);
 					for (unsigned x = 0; x <  FreeImage_GetWidth(image); x++) {
-						_pointsData.push_back(static_cast<float>(bits[x]));
+						pointsData.push_back(static_cast<float>(bits[x]));
 					}
 				}
 			}
 			break;
 	}
-}
-
-void ImageSequence::loadImage(const QString & imageFilePath, const int & imageIndex, std::vector<float>& pointsData)
-{
 }
 
 QDebug operator<<(QDebug dbg, const ImageSequence &sequence)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 enum class ImageResamplingFilter
 {
 	Box,
@@ -10,3 +12,4 @@ enum class ImageResamplingFilter
 	Lanczos
 };
 
+using FloatVector = std::vector<float>;

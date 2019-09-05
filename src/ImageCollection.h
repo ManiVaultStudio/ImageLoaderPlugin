@@ -24,6 +24,7 @@ public:
 	QStringList	imageFilePaths() const;
 	int noImages() const;
 	ResampleImageSettings& resampleImageSettings();
+	void reset();
 
 	virtual int noDimensions() const = 0;
 	virtual QStringList	dimensionNames() const = 0;
@@ -34,17 +35,19 @@ public:
 	void setSetting(const QString& name, const QVariant& value);
 
 protected:
-	virtual void loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData) = 0;
+	virtual void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData) = 0;
 
 signals:
 	void beginLoad();
-	void endLoad();
+	void endLoad(FloatVector& pointsData);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 	void message(const QString& message);
+
+protected:
+	QStringList				_imageFilePaths;
 
 private:
 	QSettings				_settings;
 	Type					_type;
-	QStringList				_imageFilePaths;
 	ResampleImageSettings	_resampleImageSettings;
 };

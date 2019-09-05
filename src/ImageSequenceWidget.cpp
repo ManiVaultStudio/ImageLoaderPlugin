@@ -66,20 +66,14 @@ void ImageSequenceWidget::onBecameDirty()
 void ImageSequenceWidget::onBeginScan()
 {
 	_ui->scanPushButton->setText("Scanning");
+
 	_ui->scanPushButton->setEnabled(false);
 }
 
 void ImageSequenceWidget::onEndScan()
 {
-	const auto noImages = _imageSequence.imageFilePaths().size();
+	_ui->loadSequencePushButton->setEnabled(_imageSequence.noImages() > 0);
 
-	if (noImages <= 0) {
-		
-	}
-	else {
-		_ui->loadSequencePushButton->setEnabled(true);
-	}
-	
 	_ui->scanPushButton->setText("Scan");
 }
 
@@ -88,7 +82,6 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
-	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.scan();
 
 	_imageSequence.setSetting("Directory", directory);
@@ -96,8 +89,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 void ImageSequenceWidget::onLoadSequence()
 {
-	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
-	_imageSequence.scan();
+	_imageSequence.load();
 
 	_ui->loadSequencePushButton->setEnabled(false);
 }
@@ -118,7 +110,6 @@ void ImageSequenceWidget::onImageHeightChanged(int imageHeight)
 
 void ImageSequenceWidget::onScan()
 {
-	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 	_imageSequence.scan();
 }
 
@@ -130,7 +121,6 @@ void ImageSequenceWidget::onPickDirectory()
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
 		_imageSequence.setDirectory(pickedDirectory);
 
-		_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
 		_imageSequence.scan();
 	}
 }
@@ -145,11 +135,9 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadSequencePushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad()
+void ImageSequenceWidget::onEndLoad(FloatVector& pointsData)
 {
-	_imageLoaderPlugin->addSequence(ImageCollection::Type::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
+	_imageLoaderPlugin->addSequence(ImageCollection::Type::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), pointsData, _imageSequence.dimensionNames());
 
 	_ui->loadSequencePushButton->setText("Load");
-
-	// close();
 }

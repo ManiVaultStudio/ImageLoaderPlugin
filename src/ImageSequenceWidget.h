@@ -32,7 +32,7 @@ private:
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
-	void onEndLoad();
+	void onEndLoad(FloatVector& pointsData);
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
