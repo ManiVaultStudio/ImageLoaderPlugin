@@ -8,29 +8,14 @@
 #include <FreeImage.h>
 
 MultipartImageSequence::MultipartImageSequence() :
-	_directory(""),
-	_imageFilePaths()
-{
-}
-
-MultipartImageSequence::MultipartImageSequence(const MultipartImageSequence &other) :
-	_directory(other._directory),
-	_imageFilePaths(other._imageFilePaths)
-{
-}
-
-MultipartImageSequence::~MultipartImageSequence()
+	ImageCollection(ImageCollection::Type::MultiPartSequence),
+	_directory("")
 {
 }
 
 QString MultipartImageSequence::directory() const
 {
 	return _directory;
-}
-
-QStringList MultipartImageSequence::imageFilePaths() const
-{
-	return _imageFilePaths;
 }
 
 QStringList MultipartImageSequence::dimensionNames() const
@@ -54,11 +39,6 @@ int MultipartImageSequence::noDimensions() const
 	return 10;
 }
 
-int MultipartImageSequence::noImages() const
-{
-	return _imageFilePaths.size();
-}
-
 void MultipartImageSequence::setDirectory(const QString & directory)
 {
 	_directory = directory;
@@ -67,9 +47,17 @@ void MultipartImageSequence::setDirectory(const QString & directory)
 	emit becameDirty();
 }
 
+void MultipartImageSequence::scan()
+{
+}
+
+void MultipartImageSequence::load()
+{
+}
+
 void MultipartImageSequence::addFile(const QString &imageFilePath)
 {
-	_imageFilePaths.append(imageFilePath);
+	// _imageFilePaths.append(imageFilePath);
 
 	// emit message(QString("Found %1").arg(QFileInfo(imageFilePath).fileName()));
 }
@@ -171,7 +159,7 @@ void MultipartImageSequence::run()
 }
 */
 
-void MultipartImageSequence::loadImage(const QString & imageFilePath)
+void MultipartImageSequence::loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 	

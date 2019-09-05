@@ -1,10 +1,10 @@
 #pragma once
 
+#include "MultipartImageSequence.h"
+
 #include <memory>
 
 #include <QWidget>
-
-#include "MultipartImageSequence.h"
 
 namespace Ui {
 	class MultiPartImageSequenceWidget;
@@ -22,7 +22,6 @@ private:
 	void onBecameDirty();
 	void onBeginScan();
 	void onEndScan();
-	void onMessage(const QString &message);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
@@ -36,5 +35,5 @@ private:
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
-	//MultipartImageSequence								_multipartImageSequence;
+	MultipartImageSequence								_multipartImageSequence;
 };

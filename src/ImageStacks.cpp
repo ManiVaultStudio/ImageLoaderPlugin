@@ -54,6 +54,7 @@ void ImageStacks::load()
 
 void ImageStacks::scanDir(const QString &directory)
 {
+	/*
 	auto subDirectories = QDir(directory);
 
 	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -106,6 +107,7 @@ void ImageStacks::scanDir(const QString &directory)
 		
 		scanDir(path);
 	}
+	*/
 }
 /*
 void ImageStacks::run()

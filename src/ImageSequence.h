@@ -4,8 +4,6 @@
 
 #include <QThread>
 #include <QSize>
-#include <QMap>
-#include <QMetaType>
 
 class ImageSequence : public ImageCollection
 {
@@ -34,6 +32,7 @@ public:
 	void setImageType(const QString &imageType);
 	void setImageSize(const QSize &imageSize);
 
+public:
 	void scan();
 	void load();
 
@@ -61,7 +60,5 @@ private:
 	QStringList			_imageFilePaths;
 	std::vector<float>	_pointsData;
 };
-
-Q_DECLARE_METATYPE(ImageSequence);
 
 QDebug operator<<(QDebug dbg, const class ImageSequence &sequence);

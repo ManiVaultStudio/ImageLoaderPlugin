@@ -6,9 +6,9 @@
 
 //#include <FreeImage.h>
 
-ImageStack::ImageStack(const QSize& size /*= QSize()*/) :
-	_size(size),
-	_imageFilePaths()
+ImageStack::ImageStack() :
+	ImageCollection(ImageCollection::Type::Stack),
+	_size()
 {
 }
 
@@ -17,30 +17,20 @@ QSize ImageStack::size() const
 	return _size;
 }
 
-QStringList ImageStack::imageFilePaths() const
-{
-	return _imageFilePaths;
-}
-
 QStringList ImageStack::dimensionNames() const
 {
 	auto dimensionNames = QStringList();
-
+	/*
 	foreach(const QString& imageFilePath, _imageFilePaths) {
 		dimensionNames << QFileInfo(imageFilePath).fileName();
 	}
-
+	*/
 	return dimensionNames;
 }
 
 int ImageStack::noDimensions() const
 {
 	return noImages();
-}
-
-int ImageStack::noImages() const
-{
-	return _imageFilePaths.size();
 }
 
 int ImageStack::noPixels() const
@@ -50,12 +40,17 @@ int ImageStack::noPixels() const
 
 void ImageStack::add(const QString & imageFilePath)
 {
-	_imageFilePaths.append(imageFilePath);
+//	_imageFilePaths.append(imageFilePath);
+}
+
+void ImageStack::scan()
+{
 }
 
 void ImageStack::load()
 {
-	emit beginLoad(this);
+	/*
+	emit beginLoad();
 
 	std::vector<float> pointsData;
 
@@ -80,10 +75,12 @@ void ImageStack::load()
 	emit message(QString("%1 image(s) loaded").arg(noImages()));
 
 	emit endLoad(this, pointsData);
+	*/
 }
 
 void ImageStack::loadImage(const QString & imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
 {
+	/*
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
 	auto* image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
@@ -110,4 +107,5 @@ void ImageStack::loadImage(const QString & imageFilePath, const int& imageIndex,
 
 			break;
 	}
+	*/
 }

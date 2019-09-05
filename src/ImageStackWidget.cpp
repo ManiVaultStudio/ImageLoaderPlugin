@@ -9,7 +9,8 @@
 
 ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
-	_ui{ std::make_unique<Ui::ImageStackWidget>() }
+	_ui{ std::make_unique<Ui::ImageStackWidget>() },
+	_imageStack()
 {
 	_ui->setupUi(this);
 	/*
@@ -41,6 +42,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_imageStacks.setDirectory(directory);
 	}
 	*/
+
+	_ui->resampleImageSettingsWidget->initialize(&_imageStack.resampleImageSettings());
 }
 
 ImageStackWidget::~ImageStackWidget()
@@ -53,7 +56,7 @@ void ImageStackWidget::onBecameDirty()
 
 void ImageStackWidget::onBeginScan()
 {
-	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
+//	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
 }
 
 void ImageStackWidget::onEndScan()
@@ -80,11 +83,6 @@ void ImageStackWidget::onEndScan()
 
 	_ui->loadPushButton->setEnabled(true);
 	*/
-}
-
-void ImageStackWidget::onMessage(const QString &message)
-{
-	_ui->infoLineEdit->setText(message);
 }
 
 void ImageStackWidget::onDirectoryChanged(const QString &directory)

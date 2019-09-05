@@ -33,6 +33,8 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	
 	const auto subsamplingRatio = _imageLoaderPlugin->setting("multipart/subsampling/ratio", "").toDouble();
 	*/
+
+	_ui->resampleImageSettingsWidget->initialize(&_multipartImageSequence.resampleImageSettings());
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()

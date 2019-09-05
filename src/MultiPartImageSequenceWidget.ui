@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>563</width>
-    <height>389</height>
+    <height>508</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,19 +33,19 @@
     <number>0</number>
    </property>
    <item row="5" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="buttonsLayout">
      <item>
-      <widget class="QLineEdit" name="infoLineEdit">
-       <property name="enabled">
-        <bool>false</bool>
+      <spacer name="buttonsSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="toolTip">
-        <string>Info</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
+      </spacer>
      </item>
      <item>
       <widget class="QPushButton" name="loadSequencePushButton">
@@ -161,7 +161,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="ResampleImageSettingsWidget" name="widget" native="true">
+    <widget class="ResampleImageSettingsWidget" name="resampleImageSettingsWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
