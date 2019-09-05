@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageScan.h"
+#include "ImageScanner.h"
 
 #include <QObject>
 #include <QString>
@@ -9,13 +9,14 @@ class QSettings;
 
 using ImageStacks = QMap<QString, QStringList>;
 
-class ImageStackScan : public ImageScan {
+class ImageStackScanner : public ImageScanner {
 	Q_OBJECT
 
 public:
-	ImageStackScan(QSettings* settings);
+	ImageStackScanner(QSettings* settings);
 
 	void scan();
+	void scanDir(const QString& directory);
 
 signals:
 	void becameDirty();

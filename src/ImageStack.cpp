@@ -6,7 +6,7 @@
 
 ImageStack::ImageStack() :
 	ImageCollection(ImageCollection::Type::Stack),
-	_scan(_settings)
+	_scanner(&_settings)
 {
 }
 
@@ -29,6 +29,11 @@ int ImageStack::noDimensions() const
 void ImageStack::add(const QString & imageFilePath)
 {
 //	_imageFilePaths.append(imageFilePath);
+}
+
+ImageStackScanner & ImageStack::scanner()
+{
+	return _scanner;
 }
 
 void ImageStack::load()

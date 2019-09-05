@@ -16,11 +16,6 @@ class ImageStackWidget : public QWidget
 {
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageStackWidget() override;
-
-public:
-	void scan();
-	void scanDir(const QString & directory);
 
 private:
 	void onBecameDirty();

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImageCollection.h"
-#include "ImageStackScan.h"
+#include "ImageStackScanner.h"
 
 #include <QString>
 
@@ -16,6 +16,8 @@ public:
 
 	void add(const QString& imageFilePath);
 
+	ImageStackScanner& scanner();
+
 public:
 	void load() override;
 	
@@ -23,5 +25,5 @@ protected:
 	void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData);
 
 private:
-	ImageStackScan	_scan;
+	ImageStackScanner	_scanner;
 };

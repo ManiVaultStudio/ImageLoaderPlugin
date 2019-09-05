@@ -1,17 +1,16 @@
 #pragma once
 
-#include "ImageCollection.h"
-
 #include <QObject>
 #include <QString>
 
 class QSettings;
 
-class ImageScan : public QObject {
+class ImageScanner : public QObject {
 	Q_OBJECT
 
 public:
-	ImageScan(QSettings* settings);
+	ImageScanner(QSettings* settings);
+	~ImageScanner();
 
 	QString	directory() const;
 	void setDirectory(const QString& directory);
@@ -28,6 +27,7 @@ signals:
 	void endScan();
 	void directoryChanged(const QString& directory);
 	void imageTypesChanged(const QStringList& imageTypes);
+	void message(const QString& message);
 
 private:
 	QSettings*		_settings;

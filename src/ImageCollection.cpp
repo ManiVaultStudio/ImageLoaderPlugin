@@ -1,5 +1,6 @@
 #include "ImageCollection.h"
 #include "ImageUtilities.h"
+#include "ImageScanner.h"
 
 #include <QDebug>
 
@@ -7,7 +8,8 @@ ImageCollection::ImageCollection(const Type& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(ImageCollection::typeName(type))),
 	_type(type),
 	_imageFilePaths(),
-	_resampleImageSettings(&_settings)
+	_resampleImageSettings(&_settings),
+	_scanner(nullptr)
 {
 }
 
@@ -34,6 +36,13 @@ ResampleImageSettings & ImageCollection::resampleImageSettings()
 void ImageCollection::reset()
 {
 	_imageFilePaths.clear();
+}
+
+void ImageCollection::setScanner(std::unique_ptr<ImageScanner>& scanner)
+{
+	_scanner.swap(scanner);
+
+	connect(_scanner.get(), &ImageScanner::message, this, &ImageCollection::message);
 }
 
 QVariant ImageCollection::setting(const QString& name, const QVariant& defaultValue) const
