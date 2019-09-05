@@ -20,7 +20,6 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageSequenceWidget{std::make_unique<ImageSequenceWidget>(imageLoaderPlugin)},
 	_imageStackWidget{std::make_unique<ImageStackWidget>(imageLoaderPlugin)},
 	_multiPartImageSequenceWidget{std::make_unique<MultiPartImageSequenceWidget>(imageLoaderPlugin)},
-	//_resampleWidget{std::make_unique<ResampleImageSettingsWidget>(imageLoaderPlugin)},
 	_statusBar{std::make_unique<QStatusBar>()}
 {
 	_mainLayout->setMargin(0);
@@ -52,7 +51,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageSequenceWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	_imageStackWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-	setMinimumWidth(640);
+	setMinimumWidth(480);
 	setMinimumHeight(480);
 
 	connect(&_imageSequenceWidget->imageSequence(), &ImageSequence::message, this, &ImageLoaderDialog::onMessage);

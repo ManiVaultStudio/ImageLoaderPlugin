@@ -99,10 +99,18 @@ void ImageSequence::setImageSize(const QSize & imageSize)
 
 void ImageSequence::scan()
 {
+	emit beginScan();
 	emit message("Scanning for image files...");
 
-	emit message("No images were found, try changing the directory, image type or dimensions");
-	// _ui->infoLineEdit->setText(QString("Found %1 images").arg(noImages));
+	scanDir(_directory);
+
+	if (noImages() > 0) {
+		emit message(QString("Found %1 images").arg(noImages()));
+	} else {
+		emit message("No images were found, try changing the directory, image type or dimensions");
+	}
+
+	emit endScan();
 }
 
 void ImageSequence::load()
