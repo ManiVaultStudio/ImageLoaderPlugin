@@ -4,20 +4,20 @@
 #include <QDir>
 #include <QSettings>
 
-ImageScanner::ImageScanner(QSettings* settings) :
-	_settings(settings)
+ImageScanner::ImageScanner(const ImageCollection::Type& type) :
+	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(ImageCollection::typeName(type)))
 {
-	const auto directory = _settings->value("Scan/Directory", "").toString();
+	const auto directory = _settings.value("Scan/Directory", "").toString();
 
 	if (QDir(directory).exists()) {
-		_directory = _settings->value("Scan/Directory", "").toString();
+		_directory = _settings.value("Scan/Directory", "").toString();
 	}
 	else {
 		_directory = "";
 	}
 
-	_directory	= _settings->value("Scan/Directory", "").toString();
-	_imageTypes	= _settings->value("Scan/ImageTypes", "").toStringList();
+	_directory	= _settings.value("Scan/Directory", "").toString();
+	_imageTypes	= _settings.value("Scan/ImageTypes", "").toStringList();
 }
 
 ImageScanner::~ImageScanner()
@@ -33,7 +33,7 @@ void ImageScanner::setDirectory(const QString& directory)
 {
 	_directory = directory;
 
-	_settings->setValue("Scan/Directory", directory);
+	_settings.setValue("Scan/Directory", directory);
 
 	emit directoryChanged(_directory);
 	emit becameDirty();
@@ -48,7 +48,7 @@ void ImageScanner::setImageTypes(const QStringList& imageTypes)
 {
 	_imageTypes = imageTypes;
 
-	_settings->setValue("Scan/ImageTypes", _imageTypes);
+	_settings.setValue("Scan/ImageTypes", _imageTypes);
 
 	emit imageTypesChanged(_imageTypes);
 	emit becameDirty();

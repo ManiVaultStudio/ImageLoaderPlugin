@@ -16,14 +16,9 @@ public:
 
 	void add(const QString& imageFilePath);
 
-	ImageStackScanner& scanner();
-
 public:
 	void load() override;
 	
 protected:
 	void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData);
-
-private:
-	ImageStackScanner	_scanner;
 };

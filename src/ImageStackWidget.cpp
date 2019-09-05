@@ -10,23 +10,24 @@
 ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
-	_imageStack()
+	_imageStack(),
+	_imageStackScanner()
 {
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
-	connect(&_imageStack.scanner(), &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStack.scanner(), &ImageStackScanner::becameDirty, this, &ImageStackWidget::onBecameDirty);
-	connect(&_imageStack.scanner(), &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
-	connect(&_imageStack.scanner(), &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
+	connect(&_imageStackScanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
+	connect(&_imageStackScanner, &ImageStackScanner::becameDirty, this, &ImageStackWidget::onBecameDirty);
+	connect(&_imageStackScanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
+	connect(&_imageStackScanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 	
 	auto imageTypes = QStringList();
 
 	imageTypes << "jpg" << "png" << "bmp" << "tif";
 
-	_imageStack.scanner().setImageTypes(imageTypes);
+	_imageStackScanner.setImageTypes(imageTypes);
 
 	_ui->datasetNameLabel->setEnabled(false);
 	_ui->datasetNameLineEdit->setEnabled(false);
@@ -77,7 +78,7 @@ void ImageStackWidget::onDirectoryChanged(const QString &directory)
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
-	_imageStack.scanner().scan();
+	_imageStackScanner.scan();
 }
 
 void ImageStackWidget::onLoadSequence()
@@ -106,7 +107,7 @@ void ImageStackWidget::onPickDirectory()
 	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_imageStack.scanner().setDirectory(pickedDirectory);
+		_imageStackScanner.setDirectory(pickedDirectory);
 	}
 }
 

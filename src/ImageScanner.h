@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ImageCollection.h"
+
 #include <QObject>
 #include <QString>
 
@@ -9,7 +11,7 @@ class ImageScanner : public QObject {
 	Q_OBJECT
 
 public:
-	ImageScanner(QSettings* settings);
+	ImageScanner(const ImageCollection::Type& type);
 	~ImageScanner();
 
 	QString	directory() const;
@@ -30,7 +32,7 @@ signals:
 	void message(const QString& message);
 
 private:
-	QSettings*		_settings;
+	QSettings		_settings;
 	QString			_directory;
 	QStringList		_imageTypes;
 };

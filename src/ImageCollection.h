@@ -1,12 +1,9 @@
 #pragma once
 
 #include "ResampleImageSettings.h"
-#include "ImageScanner.h"
 
 #include <QObject>
 #include <QString>
-
-//class ImageScanner;
 
 class ImageCollection : public QObject {
 	Q_OBJECT
@@ -28,7 +25,6 @@ public:
 	int noImages() const;
 	ResampleImageSettings& resampleImageSettings();
 	void reset();
-	void setScanner(std::unique_ptr<ImageScanner>& scanner);
 
 	virtual int noDimensions() const = 0;
 	virtual QStringList	dimensionNames() const = 0;
@@ -48,11 +44,10 @@ signals:
 	void message(const QString& message);
 
 protected:
-	QSettings				_settings;
-	QStringList				_imageFilePaths;
+	QSettings						_settings;
+	QStringList						_imageFilePaths;
 
 private:
 	Type							_type;
 	ResampleImageSettings			_resampleImageSettings;
-	std::unique_ptr<ImageScanner>	_scanner;
 };

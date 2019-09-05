@@ -1,10 +1,15 @@
 #include "ImageStackScanner.h"
+#include "ImageCollection.h"
 
 #include <QDebug>
 #include <QDir>
 
-ImageStackScanner::ImageStackScanner(QSettings* settings) :
-	ImageScanner(settings)
+ImageStackScanner::ImageStackScanner() :
+	ImageScanner(ImageCollection::Type::Stack)
+{
+}
+
+ImageStackScanner::~ImageStackScanner()
 {
 }
 

@@ -13,7 +13,8 @@ class ImageStackScanner : public ImageScanner {
 	Q_OBJECT
 
 public:
-	ImageStackScanner(QSettings* settings);
+	ImageStackScanner();
+	~ImageStackScanner();
 
 	void scan();
 	void scanDir(const QString& directory);
