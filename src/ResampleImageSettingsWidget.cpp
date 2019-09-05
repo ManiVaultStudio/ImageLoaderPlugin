@@ -21,6 +21,7 @@ ResampleImageSettingsWidget::~ResampleImageSettingsWidget()
 
 void ResampleImageSettingsWidget::initialize(ImageLoaderPlugin * imageLoaderPlugin)
 {
+	/*
 	_imageLoaderPlugin = imageLoaderPlugin;
 
 	_ui->resamplingFilterComboBox->addItems(_settings.filterNames());
@@ -30,4 +31,5 @@ void ResampleImageSettingsWidget::initialize(ImageLoaderPlugin * imageLoaderPlug
 
 	connect(_ui->resamplingRatioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), &_settings, &ResampleImageSettings::setRatio);
 	connect(_ui->resamplingFilterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int currentIndex) { _settings.setFilter(ImageResamplingFilter(currentIndex)); });
+	*/
 }

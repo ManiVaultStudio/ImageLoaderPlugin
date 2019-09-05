@@ -17,7 +17,7 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader"),
-	_settings("HDPS", "ImageViewer")
+	_settings("HDPS", "ImageLoader")
 {
 }
 
@@ -46,7 +46,7 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames /*= QStringList()*/)
+void ImageLoaderPlugin::addSequence(const ImageCollection::Type& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames /*= QStringList()*/)
 {
 	qDebug() << "Adding sequence " << name;
 
@@ -66,10 +66,10 @@ void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionTy
 	}
 
 	switch (imageCollectionType) {
-		case ImageCollectionType::Sequence:
+		case ImageCollection::Type::Sequence:
 			points.setProperty("type", "SEQUENCE");
 			break;
-		case ImageCollectionType::Stack:
+		case ImageCollection::Type::Stack:
 			points.setProperty("type", "STACK");
 			break;
 

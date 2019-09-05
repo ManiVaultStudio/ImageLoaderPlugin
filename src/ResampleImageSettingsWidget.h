@@ -23,6 +23,4 @@ public:
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::ResampleImageSettingsWidget>	_ui;
-	ResampleImageSettings								_settings;
-	//ImageStacks										_imageStacks;
 };	

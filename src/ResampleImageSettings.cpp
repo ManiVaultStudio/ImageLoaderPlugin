@@ -4,21 +4,15 @@
 
 #include <QDebug>
 
-ResampleImageSettings::ResampleImageSettings() :
-	_imageLoaderPlugin(nullptr),
-	_category(""),
+ResampleImageSettings::ResampleImageSettings(QSettings* settings) :
+	_settings(settings),
 	_ratio(100.0),
 	_filter(ImageResamplingFilter::Bilinear)
 {
-	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
-}
+	_ratio	= _settings->value(settingPath("ratio"), 100.0).toDouble();
+	_filter = ImageResamplingFilter(_settings->value(settingPath("filter"), "bilinear").toInt());
 
-void ResampleImageSettings::initialize(ImageLoaderPlugin* imageLoaderPlugin, const QString& category)
-{
-	_imageLoaderPlugin	= imageLoaderPlugin;
-	_category			= category;
-	_ratio				= _imageLoaderPlugin->setting(settingPath("ratio"), 100.0).toDouble();
-	_filter				= ImageResamplingFilter(_imageLoaderPlugin->setting(settingPath("filter"), "bilinear").toInt());
+	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
 }
 
 double ResampleImageSettings::ratio() const
@@ -34,7 +28,7 @@ void ResampleImageSettings::setRatio(const double& ratio)
 
 	emit resamplingRatioChanged(_ratio);
 
-	_imageLoaderPlugin->setSetting(settingPath("ratio"), _ratio);
+	_settings->setValue(settingPath("ratio"), _ratio);
 }
 
 ImageResamplingFilter ResampleImageSettings::filter() const
@@ -52,7 +46,7 @@ void ResampleImageSettings::setFilter(const ImageResamplingFilter& filter)
 
 	emit imageResamplingFilterChanged(_filter);
 
-	_imageLoaderPlugin->setSetting(settingPath("filter"), filterIndex);
+	_settings->setValue(settingPath("filter"), filterIndex);
 }
 
 QStringList ResampleImageSettings::filterNames() const
@@ -62,5 +56,5 @@ QStringList ResampleImageSettings::filterNames() const
 
 QString ResampleImageSettings::settingPath(const QString& name) const
 {
-	return QString("%1/resampling/%2").arg(_category, name);
+	return QString("Resampling/%2").arg(name);
 }

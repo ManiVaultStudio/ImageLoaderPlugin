@@ -33,6 +33,8 @@ set(PLUGIN_SOURCES
 	src/ResampleImageSettings.cpp
 	src/ResampleImageSettingsWidget.h
 	src/ResampleImageSettingsWidget.cpp
+	src/ImageCollection.h
+	src/ImageCollection.cpp
     src/Common.h
 )
 
