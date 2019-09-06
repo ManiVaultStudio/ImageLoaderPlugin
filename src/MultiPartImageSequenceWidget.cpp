@@ -10,52 +10,60 @@
 
 MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
-	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() }
+	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() },
+	_scanner(),
+	_loader()
 {
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
-	//connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadSequence);
-	//connect(&_loader, &MultipartImageSequence::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
-	/*
-	connect(&_imageSequence, &ImageSequence::message, this, &MultiPartImageSequenceWidget::onMessage);
-	connect(&_imageSequence, &ImageSequence::becameDirty, this, &MultiPartImageSequenceWidget::onBecameDirty);
-	connect(&_imageSequence, &ImageSequence::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
-	connect(&_imageSequence, &ImageSequence::beginLoad, this, &MultiPartImageSequenceWidget::onBeginLoad);
-	connect(&_imageSequence, &ImageSequence::endLoad, this, &MultiPartImageSequenceWidget::onEndLoad);
-	
 
-	const auto directory = _imageLoaderPlugin->setting("multipart/directory", "").toString();
-
-	if (QDir(directory).exists()) {
-		_loader.setDirectory(directory);
-	}
-	
-	const auto subsamplingRatio = _imageLoaderPlugin->setting("multipart/subsampling/ratio", "").toDouble();
-	*/
+	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
+	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, this, &MultiPartImageSequenceWidget::onBeginScan);
+	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 
 	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
+
+	_scanner.setDirectory(_scanner.directory());
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()
 {
 }
 
-/*
 void MultiPartImageSequenceWidget::onBecameDirty()
 {
-	_ui->scanPushButton->setEnabled(true);
+//	_ui->scanPushButton->setEnabled(true);
+}
+
+void MultiPartImageSequenceWidget::onPickDirectory()
+{
+	const auto initialDirectory = _scanner.directory();
+	const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
+
+	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+		_scanner.setDirectory(pickedDirectory);
+	}
+}
+
+void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
+{
+	//_ui->directoryLineEdit->setText(directory);
+	//_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+
+	_scanner.scan();
 }
 
 void MultiPartImageSequenceWidget::onBeginScan()
 {
-	_ui->infoLineEdit->setText(QString("Scanning for image files..."));
-	_ui->scanPushButton->setText("Scanning");
-	_ui->scanPushButton->setEnabled(false);
+	qDebug() << "Multipart image sequence scan started";
 }
 
 void MultiPartImageSequenceWidget::onEndScan()
 {
+	qDebug() << "Multipart image sequence scan ended";
+
+	/*
 	const auto noImages = _imageSequence.imageFilePaths().size();
 
 	if (noImages <= 0) {
@@ -65,74 +73,9 @@ void MultiPartImageSequenceWidget::onEndScan()
 		_ui->infoLineEdit->setText(QString("Found %1 images").arg(noImages));
 		_ui->loadSequencePushButton->setEnabled(true);
 	}
-	
+
 	_ui->scanPushButton->setText("Scan");
-}
-
-void MultiPartImageSequenceWidget::onMessage(const QString &message)
-{
-	// qDebug() << message;
-
-	_ui->infoLineEdit->setText(message);
-}
-*/
-void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
-{
-	_ui->directoryLineEdit->setText(directory);
-	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
-
-	//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-	//_imageSequence.start();
-
-	//_imageLoaderPlugin->setSetting("multipart/directory", directory);
-}
-/*
-void MultiPartImageSequenceWidget::onLoadSequence()
-{
-	_imageSequence.setRunMode(ImageSequence::RunMode::Load);
-	_imageSequence.start();
-
-	_ui->loadSequencePushButton->setEnabled(false);
-}
-
-void MultiPartImageSequenceWidget::onImageWidthChanged(int imageWidth)
-{
-	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-
-	_imageLoaderPlugin->_settings.setValue("stack/width", imageWidth);
-}
-
-void MultiPartImageSequenceWidget::onImageHeightChanged(int imageHeight)
-{
-	_imageSequence.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-
-	_imageLoaderPlugin->_settings.setValue("stack/height", imageHeight);
-}
-
-void MultiPartImageSequenceWidget::onScan()
-{
-	_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-	_imageSequence.start();
-}
-*/
-void MultiPartImageSequenceWidget::onPickDirectory()
-{
-	/*
-	const auto initialDirectory = _imageLoaderPlugin->setting("multipart/directory").toString();
-	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
-
-	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_loader.setDirectory(pickedDirectory);
-
-		//_imageSequence.setRunMode(ImageSequence::RunMode::Scan);
-		//_imageSequence.start();
-	}
 	*/
-}
-/*
-void MultiPartImageSequenceWidget::onImageTypeChanged(const QString & imageType)
-{
-	_imageSequence.setImageType(_ui->imageTypeComboBox->currentText());
 }
 
 void MultiPartImageSequenceWidget::onBeginLoad()
@@ -142,10 +85,7 @@ void MultiPartImageSequenceWidget::onBeginLoad()
 
 void MultiPartImageSequenceWidget::onEndLoad()
 {
-	_imageLoaderPlugin->addSequence(ImageLoaderPlugin::ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
+	//_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
 
 	_ui->loadSequencePushButton->setText("Load");
-
-	// close();
 }
-*/

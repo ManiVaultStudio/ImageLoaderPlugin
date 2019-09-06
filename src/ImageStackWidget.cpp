@@ -29,7 +29,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 void ImageStackWidget::onPickDirectory()
 {
-	const auto initialDirectory = _loader.setting("Directory").toString();
+	const auto initialDirectory = _scanner.directory();
 	const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {

@@ -20,8 +20,8 @@ public:
 	void scanDir(const QString& directory);
 
 signals:
-	void endScan(QMap<QString, QStringList>& imageStacks);
+	void endScan(QStringList& imageFilePaths);
 
 private:
-	QMap<QString, ImageStackFiles>	_imageStackFiles;
+	QStringList	_scannedFiles;
 };

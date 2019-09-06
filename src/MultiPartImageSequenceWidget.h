@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MultiPartImageSequenceScanner.h"
 #include "MultiPartImageSequenceLoader.h"
 
 #include <memory>
@@ -20,20 +21,16 @@ public:
 
 private:
 	void onBecameDirty();
+	void onPickDirectory();
+	void onDirectoryChanged(const QString& directory);
 	void onBeginScan();
 	void onEndScan();
-	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
-	void onImageWidthChanged(int width);
-	void onImageHeightChanged(int height);
-	void onScan();
-	void onPickDirectory();
-	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad();
 
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
+	MultiPartImageSequenceScanner						_scanner;
 	MultiPartImageSequenceLoader						_loader;
 };

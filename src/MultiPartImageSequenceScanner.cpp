@@ -9,7 +9,7 @@ MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 {
 	auto imageTypes = QStringList();
 
-	imageTypes << "jpg" << "png" << "bmp" << "tif";
+	imageTypes << "tiff";
 
 	setImageTypes(imageTypes);
 }
@@ -22,42 +22,9 @@ void MultiPartImageSequenceScanner::scan()
 {
 	emit beginScan();
 
-	//_imageStacks.clear();
-	/*
-	scanDir(_directory);
+	_scannedFiles.clear();
 
-	const auto noStacks		= _imageStacks.size();
-	const auto hasStacks	= noStacks > 0;
-
-	if (noStacks == 0) {
-		emit message("No image stacks were found, try changing the directory");
-	}
-	else {
-		emit message(QString("Found %1 image stack(s)").arg(noStacks));
-	}
-
-	emit endScan(_imageStacks);*/
-}
-
-void MultiPartImageSequenceScanner::scanDir(const QString& directory)
-{
-	/*
-	auto subDirectories = QDir(directory);
-
-	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-
-	const auto dirList = subDirectories.entryList();
-
-	for (int i = 0; i < dirList.size(); ++i)
-	{
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
-
-		qDebug() << "Found directory: " << dirList.at(i);
-
-		scanDir(path);
-	}
-
-	auto imageFiles = QDir(directory);
+	auto imageFiles = QDir(_directory);
 
 	imageFiles.setFilter(QDir::Files);
 
@@ -70,28 +37,24 @@ void MultiPartImageSequenceScanner::scanDir(const QString& directory)
 
 	imageFiles.setNameFilters(nameFilters);
 
-	const auto fileList = imageFiles.entryList();
+	const auto fileNames = imageFiles.entryList();
 
-	for (int i = 0; i < fileList.size(); ++i)
+	auto imageFilePaths = QStringList();
+
+	for (int i = 0; i < fileNames.size(); ++i)
 	{
-		const auto path = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
-
-		QImageReader imageReader(path);
-
-		const auto size = imageReader.size();
-
-		if (size.width() > 0 && size.height() > 0) {
-			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
-
-			if (!_imageStacks.contains(sizeString)) {
-				_imageStacks.insert(sizeString, QStringList());
-				_imageStackFiles.insert(size, QStringList());
-			}
-
-			_imageStacks[sizeString] << path;
-		}
-
-		scanDir(path);
+		imageFilePaths << QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileNames.at(i));
 	}
-	*/
+
+	const auto noStacks		= imageFilePaths.size();
+	const auto hasStacks	= noStacks > 0;
+
+	if (noStacks == 0) {
+		emit message("No multipart images were found, try changing the directory");
+	}
+	else {
+		emit message(QString("Found %1 multipart image(s)").arg(noStacks));
+	}
+
+	emit endScan(imageFilePaths);
 }
