@@ -29,10 +29,10 @@ set(PLUGIN_SOURCES
     src/ImageLoaderDialog.cpp
 	src/ImageUtilities.h
     src/ImageUtilities.cpp
-	src/ResampleImageSettings.h
-	src/ResampleImageSettings.cpp
-	src/ResampleImageSettingsWidget.h
-	src/ResampleImageSettingsWidget.cpp
+	src/SubsampleImageSettings.h
+	src/SubsampleImageSettings.cpp
+	src/SubsampleImageSettingsWidget.h
+	src/SubsampleImageSettingsWidget.cpp
     src/Common.h
 )
 
@@ -86,7 +86,7 @@ set(UIS
 	src/ImageSequenceWidget.ui
 	src/ImageStackWidget.ui
 	src/MultipartImageSequenceWidget.ui
-	src/ResampleImageSettingsWidget.ui
+	src/SubsampleImageSettingsWidget.ui
 )
 
 set(AUX src/ImageLoaderPlugin.json)

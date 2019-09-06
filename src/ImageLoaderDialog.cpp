@@ -9,7 +9,6 @@
 #include "ImageSequenceWidget.h"
 #include "ImageStackWidget.h"
 #include "MultiPartImageSequenceWidget.h"
-#include "ResampleImageSettingsWidget.h"
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),

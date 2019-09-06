@@ -26,7 +26,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
 	connect(&_loader, &MultiPartImageSequenceLoader::message, this, &MultiPartImageSequenceWidget::message);
 
-	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
+	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
 	_scanner.setDirectory(_scanner.directory());
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ResampleImageSettingsWidget</class>
- <widget class="QWidget" name="ResampleImageSettingsWidget">
+ <class>SubsampleImageSettingsWidget</class>
+ <widget class="QWidget" name="SubsampleImageSettingsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>92</height>
+    <height>114</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -47,26 +47,10 @@
       <string>Subsampling</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <layout class="QGridLayout" name="resamplingGridLayout">
         <item row="1" column="0">
-         <widget class="QLabel" name="resamplingFilterLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Subsampling filter</string>
-          </property>
-          <property name="text">
-           <string>Resampling filter</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="resamplingRatioLabel">
+         <widget class="QLabel" name="subsamplingRatioLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -81,26 +65,69 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QComboBox" name="resamplingFilterComboBox">
+        <item row="2" column="0">
+         <widget class="QLabel" name="subsamplingFilterLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Subsampling filter</string>
+          </property>
+          <property name="text">
+           <string>Resampling filter</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="subsamplingFilterComboBox">
           <property name="toolTip">
            <string>The type of resampling filter to use</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QDoubleSpinBox" name="resamplingRatioSpinBox">
-          <property name="toolTip">
-           <string>Subsampling ratio </string>
+        <item row="1" column="1" colspan="2">
+         <layout class="QHBoxLayout" name="resamplingRatioLayout">
+          <property name="topMargin">
+           <number>0</number>
           </property>
-          <property name="minimum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>100.000000000000000</double>
-          </property>
-          <property name="singleStep">
-           <double>10.000000000000000</double>
+          <item>
+           <widget class="QDoubleSpinBox" name="subsamplingRatioSpinBox">
+            <property name="toolTip">
+             <string>Subsampling ratio </string>
+            </property>
+            <property name="minimum">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>10.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="subsamplingRatioSlider">
+            <property name="minimum">
+             <number>10</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="enableSubsamplingCheckbox">
+          <property name="text">
+           <string>Enable subsampling</string>
           </property>
          </widget>
         </item>

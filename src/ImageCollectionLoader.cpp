@@ -8,7 +8,7 @@ ImageCollectionLoader::ImageCollectionLoader(const ImageCollectionType& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(ImageCollectionLoader::typeName(type))),
 	_type(type),
 	_imageFilePaths(),
-	_resampleImageSettings(&_settings)
+	_subsampleImageSettings(&_settings)
 {
 }
 
@@ -27,9 +27,9 @@ int ImageCollectionLoader::noImages() const
 	return _imageFilePaths.size();
 }
 
-ResampleImageSettings & ImageCollectionLoader::resampleImageSettings()
+SubsampleImageSettings & ImageCollectionLoader::subsampleImageSettings()
 {
-	return _resampleImageSettings;
+	return _subsampleImageSettings;
 }
 
 void ImageCollectionLoader::reset()

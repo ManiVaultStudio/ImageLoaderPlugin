@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ResampleImageSettings.h"
+#include "SubsampleImageSettings.h"
 
 #include <QObject>
 #include <QString>
@@ -16,7 +16,7 @@ public:
 	ImageCollectionType type() const;
 	QStringList	imageFilePaths() const;
 	int noImages() const;
-	ResampleImageSettings& resampleImageSettings();
+	SubsampleImageSettings& subsampleImageSettings();
 	void reset();
 
 //	virtual int noDimensions() const = 0;
@@ -42,5 +42,5 @@ protected:
 
 private:
 	ImageCollectionType		_type;
-	ResampleImageSettings	_resampleImageSettings;
+	SubsampleImageSettings	_subsampleImageSettings;
 };
