@@ -27,7 +27,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
 
-	_scanner.setDirectory(_scanner.directory());
+	emit _scanner.directoryChanged(_scanner.directory());
 }
 
 void ImageStackWidget::onPickDirectory()

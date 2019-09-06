@@ -16,7 +16,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 {
 	_ui->setupUi(this);
 	
-	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoad);
+	//connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoad);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
@@ -99,12 +99,9 @@ void MultiPartImageSequenceWidget::onEndScan(QStringList& imageFilePaths)
 
 void MultiPartImageSequenceWidget::onBeginLoad()
 {
-	_ui->loadSequencePushButton->setText("Loading");
 }
 
 void MultiPartImageSequenceWidget::onEndLoad()
 {
 	//_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
-
-	_ui->loadSequencePushButton->setText("Load");
 }

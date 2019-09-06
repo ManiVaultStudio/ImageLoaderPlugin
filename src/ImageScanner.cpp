@@ -36,6 +36,7 @@ void ImageScanner::setDirectory(const QString& directory)
 	_settings.setValue("Scan/Directory", directory);
 
 	emit directoryChanged(_directory);
+	
 	emit becameDirty();
 }
 
@@ -51,5 +52,6 @@ void ImageScanner::setImageTypes(const QStringList& imageTypes)
 	_settings.setValue("Scan/ImageTypes", _imageTypes);
 
 	emit imageTypesChanged(_imageTypes);
+
 	emit becameDirty();
 }

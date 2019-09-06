@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ImageSequenceScanner.h"
+#include "ImageSequenceLoader.h"
+
 #include <memory>
 
 #include <QWidget>
-
-#include "ImageSequenceLoader.h"
 
 namespace Ui {
 	class ImageSequenceWidget;
@@ -25,12 +26,11 @@ public:
 private:
 	void onBecameDirty();
 	void onBeginScan();
-	void onEndScan();
+	void onEndScan(QStringList& imageFilePaths);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
 	void onImageHeightChanged(int height);
-	void onScan();
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
@@ -42,5 +42,6 @@ signals:
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
+	ImageSequenceScanner						_scanner;
 	ImageSequenceLoader							_loader;
 };

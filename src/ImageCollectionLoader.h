@@ -19,8 +19,8 @@ public:
 	ResampleImageSettings& resampleImageSettings();
 	void reset();
 
-	virtual int noDimensions() const = 0;
-	virtual QStringList	dimensionNames() const = 0;
+//	virtual int noDimensions() const = 0;
+//	virtual QStringList	dimensionNames() const = 0;
 	virtual void load() = 0;
 
 public:
