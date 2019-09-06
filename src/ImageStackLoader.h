@@ -5,11 +5,11 @@
 
 #include <QString>
 
-class ImageStack : public ImageCollectionLoader {
+class ImageStackLoader : public ImageCollectionLoader {
 	Q_OBJECT
 
 public:
-	ImageStack();
+	ImageStackLoader();
 
 	QStringList	dimensionNames() const;
 	int noDimensions() const;

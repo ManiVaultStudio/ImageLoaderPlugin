@@ -10,30 +10,30 @@
 ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
-	_imageStack(),
-	_imageStackScanner()
+	_scanner(),
+	_loader()
 {
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
-	connect(&_imageStackScanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStackScanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
-	connect(&_imageStackScanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
+	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
+	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
+	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 
-	_ui->resampleImageSettingsWidget->initialize(&_imageStack.resampleImageSettings());
+	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
 
-	_imageStackScanner.setDirectory(_imageStackScanner.directory());
+	_scanner.setDirectory(_scanner.directory());
 }
 
 void ImageStackWidget::onPickDirectory()
 {
-	const auto initialDirectory = _imageStack.setting("Directory").toString();
+	const auto initialDirectory = _loader.setting("Directory").toString();
 	const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
 	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_imageStackScanner.setDirectory(pickedDirectory);
+		_scanner.setDirectory(pickedDirectory);
 	}
 }
 
@@ -44,7 +44,7 @@ void ImageStackWidget::onDirectoryChanged(const QString& directory)
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
-	_imageStackScanner.scan();
+	_scanner.scan();
 }
 
 void ImageStackWidget::onLoadSequence()

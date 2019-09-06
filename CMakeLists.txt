@@ -54,8 +54,8 @@ set(IMAGE_SEQUENCE_SOURCES
 )
 
 set(IMAGE_STACK_SOURCES
-	src/ImageStack.h
-    src/ImageStack.cpp
+	src/ImageStackLoader.h
+    src/ImageStackLoader.cpp
     src/ImageStackScanner.h
     src/ImageStackScanner.cpp
 	src/ImageStackWidget.h

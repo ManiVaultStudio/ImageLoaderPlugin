@@ -1,15 +1,15 @@
-#include "ImageStack.h"
+#include "ImageStackLoader.h"
 #include "ImageUtilities.h"
 
 #include <QDebug>
 #include <QDir>
 
-ImageStack::ImageStack() :
+ImageStackLoader::ImageStackLoader() :
 	ImageCollectionLoader(ImageCollectionType::Stack)
 {
 }
 
-QStringList ImageStack::dimensionNames() const
+QStringList ImageStackLoader::dimensionNames() const
 {
 	auto dimensionNames = QStringList();
 	/*
@@ -20,17 +20,17 @@ QStringList ImageStack::dimensionNames() const
 	return dimensionNames;
 }
 
-int ImageStack::noDimensions() const
+int ImageStackLoader::noDimensions() const
 {
 	return noImages();
 }
 
-void ImageStack::add(const QString & imageFilePath)
+void ImageStackLoader::add(const QString & imageFilePath)
 {
 //	_imageFilePaths.append(imageFilePath);
 }
 
-void ImageStack::load()
+void ImageStackLoader::load()
 {
 	/*
 	emit beginLoad();
@@ -61,7 +61,7 @@ void ImageStack::load()
 	*/
 }
 
-void ImageStack::loadImage(const QString & imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
+void ImageStackLoader::loadImage(const QString & imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
 {
 	/*
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);

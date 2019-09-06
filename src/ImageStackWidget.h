@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageStack.h"
+#include "ImageStackLoader.h"
 #include "ImageStackScanner.h"
 
 #include <memory>
@@ -30,6 +30,6 @@ private:
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
-	ImageStack								_imageStack;
-	ImageStackScanner						_imageStackScanner;
+	ImageStackScanner						_scanner;
+	ImageStackLoader						_loader;
 };	
