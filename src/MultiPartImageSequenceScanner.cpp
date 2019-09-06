@@ -1,11 +1,11 @@
-#include "ImageStackScanner.h"
+#include "MultiPartImageSequenceScanner.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
 
-ImageStackScanner::ImageStackScanner() :
-	ImageScanner(ImageCollectionType::Stack)
+MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
+	ImageScanner(ImageCollectionType::MultiPartSequence)
 {
 	auto imageTypes = QStringList();
 
@@ -14,11 +14,11 @@ ImageStackScanner::ImageStackScanner() :
 	setImageTypes(imageTypes);
 }
 
-ImageStackScanner::~ImageStackScanner()
+MultiPartImageSequenceScanner::~MultiPartImageSequenceScanner()
 {
 }
 
-void ImageStackScanner::scan()
+void MultiPartImageSequenceScanner::scan()
 {
 	emit beginScan();
 
@@ -39,7 +39,7 @@ void ImageStackScanner::scan()
 	emit endScan(_imageStacks);*/
 }
 
-void ImageStackScanner::scanDir(const QString& directory)
+void MultiPartImageSequenceScanner::scanDir(const QString& directory)
 {
 	/*
 	auto subDirectories = QDir(directory);
