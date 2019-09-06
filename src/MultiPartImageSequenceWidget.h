@@ -25,8 +25,9 @@ private:
 	void onBecameDirty();
 	void onPickDirectory();
 	void onDirectoryChanged(const QString& directory);
+	void onLoad();
 	void onBeginScan();
-	void onEndScan();
+	void onEndScan(QStringList& imageFilePaths);
 	void onBeginLoad();
 	void onEndLoad();
 

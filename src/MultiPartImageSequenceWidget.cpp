@@ -16,6 +16,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 {
 	_ui->setupUi(this);
 	
+	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoad);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
@@ -64,28 +65,36 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_scanner.scan();
 }
 
-void MultiPartImageSequenceWidget::onBeginScan()
+void MultiPartImageSequenceWidget::onLoad()
 {
-	qDebug() << "Multipart image sequence scan started";
+	//qDebug() << _ui->imagesListWidget->item
 }
 
-void MultiPartImageSequenceWidget::onEndScan()
+void MultiPartImageSequenceWidget::onBeginScan()
 {
-	qDebug() << "Multipart image sequence scan ended";
+	qDebug() << "Scanning started";
+}
 
-	/*
-	const auto noImages = _imageSequence.imageFilePaths().size();
+void MultiPartImageSequenceWidget::onEndScan(QStringList& imageFilePaths)
+{
+	qDebug() << "Scanning ended";
 
-	if (noImages <= 0) {
-		_ui->infoLineEdit->setText("No images were found, try changing the directory, image type or dimensions");
+	_ui->imagesListWidget->clear();
+
+	foreach(QString imageFilePath, imageFilePaths)
+	{
+		const auto imageFileName = QFileInfo(imageFilePath).fileName();
+
+		QListWidgetItem* fileItem = new QListWidgetItem;
+		
+		fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
+		fileItem->setCheckState(imageFileName.contains("mask") ? Qt::Unchecked : Qt::Checked);
+		fileItem->setData(Qt::UserRole, QVariant(imageFilePath));
+		fileItem->setText(imageFileName);
+		fileItem->setToolTip(imageFilePath);
+
+		_ui->imagesListWidget->addItem(fileItem);
 	}
-	else {
-		_ui->infoLineEdit->setText(QString("Found %1 images").arg(noImages));
-		_ui->loadSequencePushButton->setEnabled(true);
-	}
-
-	_ui->scanPushButton->setText("Scan");
-	*/
 }
 
 void MultiPartImageSequenceWidget::onBeginLoad()

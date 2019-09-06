@@ -48,7 +48,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="loadSequencePushButton">
+      <widget class="QPushButton" name="loadPushButton">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -164,6 +164,9 @@
             <width>16777215</width>
             <height>16777215</height>
            </size>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
