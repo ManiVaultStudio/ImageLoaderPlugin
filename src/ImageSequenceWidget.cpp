@@ -35,6 +35,9 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_loader, &ImageSequenceLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
 	connect(&_loader, &ImageSequenceLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
 
+	connect(&_loader, &ImageSequenceLoader::message, this, &ImageSequenceWidget::message);
+	//connect(&_scanner, &ImageSequenceLoader::message, this, &ImageSequenceWidget::message);
+
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
 	_ui->imageTypeComboBox->addItem("bmp");

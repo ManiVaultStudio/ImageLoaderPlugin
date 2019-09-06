@@ -21,6 +21,9 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
+	
+	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
+	connect(&_loader, &ImageStackLoader::message, this, &ImageStackWidget::message);
 
 	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
 

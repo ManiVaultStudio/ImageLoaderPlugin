@@ -22,6 +22,9 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, this, &MultiPartImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 
+	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
+	connect(&_loader, &MultiPartImageSequenceLoader::message, this, &MultiPartImageSequenceWidget::message);
+
 	_ui->resampleImageSettingsWidget->initialize(&_loader.resampleImageSettings());
 
 	_scanner.setDirectory(_scanner.directory());
@@ -48,8 +51,15 @@ void MultiPartImageSequenceWidget::onPickDirectory()
 
 void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 {
-	//_ui->directoryLineEdit->setText(directory);
-	//_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+	const auto validDirectory = !directory.isEmpty() && QDir(directory).exists();
+
+	if (validDirectory) {
+		_ui->directoryLineEdit->setText(directory);
+		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+	}
+
+	_ui->datasetNameLabel->setEnabled(validDirectory);
+	_ui->datasetNameLineEdit->setEnabled(validDirectory);
 
 	_scanner.scan();
 }

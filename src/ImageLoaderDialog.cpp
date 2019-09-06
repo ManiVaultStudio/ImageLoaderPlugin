@@ -59,7 +59,9 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	setMinimumWidth(480);
 	setMinimumHeight(480);
 
-	connect(&_imageSequenceWidget->loader(), &ImageSequenceLoader::message, this, &ImageLoaderDialog::onMessage);
+	connect(_imageSequenceWidget.get(), &ImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
+	connect(_imageStackWidget.get(), &ImageStackWidget::message, this, &ImageLoaderDialog::onMessage);
+	connect(_multiPartImageSequenceWidget.get(), &MultiPartImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
 	
 	const auto CurrentPage = _settings.value("CurrentPage", 0).toInt();
 

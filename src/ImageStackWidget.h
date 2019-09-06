@@ -15,6 +15,8 @@ class ImageLoaderPlugin;
 
 class ImageStackWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
 
@@ -26,6 +28,9 @@ private:
 	void onEndScan(QMap<QString, QStringList>& imageStacks);
 	void onBeginLoad();
 	void onEndLoad(FloatVector& pointsData);
+
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;

@@ -14,6 +14,8 @@ class ImageLoaderPlugin;
 
 class ImageSequenceWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget() override;
@@ -33,6 +35,9 @@ private:
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad(FloatVector& pointsData);
+
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;

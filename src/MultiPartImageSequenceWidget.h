@@ -15,6 +15,8 @@ class ImageLoaderPlugin;
 
 class MultiPartImageSequenceWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~MultiPartImageSequenceWidget() override;
@@ -27,6 +29,9 @@ private:
 	void onEndScan();
 	void onBeginLoad();
 	void onEndLoad();
+
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
