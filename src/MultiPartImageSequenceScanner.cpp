@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QDir>
-#include <QImageReader>
 
 MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 	ImageScanner(ImageCollectionType::MultiPartSequence)

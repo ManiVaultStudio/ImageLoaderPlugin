@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QDialog>
+#include <QSettings>
 #include <QStackedWidget>
 
 class QVBoxLayout;
@@ -39,6 +40,7 @@ private:
 	void onMessage(const QString& message);
 
 private:
+	QSettings										_settings;
 	ImageLoaderPlugin*								_imageLoaderPlugin;
 	std::unique_ptr<QVBoxLayout>					_mainLayout;
 	std::unique_ptr<QVBoxLayout>					_settingsLayout;

@@ -13,6 +13,7 @@
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
+	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_mainLayout{std::make_unique<QVBoxLayout>()},
 	_settingsLayout{std::make_unique<QVBoxLayout>()},
 	_typesComboBox{std::make_unique<QComboBox>()},
@@ -38,6 +39,8 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_pagesStackedWidget->addWidget(_imageStackWidget.get());
 	_pagesStackedWidget->addWidget(_multiPartImageSequenceWidget.get());
 
+	_typesComboBox->blockSignals(true);
+
 	_typesComboBox->addItem("Sequence");
 	_typesComboBox->addItem("Stack");
 	_typesComboBox->addItem("Multipart");
@@ -45,6 +48,8 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimenions is defined by the number of pixels", Qt::ToolTipRole);
 	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
 	_typesComboBox->setItemData(1, "Load in one or more multipart TIFF images", Qt::ToolTipRole);
+
+	_typesComboBox->blockSignals(false);
 
 	connect(_typesComboBox.get(), QOverload<int>::of(&QComboBox::currentIndexChanged), _pagesStackedWidget.get(), &QStackedWidget::setCurrentIndex);
 
@@ -56,11 +61,16 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	connect(&_imageSequenceWidget->loader(), &ImageSequenceLoader::message, this, &ImageLoaderDialog::onMessage);
 	
+	const auto CurrentPage = _settings.value("CurrentPage", 0).toInt();
+
+	_typesComboBox->setCurrentIndex(CurrentPage);
+
 	_statusBar->showMessage("Ready");
 }
 
 ImageLoaderDialog::~ImageLoaderDialog()
 {
+	_settings.setValue("CurrentPage", _pagesStackedWidget->currentIndex());
 }
 
 void ImageLoaderDialog::onMessage(const QString& message)
