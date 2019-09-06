@@ -4,7 +4,7 @@
 
 #include <QWidget>
 
-#include "ImageSequence.h"
+#include "ImageSequenceLoader.h"
 
 namespace Ui {
 	class ImageSequenceWidget;
@@ -18,7 +18,7 @@ public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget() override;
 
-	ImageSequence& imageSequence();
+	ImageSequenceLoader& loader();
 
 private:
 	void onBecameDirty();
@@ -37,5 +37,5 @@ private:
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
-	ImageSequence								_imageSequence;
+	ImageSequenceLoader							_loader;
 };

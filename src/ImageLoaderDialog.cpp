@@ -54,7 +54,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	setMinimumWidth(480);
 	setMinimumHeight(480);
 
-	connect(&_imageSequenceWidget->imageSequence(), &ImageSequence::message, this, &ImageLoaderDialog::onMessage);
+	connect(&_imageSequenceWidget->loader(), &ImageSequenceLoader::message, this, &ImageLoaderDialog::onMessage);
 	
 	_statusBar->showMessage("Ready");
 }

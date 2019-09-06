@@ -4,12 +4,12 @@
 
 #include <QSize>
 
-class ImageSequence : public ImageCollectionLoader
+class ImageSequenceLoader : public ImageCollectionLoader
 {
 	Q_OBJECT
 
 public:
-	ImageSequence();
+	ImageSequenceLoader();
 
 	QString	directory() const;
 	QString	imageType() const;
@@ -46,4 +46,4 @@ private:
 	QSize				_imageSize;
 };
 
-QDebug operator<<(QDebug dbg, const class ImageSequence &sequence);
+QDebug operator<<(QDebug dbg, const class ImageSequenceLoader &sequence);

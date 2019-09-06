@@ -47,8 +47,8 @@ set(SCANNER_SOURCES
 )
 
 set(IMAGE_SEQUENCE_SOURCES
-	src/ImageSequence.h
-    src/ImageSequence.cpp
+	src/ImageSequenceLoader.h
+    src/ImageSequenceLoader.cpp
 	src/ImageSequenceWidget.h
     src/ImageSequenceWidget.cpp
 )

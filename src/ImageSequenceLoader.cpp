@@ -1,4 +1,4 @@
-#include "ImageSequence.h"
+#include "ImageSequenceLoader.h"
 #include "ImageUtilities.h"
 
 #include <QDebug>
@@ -7,7 +7,7 @@
 
 #include <FreeImage.h>
 
-ImageSequence::ImageSequence() :
+ImageSequenceLoader::ImageSequenceLoader() :
 	ImageCollectionLoader(ImageCollectionType::Sequence),
 	_directory(""),
 	_imageType("jpg"),
@@ -15,22 +15,22 @@ ImageSequence::ImageSequence() :
 {
 }
 
-QString ImageSequence::directory() const
+QString ImageSequenceLoader::directory() const
 {
 	return _directory;
 }
 
-QString ImageSequence::imageType() const
+QString ImageSequenceLoader::imageType() const
 {
 	return _imageType;
 
 }
-QSize ImageSequence::imageSize() const
+QSize ImageSequenceLoader::imageSize() const
 {
 	return _imageSize;
 }
 
-QStringList ImageSequence::dimensionNames() const
+QStringList ImageSequenceLoader::dimensionNames() const
 {
 	auto dimensionNames = QStringList();
 
@@ -41,12 +41,12 @@ QStringList ImageSequence::dimensionNames() const
 	return dimensionNames;
 }
 
-int ImageSequence::noDimensions() const
+int ImageSequenceLoader::noDimensions() const
 {
 	return _imageSize.width() * _imageSize.height();
 }
 
-void ImageSequence::setDirectory(const QString & directory)
+void ImageSequenceLoader::setDirectory(const QString & directory)
 {
 	_directory = directory;
 
@@ -54,7 +54,7 @@ void ImageSequence::setDirectory(const QString & directory)
 	emit becameDirty();
 }
 
-void ImageSequence::setImageType(const QString & imageType)
+void ImageSequenceLoader::setImageType(const QString & imageType)
 {
 	_imageType = imageType;
 
@@ -62,7 +62,7 @@ void ImageSequence::setImageType(const QString & imageType)
 	emit becameDirty();
 }
 
-void ImageSequence::setImageSize(const QSize & imageSize)
+void ImageSequenceLoader::setImageSize(const QSize & imageSize)
 {
 	_imageSize = imageSize;
 
@@ -70,7 +70,7 @@ void ImageSequence::setImageSize(const QSize & imageSize)
 	emit becameDirty();
 }
 
-void ImageSequence::scan()
+void ImageSequenceLoader::scan()
 {
 	emit beginScan();
 	
@@ -89,7 +89,7 @@ void ImageSequence::scan()
 	emit endScan();
 }
 
-void ImageSequence::load()
+void ImageSequenceLoader::load()
 {
 	emit beginLoad();
 
@@ -117,14 +117,14 @@ void ImageSequence::load()
 	emit endLoad(pointsData);
 }
 
-void ImageSequence::addFile(const QString &imageFilePath)
+void ImageSequenceLoader::addFile(const QString &imageFilePath)
 {
 	_imageFilePaths.append(imageFilePath);
 
 	emit message(QString("Found %1").arg(QFileInfo(imageFilePath).fileName()));
 }
 
-void ImageSequence::scanDir(const QString &directory)
+void ImageSequenceLoader::scanDir(const QString &directory)
 {
 	auto subDirectories = QDir(directory);
 
@@ -161,7 +161,7 @@ void ImageSequence::scanDir(const QString &directory)
 	}
 }
 
-void ImageSequence::loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
+void ImageSequenceLoader::loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 	
@@ -185,7 +185,7 @@ void ImageSequence::loadImage(const QString& imageFilePath, const int& imageInde
 	}
 }
 
-QDebug operator<<(QDebug dbg, const ImageSequence &sequence)
+QDebug operator<<(QDebug dbg, const ImageSequenceLoader &sequence)
 {
 	dbg << sequence.imageSize() << ", " << sequence.imageType() << ", " << sequence.directory();
 

@@ -5,8 +5,6 @@
 #include <QDialog>
 #include <QStackedWidget>
 
-#include "ImageSequence.h"
-
 class QVBoxLayout;
 class QComboBox;
 class QStackedWidget;

@@ -1,5 +1,5 @@
 #include "ImageLoaderPlugin.h"
-#include "ImageSequence.h"
+#include "ImageSequenceLoader.h"
 
 #include "PointsPlugin.h"
 #include "Set.h"
