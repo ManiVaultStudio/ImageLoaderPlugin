@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MultipartImageSequence.h"
+#include "MultiPartImageSequenceLoader.h"
 
 #include <memory>
 
@@ -35,5 +35,5 @@ private:
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
-	MultipartImageSequence								_multipartImageSequence;
+	MultiPartImageSequenceLoader						_loader;
 };

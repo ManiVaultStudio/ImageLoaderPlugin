@@ -63,8 +63,8 @@ set(IMAGE_STACK_SOURCES
 )
 
 set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
-	src/MultipartImageSequence.h
-	src/MultipartImageSequence.cpp
+	src/MultiPartImageSequenceLoader.h
+	src/MultiPartImageSequenceLoader.cpp
 	src/MultiPartImageSequenceWidget.h
 	src/MultiPartImageSequenceWidget.cpp
 )
