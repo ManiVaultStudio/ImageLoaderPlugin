@@ -1,16 +1,15 @@
 #pragma once
 
-#include "ImageCollection.h"
+#include "ImageCollectionLoader.h"
 
 #include <QSize>
 
-class ImageSequence : public ImageCollection
+class ImageSequence : public ImageCollectionLoader
 {
 	Q_OBJECT
 
 public:
 	ImageSequence();
-	ImageSequence(const ImageSequence &other);
 
 	QString	directory() const;
 	QString	imageType() const;

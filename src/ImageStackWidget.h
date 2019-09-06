@@ -19,14 +19,13 @@ public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	void onBecameDirty();
-	void onBeginScan();
-	void onEndScan();
+	void onPickDirectory();
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
-	void onPickDirectory();
-	void onBeginLoad(ImageStack* imageStack);
-	void onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData);
+	void onBeginScan();
+	void onEndScan(QMap<QString, QStringList>& imageStacks);
+	void onBeginLoad();
+	void onEndLoad(FloatVector& pointsData);
 
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;

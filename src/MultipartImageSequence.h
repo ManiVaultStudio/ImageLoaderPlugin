@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ImageCollection.h"
+#include "ImageCollectionLoader.h"
 
 #include <QSize>
 #include <QMap>
 
-class MultipartImageSequence : public ImageCollection
+class MultipartImageSequence : public ImageCollectionLoader
 {
 	Q_OBJECT
 

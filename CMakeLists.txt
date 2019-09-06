@@ -33,11 +33,17 @@ set(PLUGIN_SOURCES
 	src/ResampleImageSettings.cpp
 	src/ResampleImageSettingsWidget.h
 	src/ResampleImageSettingsWidget.cpp
-	src/ImageCollection.h
-	src/ImageCollection.cpp
+    src/Common.h
+)
+
+set(LOADER_SOURCES
+	src/ImageCollectionLoader.h
+	src/ImageCollectionLoader.cpp
+)
+
+set(SCANNER_SOURCES
 	src/ImageScanner.h
 	src/ImageScanner.cpp
-    src/Common.h
 )
 
 set(IMAGE_SEQUENCE_SOURCES
@@ -63,7 +69,14 @@ set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
 	src/MultiPartImageSequenceWidget.cpp
 )
 
-set(SOURCES ${PLUGIN_SOURCES} ${IMAGE_SEQUENCE_SOURCES} ${IMAGE_STACK_SOURCES} ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
+set(SOURCES 
+	${PLUGIN_SOURCES}
+	${LOADER_SOURCES}
+	${SCANNER_SOURCES}
+	${IMAGE_SEQUENCE_SOURCES}
+	${IMAGE_STACK_SOURCES}
+	${MULTI_PART_IMAGE_SEQUENCE_SOURCES}
+)
 
 set(UIS 
 	src/ImageSequenceWidget.ui
@@ -74,7 +87,7 @@ set(UIS
 
 set(AUX src/ImageLoaderPlugin.json)
 
-source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
+source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
 source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
 source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
 source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})

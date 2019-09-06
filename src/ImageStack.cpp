@@ -5,7 +5,7 @@
 #include <QDir>
 
 ImageStack::ImageStack() :
-	ImageCollection(ImageCollection::Type::Stack)
+	ImageCollectionLoader(ImageCollectionType::Stack)
 {
 }
 

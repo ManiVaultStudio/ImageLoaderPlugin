@@ -8,18 +8,10 @@
 #include <FreeImage.h>
 
 ImageSequence::ImageSequence() :
-	ImageCollection(ImageCollection::Type::Sequence),
+	ImageCollectionLoader(ImageCollectionType::Sequence),
 	_directory(""),
 	_imageType("jpg"),
 	_imageSize(28, 28)
-{
-}
-
-ImageSequence::ImageSequence(const ImageSequence &other) :
-	ImageCollection(ImageCollection::Type::Sequence),
-	_directory(other._directory),
-	_imageType(other._imageType),
-	_imageSize(other._imageSize)
 {
 }
 

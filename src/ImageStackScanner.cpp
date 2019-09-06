@@ -1,12 +1,18 @@
 #include "ImageStackScanner.h"
-#include "ImageCollection.h"
+#include "ImageCollectionLoader.h"
 
 #include <QDebug>
 #include <QDir>
+#include <QImageReader>
 
 ImageStackScanner::ImageStackScanner() :
-	ImageScanner(ImageCollection::Type::Stack)
+	ImageScanner(ImageCollectionType::Stack)
 {
+	auto imageTypes = QStringList();
+
+	imageTypes << "jpg" << "png" << "bmp" << "tif";
+
+	setImageTypes(imageTypes);
 }
 
 ImageStackScanner::~ImageStackScanner()
@@ -15,45 +21,23 @@ ImageStackScanner::~ImageStackScanner()
 
 void ImageStackScanner::scan()
 {
-	QMap<QString, QStringList> _stacks;
-
 	emit beginScan();
 
-	emit message("Scanning for images...");
-
-	//_stacks.clear();
-
+	//_imageStacks.clear();
 	/*
-	if (_imageStacks.stacks().size() == 0) {
-		_ui->infoLineEdit->setText("No image stacks were found, try changing the directory");
-	}
-	else {
-		_ui->infoLineEdit->setText(QString("Found %1 image stack(s)").arg(_imageStacks.stacks().size()));
-
-		_ui->stacksComboBox->addItems(_imageStacks.stacks().keys());
-
-		_ui->datasetNameLabel->setEnabled(true);
-		_ui->datasetNameLineEdit->setEnabled(true);
-		_ui->stacksLabel->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
-	}
-
-	reset();
-
 	scanDir(_directory);
 
-	if (noImages() > 0) {
-		emit message(QString("Found %1 images").arg(noImages()));
+	const auto noStacks		= _imageStacks.size();
+	const auto hasStacks	= noStacks > 0;
+
+	if (noStacks == 0) {
+		emit message("No image stacks were found, try changing the directory");
 	}
 	else {
-		emit message("No images were found, try changing the directory, image type or dimensions");
+		emit message(QString("Found %1 image stack(s)").arg(noStacks));
 	}
-	
 
-	scanDir(_imageStack.directory());
-
-	emit _imageStack.endScan();*/
+	emit endScan(_imageStacks);*/
 }
 
 void ImageStackScanner::scanDir(const QString& directory)
@@ -80,7 +64,7 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	auto nameFilters = QStringList();
 
-	foreach(QString imageType, _imageStack.imageTypes())
+	foreach(QString imageType, imageTypes())
 	{
 		nameFilters << "*." + imageType;
 	}
@@ -95,18 +79,17 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 		QImageReader imageReader(path);
 
-		// qDebug() << imageReader.size();
-
 		const auto size = imageReader.size();
 
 		if (size.width() > 0 && size.height() > 0) {
-			const auto sizeString = QString("%1x%2").arg(QString::number(imageReader.size().width()), QString::number(imageReader.size().height()));
+			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
 
-			if (!_stacks.contains(sizeString)) {
-				_stacks.insert(sizeString, QStringList());
+			if (!_imageStacks.contains(sizeString)) {
+				_imageStacks.insert(sizeString, QStringList());
+				_imageStackFiles.insert(size, QStringList());
 			}
 
-			_stacks[sizeString] << path;
+			_imageStacks[sizeString] << path;
 		}
 
 		scanDir(path);

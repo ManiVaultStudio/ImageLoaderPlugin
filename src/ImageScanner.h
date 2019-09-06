@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageCollection.h"
+#include "ImageCollectionLoader.h"
 
 #include <QObject>
 #include <QString>
@@ -11,7 +11,7 @@ class ImageScanner : public QObject {
 	Q_OBJECT
 
 public:
-	ImageScanner(const ImageCollection::Type& type);
+	ImageScanner(const ImageCollectionType& type);
 	~ImageScanner();
 
 	QString	directory() const;
@@ -31,7 +31,7 @@ signals:
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);
 
-private:
+protected:
 	QSettings		_settings;
 	QString			_directory;
 	QStringList		_imageTypes;

@@ -2,6 +2,13 @@
 
 #include <vector>
 
+enum class ImageCollectionType
+{
+	Sequence,
+	Stack,
+	MultiPartSequence
+};
+
 enum class ImageResamplingFilter
 {
 	Box,

@@ -8,7 +8,7 @@
 #include <FreeImage.h>
 
 MultipartImageSequence::MultipartImageSequence() :
-	ImageCollection(ImageCollection::Type::MultiPartSequence),
+	ImageCollectionLoader(ImageCollectionType::MultiPartSequence),
 	_directory("")
 {
 }

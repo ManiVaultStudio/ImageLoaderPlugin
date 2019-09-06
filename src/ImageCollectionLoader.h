@@ -5,22 +5,15 @@
 #include <QObject>
 #include <QString>
 
-class ImageCollection : public QObject {
+class ImageCollectionLoader : public QObject {
 	Q_OBJECT
 
 public:
-	enum class Type
-	{
-		Sequence,
-		Stack,
-		MultiPartSequence
-	};
+	ImageCollectionLoader(const ImageCollectionType& type);
 
-	ImageCollection(const Type& type);
+	static QString typeName(const ImageCollectionType& type);
 
-	static QString typeName(const Type& type);
-
-	Type type() const;
+	ImageCollectionType type() const;
 	QStringList	imageFilePaths() const;
 	int noImages() const;
 	ResampleImageSettings& resampleImageSettings();
@@ -44,10 +37,10 @@ signals:
 	void message(const QString& message);
 
 protected:
-	QSettings						_settings;
-	QStringList						_imageFilePaths;
+	QSettings				_settings;
+	QStringList				_imageFilePaths;
 
 private:
-	Type							_type;
-	ResampleImageSettings			_resampleImageSettings;
+	ImageCollectionType		_type;
+	ResampleImageSettings	_resampleImageSettings;
 };

@@ -137,7 +137,7 @@ void ImageSequenceWidget::onBeginLoad()
 
 void ImageSequenceWidget::onEndLoad(FloatVector& pointsData)
 {
-	_imageLoaderPlugin->addSequence(ImageCollection::Type::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), pointsData, _imageSequence.dimensionNames());
+	_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), pointsData, _imageSequence.dimensionNames());
 
 	_ui->loadSequencePushButton->setText("Load");
 }

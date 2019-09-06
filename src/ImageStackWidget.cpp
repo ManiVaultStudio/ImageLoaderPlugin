@@ -19,62 +19,28 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
 
 	connect(&_imageStackScanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
-	connect(&_imageStackScanner, &ImageStackScanner::becameDirty, this, &ImageStackWidget::onBecameDirty);
 	connect(&_imageStackScanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_imageStackScanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
-	
-	auto imageTypes = QStringList();
-
-	imageTypes << "jpg" << "png" << "bmp" << "tif";
-
-	_imageStackScanner.setImageTypes(imageTypes);
-
-	_ui->datasetNameLabel->setEnabled(false);
-	_ui->datasetNameLineEdit->setEnabled(false);
-	_ui->stacksLabel->setEnabled(false);
-	_ui->stacksComboBox->setEnabled(false);
-	_ui->loadPushButton->setEnabled(false);
 
 	_ui->resampleImageSettingsWidget->initialize(&_imageStack.resampleImageSettings());
+
+	_imageStackScanner.setDirectory(_imageStackScanner.directory());
 }
 
-void ImageStackWidget::onBecameDirty()
+void ImageStackWidget::onPickDirectory()
 {
-}
+	const auto initialDirectory = _imageStack.setting("Directory").toString();
+	const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
-void ImageStackWidget::onBeginScan()
-{
-//	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
-}
-
-void ImageStackWidget::onEndScan()
-{
-	_ui->stacksComboBox->clear();
-
-	_ui->stacksComboBox->setEnabled(false);
-
-	/*
-	if (_imageStacks.stacks().size() == 0) {
-		_ui->infoLineEdit->setText("No image stacks were found, try changing the directory");
+	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+		_imageStackScanner.setDirectory(pickedDirectory);
 	}
-	else {
-		_ui->infoLineEdit->setText(QString("Found %1 image stack(s)").arg(_imageStacks.stacks().size()));
-
-		_ui->stacksComboBox->addItems(_imageStacks.stacks().keys());
-		
-		_ui->datasetNameLabel->setEnabled(true);
-		_ui->datasetNameLineEdit->setEnabled(true);
-		_ui->stacksLabel->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
-		_ui->stacksComboBox->setEnabled(true);
-	}
-	*/
-
-	_ui->loadPushButton->setEnabled(true);
 }
 
-void ImageStackWidget::onDirectoryChanged(const QString &directory)
+void ImageStackWidget::onDirectoryChanged(const QString& directory)
 {
+	qDebug() << "Image stack scan directory changed to" << directory;
+
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
@@ -101,25 +67,48 @@ void ImageStackWidget::onLoadSequence()
 	*/
 }
 
-void ImageStackWidget::onPickDirectory()
+void ImageStackWidget::onBeginScan()
 {
-	const auto initialDirectory = _imageStack.setting("Directory").toString();
-	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
+	qDebug() << "Image stack scan started";
 
-	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_imageStackScanner.setDirectory(pickedDirectory);
-	}
+	//	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
 }
 
-void ImageStackWidget::onBeginLoad(ImageStack* imageStack)
+void ImageStackWidget::onEndScan(QMap<QString, QStringList>& imageStacks)
 {
-	qDebug() << "Begin loading";
+	qDebug() << "Image stack scan ended";
+
+	_ui->stacksComboBox->clear();
+
+	const auto noStacks		= imageStacks.size();
+	const auto hasStacks	= noStacks > 0;
+
+	_ui->datasetNameLabel->setEnabled(hasStacks);
+	_ui->datasetNameLineEdit->setEnabled(hasStacks);
+	_ui->stacksLabel->setEnabled(hasStacks);
+	_ui->stacksComboBox->setEnabled(hasStacks);
+	_ui->loadPushButton->setEnabled(hasStacks);
+
+	if (hasStacks) {
+		_ui->stacksComboBox->addItems(imageStacks.keys());
+	}
+	
+	_ui->loadPushButton->setEnabled(true);
+}
+
+void ImageStackWidget::onBeginLoad()
+{
+	qDebug() << "Image stack loading";
 
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData)
+void ImageStackWidget::onEndLoad(FloatVector& pointsData)
 {
+	qDebug() << "Image stack loaded";
+
+	//_imageLoaderPlugin->addSequence(ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
+
 	/*
 	qDebug() << "End loading";
 
@@ -127,7 +116,7 @@ void ImageStackWidget::onEndLoad(ImageStack* imageStack, std::vector<float>& poi
 	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
 	disconnect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
 
-	_imageLoaderPlugin->addSequence(ImageCollection::Type::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
+	_imageLoaderPlugin->addSequence(ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
 
 	_ui->loadPushButton->setText("Load");
 	*/

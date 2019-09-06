@@ -7,7 +7,7 @@
 
 class QSettings;
 
-using ImageStacks = QMap<QString, QStringList>;
+using ImageStackFiles = QPair<QSize, QStringList>;
 
 class ImageStackScanner : public ImageScanner {
 	Q_OBJECT
@@ -20,7 +20,8 @@ public:
 	void scanDir(const QString& directory);
 
 signals:
-	void becameDirty();
-	void beginScan();
-	void endScan(ImageStacks& imageStacks);
+	void endScan(QMap<QString, QStringList>& imageStacks);
+
+private:
+	QMap<QString, ImageStackFiles>	_imageStackFiles;
 };
