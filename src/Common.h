@@ -2,6 +2,9 @@
 
 #include <vector>
 
+
+#include <QStringList>
+
 enum class ImageCollectionType
 {
 	Sequence,
@@ -20,3 +23,4 @@ enum class ImageResamplingFilter
 };
 
 using FloatVector = std::vector<float>;
+using ImageList = QStringList;

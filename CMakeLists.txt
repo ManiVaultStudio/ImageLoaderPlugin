@@ -37,8 +37,12 @@ set(PLUGIN_SOURCES
 )
 
 set(LOADER_SOURCES
-	src/ImageCollectionLoader.h
-	src/ImageCollectionLoader.cpp
+	src/ImageCollection.h
+	src/ImageCollection.cpp
+	src/ImageCollections.h
+	src/ImageCollections.cpp
+	src/ImageCollectionsLoader.h
+	src/ImageCollectionsLoader.cpp
 )
 
 set(SCANNER_SOURCES

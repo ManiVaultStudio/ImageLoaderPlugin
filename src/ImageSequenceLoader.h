@@ -17,12 +17,19 @@ public:
 public:
 	void load();
 
+public:
+	QSize imageSize() const;
+	void setImageSize(const QSize &imageSize);
+
 signals:
 	void becameDirty();
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 
 private:
 	void loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData);
+
+private:
+	QSize		_imageSize;
 };
 
 QDebug operator<<(QDebug dbg, const class ImageSequenceLoader &sequence);
