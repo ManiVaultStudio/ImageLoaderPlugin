@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>114</height>
+    <height>112</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,7 +33,10 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="resamplingGroupBox">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -50,7 +53,7 @@
       <item row="1" column="0">
        <layout class="QGridLayout" name="resamplingGridLayout">
         <item row="1" column="0">
-         <widget class="QLabel" name="subsamplingRatioLabel">
+         <widget class="QLabel" name="ratioLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -66,7 +69,7 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="subsamplingFilterLabel">
+         <widget class="QLabel" name="filterLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -82,7 +85,7 @@
          </widget>
         </item>
         <item row="2" column="1" colspan="2">
-         <widget class="QComboBox" name="subsamplingFilterComboBox">
+         <widget class="QComboBox" name="filterComboBox">
           <property name="toolTip">
            <string>The type of resampling filter to use</string>
           </property>
@@ -94,7 +97,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QDoubleSpinBox" name="subsamplingRatioSpinBox">
+           <widget class="QDoubleSpinBox" name="ratioSpinBox">
             <property name="toolTip">
              <string>Subsampling ratio </string>
             </property>
@@ -110,7 +113,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QSlider" name="subsamplingRatioSlider">
+           <widget class="QSlider" name="ratioSlider">
             <property name="minimum">
              <number>10</number>
             </property>
@@ -124,7 +127,7 @@
           </item>
          </layout>
         </item>
-        <item row="0" column="0">
+        <item row="0" column="0" colspan="3">
          <widget class="QCheckBox" name="enableSubsamplingCheckbox">
           <property name="text">
            <string>Enable subsampling</string>

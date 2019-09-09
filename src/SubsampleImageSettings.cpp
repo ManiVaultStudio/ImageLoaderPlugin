@@ -24,6 +24,13 @@ SubsampleImageSettings::~SubsampleImageSettings()
 	_settings->setValue(settingPath("filter"), static_cast<int>(_filter));
 }
 
+void SubsampleImageSettings::emitAll()
+{
+	emit enabledChanged(_enabled);
+	emit ratioChanged(_ratio);
+	emit filterChanged(_filter);
+}
+
 bool SubsampleImageSettings::enabled() const
 {
 	return false;
@@ -31,6 +38,9 @@ bool SubsampleImageSettings::enabled() const
 
 void SubsampleImageSettings::setEnabled(const bool& enabled)
 {
+	if (enabled == _enabled)
+		return;
+
 	qDebug() << "Image resampling enabled changed to" << enabled;
 
 	_enabled = enabled;
@@ -45,6 +55,9 @@ double SubsampleImageSettings::ratio() const
 
 void SubsampleImageSettings::setRatio(const double& ratio)
 {
+	if (ratio == _ratio)
+		return;
+
 	qDebug() << "Image resamping ratio changed to" << ratio;
 
 	_ratio = ratio;
@@ -59,6 +72,9 @@ ImageResamplingFilter SubsampleImageSettings::filter() const
 
 void SubsampleImageSettings::setFilter(const ImageResamplingFilter& filter)
 {
+	if (filter == _filter)
+		return;
+	
 	const auto filterIndex = static_cast<int>(filter);
 
 	qDebug() << "Image resamping filter changed to" << _filterNames.at(filterIndex);

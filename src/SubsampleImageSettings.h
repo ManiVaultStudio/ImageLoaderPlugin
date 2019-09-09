@@ -14,6 +14,8 @@ public:
 	 SubsampleImageSettings(QSettings* settings);
 	 ~SubsampleImageSettings();
 
+	 void emitAll();
+
 signals:
 	void enabledChanged(const bool&);
 	void ratioChanged(const double&);

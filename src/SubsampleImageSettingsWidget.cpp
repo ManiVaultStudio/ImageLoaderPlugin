@@ -22,33 +22,63 @@ void SubsampleImageSettingsWidget::initialize(SubsampleImageSettings* subsampleI
 {
 	_subsampleImageSettings = subsampleImageSettings;
 
-	_ui->subsamplingFilterComboBox->addItems(_subsampleImageSettings->filterNames());
+	_ui->filterComboBox->addItems(_subsampleImageSettings->filterNames());
 
-	_ui->subsamplingRatioSpinBox->setValue(_subsampleImageSettings->ratio());
-	_ui->subsamplingRatioSlider->setValue(_subsampleImageSettings->ratio());
-	_ui->subsamplingFilterComboBox->setCurrentIndex(static_cast<int>(_subsampleImageSettings->filter()));
+	connect(_subsampleImageSettings, &SubsampleImageSettings::enabledChanged, this, &SubsampleImageSettingsWidget::onEnabledChanged);
+	connect(_ui->enableSubsamplingCheckbox, &QCheckBox::stateChanged, this, &SubsampleImageSettingsWidget::onEnabledCheckBoxStateChanged);
 
-	connect(_ui->subsamplingRatioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), _subsampleImageSettings, &SubsampleImageSettings::setRatio);
-	connect(_ui->subsamplingFilterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int currentIndex) { _subsampleImageSettings->setFilter(ImageResamplingFilter(currentIndex)); });
-	connect(_subsampleImageSettings, &SubsampleImageSettings::ratioChanged, _ui->subsamplingRatioSpinBox, &QDoubleSpinBox::setValue);
-	connect(_subsampleImageSettings, &SubsampleImageSettings::ratioChanged, [=](double ratio) { _ui->subsamplingRatioSlider->setValue(static_cast<int>(ratio)); });
-	connect(_ui->subsamplingRatioSlider, &QSlider::valueChanged, [=](int sliderValue) { _subsampleImageSettings->setRatio(static_cast<double>(sliderValue)); });
-	connect(_ui->enableSubsamplingCheckbox, &QCheckBox::stateChanged, [=](int state) { _subsampleImageSettings->setEnabled(static_cast<bool>(state)); });
+	connect(_subsampleImageSettings, &SubsampleImageSettings::ratioChanged, this, &SubsampleImageSettingsWidget::onRatioChanged);
+	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &SubsampleImageSettingsWidget::onRatioSpinBoxValueChanged);
+	connect(_ui->ratioSlider, &QSlider::valueChanged, this, &SubsampleImageSettingsWidget::onRatioSliderValueChanged);
 
-	connect(_subsampleImageSettings, &SubsampleImageSettings::enabledChanged, [=](bool enabled) {
-		update();
-	});
-
-	update();
+	_subsampleImageSettings->emitAll();
 }
 
-void SubsampleImageSettingsWidget::update()
+void SubsampleImageSettingsWidget::onEnabledChanged(const bool& enabled)
 {
-	const auto enabled = _subsampleImageSettings->enabled();
+	_ui->enableSubsamplingCheckbox->setChecked(enabled);
 
-	_ui->subsamplingRatioLabel->setEnabled(enabled);
-	_ui->subsamplingRatioSpinBox->setEnabled(enabled);
-	_ui->subsamplingRatioSlider->setEnabled(enabled);
-	_ui->subsamplingFilterLabel->setEnabled(enabled);
-	_ui->subsamplingFilterComboBox->setEnabled(enabled);
+	_ui->ratioLabel->setEnabled(enabled);
+	_ui->ratioSpinBox->setEnabled(enabled);
+	_ui->ratioSlider->setEnabled(enabled);
+	_ui->filterLabel->setEnabled(enabled);
+	_ui->filterComboBox->setEnabled(enabled);
+}
+
+void SubsampleImageSettingsWidget::onEnabledCheckBoxStateChanged(const int& state)
+{
+	const auto enabled = static_cast<bool>(state);
+
+	_subsampleImageSettings->setEnabled(enabled);
+}
+
+void SubsampleImageSettingsWidget::onRatioChanged(const double & ratio)
+{
+	if (ratio != _ui->ratioSpinBox->value()) {
+		_ui->ratioSpinBox->setValue(ratio);
+	}
+	
+	if (ratio != _ui->ratioSlider->value()) {
+		_ui->ratioSlider->setValue(ratio);
+	}
+}
+
+void SubsampleImageSettingsWidget::onRatioSpinBoxValueChanged(const double& ratio)
+{
+	_subsampleImageSettings->setRatio(ratio);
+}
+
+void SubsampleImageSettingsWidget::onRatioSliderValueChanged(const int& ratio)
+{
+	_subsampleImageSettings->setRatio(ratio);
+}
+
+void SubsampleImageSettingsWidget::onFilterChanged(const ImageResamplingFilter& imageResamplingFilter)
+{
+	const int filterIndex = static_cast<int>(imageResamplingFilter);
+
+	if (filterIndex == _ui->filterComboBox->currentIndex())
+		return;
+
+	_ui->filterComboBox->setCurrentIndex(filterIndex);
 }
