@@ -19,9 +19,6 @@ public:
 	void scan();
 	void scanDir(const QString& directory);
 
-signals:
-	void endScan(QMap<QString, QStringList>& imageStacks);
-
 private:
 	QMap<QString, ImageStackFiles>	_imageStackFiles;
 };

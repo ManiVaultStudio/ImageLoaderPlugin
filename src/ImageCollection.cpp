@@ -3,11 +3,37 @@
 #include <QDebug>
 
 ImageCollection::ImageCollection() :
-	_imageFilePaths()
+	_size(),
+	_filePaths()
 {
 }
 
-QStringList ImageCollection::imageFilePaths() const
+ImageCollection::ImageCollection(const QSize& size) :
+	_size(size),
+	_filePaths()
 {
-	return _imageFilePaths;
+}
+
+ImageCollection::ImageCollection(const ImageCollection& other) :
+	ImageCollection(other._size)
+{
+}
+
+ImageCollection::~ImageCollection()
+{
+}
+
+QSize ImageCollection::size() const
+{
+	return _size;
+}
+
+QStringList ImageCollection::filePaths() const
+{
+	return _filePaths;
+}
+
+void ImageCollection::add(const QString& filePath)
+{
+	_filePaths << filePath;
 }

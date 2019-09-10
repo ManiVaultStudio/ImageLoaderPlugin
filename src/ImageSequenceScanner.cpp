@@ -46,7 +46,7 @@ void ImageSequenceScanner::setImageSize(const QSize & imageSize)
 	emit becameDirty();
 }
 
-void ImageSequenceScanner::scanDir(const QString& directory, QStringList& imageFilePaths)
+void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& imageCollection)
 {
 	auto subDirectories = QDir(directory);
 
@@ -58,9 +58,7 @@ void ImageSequenceScanner::scanDir(const QString& directory, QStringList& imageF
 	{
 		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
 
-		// qDebug() << "Found directory: " << dirList.at(i);
-
-		scanDir(path, imageFilePaths);
+		scanDir(path, imageCollection);
 	}
 
 	auto imageFiles = QDir(directory);
@@ -72,21 +70,18 @@ void ImageSequenceScanner::scanDir(const QString& directory, QStringList& imageF
 
 	for (int i = 0; i < fileList.size(); ++i)
 	{
-		const auto fileName = fileList.at(i);
-		const auto path		= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+		const auto fileName			= fileList.at(i);
+		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
 
-		QImageReader imageReader(path);
+		QImageReader imageReader(imageFilePath);
 
 		if (imageReader.size() == _imageSize) {
-			imageFilePaths << path;
+			imageCollection.add(imageFilePath);
 
 			emit message(QString("Found %1").arg(fileName));
-
-			scanDir(path, imageFilePaths);
 		}
 	}
 }
-
 
 void ImageSequenceScanner::scan()
 {
@@ -94,10 +89,12 @@ void ImageSequenceScanner::scan()
 
 	emit message("Scanning for image files...");
 
-	auto imageFilePaths = QStringList();
+	auto imageCollections	= ImageCollections(ImageCollectionType::Sequence);
+	auto imageCollection	= ImageCollection(_imageSize);
+	
+	scanDir(_directory, imageCollection);
 
-	scanDir(_directory, imageFilePaths);
-
+	/*
 	const auto noImages = imageFilePaths.size();
 
 	if (noImages > 0) {
@@ -106,8 +103,11 @@ void ImageSequenceScanner::scan()
 	else {
 		emit message("No images were found...");
 	}
-	
-	emit endScan(imageFilePaths);
+	*/
+
+	imageCollections.map()[QDir(_directory).dirName()] = imageCollection;
+
+	emit endScan(imageCollections);
 }
 
 /*

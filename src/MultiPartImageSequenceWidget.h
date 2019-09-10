@@ -1,7 +1,7 @@
 #pragma once
 
+#include "ImageCollectionsLoader.h"
 #include "MultiPartImageSequenceScanner.h"
-#include "MultiPartImageSequenceLoader.h"
 
 #include <memory>
 
@@ -27,7 +27,7 @@ private:
 	void onDirectoryChanged(const QString& directory);
 	void onLoad();
 	void onBeginScan();
-	void onEndScan(QStringList& imageFilePaths);
+	void onEndScan(const ImageCollections& imageCollections);
 	void onBeginLoad();
 	void onEndLoad();
 
@@ -38,5 +38,5 @@ private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
 	MultiPartImageSequenceScanner						_scanner;
-	MultiPartImageSequenceLoader						_loader;
+	ImageCollectionsLoader								_loader;
 };

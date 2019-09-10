@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageCollectionLoader.h"
+#include "ImageCollectionsLoader.h"
 
 #include <QObject>
 #include <QString>
@@ -26,7 +26,7 @@ public:
 signals:
 	void becameDirty();
 	void beginScan();
-	void endScan();
+	void endScan(const ImageCollections& imageCollections);
 	void directoryChanged(const QString& directory);
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);

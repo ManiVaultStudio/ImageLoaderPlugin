@@ -22,10 +22,9 @@ public:
 
 public:
 	void scan();
-	void scanDir(const QString& directory, QStringList& imageFilePaths);
+	void scanDir(const QString& directory, ImageCollection& imageCollection);
 
 signals:
-	void endScan(QStringList& imageFilePaths);
 	void imageTypeChanged(const QString &imageType);
 	void imageSizeChanged(const QSize &imageSize);
 

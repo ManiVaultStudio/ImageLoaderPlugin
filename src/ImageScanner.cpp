@@ -5,7 +5,7 @@
 #include <QSettings>
 
 ImageScanner::ImageScanner(const ImageCollectionType& type) :
-	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(ImageCollectionLoader::typeName(type)))
+	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type)))
 {
 	const auto directory = _settings.value("Scan/Directory", "").toString();
 

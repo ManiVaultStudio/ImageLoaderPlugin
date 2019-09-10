@@ -10,15 +10,28 @@ class ImageCollections : public QObject {
 
 public:
 	ImageCollections(const ImageCollectionType& type);
+	ImageCollections(const ImageCollections& other);
+	~ImageCollections();
+
+	ImageCollections& operator=(const ImageCollections& other)
+	{
+		if (&other != this) {
+			_type	= other._type;
+			_map	= other._map;
+		}
+
+		return *this;
+	}
 
 	void load();
 
-protected:
-	virtual void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData) = 0;
+	ImageCollectionMap& map() {
+		return _map;
+	}
 
 signals:
 
 private:
 	ImageCollectionType		_type;
-	ImageCollectionMap		_imageCollectionMap;
+	ImageCollectionMap		_map;
 };

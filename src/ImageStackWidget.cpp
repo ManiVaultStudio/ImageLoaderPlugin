@@ -11,7 +11,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
 	_scanner(),
-	_loader()
+	_loader(ImageCollectionType::Stack)
 {
 	_ui->setupUi(this);
 	
@@ -23,7 +23,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 	
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
-	connect(&_loader, &ImageStackLoader::message, this, &ImageStackWidget::message);
+	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
@@ -77,8 +77,9 @@ void ImageStackWidget::onBeginScan()
 	//	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
 }
 
-void ImageStackWidget::onEndScan(QMap<QString, QStringList>& imageStacks)
+void ImageStackWidget::onEndScan(const ImageCollections& imageCollections)
 {
+	/*
 	qDebug() << "Image stack scan ended";
 
 	_ui->stacksComboBox->clear();
@@ -97,6 +98,7 @@ void ImageStackWidget::onEndScan(QMap<QString, QStringList>& imageStacks)
 	}
 	
 	_ui->loadPushButton->setEnabled(true);
+	*/
 }
 
 void ImageStackWidget::onBeginLoad()

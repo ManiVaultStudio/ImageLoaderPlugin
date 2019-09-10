@@ -12,7 +12,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() },
 	_scanner(),
-	_loader()
+	_loader(ImageCollectionType::MultiPartSequence)
 {
 	_ui->setupUi(this);
 	
@@ -24,7 +24,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
-	connect(&_loader, &MultiPartImageSequenceLoader::message, this, &MultiPartImageSequenceWidget::message);
+	connect(&_loader, &ImageCollectionsLoader::message, this, &MultiPartImageSequenceWidget::message);
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
@@ -75,8 +75,9 @@ void MultiPartImageSequenceWidget::onBeginScan()
 	qDebug() << "Scanning started";
 }
 
-void MultiPartImageSequenceWidget::onEndScan(QStringList& imageFilePaths)
+void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& imageCollections)
 {
+	/*
 	qDebug() << "Scanning ended";
 
 	_ui->imagesListWidget->clear();
@@ -95,6 +96,7 @@ void MultiPartImageSequenceWidget::onEndScan(QStringList& imageFilePaths)
 
 		_ui->imagesListWidget->addItem(fileItem);
 	}
+	*/
 }
 
 void MultiPartImageSequenceWidget::onBeginLoad()

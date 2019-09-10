@@ -11,7 +11,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() },
 	_scanner(),
-	_loader()
+	_loader(ImageCollectionType::Sequence)
 {
 	_ui->setupUi(this);
 	
@@ -33,10 +33,10 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageSequenceScanner::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
 	connect(&_scanner, &ImageSequenceScanner::beginScan, this, &ImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
-	connect(&_loader, &ImageSequenceLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
-	connect(&_loader, &ImageSequenceLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
+	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
+	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
 
-	connect(&_loader, &ImageSequenceLoader::message, this, &ImageSequenceWidget::message);
+	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
 
 	_ui->imageTypeComboBox->addItem("jpg");
@@ -53,11 +53,6 @@ ImageSequenceWidget::~ImageSequenceWidget()
 {
 }
 
-ImageSequenceLoader & ImageSequenceWidget::loader()
-{
-	return _loader;
-}
-
 void ImageSequenceWidget::onBecameDirty()
 {
 	_scanner.scan();
@@ -67,9 +62,9 @@ void ImageSequenceWidget::onBeginScan()
 {
 }
 
-void ImageSequenceWidget::onEndScan(QStringList& imageFilePaths)
+void ImageSequenceWidget::onEndScan(const ImageCollections& imageCollections)
 {
-	_ui->loadSequencePushButton->setEnabled(imageFilePaths.size() > 0);
+//	_ui->loadSequencePushButton->setEnabled(imageFilePaths.size() > 0);
 }
 
 void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
@@ -82,7 +77,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 void ImageSequenceWidget::onLoadSequence()
 {
-	_loader.load();
+//	_loader.load();
 
 	_ui->loadSequencePushButton->setEnabled(false);
 }

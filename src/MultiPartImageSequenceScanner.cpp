@@ -19,6 +19,7 @@ MultiPartImageSequenceScanner::~MultiPartImageSequenceScanner()
 
 void MultiPartImageSequenceScanner::scan()
 {
+	/*
 	emit beginScan();
 
 	_scannedFiles.clear();
@@ -56,4 +57,5 @@ void MultiPartImageSequenceScanner::scan()
 	}
 
 	emit endScan(imageFilePaths);
+	*/
 }

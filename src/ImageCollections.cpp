@@ -4,6 +4,15 @@
 
 ImageCollections::ImageCollections(const ImageCollectionType& type) :
 	_type(type),
-	_imageCollectionMap()
+	_map()
+{
+}
+
+ImageCollections::ImageCollections(const ImageCollections& other) :
+	ImageCollections(other._type)
+{
+}
+
+ImageCollections::~ImageCollections()
 {
 }

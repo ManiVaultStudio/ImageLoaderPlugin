@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageStackLoader.h"
+#include "ImageCollectionsLoader.h"
 #include "ImageStackScanner.h"
 
 #include <memory>
@@ -25,7 +25,7 @@ private:
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onBeginScan();
-	void onEndScan(QMap<QString, QStringList>& imageStacks);
+	void onEndScan(const ImageCollections& imageCollections);
 	void onBeginLoad();
 	void onEndLoad(FloatVector& pointsData);
 
@@ -36,5 +36,5 @@ private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
 	ImageStackScanner						_scanner;
-	ImageStackLoader						_loader;
+	ImageCollectionsLoader					_loader;
 };	
