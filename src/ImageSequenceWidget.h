@@ -41,5 +41,6 @@ private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
 	ImageSequenceScanner						_scanner;
+	ImageCollections							_scanned;
 	ImageCollectionsLoader						_loader;
 };

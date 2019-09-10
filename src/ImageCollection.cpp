@@ -3,37 +3,52 @@
 #include <QDebug>
 
 ImageCollection::ImageCollection() :
-	_size(),
-	_filePaths()
+	_imageSize(),
+	_imageFilePaths()
 {
 }
 
-ImageCollection::ImageCollection(const QSize& size) :
-	_size(size),
-	_filePaths()
+ImageCollection::ImageCollection(const QSize& imageSize) :
+	_imageSize(imageSize),
+	_imageFilePaths()
 {
 }
 
 ImageCollection::ImageCollection(const ImageCollection& other) :
-	ImageCollection(other._size)
+	ImageCollection()
 {
+	*this = other;
 }
 
 ImageCollection::~ImageCollection()
 {
 }
 
-QSize ImageCollection::size() const
+int ImageCollection::noImages() const
 {
-	return _size;
+	return _imageFilePaths.size();
 }
 
-QStringList ImageCollection::filePaths() const
+QSize ImageCollection::imageSize() const
 {
-	return _filePaths;
+	return _imageSize;
 }
 
-void ImageCollection::add(const QString& filePath)
+QStringList ImageCollection::imageFilePaths() const
 {
-	_filePaths << filePath;
+	return _imageFilePaths;
+}
+
+void ImageCollection::add(const QString& imageFilePath)
+{
+	_imageFilePaths = _imageFilePaths << imageFilePath;
+}
+
+QDebug operator<<(QDebug dbg, const ImageCollection& imageCollection)
+{
+	const auto imageSize = imageCollection.imageSize();
+
+	dbg << QString("%1 images at %2x%3").arg(QString::number(imageCollection.imageFilePaths().size()), QString::number(imageSize.width()), QString::number(imageSize.height()));
+
+	return dbg;
 }

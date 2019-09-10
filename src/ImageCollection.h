@@ -16,21 +16,24 @@ public:
 	ImageCollection& operator=(const ImageCollection& other)
 	{
 		if (&other != this) {
-			_size		= other._size;
-			_filePaths	= other._filePaths;
+			_imageSize		= other._imageSize;
+			_imageFilePaths = other._imageFilePaths;
 		}
 
 		return *this;
 	}
 
-	QSize size() const;
-	QStringList	filePaths() const;
+	int noImages() const;
+	QSize imageSize() const;
+	QStringList	imageFilePaths() const;
 
-	void add(const QString& filePath);
+	void add(const QString& imageFilePath);
 
 protected:
-	QSize			_size;
-	QStringList		_filePaths;
+	QSize			_imageSize;
+	QStringList		_imageFilePaths;
 };
+
+QDebug operator<<(QDebug dbg, const class ImageCollection& imageCollection);
 
 using ImageCollectionMap = QMap<QString, ImageCollection>;

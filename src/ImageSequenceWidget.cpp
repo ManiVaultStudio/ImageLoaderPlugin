@@ -11,6 +11,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() },
 	_scanner(),
+	_scanned(ImageCollectionType::Sequence),
 	_loader(ImageCollectionType::Sequence)
 {
 	_ui->setupUi(this);
@@ -64,7 +65,13 @@ void ImageSequenceWidget::onBeginScan()
 
 void ImageSequenceWidget::onEndScan(const ImageCollections& imageCollections)
 {
-//	_ui->loadSequencePushButton->setEnabled(imageFilePaths.size() > 0);
+	_scanned = imageCollections;
+
+	qDebug() << imageCollections;
+
+	const auto canLoad = _scanned.map().size() > 0;
+
+	_ui->loadSequencePushButton->setEnabled(canLoad);
 }
 
 void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
@@ -77,7 +84,7 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 void ImageSequenceWidget::onLoadSequence()
 {
-//	_loader.load();
+	_loader.load(_scanned);
 
 	_ui->loadSequencePushButton->setEnabled(false);
 }
@@ -114,6 +121,9 @@ void ImageSequenceWidget::onBeginLoad()
 
 void ImageSequenceWidget::onEndLoad(FloatVector& pointsData)
 {
+	_ui->loadSequencePushButton->setEnabled(false);
+	_ui->loadSequencePushButton->setText("Load");
+
 	/*
 	_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _loader.imageSize(), _loader.noImages(), _loader.noDimensions(), pointsData, _loader.dimensionNames());
 

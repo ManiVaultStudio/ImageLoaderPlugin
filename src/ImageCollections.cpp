@@ -16,3 +16,20 @@ ImageCollections::ImageCollections(const ImageCollections& other) :
 ImageCollections::~ImageCollections()
 {
 }
+
+ImageCollectionType ImageCollections::type() const
+{
+	return _type;
+}
+
+QDebug operator<<(QDebug dbg, const ImageCollections& imageCollections)
+{
+	dbg << imageCollectionTypeName(imageCollections.type());
+
+	foreach(QString key, imageCollections.map().keys()) {
+		dbg << key;
+		dbg << imageCollections.map()[key];
+	}
+
+	return dbg;
+}

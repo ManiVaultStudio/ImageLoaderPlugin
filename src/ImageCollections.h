@@ -25,9 +25,16 @@ public:
 
 	void load();
 
-	ImageCollectionMap& map() {
+	void set(const QString& name, const ImageCollection& imageCollection)
+	{
+		_map[name] = imageCollection;
+	}
+
+	const ImageCollectionMap& map() const {
 		return _map;
 	}
+
+	ImageCollectionType type() const;
 
 signals:
 
@@ -35,3 +42,5 @@ private:
 	ImageCollectionType		_type;
 	ImageCollectionMap		_map;
 };
+
+QDebug operator<<(QDebug dbg, const class ImageCollections& imageCollections);

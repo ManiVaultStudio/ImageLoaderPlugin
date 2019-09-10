@@ -13,10 +13,7 @@ public:
 	ImageCollectionsLoader(const ImageCollectionType& type);
 
 	ImageCollectionType type() const;
-	QStringList	imageFilePaths() const;
-	int noImages() const;
 	SubsampleImageSettings& subsampleImageSettings();
-	void reset();
 
 	void load(const ImageCollections& imageCollections);
 
@@ -24,8 +21,8 @@ public:
 	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
 	void setSetting(const QString& name, const QVariant& value);
 
-protected:
-	//virtual void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData) = 0;
+private:
+	void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData);
 
 signals:
 	void beginLoad();
@@ -35,7 +32,6 @@ signals:
 
 protected:
 	QSettings				_settings;
-	QStringList				_imageFilePaths;
 
 private:
 	ImageCollectionType		_type;
