@@ -15,7 +15,7 @@ public:
 	ImageCollectionType type() const;
 	SubsampleImageSettings& subsampleImageSettings();
 
-	void load(const ImageCollections& imageCollections);
+	void load(ImageCollections& imageCollections);
 
 public:
 	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
@@ -26,7 +26,7 @@ private:
 
 signals:
 	void beginLoad();
-	void endLoad(FloatVector& pointsData);
+	void endLoad(const ImageCollections& imageCollections);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 	void message(const QString& message);
 

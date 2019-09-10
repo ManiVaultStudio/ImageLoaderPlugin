@@ -32,11 +32,9 @@ void ImageCollectionsLoader::setSetting(const QString& name, const QVariant& val
 	_settings.setValue(name, value);
 }
 
-void ImageCollectionsLoader::load(const ImageCollections& imageCollections)
+void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 {
 	emit beginLoad();
-
-	FloatVector pointsData;
 
 	switch (_type)
 	{
@@ -48,6 +46,8 @@ void ImageCollectionsLoader::load(const ImageCollections& imageCollections)
 			const auto imageSize		= sequence.imageSize();
 			const auto noDimensions		= imageSize.width() * imageSize.height();
 			const auto total			= noImages;
+
+			auto pointsData = imageCollections.pointsData();
 
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
 
@@ -71,10 +71,10 @@ void ImageCollectionsLoader::load(const ImageCollections& imageCollections)
 			break;
 	}
 
-	emit endLoad(pointsData);
+	emit endLoad(imageCollections);
 }
 
-void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const int& imageIndex, std::vector<float>& pointsData)
+void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 

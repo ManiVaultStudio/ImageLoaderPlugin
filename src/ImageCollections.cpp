@@ -22,6 +22,11 @@ ImageCollectionType ImageCollections::type() const
 	return _type;
 }
 
+FloatVector ImageCollections::pointsData()
+{
+	return _pointsData;
+}
+
 QDebug operator<<(QDebug dbg, const ImageCollections& imageCollections)
 {
 	dbg << imageCollectionTypeName(imageCollections.type());

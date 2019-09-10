@@ -32,7 +32,7 @@ private:
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
-	void onEndLoad(FloatVector& pointsData);
+	void onEndLoad(const ImageCollections& imageCollections);
 
 signals:
 	void message(const QString& message);

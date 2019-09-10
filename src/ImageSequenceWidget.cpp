@@ -119,7 +119,7 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadSequencePushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad(FloatVector& pointsData)
+void ImageSequenceWidget::onEndLoad(const ImageCollections& imageCollections)
 {
 	_ui->loadSequencePushButton->setEnabled(false);
 	_ui->loadSequencePushButton->setText("Load");

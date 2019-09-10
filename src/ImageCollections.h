@@ -36,11 +36,14 @@ public:
 
 	ImageCollectionType type() const;
 
+	FloatVector	pointsData();
+
 signals:
 
 private:
 	ImageCollectionType		_type;
 	ImageCollectionMap		_map;
+	FloatVector				_pointsData;
 };
 
 QDebug operator<<(QDebug dbg, const class ImageCollections& imageCollections);
