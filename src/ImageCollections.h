@@ -36,12 +36,17 @@ public:
 
 	ImageCollectionType type() const;
 
+	QString name() const;
+	void setName(const QString& name);
+
 	FloatVector	pointsData();
 
 signals:
+	void nameChanged(const QString&);
 
 private:
 	ImageCollectionType		_type;
+	QString					_name;
 	ImageCollectionMap		_map;
 	FloatVector				_pointsData;
 };

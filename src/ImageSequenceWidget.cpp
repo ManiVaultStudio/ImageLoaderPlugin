@@ -30,13 +30,16 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
 	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadSequence);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setName);
+
 	connect(&_scanner, &ImageSequenceScanner::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageSequenceScanner::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
 	connect(&_scanner, &ImageSequenceScanner::beginScan, this, &ImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
 	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
 	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
-
+	//connect(&_scanned, &ImageCollections::nameChanged, this, &ImageSequenceWidget::onEndLoad);
+	
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
 
@@ -124,9 +127,5 @@ void ImageSequenceWidget::onEndLoad(const ImageCollections& imageCollections)
 	_ui->loadSequencePushButton->setEnabled(false);
 	_ui->loadSequencePushButton->setText("Load");
 
-	/*
-	_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _loader.imageSize(), _loader.noImages(), _loader.noDimensions(), pointsData, _loader.dimensionNames());
-
-	_ui->loadSequencePushButton->setText("Load");
-	*/
+	_imageLoaderPlugin->addDataSet(imageCollections);
 }

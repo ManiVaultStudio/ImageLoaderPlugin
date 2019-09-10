@@ -30,10 +30,11 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames /*= QStringList()*/)
+void ImageLoaderPlugin::addDataSet(const ImageCollections& imageCollections)
 {
-	qDebug() << "Adding sequence " << name;
+	qDebug() << "Adding data set" << imageCollections.name();
 
+	/*
 	const auto datasetName = _core->addData("Points", name);
 
 	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
@@ -65,6 +66,7 @@ void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionTy
 	points.setProperty("imageSize", size);
 
 	_core->notifyDataAdded(datasetName);
+	*/
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

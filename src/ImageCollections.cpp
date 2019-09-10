@@ -22,6 +22,21 @@ ImageCollectionType ImageCollections::type() const
 	return _type;
 }
 
+QString ImageCollections::name() const
+{
+	return _name;
+}
+
+void ImageCollections::setName(const QString& name)
+{
+	if (name == _name)
+		return;
+
+	_name = name;
+
+	emit nameChanged(_name);
+}
+
 FloatVector ImageCollections::pointsData()
 {
 	return _pointsData;

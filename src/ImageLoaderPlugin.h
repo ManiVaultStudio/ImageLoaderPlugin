@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "ImageCollections.h"
 
 #include <LoaderPlugin.h>
 
@@ -18,7 +19,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames = QStringList());
+	void addDataSet(const ImageCollections& imageCollections);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory
