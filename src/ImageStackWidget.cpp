@@ -11,12 +11,14 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
 	_scanner(),
+	_scanned(ImageCollectionType::Stack),
 	_loader(ImageCollectionType::Stack)
 {
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
-	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadSequence);
+	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setDatasetName);
 
 	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
@@ -24,6 +26,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
+
+	connect(&_scanned, &ImageCollections::datasetNameChanged, this, &ImageStackWidget::onDatasetNameChanged);
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
@@ -42,87 +46,54 @@ void ImageStackWidget::onPickDirectory()
 
 void ImageStackWidget::onDirectoryChanged(const QString& directory)
 {
-	qDebug() << "Image stack scan directory changed to" << directory;
-
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 
 	_scanner.scan();
 }
 
-void ImageStackWidget::onLoadSequence()
+void ImageStackWidget::onLoadPushButtonClicked()
 {
-	/*
+	_loader.load(_scanned);
+
 	_ui->loadPushButton->setEnabled(false);
+}
 
-	const auto stackName = _ui->stacksComboBox->currentText();
-
-	if (!_imageStacks.stacks().contains(stackName))
-		return;
-
-	auto imageStack = _imageStacks.stacks()[_ui->stacksComboBox->currentText()].data();
-
-	connect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	connect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
-	connect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
-
-	imageStack->load();
-	*/
+void ImageStackWidget::onDatasetNameChanged(const QString& text)
+{
+	_ui->loadPushButton->setEnabled(!text.isEmpty() && _scanned.map().size() > 0);
 }
 
 void ImageStackWidget::onBeginScan()
 {
-	qDebug() << "Image stack scan started";
-
-	//	_ui->infoLineEdit->setText(QString("Scanning for image stacks..."));
 }
 
-void ImageStackWidget::onEndScan(const ImageCollections& imageCollections)
+void ImageStackWidget::onEndScan(ImageCollections& imageCollections)
 {
-	/*
-	qDebug() << "Image stack scan ended";
+	_scanned = imageCollections;
+
+	qDebug() << imageCollections;
+
+	const auto canLoad = _scanned.map().size() > 0;
+
+	_ui->datasetNameLabel->setEnabled(canLoad);
+	_ui->datasetNameLineEdit->setEnabled(canLoad);
+	_ui->stacksComboBox->setEnabled(canLoad);
+	_ui->loadPushButton->setEnabled(canLoad);
 
 	_ui->stacksComboBox->clear();
-
-	const auto noStacks		= imageStacks.size();
-	const auto hasStacks	= noStacks > 0;
-
-	_ui->datasetNameLabel->setEnabled(hasStacks);
-	_ui->datasetNameLineEdit->setEnabled(hasStacks);
-	_ui->stacksLabel->setEnabled(hasStacks);
-	_ui->stacksComboBox->setEnabled(hasStacks);
-	_ui->loadPushButton->setEnabled(hasStacks);
-
-	if (hasStacks) {
-		_ui->stacksComboBox->addItems(imageStacks.keys());
-	}
-	
-	_ui->loadPushButton->setEnabled(true);
-	*/
+	_ui->stacksComboBox->addItems(_scanned.map().keys());
 }
 
 void ImageStackWidget::onBeginLoad()
 {
-	qDebug() << "Image stack loading";
-
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad(FloatVector& pointsData)
+void ImageStackWidget::onEndLoad(ImageCollections& imageCollections)
 {
-	qDebug() << "Image stack loaded";
-
-	//_imageLoaderPlugin->addSequence(ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
-
-	/*
-	qDebug() << "End loading";
-
-	disconnect(imageStack, &ImageStack::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	disconnect(imageStack, &ImageStack::endLoad, this, &ImageStackWidget::onEndLoad);
-	disconnect(imageStack, &ImageStack::message, this, &ImageStackWidget::onMessage);
-
-	_imageLoaderPlugin->addSequence(ImageCollectionType::Stack, _ui->datasetNameLineEdit->text(), imageStack->size(), imageStack->noImages(), imageStack->noDimensions(), pointsData, imageStack->dimensionNames());
-
+	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
-	*/
+
+	_imageLoaderPlugin->addDataSet(imageCollections);
 }

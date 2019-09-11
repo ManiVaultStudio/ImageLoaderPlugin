@@ -17,8 +17,5 @@ public:
 	~ImageStackScanner();
 
 	void scan();
-	void scanDir(const QString& directory);
-
-private:
-	QMap<QString, ImageStackFiles>	_imageStackFiles;
+	void scanDir(const QString& directory, ImageCollections& imageCollections);
 };

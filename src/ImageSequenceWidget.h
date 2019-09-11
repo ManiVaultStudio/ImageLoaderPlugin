@@ -26,14 +26,15 @@ private:
 	void onBeginScan();
 	void onEndScan(ImageCollections& imageCollections);
 	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& text);
 	void onImageWidthChanged(int width);
 	void onImageHeightChanged(int height);
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
 	void onEndLoad(ImageCollections& imageCollections);
-
+	
 signals:
 	void message(const QString& message);
 

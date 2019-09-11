@@ -23,11 +23,12 @@ public:
 private:
 	void onPickDirectory();
 	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& text);
 	void onBeginScan();
-	void onEndScan(const ImageCollections& imageCollections);
+	void onEndScan(ImageCollections& imageCollections);
 	void onBeginLoad();
-	void onEndLoad(FloatVector& pointsData);
+	void onEndLoad(ImageCollections& imageCollections);
 
 signals:
 	void message(const QString& message);
@@ -36,5 +37,6 @@ private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
 	ImageStackScanner						_scanner;
+	ImageCollections						_scanned;
 	ImageCollectionsLoader					_loader;
 };	

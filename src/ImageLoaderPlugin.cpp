@@ -32,9 +32,9 @@ void ImageLoaderPlugin::loadData()
 
 void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 {
-	qDebug() << QString("Adding data set %1 with %2 dimensions").arg(imageCollections.name(), QString::number(imageCollections.noDimensions()));
+	qDebug() << QString("Adding data set %1 with %2 dimensions").arg(imageCollections.datasetName(), QString::number(imageCollections.noDimensions()));
 
-	const auto name			= imageCollections.name();
+	const auto name			= imageCollections.datasetName();
 	const auto datasetName	= _core->addData("Points", name);
 
 	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));

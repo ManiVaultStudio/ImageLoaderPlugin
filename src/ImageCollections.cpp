@@ -4,7 +4,7 @@
 
 ImageCollections::ImageCollections(const ImageCollectionType& type) :
 	_type(type),
-	_name(),
+	_datasetName(),
 	_map(),
 	_pointsData()
 {
@@ -24,19 +24,19 @@ ImageCollectionType ImageCollections::type() const
 	return _type;
 }
 
-QString ImageCollections::name() const
+QString ImageCollections::datasetName() const
 {
-	return _name;
+	return _datasetName;
 }
 
-void ImageCollections::setName(const QString& name)
+void ImageCollections::setDatasetName(const QString& datasetName)
 {
-	if (name == _name)
+	if (datasetName == _datasetName)
 		return;
 
-	_name = name;
+	_datasetName = datasetName;
 
-	emit nameChanged(_name);
+	emit datasetNameChanged(_datasetName);
 }
 
 FloatVector& ImageCollections::pointsData()

@@ -22,11 +22,12 @@ void ImageStackScanner::scan()
 {
 	emit beginScan();
 
-	//_imageStacks.clear();
-	/*
-	scanDir(_directory);
+	auto imageCollections = ImageCollections(ImageCollectionType::Stack);
+	
+	
+	scanDir(_directory, imageCollections);
 
-	const auto noStacks		= _imageStacks.size();
+	const auto noStacks		= imageCollections.map().size();
 	const auto hasStacks	= noStacks > 0;
 
 	if (noStacks == 0) {
@@ -36,12 +37,11 @@ void ImageStackScanner::scan()
 		emit message(QString("Found %1 image stack(s)").arg(noStacks));
 	}
 
-	emit endScan(_imageStacks);*/
+	emit endScan(imageCollections);
 }
 
-void ImageStackScanner::scanDir(const QString& directory)
+void ImageStackScanner::scanDir(const QString& directory, ImageCollections& imageCollections)
 {
-	/*
 	auto subDirectories = QDir(directory);
 
 	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -50,11 +50,11 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	for (int i = 0; i < dirList.size(); ++i)
 	{
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
+		const auto imageFilePath = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
 
 		qDebug() << "Found directory: " << dirList.at(i);
 
-		scanDir(path);
+		scanDir(imageFilePath, imageCollections);
 	}
 
 	auto imageFiles = QDir(directory);
@@ -74,24 +74,23 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	for (int i = 0; i < fileList.size(); ++i)
 	{
-		const auto path = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
+		const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
 
-		QImageReader imageReader(path);
+		QImageReader imageReader(imageFilePath);
 
 		const auto size = imageReader.size();
 
 		if (size.width() > 0 && size.height() > 0) {
 			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
 
-			if (!_imageStacks.contains(sizeString)) {
-				_imageStacks.insert(sizeString, QStringList());
-				_imageStackFiles.insert(size, QStringList());
+			
+			if (!imageCollections.map().contains(sizeString)) {
+				imageCollections.map()[sizeString] = ImageCollection(size);
 			}
-
-			_imageStacks[sizeString] << path;
+			
+			imageCollections.map()[sizeString].add(imageFilePath);
 		}
 
-		scanDir(path);
+		scanDir(imageFilePath, imageCollections);
 	}
-	*/
 }

@@ -36,13 +36,6 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 {
 	emit beginLoad();
 
-	qDebug() << "SSE" << _subsampleImageSettings.enabled();
-	/*
-	if (_subsampleImageSettings.enabled()) {
-		imageCollections.resize(_subsampleImageSettings.ratio());
-	}
-	*/
-
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:

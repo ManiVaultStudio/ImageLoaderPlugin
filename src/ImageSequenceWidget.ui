@@ -48,7 +48,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="loadSequencePushButton">
+      <widget class="QPushButton" name="loadPushButton">
        <property name="enabled">
         <bool>false</bool>
        </property>

@@ -29,8 +29,8 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onPickDirectory);
 	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
-	connect(_ui->loadSequencePushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadSequence);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setName);
+	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadPushButtonClicked);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setDatasetName);
 
 	connect(&_scanner, &ImageSequenceScanner::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageSequenceScanner::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
@@ -41,6 +41,8 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
+
+	connect(&_scanned, &ImageCollections::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
@@ -73,7 +75,9 @@ void ImageSequenceWidget::onEndScan(ImageCollections& imageCollections)
 
 	const auto canLoad = _scanned.map().size() > 0;
 
-	_ui->loadSequencePushButton->setEnabled(canLoad);
+	_ui->datasetNameLabel->setEnabled(canLoad);
+	_ui->datasetNameLineEdit->setEnabled(canLoad);
+	_ui->loadPushButton->setEnabled(canLoad);
 }
 
 void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
@@ -84,11 +88,16 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_scanner.scan();
 }
 
-void ImageSequenceWidget::onLoadSequence()
+void ImageSequenceWidget::onLoadPushButtonClicked()
 {
 	_loader.load(_scanned);
 
-	_ui->loadSequencePushButton->setEnabled(false);
+	_ui->loadPushButton->setEnabled(false);
+}
+
+void ImageSequenceWidget::onDatasetNameChanged(const QString& text)
+{
+	_ui->loadPushButton->setEnabled(!text.isEmpty() &&  _scanned.map().size() > 0);
 }
 
 void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
@@ -118,15 +127,13 @@ void ImageSequenceWidget::onImageTypeChanged(const QString & imageType)
 
 void ImageSequenceWidget::onBeginLoad()
 {
-	_ui->loadSequencePushButton->setText("Loading");
+	_ui->loadPushButton->setText("Loading");
 }
 
 void ImageSequenceWidget::onEndLoad(ImageCollections& imageCollections)
 {
-	_ui->loadSequencePushButton->setEnabled(false);
-	_ui->loadSequencePushButton->setText("Load");
-
-	//qDebug() << "====" << imageCollections.pointsData().size();
+	_ui->loadPushButton->setEnabled(false);
+	_ui->loadPushButton->setText("Load");
 
 	_imageLoaderPlugin->addDataSet(imageCollections);
 }
