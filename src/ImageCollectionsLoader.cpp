@@ -36,13 +36,26 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 {
 	emit beginLoad();
 
+	qDebug() << "SSE" << _subsampleImageSettings.enabled();
+	/*
+	if (_subsampleImageSettings.enabled()) {
+		imageCollections.resize(_subsampleImageSettings.ratio());
+	}
+	*/
+
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:
 		{
-			const auto sequence			= imageCollections.map().first();
+			ImageCollection& sequence = imageCollections.map().first();
+
+			if (_subsampleImageSettings.enabled()) {
+				sequence.setImageSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			}
+
 			const auto imageFilePaths	= sequence.imageFilePaths();
 			const auto noImages			= sequence.noImages();
+			const auto subsample		= _subsampleImageSettings.enabled();
 			const auto imageSize		= sequence.imageSize();
 			const auto noDimensions		= imageSize.width() * imageSize.height();
 			const auto total			= noImages;
@@ -55,8 +68,7 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			pointsData.reserve(noImages * noDimensions);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				qDebug() << "asd";
-				loadImage(imageFilePath, imageFilePaths.indexOf(imageFilePath), pointsData);
+				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), pointsData);
 
 				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
 				const auto percentage	= 100.0f * (done / static_cast<float>(total));
@@ -73,32 +85,38 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			break;
 	}
 
-	qDebug() << "---" << imageCollections.pointsData().size();
-
 	emit endLoad(imageCollections);
 }
 
-void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData)
+void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, FloatVector& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
-	auto *image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
+	auto* image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
 
 	const auto image_type = FreeImage_GetImageType(image);
 
 	//qDebug() << image_type;
 
+	const auto width	= FreeImage_GetWidth(image);
+	const auto height	= FreeImage_GetHeight(image);
+
+	if (QSize(width, height) != imageSize) {
+		image = FreeImage_Rescale(image, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter()));
+	}
+
 	switch (image_type) {
-	case FIT_BITMAP:
-		if (FreeImage_GetBPP(image) == 8) {
-			for (unsigned y = 0; y < FreeImage_GetHeight(image); y++) {
-				const BYTE *const bits = FreeImage_GetScanLine(image, y);
-				for (unsigned x = 0; x < FreeImage_GetWidth(image); x++) {
-					pointsData.push_back(static_cast<float>(bits[x]));
+		case FIT_BITMAP: {
+			if (FreeImage_GetBPP(image) == 8) {
+				for (unsigned y = 0; y < imageSize.height(); y++) {
+					const BYTE *const bits = FreeImage_GetScanLine(image, y);
+					for (unsigned x = 0; x < imageSize.width(); x++) {
+						pointsData.push_back(static_cast<float>(bits[x]));
+					}
 				}
 			}
+			break;
 		}
-		break;
 	}
 }
 

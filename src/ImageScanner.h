@@ -26,7 +26,7 @@ public:
 signals:
 	void becameDirty();
 	void beginScan();
-	void endScan(const ImageCollections& imageCollections);
+	void endScan(ImageCollections& imageCollections);
 	void directoryChanged(const QString& directory);
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);

@@ -16,9 +16,9 @@ public:
 	ImageCollection& operator=(const ImageCollection& other)
 	{
 		if (&other != this) {
-			_imageSize		= other._imageSize;
-			_noDimensions	= other._noDimensions;
-			_imageFilePaths = other._imageFilePaths;
+			_imageSize			= other._imageSize;
+			_noDimensions		= other._noDimensions;
+			_imageFilePaths		= other._imageFilePaths;
 		}
 
 		return *this;
@@ -26,6 +26,7 @@ public:
 
 	int noImages() const;
 	QSize imageSize() const;
+	void setImageSize(const QSize& imageSize);
 	int noDimensions() const;
 	void setNoDimensions(const int& noDimensions);
 	QStringList	imageFilePaths() const;

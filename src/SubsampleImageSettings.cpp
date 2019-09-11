@@ -33,7 +33,7 @@ void SubsampleImageSettings::emitAll()
 
 bool SubsampleImageSettings::enabled() const
 {
-	return false;
+	return _enabled;
 }
 
 void SubsampleImageSettings::setEnabled(const bool& enabled)

@@ -32,7 +32,7 @@ public:
 		_map[name] = imageCollection;
 	}
 
-	const ImageCollectionMap& map() const {
+	ImageCollectionMap& map() {
 		return _map;
 	}
 
@@ -55,4 +55,4 @@ protected:
 	FloatVector				_pointsData;
 };
 
-QDebug operator<<(QDebug dbg, const class ImageCollections& imageCollections);
+QDebug operator<<(QDebug dbg, ImageCollections& imageCollections);

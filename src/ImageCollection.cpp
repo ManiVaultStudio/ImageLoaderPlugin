@@ -36,6 +36,11 @@ QSize ImageCollection::imageSize() const
 	return _imageSize;
 }
 
+void ImageCollection::setImageSize(const QSize& imageSize)
+{
+	_imageSize = imageSize;
+}
+
 int ImageCollection::noDimensions() const
 {
 	return _noDimensions;

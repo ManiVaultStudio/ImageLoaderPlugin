@@ -65,7 +65,7 @@ void ImageSequenceWidget::onBeginScan()
 {
 }
 
-void ImageSequenceWidget::onEndScan(const ImageCollections& imageCollections)
+void ImageSequenceWidget::onEndScan(ImageCollections& imageCollections)
 {
 	_scanned = imageCollections;
 

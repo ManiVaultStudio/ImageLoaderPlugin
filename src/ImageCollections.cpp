@@ -52,7 +52,7 @@ int ImageCollections::noDimensions() const
 	return _map.first().noDimensions();
 }
 
-QDebug operator<<(QDebug dbg, const ImageCollections& imageCollections)
+QDebug operator<<(QDebug dbg, ImageCollections& imageCollections)
 {
 	dbg << imageCollectionTypeName(imageCollections.type());
 

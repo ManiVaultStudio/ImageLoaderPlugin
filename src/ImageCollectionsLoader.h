@@ -22,7 +22,7 @@ public:
 	void setSetting(const QString& name, const QVariant& value);
 
 private:
-	void loadImage(const QString& imageFilePath, const int& imageIndex, FloatVector& pointsData);
+	void loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, FloatVector& pointsData);
 
 signals:
 	void beginLoad();

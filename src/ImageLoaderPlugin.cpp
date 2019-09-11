@@ -45,32 +45,39 @@ void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 	points.data.swap(imageCollections.pointsData());
 
 	/*
-	for (int i = 0; i <= 200; i++) {
-		qDebug() << imageCollections.pointsData()[i];
-	}
-	*/
-
-	/*
 	points.dimNames.clear();
 
 	foreach(const QString &dimensionName, dimensionNames) {
 		points.dimNames.push_back(dimensionName);
 	}
+	*/
 
-	switch (imageCollectionType) {
+	switch (imageCollections.type()) {
 		case ImageCollectionType::Sequence:
+		{
+			
+
+			const auto sequence = imageCollections.map().first();
+
+			qDebug() << sequence.imageSize();
+
 			points.setProperty("type", "SEQUENCE");
+			points.setProperty("noImages", sequence.noImages());
+			points.setProperty("imageSize", sequence.imageSize());
 			break;
+		}
+			
 		case ImageCollectionType::Stack:
+		{
 			points.setProperty("type", "STACK");
 			break;
+		}
 
 		default:
 			break;
 	}
-	points.setProperty("noImages", noImages);
-	points.setProperty("imageSize", size);
-	*/
+	
+	
 
 	_core->notifyDataAdded(datasetName);
 }

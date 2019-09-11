@@ -24,7 +24,7 @@ public:
 private:
 	void onBecameDirty();
 	void onBeginScan();
-	void onEndScan(const ImageCollections& imageCollections);
+	void onEndScan(ImageCollections& imageCollections);
 	void onDirectoryChanged(const QString &directory);
 	void onLoadSequence();
 	void onImageWidthChanged(int width);
