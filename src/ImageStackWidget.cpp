@@ -54,7 +54,15 @@ void ImageStackWidget::onDirectoryChanged(const QString& directory)
 
 void ImageStackWidget::onLoadPushButtonClicked()
 {
-	_loader.load(_scanned);
+	ImageCollections scanned = _scanned;
+
+	foreach(QString key, scanned.map().keys()) {
+		if (key != _ui->stacksComboBox->currentText()) {
+			scanned.map().remove(key);
+		}
+	}
+
+	_loader.load(scanned);
 
 	_ui->loadPushButton->setEnabled(false);
 }
@@ -72,7 +80,7 @@ void ImageStackWidget::onEndScan(ImageCollections& imageCollections)
 {
 	_scanned = imageCollections;
 
-	qDebug() << imageCollections;
+	// qDebug() << imageCollections;
 
 	const auto canLoad = _scanned.map().size() > 0;
 

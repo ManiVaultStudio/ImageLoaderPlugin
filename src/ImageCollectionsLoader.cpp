@@ -48,7 +48,6 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 
 			const auto imageFilePaths	= sequence.imageFilePaths();
 			const auto noImages			= sequence.noImages();
-			const auto subsample		= _subsampleImageSettings.enabled();
 			const auto imageSize		= sequence.imageSize();
 			const auto noDimensions		= imageSize.width() * imageSize.height();
 			const auto total			= noImages;
@@ -74,6 +73,41 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			break;
 		}
 
+		case ImageCollectionType::Stack:
+		{
+			ImageCollection& stack = imageCollections.map().first();
+
+			if (_subsampleImageSettings.enabled()) {
+				stack.setImageSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			}
+
+			const auto imageFilePaths	= stack.imageFilePaths();
+			const auto noImages			= stack.noImages();
+			const auto imageSize		= stack.imageSize();
+			const auto noDimensions		= imageSize.width() * imageSize.height();
+			const auto total			= noImages;
+
+			FloatVector& pointsData = imageCollections.pointsData();
+
+			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
+
+			pointsData.clear();
+			pointsData.resize(noImages * noDimensions);
+
+			foreach(const QString& imageFilePath, imageFilePaths) {
+				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), pointsData);
+
+				const auto done = imageFilePaths.indexOf(imageFilePath) + 1;
+				const auto percentage = 100.0f * (done / static_cast<float>(total));
+
+				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
+			}
+
+			emit message(QString("%1 image(s) loaded").arg(total));
+
+			break;
+		}
+
 		default:
 			break;
 	}
@@ -87,7 +121,8 @@ void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize
 
 	auto* image = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
 
-	const auto image_type = FreeImage_GetImageType(image);
+	const auto image_type	= FreeImage_GetImageType(image);
+	const auto noPixels		= imageSize.width() * imageSize.height();
 
 	//qDebug() << image_type;
 
@@ -104,7 +139,15 @@ void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize
 				for (unsigned y = 0; y < imageSize.height(); y++) {
 					const BYTE *const bits = FreeImage_GetScanLine(image, y);
 					for (unsigned x = 0; x < imageSize.width(); x++) {
-						pointsData.push_back(static_cast<float>(bits[x]));
+						switch (_type)
+						{
+							case ImageCollectionType::Sequence:
+							{
+								const auto pointIndex = imageIndex * noPixels + (y * imageSize.width() + x);
+								pointsData[pointIndex] = static_cast<float>(bits[x]);
+								break;
+							}
+						}
 					}
 				}
 			}

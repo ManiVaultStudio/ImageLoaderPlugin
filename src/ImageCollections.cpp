@@ -13,6 +13,7 @@ ImageCollections::ImageCollections(const ImageCollectionType& type) :
 ImageCollections::ImageCollections(const ImageCollections& other) :
 	ImageCollections(other._type)
 {
+	*this = other;
 }
 
 ImageCollections::~ImageCollections()
