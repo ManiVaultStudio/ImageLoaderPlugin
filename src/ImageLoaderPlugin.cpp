@@ -30,20 +30,27 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addDataSet(const ImageCollections& imageCollections)
+void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 {
-	qDebug() << "Adding data set" << imageCollections.name();
+	qDebug() << QString("Adding data set %1 with %2 dimensions").arg(imageCollections.name(), QString::number(imageCollections.noDimensions()));
 
-	/*
-	const auto datasetName = _core->addData("Points", name);
+	const auto name			= imageCollections.name();
+	const auto datasetName	= _core->addData("Points", name);
 
 	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
 
 	PointsPlugin& points = set.getData();
 
-	points.numDimensions = noDimensions;
-	points.data.swap(pointsData);
+	points.numDimensions = imageCollections.noDimensions();
+	points.data.swap(imageCollections.pointsData());
 
+	/*
+	for (int i = 0; i <= 200; i++) {
+		qDebug() << imageCollections.pointsData()[i];
+	}
+	*/
+
+	/*
 	points.dimNames.clear();
 
 	foreach(const QString &dimensionName, dimensionNames) {
@@ -61,12 +68,11 @@ void ImageLoaderPlugin::addDataSet(const ImageCollections& imageCollections)
 		default:
 			break;
 	}
-	
 	points.setProperty("noImages", noImages);
 	points.setProperty("imageSize", size);
+	*/
 
 	_core->notifyDataAdded(datasetName);
-	*/
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

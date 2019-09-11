@@ -19,7 +19,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addDataSet(const ImageCollections& imageCollections);
+	void addDataSet(ImageCollections& imageCollections);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

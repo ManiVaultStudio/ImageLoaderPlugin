@@ -17,6 +17,7 @@ public:
 	{
 		if (&other != this) {
 			_imageSize		= other._imageSize;
+			_noDimensions	= other._noDimensions;
 			_imageFilePaths = other._imageFilePaths;
 		}
 
@@ -25,12 +26,15 @@ public:
 
 	int noImages() const;
 	QSize imageSize() const;
+	int noDimensions() const;
+	void setNoDimensions(const int& noDimensions);
 	QStringList	imageFilePaths() const;
 
 	void add(const QString& imageFilePath);
 
 protected:
 	QSize			_imageSize;
+	int				_noDimensions;
 	QStringList		_imageFilePaths;
 };
 

@@ -4,7 +4,9 @@
 
 ImageCollections::ImageCollections(const ImageCollectionType& type) :
 	_type(type),
-	_map()
+	_name(),
+	_map(),
+	_pointsData()
 {
 }
 
@@ -37,9 +39,17 @@ void ImageCollections::setName(const QString& name)
 	emit nameChanged(_name);
 }
 
-FloatVector ImageCollections::pointsData()
+FloatVector& ImageCollections::pointsData()
 {
 	return _pointsData;
+}
+
+int ImageCollections::noDimensions() const
+{
+	if (_map.isEmpty())
+		return 0;
+
+	return _map.first().noDimensions();
 }
 
 QDebug operator<<(QDebug dbg, const ImageCollections& imageCollections)

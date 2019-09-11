@@ -26,7 +26,7 @@ private:
 
 signals:
 	void beginLoad();
-	void endLoad(const ImageCollections& imageCollections);
+	void endLoad(ImageCollections& imageCollections);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 	void message(const QString& message);
 

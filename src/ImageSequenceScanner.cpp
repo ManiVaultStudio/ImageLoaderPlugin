@@ -92,6 +92,10 @@ void ImageSequenceScanner::scan()
 	auto imageCollections	= ImageCollections(ImageCollectionType::Sequence);
 	auto imageCollection	= ImageCollection(_imageSize);
 	
+	const auto noDimensions = _imageSize.width() * _imageSize.height();
+
+	imageCollection.setNoDimensions(noDimensions);
+
 	scanDir(_directory, imageCollection);
 
 	const auto noImages = imageCollection.noImages();
@@ -99,6 +103,7 @@ void ImageSequenceScanner::scan()
 	if (noImages > 0) {
 		const auto imageCollectionName = QDir(_directory).dirName();
 
+		imageCollections.setName(imageCollectionName);
 		imageCollections.set(imageCollectionName, imageCollection);
 
 		emit message(QString("Found %1 images").arg(noImages));

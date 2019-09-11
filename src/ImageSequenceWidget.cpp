@@ -38,7 +38,6 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
 	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
 	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
-	//connect(&_scanned, &ImageCollections::nameChanged, this, &ImageSequenceWidget::onEndLoad);
 	
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
@@ -122,10 +121,12 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadSequencePushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad(const ImageCollections& imageCollections)
+void ImageSequenceWidget::onEndLoad(ImageCollections& imageCollections)
 {
 	_ui->loadSequencePushButton->setEnabled(false);
 	_ui->loadSequencePushButton->setText("Load");
+
+	//qDebug() << "====" << imageCollections.pointsData().size();
 
 	_imageLoaderPlugin->addDataSet(imageCollections);
 }

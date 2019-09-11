@@ -16,8 +16,10 @@ public:
 	ImageCollections& operator=(const ImageCollections& other)
 	{
 		if (&other != this) {
-			_type	= other._type;
-			_map	= other._map;
+			_type		= other._type;
+			_name		= other._name;
+			_map		= other._map;
+			_pointsData	= other._pointsData;
 		}
 
 		return *this;
@@ -39,12 +41,14 @@ public:
 	QString name() const;
 	void setName(const QString& name);
 
-	FloatVector	pointsData();
+	FloatVector& pointsData();
+
+	int noDimensions() const;
 
 signals:
 	void nameChanged(const QString&);
 
-private:
+protected:
 	ImageCollectionType		_type;
 	QString					_name;
 	ImageCollectionMap		_map;

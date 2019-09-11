@@ -47,13 +47,15 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			const auto noDimensions		= imageSize.width() * imageSize.height();
 			const auto total			= noImages;
 
-			auto pointsData = imageCollections.pointsData();
+			FloatVector& pointsData = imageCollections.pointsData();
 
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
 
+			pointsData.clear();
 			pointsData.reserve(noImages * noDimensions);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
+				qDebug() << "asd";
 				loadImage(imageFilePath, imageFilePaths.indexOf(imageFilePath), pointsData);
 
 				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
@@ -71,6 +73,8 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			break;
 	}
 
+	qDebug() << "---" << imageCollections.pointsData().size();
+
 	emit endLoad(imageCollections);
 }
 
@@ -82,7 +86,7 @@ void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const int& 
 
 	const auto image_type = FreeImage_GetImageType(image);
 
-	// qDebug() << image_type;
+	//qDebug() << image_type;
 
 	switch (image_type) {
 	case FIT_BITMAP:
