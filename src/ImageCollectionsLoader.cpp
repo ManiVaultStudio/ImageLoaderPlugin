@@ -64,9 +64,10 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 		{
 			ImageCollection sequence = imageCollections.map().first();
 
-			if (_subsampleImageSettings.enabled()) {
-				sequence.setImageSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
-			}
+			if (_subsampleImageSettings.enabled())
+				imageDataSet.setImageSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			else
+				imageDataSet.setImageSize(sequence.imageSize());
 
 			const auto imageFilePaths	= sequence.imageFilePaths();
 			const auto noImages			= sequence.noImages();
@@ -104,13 +105,14 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 		{
 			ImageCollection stack = imageCollections.map().first();
 
-			if (_subsampleImageSettings.enabled()) {
-				stack.setImageSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
-			}
+			if (_subsampleImageSettings.enabled())
+				imageDataSet.setImageSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			else
+				imageDataSet.setImageSize(stack.imageSize());
 
 			const auto imageFilePaths	= stack.imageFilePaths();
 			const auto noImages			= stack.noImages();
-			const auto imageSize		= stack.imageSize();
+			const auto imageSize		= imageDataSet.imageSize();
 			const auto noPixels			= imageSize.width() * imageSize.height();
 			const auto noDimensions		= noImages;
 			const auto noPoints			= noImages * noPixels;
@@ -123,7 +125,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			}
 
 			imageDataSet.setNoImages(noImages);
-			imageDataSet.setImageSize(imageSize);
 			imageDataSet.setNoDimensions(noImages);
 			imageDataSet.setDimensionNames(dimensionNames);
 

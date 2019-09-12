@@ -95,8 +95,6 @@ void ImageStackWidget::onBeginLoad()
 
 void ImageStackWidget::onEndLoad(ImageDataSet& imageDataSet)
 {
-	qDebug() << "onEndLoad";
-
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
