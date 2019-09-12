@@ -10,19 +10,6 @@ class ImageCollection {
 public:
 	ImageCollection();
 	ImageCollection(const QSize& imageSize);
-	ImageCollection(const ImageCollection& other);
-	~ImageCollection();
-
-	ImageCollection& operator=(const ImageCollection& other)
-	{
-		if (&other != this) {
-			_imageSize			= other._imageSize;
-			_noDimensions		= other._noDimensions;
-			_imageFilePaths		= other._imageFilePaths;
-		}
-
-		return *this;
-	}
 
 	int noImages() const;
 	QSize imageSize() const;

@@ -55,11 +55,7 @@ void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 	switch (imageCollections.type()) {
 		case ImageCollectionType::Sequence:
 		{
-			
-
 			const auto sequence = imageCollections.map().first();
-
-			qDebug() << sequence.imageSize();
 
 			points.setProperty("type", "SEQUENCE");
 			points.setProperty("noImages", sequence.noImages());
@@ -69,15 +65,17 @@ void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 			
 		case ImageCollectionType::Stack:
 		{
+			const auto stack = imageCollections.map().first();
+
 			points.setProperty("type", "STACK");
+			points.setProperty("noImages", stack.noImages());
+			points.setProperty("imageSize", stack.imageSize());
 			break;
 		}
 
 		default:
 			break;
 	}
-	
-	
 
 	_core->notifyDataAdded(datasetName);
 }

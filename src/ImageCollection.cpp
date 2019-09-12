@@ -16,16 +16,6 @@ ImageCollection::ImageCollection(const QSize& imageSize) :
 {
 }
 
-ImageCollection::ImageCollection(const ImageCollection& other) :
-	ImageCollection()
-{
-	*this = other;
-}
-
-ImageCollection::~ImageCollection()
-{
-}
-
 int ImageCollection::noImages() const
 {
 	return _imageFilePaths.size();

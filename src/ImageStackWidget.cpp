@@ -80,8 +80,6 @@ void ImageStackWidget::onEndScan(ImageCollections& imageCollections)
 {
 	_scanned = imageCollections;
 
-	// qDebug() << imageCollections;
-
 	const auto canLoad = _scanned.map().size() > 0;
 
 	_ui->datasetNameLabel->setEnabled(canLoad);

@@ -60,7 +60,7 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			pointsData.reserve(noImages * noDimensions);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), pointsData);
+				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
 
 				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
 				const auto percentage	= 100.0f * (done / static_cast<float>(total));
@@ -95,7 +95,7 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			pointsData.resize(noImages * noDimensions);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), pointsData);
+				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
 
 				const auto done = imageFilePaths.indexOf(imageFilePath) + 1;
 				const auto percentage = 100.0f * (done / static_cast<float>(total));
@@ -115,7 +115,7 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 	emit endLoad(imageCollections);
 }
 
-void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, FloatVector& pointsData)
+void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, const int& noImages, FloatVector& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
@@ -139,11 +139,20 @@ void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize
 				for (unsigned y = 0; y < imageSize.height(); y++) {
 					const BYTE *const bits = FreeImage_GetScanLine(image, y);
 					for (unsigned x = 0; x < imageSize.width(); x++) {
+						const auto localPixelIndex = y * imageSize.width() + x;
+
 						switch (_type)
 						{
 							case ImageCollectionType::Sequence:
 							{
-								const auto pointIndex = imageIndex * noPixels + (y * imageSize.width() + x);
+								const auto pointIndex = imageIndex * noPixels + localPixelIndex;
+								pointsData[pointIndex] = static_cast<float>(bits[x]);
+								break;
+							}
+
+							case ImageCollectionType::Stack:
+							{
+								const auto pointIndex = localPixelIndex * noImages + imageIndex;
 								pointsData[pointIndex] = static_cast<float>(bits[x]);
 								break;
 							}
