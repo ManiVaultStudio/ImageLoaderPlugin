@@ -17,5 +17,5 @@ public:
 	~ImageStackScanner();
 
 	void scan();
-	void scanDir(const QString& directory, ImageCollections& imageCollections);
+	void scanDir(const QString& directory);
 };

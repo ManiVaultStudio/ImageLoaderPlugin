@@ -30,19 +30,18 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
+void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 {
-	qDebug() << QString("Adding data set %1 with %2 dimensions").arg(imageCollections.datasetName(), QString::number(imageCollections.noDimensions()));
+	qDebug() << imageDataSet;
+	
+	const auto datasetName = _core->addData("Points", imageDataSet.name());
 
-	const auto name			= imageCollections.datasetName();
-	const auto datasetName	= _core->addData("Points", name);
-
-	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
+	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(datasetName));
 
 	PointsPlugin& points = set.getData();
 
-	points.numDimensions = imageCollections.noDimensions();
-	points.data.swap(imageCollections.pointsData());
+	points.numDimensions = imageDataSet.noDimensions();
+	points.data.swap(imageDataSet.pointsData());
 
 	/*
 	points.dimNames.clear();
@@ -52,24 +51,21 @@ void ImageLoaderPlugin::addDataSet(ImageCollections& imageCollections)
 	}
 	*/
 
-	switch (imageCollections.type()) {
+	switch (imageDataSet.type()) {
 		case ImageCollectionType::Sequence:
 		{
-			const auto sequence = imageCollections.map().first();
-
 			points.setProperty("type", "SEQUENCE");
-			points.setProperty("noImages", sequence.noImages());
-			points.setProperty("imageSize", sequence.imageSize());
+			points.setProperty("noImages", imageDataSet.noImages());
+			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;
 		}
 			
 		case ImageCollectionType::Stack:
 		{
-			const auto stack = imageCollections.map().first();
-
+			qDebug() << "asdasdasasdasd[[[[[[";
 			points.setProperty("type", "STACK");
-			points.setProperty("noImages", stack.noImages());
-			points.setProperty("imageSize", stack.imageSize());
+			points.setProperty("noImages", imageDataSet.noImages());
+			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;
 		}
 

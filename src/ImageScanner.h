@@ -20,19 +20,22 @@ public:
 	QStringList	imageTypes() const;
 	void setImageTypes(const QStringList& imageTypes);
 
+	ImageCollections& scanned();
+
 public:
 	virtual void scan() = 0;
 
 signals:
 	void becameDirty();
 	void beginScan();
-	void endScan(ImageCollections& imageCollections);
+	void endScan(const ImageCollections& scannedImageCollections);
 	void directoryChanged(const QString& directory);
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);
 
 protected:
-	QSettings		_settings;
-	QString			_directory;
-	QStringList		_imageTypes;
+	QSettings			_settings;
+	QString				_directory;
+	QStringList			_imageTypes;
+	ImageCollections	_scanned;
 };

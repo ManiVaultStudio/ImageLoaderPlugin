@@ -24,8 +24,7 @@ void ImageStackScanner::scan()
 
 	auto imageCollections = ImageCollections(ImageCollectionType::Stack);
 	
-	
-	scanDir(_directory, imageCollections);
+	scanDir(_directory);
 
 	const auto noStacks		= imageCollections.map().size();
 	const auto hasStacks	= noStacks > 0;
@@ -37,10 +36,10 @@ void ImageStackScanner::scan()
 		emit message(QString("Found %1 image stack(s)").arg(noStacks));
 	}
 
-	emit endScan(imageCollections);
+	emit endScan(_scanned);
 }
 
-void ImageStackScanner::scanDir(const QString& directory, ImageCollections& imageCollections)
+void ImageStackScanner::scanDir(const QString& directory)
 {
 	auto subDirectories = QDir(directory);
 
@@ -54,7 +53,7 @@ void ImageStackScanner::scanDir(const QString& directory, ImageCollections& imag
 
 		qDebug() << "Found directory: " << dirList.at(i);
 
-		scanDir(imageFilePath, imageCollections);
+		scanDir(imageFilePath);
 	}
 
 	auto imageFiles = QDir(directory);
@@ -84,13 +83,13 @@ void ImageStackScanner::scanDir(const QString& directory, ImageCollections& imag
 			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
 
 			
-			if (!imageCollections.map().contains(sizeString)) {
-				imageCollections.map()[sizeString] = ImageCollection(size);
+			if (!_scanned.map().contains(sizeString)) {
+				_scanned.map()[sizeString] = ImageCollection(size);
 			}
 			
-			imageCollections.map()[sizeString].add(imageFilePath);
+			_scanned.map()[sizeString].add(imageFilePath);
 		}
 
-		scanDir(imageFilePath, imageCollections);
+		scanDir(imageFilePath);
 	}
 }

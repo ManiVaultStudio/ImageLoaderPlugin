@@ -25,11 +25,12 @@ private:
 	void onBecameDirty();
 	void onPickDirectory();
 	void onDirectoryChanged(const QString& directory);
-	void onLoad();
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& dataSetName);
 	void onBeginScan();
-	void onEndScan(const ImageCollections& imageCollections);
+	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onBeginLoad();
-	void onEndLoad();
+	void onEndLoad(ImageDataSet& imageDataSet);
 
 signals:
 	void message(const QString& message);

@@ -14,15 +14,13 @@ public:
 	int noImages() const;
 	QSize imageSize() const;
 	void setImageSize(const QSize& imageSize);
-	int noDimensions() const;
-	void setNoDimensions(const int& noDimensions);
+	
 	QStringList	imageFilePaths() const;
 
 	void add(const QString& imageFilePath);
 
 protected:
 	QSize			_imageSize;
-	int				_noDimensions;
 	QStringList		_imageFilePaths;
 };
 

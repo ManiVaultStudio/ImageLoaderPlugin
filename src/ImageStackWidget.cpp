@@ -11,23 +11,24 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
 	_scanner(),
-	_scanned(ImageCollectionType::Stack),
 	_loader(ImageCollectionType::Stack)
 {
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setDatasetName);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
 	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 	
+	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageStackWidget::onEndLoad);
+	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &ImageStackWidget::onDatasetNameChanged);
+
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
-
-	connect(&_scanned, &ImageCollections::datasetNameChanged, this, &ImageStackWidget::onDatasetNameChanged);
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
@@ -54,41 +55,37 @@ void ImageStackWidget::onDirectoryChanged(const QString& directory)
 
 void ImageStackWidget::onLoadPushButtonClicked()
 {
-	ImageCollections scanned = _scanned;
-
-	foreach(QString key, scanned.map().keys()) {
+	foreach(QString key, _scanner.scanned().map().keys()) {
 		if (key != _ui->stacksComboBox->currentText()) {
-			scanned.map().remove(key);
+			_scanner.scanned().map().remove(key);
 		}
 	}
 
-	_loader.load(scanned);
+	_loader.load(_scanner.scanned());
 
 	_ui->loadPushButton->setEnabled(false);
 }
 
-void ImageStackWidget::onDatasetNameChanged(const QString& text)
+void ImageStackWidget::onDatasetNameChanged(const QString& dataSetName)
 {
-	_ui->loadPushButton->setEnabled(!text.isEmpty() && _scanned.map().size() > 0);
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned().loadable());
 }
 
 void ImageStackWidget::onBeginScan()
 {
 }
 
-void ImageStackWidget::onEndScan(ImageCollections& imageCollections)
+void ImageStackWidget::onEndScan(const ImageCollections& scannedImageCollections)
 {
-	_scanned = imageCollections;
+	const auto loadable = _scanner.scanned().loadable();
 
-	const auto canLoad = _scanned.map().size() > 0;
-
-	_ui->datasetNameLabel->setEnabled(canLoad);
-	_ui->datasetNameLineEdit->setEnabled(canLoad);
-	_ui->stacksComboBox->setEnabled(canLoad);
-	_ui->loadPushButton->setEnabled(canLoad);
+	_ui->datasetNameLabel->setEnabled(loadable);
+	_ui->datasetNameLineEdit->setEnabled(loadable);
+	_ui->stacksComboBox->setEnabled(loadable);
+	_ui->loadPushButton->setEnabled(loadable);
 
 	_ui->stacksComboBox->clear();
-	_ui->stacksComboBox->addItems(_scanned.map().keys());
+	_ui->stacksComboBox->addItems(_scanner.scanned().map().keys());
 }
 
 void ImageStackWidget::onBeginLoad()
@@ -96,10 +93,12 @@ void ImageStackWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad(ImageCollections& imageCollections)
+void ImageStackWidget::onEndLoad(ImageDataSet& imageDataSet)
 {
+	qDebug() << "onEndLoad";
+
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addDataSet(imageCollections);
+	_imageLoaderPlugin->addImageDataSet(imageDataSet);
 }

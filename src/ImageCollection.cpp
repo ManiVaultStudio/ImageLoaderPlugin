@@ -4,14 +4,12 @@
 
 ImageCollection::ImageCollection() :
 	_imageSize(),
-	_noDimensions(),
 	_imageFilePaths()
 {
 }
 
 ImageCollection::ImageCollection(const QSize& imageSize) :
 	_imageSize(imageSize),
-	_noDimensions(imageSize.width() * imageSize.height()),
 	_imageFilePaths()
 {
 }
@@ -29,16 +27,6 @@ QSize ImageCollection::imageSize() const
 void ImageCollection::setImageSize(const QSize& imageSize)
 {
 	_imageSize = imageSize;
-}
-
-int ImageCollection::noDimensions() const
-{
-	return _noDimensions;
-}
-
-void ImageCollection::setNoDimensions(const int& noDimensions)
-{
-	_noDimensions = noDimensions;
 }
 
 QStringList ImageCollection::imageFilePaths() const

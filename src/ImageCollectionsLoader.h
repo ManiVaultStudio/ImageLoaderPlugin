@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImageCollections.h"
+#include "ImageDataSet.h"
 #include "SubsampleImageSettings.h"
 
 #include <QObject>
@@ -15,18 +16,21 @@ public:
 	ImageCollectionType type() const;
 	SubsampleImageSettings& subsampleImageSettings();
 
-	void load(ImageCollections& imageCollections);
+	void load(const ImageCollections& scannedImageCollections);
 
 public:
 	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
 	void setSetting(const QString& name, const QVariant& value);
+	QString datasetName() const;
+	void setDatasetName(const QString& datasetName);
 
 private:
 	void loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, const int& noImages, FloatVector& pointsData);
 
 signals:
+	void datasetNameChanged(const QString&);
 	void beginLoad();
-	void endLoad(ImageCollections& imageCollections);
+	void endLoad(ImageDataSet& imageDataSet);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 	void message(const QString& message);
 
@@ -35,5 +39,6 @@ protected:
 
 private:
 	ImageCollectionType		_type;
+	QString					_datasetName;
 	SubsampleImageSettings	_subsampleImageSettings;
 };

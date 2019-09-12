@@ -16,15 +16,17 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 {
 	_ui->setupUi(this);
 	
-	//connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoad);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
+	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadPushButtonClicked);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, this, &MultiPartImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
-
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
+	
 	connect(&_loader, &ImageCollectionsLoader::message, this, &MultiPartImageSequenceWidget::message);
+	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &MultiPartImageSequenceWidget::onDatasetNameChanged);
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
@@ -65,9 +67,14 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 	_scanner.scan();
 }
 
-void MultiPartImageSequenceWidget::onLoad()
+void MultiPartImageSequenceWidget::onLoadPushButtonClicked()
 {
 	//qDebug() << _ui->imagesListWidget->item
+}
+
+void MultiPartImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
+{
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned().loadable());
 }
 
 void MultiPartImageSequenceWidget::onBeginScan()
@@ -75,7 +82,7 @@ void MultiPartImageSequenceWidget::onBeginScan()
 	qDebug() << "Scanning started";
 }
 
-void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& imageCollections)
+void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImageCollections)
 {
 	/*
 	qDebug() << "Scanning ended";
@@ -103,7 +110,7 @@ void MultiPartImageSequenceWidget::onBeginLoad()
 {
 }
 
-void MultiPartImageSequenceWidget::onEndLoad()
+void MultiPartImageSequenceWidget::onEndLoad(ImageDataSet& imageDataSet)
 {
 	//_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
 }

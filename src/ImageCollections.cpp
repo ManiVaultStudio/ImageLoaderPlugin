@@ -2,18 +2,10 @@
 
 #include <QDebug>
 
-ImageCollections::ImageCollections(const ImageCollectionType& type) :
+ImageCollections::ImageCollections(const ImageCollectionType& type /*= ImageCollectionType::Sequence*/) :
 	_type(type),
-	_datasetName(),
-	_map(),
-	_pointsData()
+	_map()
 {
-}
-
-ImageCollections::ImageCollections(const ImageCollections& other) :
-	ImageCollections(other._type)
-{
-	*this = other;
 }
 
 ImageCollections::~ImageCollections()
@@ -25,32 +17,9 @@ ImageCollectionType ImageCollections::type() const
 	return _type;
 }
 
-QString ImageCollections::datasetName() const
+bool ImageCollections::loadable() const
 {
-	return _datasetName;
-}
-
-void ImageCollections::setDatasetName(const QString& datasetName)
-{
-	if (datasetName == _datasetName)
-		return;
-
-	_datasetName = datasetName;
-
-	emit datasetNameChanged(_datasetName);
-}
-
-FloatVector& ImageCollections::pointsData()
-{
-	return _pointsData;
-}
-
-int ImageCollections::noDimensions() const
-{
-	if (_map.isEmpty())
-		return 0;
-
-	return _map.first().noDimensions();
+	return _map.size() > 0;
 }
 
 QDebug operator<<(QDebug dbg, ImageCollections& imageCollections)

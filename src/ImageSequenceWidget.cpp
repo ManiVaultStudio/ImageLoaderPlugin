@@ -11,7 +11,6 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() },
 	_scanner(),
-	_scanned(ImageCollectionType::Sequence),
 	_loader(ImageCollectionType::Sequence)
 {
 	_ui->setupUi(this);
@@ -30,7 +29,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_scanned, &ImageCollections::setDatasetName);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
 	connect(&_scanner, &ImageSequenceScanner::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageSequenceScanner::becameDirty, this, &ImageSequenceWidget::onBecameDirty);
@@ -38,11 +37,10 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
 	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
 	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
+	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
 	
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
-
-	connect(&_scanned, &ImageCollections::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
@@ -67,17 +65,13 @@ void ImageSequenceWidget::onBeginScan()
 {
 }
 
-void ImageSequenceWidget::onEndScan(ImageCollections& imageCollections)
+void ImageSequenceWidget::onEndScan(const ImageCollections& scannedImageCollections)
 {
-	_scanned = imageCollections;
+	const auto loadable = _scanner.scanned().loadable();
 
-	qDebug() << imageCollections;
-
-	const auto canLoad = _scanned.map().size() > 0;
-
-	_ui->datasetNameLabel->setEnabled(canLoad);
-	_ui->datasetNameLineEdit->setEnabled(canLoad);
-	_ui->loadPushButton->setEnabled(canLoad);
+	_ui->datasetNameLabel->setEnabled(loadable);
+	_ui->datasetNameLineEdit->setEnabled(loadable);
+	_ui->loadPushButton->setEnabled(loadable);
 }
 
 void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
@@ -90,14 +84,14 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 void ImageSequenceWidget::onLoadPushButtonClicked()
 {
-	_loader.load(_scanned);
+	_loader.load(_scanner.scanned());
 
 	_ui->loadPushButton->setEnabled(false);
 }
 
-void ImageSequenceWidget::onDatasetNameChanged(const QString& text)
+void ImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
 {
-	_ui->loadPushButton->setEnabled(!text.isEmpty() &&  _scanned.map().size() > 0);
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() &&  _scanner.scanned().loadable());
 }
 
 void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
@@ -130,10 +124,10 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad(ImageCollections& imageCollections)
+void ImageSequenceWidget::onEndLoad(ImageDataSet& imageDataSet)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addDataSet(imageCollections);
+	_imageLoaderPlugin->addImageDataSet(imageDataSet);
 }

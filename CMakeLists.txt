@@ -33,6 +33,8 @@ set(PLUGIN_SOURCES
 	src/SubsampleImageSettings.cpp
 	src/SubsampleImageSettingsWidget.h
 	src/SubsampleImageSettingsWidget.cpp
+	src/ImageDataset.h
+	src/ImageDataset.cpp
     src/Common.h
 )
 

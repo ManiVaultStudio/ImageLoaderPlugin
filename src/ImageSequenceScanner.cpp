@@ -52,12 +52,7 @@ void ImageSequenceScanner::scan()
 
 	emit message("Scanning for image files...");
 
-	auto imageCollections	= ImageCollections(ImageCollectionType::Sequence);
-	auto imageCollection	= ImageCollection(_imageSize);
-	
-	const auto noDimensions = _imageSize.width() * _imageSize.height();
-
-	imageCollection.setNoDimensions(noDimensions);
+	auto imageCollection = ImageCollection(_imageSize);
 
 	scanDir(_directory, imageCollection);
 
@@ -66,8 +61,8 @@ void ImageSequenceScanner::scan()
 	if (noImages > 0) {
 		const auto datasetName = QDir(_directory).dirName();
 
-		imageCollections.setDatasetName(datasetName);
-		imageCollections.set(datasetName, imageCollection);
+		// _scanned.setDatasetName(datasetName);
+		_scanned.set(datasetName, imageCollection);
 
 		emit message(QString("Found %1 images").arg(noImages));
 	}
@@ -75,7 +70,7 @@ void ImageSequenceScanner::scan()
 		emit message("No images were found...");
 	}
 
-	emit endScan(imageCollections);
+	emit endScan(_scanned);
 }
 
 void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& imageCollection)

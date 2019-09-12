@@ -5,7 +5,10 @@
 #include <QSettings>
 
 ImageScanner::ImageScanner(const ImageCollectionType& type) :
-	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type)))
+	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
+	_directory(),
+	_imageTypes(),
+	_scanned()
 {
 	const auto directory = _settings.value("Scan/Directory", "").toString();
 
@@ -54,4 +57,9 @@ void ImageScanner::setImageTypes(const QStringList& imageTypes)
 	emit imageTypesChanged(_imageTypes);
 
 	emit becameDirty();
+}
+
+ImageCollections & ImageScanner::scanned()
+{
+	return _scanned;
 }

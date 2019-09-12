@@ -8,6 +8,7 @@
 ImageCollectionsLoader::ImageCollectionsLoader(const ImageCollectionType& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
 	_type(type),
+	_datasetName(),
 	_subsampleImageSettings(&_settings)
 {
 }
@@ -32,15 +33,36 @@ void ImageCollectionsLoader::setSetting(const QString& name, const QVariant& val
 	_settings.setValue(name, value);
 }
 
-void ImageCollectionsLoader::load(ImageCollections& imageCollections)
+QString ImageCollectionsLoader::datasetName() const
+{
+	return _datasetName;
+}
+
+void ImageCollectionsLoader::setDatasetName(const QString& datasetName)
+{
+	if (datasetName == _datasetName)
+		return;
+
+	_datasetName = datasetName;
+
+	emit datasetNameChanged(_datasetName);
+}
+
+void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollections)
 {
 	emit beginLoad();
+
+	ImageCollections imageCollections = scannedImageCollections;
+
+	auto imageDataSet = ImageDataSet(_type);
+
+	imageDataSet.setName(_datasetName);
 
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:
 		{
-			ImageCollection& sequence = imageCollections.map().first();
+			ImageCollection sequence = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled()) {
 				sequence.setImageSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
@@ -50,14 +72,19 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			const auto noImages			= sequence.noImages();
 			const auto imageSize		= sequence.imageSize();
 			const auto noDimensions		= imageSize.width() * imageSize.height();
+			const auto noPoints			= noImages * noDimensions;
 			const auto total			= noImages;
 
-			FloatVector& pointsData = imageCollections.pointsData();
+			imageDataSet.setNoImages(noImages);
+			imageDataSet.setImageSize(imageSize);
+			imageDataSet.setNoDimensions(noDimensions);
 
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
 
+			FloatVector& pointsData = imageDataSet.pointsData();
+
 			pointsData.clear();
-			pointsData.reserve(noImages * noDimensions);
+			pointsData.resize(noPoints);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
 				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
@@ -75,7 +102,7 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 
 		case ImageCollectionType::Stack:
 		{
-			ImageCollection& stack = imageCollections.map().first();
+			ImageCollection stack = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled()) {
 				stack.setImageSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
@@ -84,15 +111,21 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			const auto imageFilePaths	= stack.imageFilePaths();
 			const auto noImages			= stack.noImages();
 			const auto imageSize		= stack.imageSize();
-			const auto noDimensions		= imageSize.width() * imageSize.height();
+			const auto noPixels			= imageSize.width() * imageSize.height();
+			const auto noDimensions		= noImages;
+			const auto noPoints			= noImages * noPixels;
 			const auto total			= noImages;
 
-			FloatVector& pointsData = imageCollections.pointsData();
+			imageDataSet.setNoImages(noImages);
+			imageDataSet.setImageSize(imageSize);
+			imageDataSet.setNoDimensions(noImages);
+
+			FloatVector& pointsData = imageDataSet.pointsData();
 
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
 
 			pointsData.clear();
-			pointsData.resize(noImages * noDimensions);
+			pointsData.resize(noPoints);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
 				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
@@ -112,7 +145,9 @@ void ImageCollectionsLoader::load(ImageCollections& imageCollections)
 			break;
 	}
 
-	emit endLoad(imageCollections);
+	qDebug() << imageDataSet;
+
+	emit endLoad(imageDataSet);
 }
 
 void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, const int& noImages, FloatVector& pointsData)
