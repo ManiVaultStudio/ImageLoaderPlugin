@@ -115,10 +115,17 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			const auto noDimensions		= noImages;
 			const auto noPoints			= noImages * noPixels;
 			const auto total			= noImages;
+			
+			auto dimensionNames = QStringList();
+
+			foreach(const QString& imageFilePath, imageFilePaths) {
+				dimensionNames << QFileInfo(imageFilePath).fileName();
+			}
 
 			imageDataSet.setNoImages(noImages);
 			imageDataSet.setImageSize(imageSize);
 			imageDataSet.setNoDimensions(noImages);
+			imageDataSet.setDimensionNames(dimensionNames);
 
 			FloatVector& pointsData = imageDataSet.pointsData();
 

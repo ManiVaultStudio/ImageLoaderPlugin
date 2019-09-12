@@ -43,13 +43,11 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 	points.numDimensions = imageDataSet.noDimensions();
 	points.data.swap(imageDataSet.pointsData());
 
-	/*
 	points.dimNames.clear();
 
-	foreach(const QString &dimensionName, dimensionNames) {
+	foreach(const QString &dimensionName, imageDataSet.dimensionNames()) {
 		points.dimNames.push_back(dimensionName);
 	}
-	*/
 
 	switch (imageDataSet.type()) {
 		case ImageCollectionType::Sequence:
@@ -62,8 +60,15 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 			
 		case ImageCollectionType::Stack:
 		{
-			qDebug() << "asdasdasasdasd[[[[[[";
 			points.setProperty("type", "STACK");
+			points.setProperty("noImages", imageDataSet.noImages());
+			points.setProperty("imageSize", imageDataSet.imageSize());
+			break;
+		}
+
+		case ImageCollectionType::MultiPartSequence:
+		{
+			points.setProperty("type", "MULTIPART");
 			points.setProperty("noImages", imageDataSet.noImages());
 			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;

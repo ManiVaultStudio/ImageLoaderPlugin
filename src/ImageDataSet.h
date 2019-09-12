@@ -20,6 +20,8 @@ public:
 	void setImageSize(const QSize& imageSize);
 	int noDimensions() const;
 	void setNoDimensions(const int& noDimensions);
+	QStringList dimensionNames() const;
+	void setDimensionNames(const QStringList& dimensionNames);
 
 	FloatVector& pointsData();
 
@@ -29,6 +31,7 @@ protected:
 	int						_noImages;
 	QSize					_imageSize;
 	int						_noDimensions;
+	QStringList				_dimensionNames;
 	FloatVector				_pointsData;
 };
 

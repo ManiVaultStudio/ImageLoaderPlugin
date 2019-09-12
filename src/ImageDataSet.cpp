@@ -8,6 +8,7 @@ ImageDataSet::ImageDataSet(const ImageCollectionType& type) :
 	_noImages(0),
 	_imageSize(),
 	_noDimensions(0),
+	_dimensionNames(),
 	_pointsData()
 {
 }
@@ -60,6 +61,16 @@ int ImageDataSet::noDimensions() const
 void ImageDataSet::setNoDimensions(const int& noDimensions)
 {
 	_noDimensions = noDimensions;
+}
+
+QStringList ImageDataSet::dimensionNames() const
+{
+	return _dimensionNames;
+}
+
+void ImageDataSet::setDimensionNames(const QStringList & dimensionNames)
+{
+	_dimensionNames = dimensionNames;
 }
 
 FloatVector& ImageDataSet::pointsData()
