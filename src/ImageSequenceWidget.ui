@@ -64,6 +64,9 @@
    </item>
    <item row="3" column="0" colspan="2">
     <widget class="SubsampleImageSettingsWidget" name="subsampleImageSettingsWidget" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -221,7 +224,7 @@
           <item>
            <widget class="QLineEdit" name="directoryLineEdit">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">

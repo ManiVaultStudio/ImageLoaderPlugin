@@ -1,4 +1,5 @@
 #include "ImageLoaderPlugin.h"
+#include "ImageLoaderDialog.h"
 
 #include "PointsPlugin.h"
 #include "Set.h"
@@ -6,11 +7,7 @@
 #include <QtCore>
 #include <QtDebug>
 
-#include <QImageReader>
 #include <vector>
-#include <QInputDialog>
-
-#include "ImageLoaderDialog.h"
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
@@ -51,32 +48,23 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 
 	switch (imageDataSet.type()) {
 		case ImageCollectionType::Sequence:
-		{
 			points.setProperty("type", "SEQUENCE");
-			points.setProperty("noImages", imageDataSet.noImages());
-			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;
-		}
 			
 		case ImageCollectionType::Stack:
-		{
 			points.setProperty("type", "STACK");
-			points.setProperty("noImages", imageDataSet.noImages());
-			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;
-		}
 
 		case ImageCollectionType::MultiPartSequence:
-		{
 			points.setProperty("type", "MULTIPART");
-			points.setProperty("noImages", imageDataSet.noImages());
-			points.setProperty("imageSize", imageDataSet.imageSize());
 			break;
-		}
 
 		default:
 			break;
 	}
+
+	points.setProperty("noImages", imageDataSet.noImages());
+	points.setProperty("imageSizes", imageDataSet.imageSizes());
 
 	_core->notifyDataAdded(datasetName);
 }

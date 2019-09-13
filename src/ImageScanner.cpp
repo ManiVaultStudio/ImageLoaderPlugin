@@ -10,21 +10,24 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 	_imageTypes(),
 	_scanned()
 {
-	const auto directory = _settings.value("Scan/Directory", "").toString();
-
-	if (QDir(directory).exists()) {
-		_directory = _settings.value("Scan/Directory", "").toString();
-	}
-	else {
-		_directory = "";
-	}
-
-	_directory	= _settings.value("Scan/Directory", "").toString();
-	_imageTypes	= _settings.value("Scan/ImageTypes", "").toStringList();
 }
 
 ImageScanner::~ImageScanner()
 {
+}
+
+void ImageScanner::load()
+{
+	const auto directory = _settings.value("Scan/Directory", "").toString();
+
+	if (QDir(directory).exists()) {
+		setDirectory(_settings.value("Scan/Directory", "").toString());
+	}
+	else {
+		setDirectory("");
+	}
+
+	setImageTypes(_settings.value("Scan/ImageTypes", "").toStringList());
 }
 
 QString ImageScanner::directory() const

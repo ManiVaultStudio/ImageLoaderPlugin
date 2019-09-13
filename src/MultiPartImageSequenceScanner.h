@@ -14,7 +14,4 @@ public:
 
 	void scan();
 	void scanDir(const QString& directory);
-
-private:
-	QStringList	_scannedFiles;
 };

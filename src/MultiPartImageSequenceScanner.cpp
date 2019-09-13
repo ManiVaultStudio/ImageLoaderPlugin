@@ -1,4 +1,5 @@
 #include "MultiPartImageSequenceScanner.h"
+#include "ImageUtilities.h"
 
 #include <QDebug>
 #include <QDir>
@@ -19,10 +20,9 @@ MultiPartImageSequenceScanner::~MultiPartImageSequenceScanner()
 
 void MultiPartImageSequenceScanner::scan()
 {
-	/*
 	emit beginScan();
 
-	_scannedFiles.clear();
+	_scanned.reset();
 
 	auto imageFiles = QDir(_directory);
 
@@ -39,23 +39,41 @@ void MultiPartImageSequenceScanner::scan()
 
 	const auto fileNames = imageFiles.entryList();
 
-	auto imageFilePaths = QStringList();
+	auto multiPartTiffs = QMap<int, QStringList>();
 
 	for (int i = 0; i < fileNames.size(); ++i)
 	{
-		imageFilePaths << QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileNames.at(i));
+		const auto filePath		= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileNames.at(i));
+		const auto pageCount	= freeImageGetPageCount(filePath);
+
+		if (!multiPartTiffs.contains(pageCount)) {
+			multiPartTiffs[pageCount] = QStringList();
+		}
+
+		multiPartTiffs[pageCount] << filePath;
 	}
 
-	const auto noStacks		= imageFilePaths.size();
-	const auto hasStacks	= noStacks > 0;
+	multiPartTiffs.remove(1);
 
-	if (noStacks == 0) {
-		emit message("No multipart images were found, try changing the directory");
+	if (multiPartTiffs.size() >= 1) {
+		const auto imageFilePaths = multiPartTiffs.last();
+
+		const auto noDimensions = multiPartTiffs.keys().last();
+
+		foreach(const QString& imageFilePath, imageFilePaths) {
+			auto imageCollection = ImageCollection(freeImageGetSize(imageFilePath));
+
+			imageCollection.add(imageFilePath);
+			imageCollection.setNoDimensions(noDimensions);
+
+			_scanned.map()[imageFilePath] = imageCollection;
+		}
+
+		emit message(QString("Found %1 multipart image(s)").arg(imageFilePaths.size()));
 	}
 	else {
-		emit message(QString("Found %1 multipart image(s)").arg(noStacks));
+		emit message("No multipart images were found, try changing the directory");
 	}
 
-	emit endScan(imageFilePaths);
-	*/
+	emit endScan(_scanned);
 }

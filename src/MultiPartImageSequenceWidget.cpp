@@ -16,6 +16,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 {
 	_ui->setupUi(this);
 	
+	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &MultiPartImageSequenceScanner::setDirectory);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadPushButtonClicked);
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
@@ -30,7 +31,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
-	_scanner.setDirectory(_scanner.directory());
+	_scanner.load();
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()
@@ -69,7 +70,9 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 void MultiPartImageSequenceWidget::onLoadPushButtonClicked()
 {
-	//qDebug() << _ui->imagesListWidget->item
+	_loader.load(_scanner.scanned());
+
+	_ui->loadPushButton->setEnabled(false);
 }
 
 void MultiPartImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
@@ -79,16 +82,20 @@ void MultiPartImageSequenceWidget::onDatasetNameChanged(const QString& dataSetNa
 
 void MultiPartImageSequenceWidget::onBeginScan()
 {
-	qDebug() << "Scanning started";
 }
 
 void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImageCollections)
 {
-	/*
-	qDebug() << "Scanning ended";
+	const auto loadable = _scanner.scanned().loadable();
+
+	_ui->imagesListWidget->setEnabled(loadable);
+	_ui->datasetNameLabel->setEnabled(loadable);
+	_ui->datasetNameLineEdit->setEnabled(loadable);
+	_ui->loadPushButton->setEnabled(loadable);
 
 	_ui->imagesListWidget->clear();
 
+	/*
 	foreach(QString imageFilePath, imageFilePaths)
 	{
 		const auto imageFileName = QFileInfo(imageFilePath).fileName();
@@ -108,9 +115,15 @@ void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImag
 
 void MultiPartImageSequenceWidget::onBeginLoad()
 {
+	qDebug() << "onBeginLoad";
 }
 
 void MultiPartImageSequenceWidget::onEndLoad(ImageDataSet& imageDataSet)
 {
-	//_imageLoaderPlugin->addSequence(ImageCollectionType::Sequence, _ui->datasetNameLineEdit->text(), _imageSequence.imageSize(), _imageSequence.noImages(), _imageSequence.noDimensions(), _imageSequence.pointsData(), _imageSequence.dimensionNames());
+	qDebug() << "onEndLoad";
+
+	_ui->loadPushButton->setEnabled(false);
+	_ui->loadPushButton->setText("Load");
+
+	_imageLoaderPlugin->addImageDataSet(imageDataSet);
 }

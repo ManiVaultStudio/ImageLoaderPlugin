@@ -19,9 +19,13 @@ public:
 
 	void add(const QString& imageFilePath);
 
+	int noDimensions() const;
+	void setNoDimensions(const int& noDimensions);
+
 protected:
 	QSize			_imageSize;
 	QStringList		_imageFilePaths;
+	int				_noDimensions;
 };
 
 QDebug operator<<(QDebug dbg, const class ImageCollection& imageCollection);

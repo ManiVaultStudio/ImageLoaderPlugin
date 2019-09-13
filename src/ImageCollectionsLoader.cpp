@@ -65,19 +65,18 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			ImageCollection sequence = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled())
-				imageDataSet.setImageSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				imageDataSet.setImageSize("0", sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
 			else
-				imageDataSet.setImageSize(sequence.imageSize());
+				imageDataSet.setImageSize("0", sequence.imageSize());
 
 			const auto imageFilePaths	= sequence.imageFilePaths();
 			const auto noImages			= sequence.noImages();
-			const auto imageSize		= sequence.imageSize();
+			const auto imageSize		= imageDataSet.imageSize("0");
 			const auto noDimensions		= imageSize.width() * imageSize.height();
 			const auto noPoints			= noImages * noDimensions;
 			const auto total			= noImages;
 
 			imageDataSet.setNoImages(noImages);
-			imageDataSet.setImageSize(imageSize);
 			imageDataSet.setNoDimensions(noDimensions);
 
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
@@ -106,13 +105,13 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			ImageCollection stack = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled())
-				imageDataSet.setImageSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				imageDataSet.setImageSize("0", stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
 			else
-				imageDataSet.setImageSize(stack.imageSize());
+				imageDataSet.setImageSize("0", stack.imageSize());
 
 			const auto imageFilePaths	= stack.imageFilePaths();
 			const auto noImages			= stack.noImages();
-			const auto imageSize		= imageDataSet.imageSize();
+			const auto imageSize		= imageDataSet.imageSize("0");
 			const auto noPixels			= imageSize.width() * imageSize.height();
 			const auto noDimensions		= noImages;
 			const auto noPoints			= noImages * noPixels;
@@ -143,6 +142,62 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
+
+			emit message(QString("%1 image(s) loaded").arg(total));
+
+			break;
+		}
+
+		case ImageCollectionType::MultiPartSequence:
+		{
+			auto imageFilePaths = QStringList();
+
+			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
+				const auto imageFilePath = imageCollection.imageFilePaths().first();
+
+				imageFilePaths << imageFilePath;
+
+				if (_subsampleImageSettings.enabled())
+					imageDataSet.setImageSize(imageFilePath, imageCollection.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				else
+					imageDataSet.setImageSize(imageFilePath, imageCollection.imageSize());
+			}
+
+			const auto noImages		= imageFilePaths.size();
+			const auto noDimensions = noImages;
+			const auto total		= noImages;
+
+			imageDataSet.setNoImages(noImages);
+			imageDataSet.setNoDimensions(imageCollections.map().first().noDimensions());
+
+			qDebug() << imageDataSet;
+
+			auto dimensionNames = QStringList();
+
+			foreach(const QString& imageFilePath, imageFilePaths) {
+			}
+			/*
+
+			imageDataSet.setNoImages(noImages);
+			imageDataSet.setNoDimensions(noImages);
+			imageDataSet.setDimensionNames(dimensionNames);
+
+			FloatVector& pointsData = imageDataSet.pointsData();
+
+			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
+
+			pointsData.clear();
+			pointsData.resize(noPoints);
+
+			foreach(const QString& imageFilePath, imageFilePaths) {
+				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
+
+				const auto done = imageFilePaths.indexOf(imageFilePath) + 1;
+				const auto percentage = 100.0f * (done / static_cast<float>(total));
+
+				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
+			}
+			*/
 
 			emit message(QString("%1 image(s) loaded").arg(total));
 

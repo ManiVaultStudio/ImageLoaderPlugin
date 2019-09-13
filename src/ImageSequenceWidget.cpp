@@ -25,6 +25,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->imageHeightSpinBox->setValue(_scanner.imageSize().height());
 
 	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &ImageSequenceWidget::onImageTypeChanged);
+	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageSequenceScanner::setDirectory);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onPickDirectory);
 	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
@@ -49,7 +50,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
-	emit _scanner.directoryChanged(_scanner.directory());
+	_scanner.load();
 }
 
 ImageSequenceWidget::~ImageSequenceWidget()
@@ -59,6 +60,8 @@ ImageSequenceWidget::~ImageSequenceWidget()
 void ImageSequenceWidget::onBecameDirty()
 {
 	_scanner.scan();
+
+	//_ui->subsampleImageSettingsWidget->setEnabled(_scanner.scanned().loadable());
 }
 
 void ImageSequenceWidget::onBeginScan()

@@ -12,6 +12,11 @@ ImageCollections::~ImageCollections()
 {
 }
 
+void ImageCollections::reset()
+{
+	_map.clear();
+}
+
 ImageCollectionType ImageCollections::type() const
 {
 	return _type;

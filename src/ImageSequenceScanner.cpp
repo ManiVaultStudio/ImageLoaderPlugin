@@ -52,6 +52,8 @@ void ImageSequenceScanner::scan()
 
 	emit message("Scanning for image files...");
 
+	_scanned.reset();
+
 	auto imageCollection = ImageCollection(_imageSize);
 
 	scanDir(_directory, imageCollection);

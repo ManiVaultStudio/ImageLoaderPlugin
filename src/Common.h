@@ -2,8 +2,9 @@
 
 #include <vector>
 
-
 #include <QStringList>
+#include <QMap>
+#include <QSize>
 
 enum class ImageCollectionType
 {

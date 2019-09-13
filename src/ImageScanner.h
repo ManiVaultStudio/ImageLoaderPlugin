@@ -14,6 +14,8 @@ public:
 	ImageScanner(const ImageCollectionType& type);
 	~ImageScanner();
 
+	void load();
+
 	QString	directory() const;
 	void setDirectory(const QString& directory);
 	

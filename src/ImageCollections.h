@@ -11,6 +11,8 @@ public:
 
 	void load();
 
+	void reset();
+
 	void set(const QString& name, const ImageCollection& imageCollection)
 	{
 		_map[name] = imageCollection;

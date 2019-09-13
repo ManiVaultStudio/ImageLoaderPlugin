@@ -6,7 +6,7 @@ ImageDataSet::ImageDataSet(const ImageCollectionType& type) :
 	_type(type),
 	_name(),
 	_noImages(0),
-	_imageSize(),
+	_imageSizes(),
 	_noDimensions(0),
 	_dimensionNames(),
 	_pointsData()
@@ -43,14 +43,28 @@ void ImageDataSet::setNoImages(const int& noImages)
 	_noImages = noImages;
 }
 
-QSize ImageDataSet::imageSize() const
+QMap<QString, QVariant> ImageDataSet::imageSizes() const
 {
-	return _imageSize;
+	auto imageSizes = QMap<QString, QVariant>();
+
+	foreach(const QString& imageName, _imageSizes.keys()) {
+		imageSizes[imageName] = QVariant(_imageSizes[imageName]);
+	}
+
+	return imageSizes;
 }
 
-void ImageDataSet::setImageSize(const QSize & imageSize)
+QSize ImageDataSet::imageSize(const QString& imageName) const
 {
-	_imageSize = imageSize;
+	if (!_imageSizes.contains(imageName))
+		return QSize();
+
+	return _imageSizes[imageName];
+}
+
+void ImageDataSet::setImageSize(const QString& imageName, const QSize & imageSize)
+{
+	_imageSizes[imageName] = imageSize;
 }
 
 int ImageDataSet::noDimensions() const

@@ -79,7 +79,7 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="directoryLineEdit">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">

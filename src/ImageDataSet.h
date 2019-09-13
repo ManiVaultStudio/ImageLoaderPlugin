@@ -4,6 +4,10 @@
 
 #include <QString>
 #include <QSize>
+#include <QMap>
+#include <QVariant>
+
+using ImageSizes = QMap<QString, QSize>;
 
 class ImageDataSet {
 public:
@@ -16,8 +20,9 @@ public:
 	void setType(const ImageCollectionType& type);
 	int noImages() const;
 	void setNoImages(const int& noImages);
-	QSize imageSize() const;
-	void setImageSize(const QSize& imageSize);
+	QMap<QString, QVariant> imageSizes() const;
+	QSize imageSize(const QString& imageName) const;
+	void setImageSize(const QString& imageName, const QSize& imageSize);
 	int noDimensions() const;
 	void setNoDimensions(const int& noDimensions);
 	QStringList dimensionNames() const;
@@ -29,7 +34,7 @@ protected:
 	ImageCollectionType		_type;
 	QString					_name;
 	int						_noImages;
-	QSize					_imageSize;
+	ImageSizes				_imageSizes;
 	int						_noDimensions;
 	QStringList				_dimensionNames;
 	FloatVector				_pointsData;
