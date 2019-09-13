@@ -56,6 +56,8 @@ void ImageSequenceScanner::scan()
 
 	auto imageCollection = ImageCollection(_imageSize);
 
+	imageCollection.setNoDimensions(_imageSize.width() * _imageSize.height());
+
 	scanDir(_directory, imageCollection);
 
 	const auto noImages = imageCollection.noImages();

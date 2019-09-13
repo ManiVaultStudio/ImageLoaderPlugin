@@ -26,6 +26,7 @@ public:
 
 private:
 	void loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, const int& noImages, FloatVector& pointsData);
+	void loadMultiPartImage(const QString& imageFilePath, const QSize& imageSize, const int& pointIndexOffset, const int& noPointsPerDimension, FloatVector& pointsData);
 
 signals:
 	void datasetNameChanged(const QString&);

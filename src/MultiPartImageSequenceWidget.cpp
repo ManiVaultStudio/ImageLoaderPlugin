@@ -88,6 +88,7 @@ void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImag
 {
 	const auto loadable = _scanner.scanned().loadable();
 
+	_ui->imagesLabel->setEnabled(loadable);
 	_ui->imagesListWidget->setEnabled(loadable);
 	_ui->datasetNameLabel->setEnabled(loadable);
 	_ui->datasetNameLineEdit->setEnabled(loadable);
