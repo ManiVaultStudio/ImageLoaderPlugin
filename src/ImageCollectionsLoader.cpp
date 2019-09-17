@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QFileInfo>
 
+#include <functional>
+
 ImageCollectionsLoader::ImageCollectionsLoader(const ImageCollectionType& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
 	_type(type),
@@ -58,6 +60,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 	imageDataSet.setName(_datasetName);
 
+
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:
@@ -72,7 +75,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			const auto imageFilePaths	= sequence.imageFilePaths();
 			const auto noImages			= sequence.noImages();
 			const auto imageSize		= imageDataSet.imageSize("0");
-			const auto noDimensions		= imageSize.width() * imageSize.height();
+			const auto noPixels			= imageSize.width() * imageSize.height();
+			const auto noDimensions		= noPixels;
 			const auto noPoints			= noImages * noDimensions;
 			const auto total			= noImages;
 
@@ -87,7 +91,14 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			pointsData.resize(noPoints);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
+				const auto imageIndex = imageFilePaths.indexOf(imageFilePath);
+
+				IndexerFunction indexer = [noPixels, imageIndex, imageSize](int x, int y) -> int {
+					const auto localPixelIndex = y * imageSize.width() + x;
+					return imageIndex * noPixels + localPixelIndex;
+				};
+
+				loadImage(imageFilePath, imageSize, indexer, pointsData);
 
 				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
 				const auto percentage	= 100.0f * (done / static_cast<float>(total));
@@ -95,7 +106,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
 
-			emit message(QString("%1 greyscaleImage(s) loaded").arg(total));
+			emit message(QString("%1 image(s) loaded").arg(total));
 
 			break;
 		}
@@ -135,21 +146,29 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			pointsData.resize(noPoints);
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				loadImage(imageFilePath, imageSize, imageFilePaths.indexOf(imageFilePath), noImages, pointsData);
+				const auto imageIndex = imageFilePaths.indexOf(imageFilePath);
 
-				const auto done = imageFilePaths.indexOf(imageFilePath) + 1;
-				const auto percentage = 100.0f * (done / static_cast<float>(total));
+				IndexerFunction indexer = [noImages, imageIndex, noPixels, imageSize](int x, int y) -> int {
+					const auto localPixelIndex = y * imageSize.width() + x;
+					return localPixelIndex * noImages + imageIndex;
+				};
+
+				loadImage(imageFilePath, imageSize, indexer, pointsData);
+
+				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
+				const auto percentage	= 100.0f * (done / static_cast<float>(total));
 
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
 
-			emit message(QString("%1 greyscaleImage(s) loaded").arg(total));
-
+			emit message(QString("%1 image(s) loaded").arg(total));
+			
 			break;
 		}
 
 		case ImageCollectionType::MultiPartSequence:
 		{
+			/*
 			auto imageFilePaths = QStringList();
 
 			int noPoints = 0;
@@ -222,7 +241,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			}
 			*/
 
-			// emit message(QString("%1 greyscaleImage(s) loaded").arg(total));
+			// emit message(QString("%1 greyscaleBitmap(s) loaded").arg(total));
 
 			break;
 		}
@@ -236,82 +255,94 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 	emit endLoad(imageDataSet);
 }
 
-void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const int& imageIndex, const int& noImages, FloatVector& pointsData)
+void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize, const IndexerFunction& indexer, FloatVector& pointsData)
+{
+	assert(bitmap != nullptr);
+
+	auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(bitmap);
+
+	if (greyscaleBitmap) {
+		const auto image_type = FreeImage_GetImageType(greyscaleBitmap);
+
+		const auto width	= FreeImage_GetWidth(greyscaleBitmap);
+		const auto height	= FreeImage_GetHeight(greyscaleBitmap);
+		const auto rescale	= QSize(width, height) != imageSize;
+
+		auto* rescaledBitmap = rescale ? FreeImage_Rescale(greyscaleBitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : greyscaleBitmap;
+
+		if (rescaledBitmap) {
+			for (unsigned y = 0; y < imageSize.height(); y++) {
+				const BYTE *const bits = FreeImage_GetScanLine(rescaledBitmap, y);
+
+				for (unsigned x = 0; x < imageSize.width(); x++) {
+					pointsData[indexer(x, y)] = static_cast<float>(bits[x]);
+				}
+			}
+
+			FreeImage_Unload(rescaledBitmap);
+		}
+
+		if (rescale)
+			FreeImage_Unload(greyscaleBitmap);
+	}
+}
+
+void ImageCollectionsLoader::loadImage(const QString& imageFilePath, const QSize& imageSize, const IndexerFunction& indexer, FloatVector& pointsData)
 {
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
-	auto* originalImage		= freeImageLoad(imageFilePath);
-	auto* greyscaleImage	= FreeImage_ConvertToGreyscale(originalImage);
+	auto* bitmap = freeImageLoad(imageFilePath);
+	
+	if (bitmap) {
+		loadBitmap(bitmap, imageSize, indexer, pointsData);
 
-	const auto image_type	= FreeImage_GetImageType(greyscaleImage);
-	const auto noPixels		= imageSize.width() * imageSize.height();
-
-	const auto width = FreeImage_GetWidth(greyscaleImage);
-	const auto height = FreeImage_GetHeight(greyscaleImage);
-
-	if (QSize(width, height) != imageSize) {
-		greyscaleImage = FreeImage_Rescale(greyscaleImage, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter()));
+		FreeImage_Unload(bitmap);
 	}
-
-	switch (image_type) {
-		case FIT_BITMAP: {
-			if (FreeImage_GetBPP(greyscaleImage) == 8) {
-				for (unsigned y = 0; y < imageSize.height(); y++) {
-					const BYTE *const bits = FreeImage_GetScanLine(greyscaleImage, y);
-					for (unsigned x = 0; x < imageSize.width(); x++) {
-						const auto localPixelIndex = y * imageSize.width() + x;
-
-						switch (_type)
-						{
-							case ImageCollectionType::Sequence:
-							{
-								const auto pointIndex = imageIndex * noPixels + localPixelIndex;
-								pointsData[pointIndex] = static_cast<float>(bits[x]);
-								break;
-							}
-
-							case ImageCollectionType::Stack:
-							{
-								const auto pointIndex = localPixelIndex * noImages + imageIndex;
-								pointsData[pointIndex] = static_cast<float>(bits[x]);
-								break;
-							}
-						}
-					}
-				}
-			}
-			break;
-		}
-	}
-
-	FreeImage_Unload(originalImage);
-	FreeImage_Unload(greyscaleImage);
 }
 
 void ImageCollectionsLoader::loadMultiPartImage(const QString& imageFilePath, const QSize& imageSize, const int& pointIndexOffset, const int& noPointsPerDimension, FloatVector& pointsData)
 {
 	/*
+	FIMULTIBITMAP* multiBitmap = freeImageOpenMultiBitmap(imageFilePath);
+
+	if (multiBitmap == nullptr)
+		return;
+
+	const auto noPages = freeImageGetPageCount(imageFilePath);
+
+	for (int i = 0; i < noPages; i++) {
+		auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(multiBitmap[i]);
+
+		FreeImage_Unload(greyscaleBitmap);
+	}
+
+	qDebug() << noPages;
+
+	FreeImage_CloseMultiBitmap(multiBitmap);
+
+	
 	const auto format = FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
 
-	auto* greyscaleImage = FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
+	auto* originalImage		= freeImageLoad(imageFilePath);
+	auto* greyscaleBitmap	= FreeImage_ConvertToGreyscale(freeImageLoad(imageFilePath));
 
-	const auto image_type	= FreeImage_GetImageType(greyscaleImage);
+	const auto image_type	= FreeImage_GetImageType(greyscaleBitmap);
 	const auto noPixels		= imageSize.width() * imageSize.height();
 
 	//qDebug() << image_type;
 
-	const auto width	= FreeImage_GetWidth(greyscaleImage);
-	const auto height	= FreeImage_GetHeight(greyscaleImage);
+	const auto width	= FreeImage_GetWidth(greyscaleBitmap);
+	const auto height	= FreeImage_GetHeight(greyscaleBitmap);
 
 	if (QSize(width, height) != imageSize) {
-		greyscaleImage = FreeImage_Rescale(greyscaleImage, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter()));
+		greyscaleBitmap = FreeImage_Rescale(greyscaleBitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter()));
 	}
 
 	switch (image_type) {
 		case FIT_BITMAP: {
-			if (FreeImage_GetBPP(greyscaleImage) == 8) {
+			if (FreeImage_GetBPP(greyscaleBitmap) == 8) {
 				for (unsigned y = 0; y < imageSize.height(); y++) {
-					const BYTE *const bits = FreeImage_GetScanLine(greyscaleImage, y);
+					const BYTE *const bits = FreeImage_GetScanLine(greyscaleBitmap, y);
 					for (unsigned x = 0; x < imageSize.width(); x++) {
 						const auto localPixelIndex = y * imageSize.width() + x;
 
