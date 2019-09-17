@@ -102,7 +102,7 @@
              <string>Subsampling ratio </string>
             </property>
             <property name="minimum">
-             <double>10.000000000000000</double>
+             <double>1.000000000000000</double>
             </property>
             <property name="maximum">
              <double>100.000000000000000</double>
@@ -115,7 +115,7 @@
           <item>
            <widget class="QSlider" name="ratioSlider">
             <property name="minimum">
-             <number>10</number>
+             <number>1</number>
             </property>
             <property name="maximum">
              <number>100</number>

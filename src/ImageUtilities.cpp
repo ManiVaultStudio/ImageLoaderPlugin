@@ -27,7 +27,7 @@ FIMULTIBITMAP* freeImageOpenMultiBitmap(const QString& imageFilePath)
 	const auto fileNameUtf8 = imageFilePath.toUtf8();
 	const auto format = FreeImage_GetFileType(fileNameUtf8);
 
-	return FreeImage_OpenMultiBitmap(FIF_TIFF, fileNameUtf8, true, false, false);
+	return FreeImage_OpenMultiBitmap(FIF_TIFF, fileNameUtf8, false, false, false);
 }
 
 int freeImageGetPageCount(const QString& imageFilePath)

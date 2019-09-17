@@ -29,9 +29,11 @@ public:
 	void setDatasetName(const QString& datasetName);
 
 private:
-	void loadBitmap(FIBITMAP* bitmap, const QSize & imageSize, const IndexerFunction& indexer, FloatVector & pointsData);
-	void loadImage(const QString& imageFilePath, const QSize& imageSize, const IndexerFunction& indexerFunction, FloatVector& pointsData);
-	void loadMultiPartImage(const QString& imageFilePath, const QSize& imageSize, const int& pointIndexOffset, const int& noPointsPerDimension, FloatVector& pointsData);
+	template<typename PointIndexMapper>
+	void loadBitmap(FIBITMAP* bitmap, const QSize & imageSize, const PointIndexMapper& pointIndexMapper, FloatVector & pointsData);
+
+	template<typename PointIndexMapper>
+	void loadImage(const QString& imageFilePath, const QSize& imageSize, const PointIndexMapper& pointIndexMapper, FloatVector& pointsData);
 
 signals:
 	void datasetNameChanged(const QString&);
