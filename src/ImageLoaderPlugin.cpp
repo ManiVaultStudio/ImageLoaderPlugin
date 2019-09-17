@@ -63,7 +63,7 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 			break;
 	}
 
-	points.setProperty("noImages", imageDataSet.noImages());
+	points.setProperty("imageFileNames", imageDataSet.imageFileNames());
 	points.setProperty("imageSizes", imageDataSet.imageSizes());
 
 	_core->notifyDataAdded(datasetName);

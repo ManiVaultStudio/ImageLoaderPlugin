@@ -18,8 +18,9 @@ public:
 	void setName(const QString& name);
 	ImageCollectionType type() const;
 	void setType(const ImageCollectionType& type);
+	QStringList imageFileNames() const;
+	void setImageFileNames(const QStringList& images);
 	int noImages() const;
-	void setNoImages(const int& noImages);
 	QMap<QString, QVariant> imageSizes() const;
 	QSize imageSize(const QString& imageName) const;
 	void setImageSize(const QString& imageName, const QSize& imageSize);
@@ -33,7 +34,7 @@ public:
 protected:
 	ImageCollectionType		_type;
 	QString					_name;
-	int						_noImages;
+	QStringList				_imageFileNames;
 	ImageSizes				_imageSizes;
 	int						_noDimensions;
 	QStringList				_dimensionNames;
