@@ -87,11 +87,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			pointsData.clear();
 			pointsData.resize(noPoints);
 
-			auto imageFileNames = QStringList();
-
 			foreach(const QString& imageFilePath, imageFilePaths) {
-				imageFileNames << QFileInfo(imageFilePath).fileName();
-
 				const auto imageIndex = imageFilePaths.indexOf(imageFilePath);
 
 				const auto pointIndexMapper = [noPixels, imageIndex, imageSize](int x, int y) -> int {
@@ -107,7 +103,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
 
-			imageDataSet.setImageFileNames(imageFileNames);
+			imageDataSet.setImageFilePaths(imageFilePaths);
 
 			emit message(QString("%1 image(s) loaded").arg(total));
 
@@ -131,15 +127,9 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			const auto noPoints			= noImages * noPixels;
 			const auto total			= noImages;
 			
-			auto imageFileNames = QStringList();
-
-			foreach(const QString& imageFilePath, imageFilePaths) {
-				imageFileNames << QFileInfo(imageFilePath).fileName();
-			}
-
-			imageDataSet.setImageFileNames(imageFileNames);
+			imageDataSet.setImageFilePaths(imageFilePaths);
 			imageDataSet.setNoDimensions(noImages);
-			imageDataSet.setDimensionNames(imageFileNames);
+			imageDataSet.setDimensionNames(imageFilePaths);
 
 			auto& pointsData = imageDataSet.pointsData();
 
@@ -172,7 +162,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 		case ImageCollectionType::MultiPartSequence:
 		{
 			auto imageFilePaths = QStringList();
-			auto imageFileNames = QStringList();
 
 			int noPoints = 0;
 
@@ -182,8 +171,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				const auto imageFilePath = imageCollection.imageFilePaths().first();
 
 				imageFilePaths << imageFilePath;
-
-				imageFileNames << QFileInfo(imageFilePath).fileName();
 
 				auto imageSize = imageCollection.imageSize();
 
@@ -197,7 +184,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 			const auto noImages = imageFilePaths.size();
 
-			imageDataSet.setImageFileNames(imageFileNames);
+			imageDataSet.setImageFilePaths(imageFilePaths);
 
 			auto dimensionNames = QStringList();
 

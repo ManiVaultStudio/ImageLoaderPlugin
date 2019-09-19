@@ -5,7 +5,7 @@
 ImageDataSet::ImageDataSet(const ImageCollectionType& type) :
 	_type(type),
 	_name(),
-	_imageFileNames(),
+	_imageFilePaths(),
 	_imageSizes(),
 	_noDimensions(0),
 	_dimensionNames(),
@@ -33,19 +33,19 @@ void ImageDataSet::setType(const ImageCollectionType& type)
 	_type = type;
 }
 
-QStringList ImageDataSet::imageFileNames() const
+QStringList ImageDataSet::imageFilePaths() const
 {
-	return _imageFileNames;
+	return _imageFilePaths;
 }
 
-void ImageDataSet::setImageFileNames(const QStringList& imageFileNames)
+void ImageDataSet::setImageFilePaths(const QStringList& imageFilePaths)
 {
-	_imageFileNames = imageFileNames;
+	_imageFilePaths = imageFilePaths;
 }
 
 int ImageDataSet::noImages() const
 {
-	return _imageFileNames.size();
+	return _imageFilePaths.size();
 }
 
 QMap<QString, QVariant> ImageDataSet::imageSizes() const

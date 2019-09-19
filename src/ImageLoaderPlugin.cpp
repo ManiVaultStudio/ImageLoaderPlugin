@@ -42,7 +42,7 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 
 	points.dimNames.clear();
 
-	foreach(const QString &dimensionName, imageDataSet.dimensionNames()) {
+	foreach(const QString& dimensionName, imageDataSet.dimensionNames()) {
 		points.dimNames.push_back(dimensionName);
 	}
 
@@ -63,7 +63,7 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 			break;
 	}
 
-	points.setProperty("imageFileNames", imageDataSet.imageFileNames());
+	points.setProperty("imageFilePaths", imageDataSet.imageFilePaths());
 	points.setProperty("imageSizes", imageDataSet.imageSizes());
 
 	_core->notifyDataAdded(datasetName);
