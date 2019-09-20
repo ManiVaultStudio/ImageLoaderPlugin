@@ -14,11 +14,10 @@ public:
 	ImageScanner(const ImageCollectionType& type);
 	~ImageScanner();
 
-	void load();
+	void loadSettings();
 
 	QString	directory() const;
 	void setDirectory(const QString& directory);
-	
 	QStringList	imageTypes() const;
 	void setImageTypes(const QStringList& imageTypes);
 

@@ -16,7 +16,7 @@ ImageScanner::~ImageScanner()
 {
 }
 
-void ImageScanner::load()
+void ImageScanner::loadSettings()
 {
 	const auto directory = _settings.value("Scan/Directory", "").toString();
 

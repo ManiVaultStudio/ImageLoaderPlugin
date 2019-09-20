@@ -50,7 +50,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
-	_scanner.load();
+	_scanner.loadSettings();
 }
 
 ImageSequenceWidget::~ImageSequenceWidget()

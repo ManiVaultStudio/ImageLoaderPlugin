@@ -34,7 +34,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
-	_scanner.load();
+	_scanner.loadSettings();
 }
 
 MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()

@@ -35,11 +35,12 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 
 	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(datasetName));
 
+	//qDebug() << imageDataSet.pointsData() << imageDataSet.pointsData().size();
+
 	PointsPlugin& points = set.getData();
 
 	points.numDimensions = imageDataSet.noDimensions();
 	points.data.swap(imageDataSet.pointsData());
-
 	points.dimNames.clear();
 
 	foreach(const QString& dimensionName, imageDataSet.dimensionNames()) {
@@ -56,7 +57,7 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 			break;
 
 		case ImageCollectionType::MultiPartSequence:
-			points.setProperty("type", "MULTIPART");
+			points.setProperty("type", "MULTI_PART_SEQUENCE");
 			break;
 
 		default:

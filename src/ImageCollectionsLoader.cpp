@@ -185,9 +185,21 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			const auto noImages = imageFilePaths.size();
 
 			imageDataSet.setImageFilePaths(imageFilePaths);
+			
+			auto dimensionIds = std::vector<int>();
+
+			dimensionIds.resize(imageDataSet.noDimensions());
+			std::iota(std::begin(dimensionIds), std::end(dimensionIds), 0);
 
 			auto dimensionNames = QStringList();
 
+			for (int dimensionId : dimensionIds)
+			{
+				dimensionNames << QString("dim_%1").arg(dimensionId);
+			}
+
+			imageDataSet.setDimensionNames(dimensionNames);
+			
 			auto& pointsData = imageDataSet.pointsData();
 
 			pointsData.clear();
@@ -215,9 +227,13 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				auto* multiBitmap = freeImageOpenMultiBitmap(imageFilePath);
 
 				if (multiBitmap != nullptr) {
-					const auto noPages = freeImageGetPageCount(imageFilePath);
+					const auto noPages = FreeImage_GetPageCount(multiBitmap);
+
+					qDebug() << "Number of pages: " << noPages;
 
 					for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
+						qDebug() << pageIndex;
+
 						const auto pointIndexMapper = [pointIndexOffset, noPointsPerDimension, pageIndex, imageSize](int x, int y) -> int {
 							const auto localPixelIndex = y * imageSize.width() + x;
 							return noPointsPerDimension * pageIndex + localPixelIndex;
@@ -226,6 +242,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
+							qDebug() << pageIndex;
+
 							loadBitmap(pageBitmap, imageSize, pointIndexMapper, pointsData);
 
 							FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
@@ -264,11 +282,10 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 	auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(bitmap);
 
 	if (greyscaleBitmap) {
-		const auto image_type = FreeImage_GetImageType(greyscaleBitmap);
-
-		const auto width	= FreeImage_GetWidth(greyscaleBitmap);
-		const auto height	= FreeImage_GetHeight(greyscaleBitmap);
-		const auto rescale	= QSize(width, height) != imageSize;
+		const auto image_type	= FreeImage_GetImageType(greyscaleBitmap);
+		const auto width		= FreeImage_GetWidth(greyscaleBitmap);
+		const auto height		= FreeImage_GetHeight(greyscaleBitmap);
+		const auto rescale		= QSize(width, height) != imageSize;
 
 		auto* rescaledBitmap = rescale ? FreeImage_Rescale(greyscaleBitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : greyscaleBitmap;
 
