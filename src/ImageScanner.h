@@ -12,7 +12,6 @@ class ImageScanner : public QObject {
 
 public:
 	ImageScanner(const ImageCollectionType& type);
-	~ImageScanner();
 
 	void loadSettings();
 

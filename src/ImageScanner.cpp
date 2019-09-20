@@ -12,10 +12,6 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 {
 }
 
-ImageScanner::~ImageScanner()
-{
-}
-
 void ImageScanner::loadSettings()
 {
 	const auto directory = _settings.value("Scan/Directory", "").toString();
