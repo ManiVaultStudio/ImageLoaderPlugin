@@ -10,7 +10,6 @@ class MultiPartImageSequenceScanner : public ImageScanner {
 
 public:
 	MultiPartImageSequenceScanner();
-	~MultiPartImageSequenceScanner();
 
 	void scan();
 	void scanDir(const QString& directory);

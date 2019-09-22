@@ -22,6 +22,8 @@ public:
 	int noDimensions() const;
 	void setNoDimensions(const int& noDimensions);
 
+	
+	
 protected:
 	QSize			_imageSize;
 	QStringList		_imageFilePaths;

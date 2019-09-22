@@ -54,10 +54,9 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 	ImageCollections imageCollections = scannedImageCollections;
 
-	auto imageDataSet = ImageDataSet(_type);
+	auto imagePointDataSet = ImagePointDataSet(_type);
 
-	imageDataSet.setName(_datasetName);
-
+	imagePointDataSet.setName(_datasetName);
 
 	switch (_type)
 	{
@@ -66,33 +65,30 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			ImageCollection sequence = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled())
-				imageDataSet.setImageSize("0", sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				imagePointDataSet.setImageSize("0", sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
 			else
-				imageDataSet.setImageSize("0", sequence.imageSize());
+				imagePointDataSet.setImageSize("0", sequence.imageSize());
 
-			const auto imageFilePaths	= sequence.imageFilePaths();
-			const auto noImages			= sequence.noImages();
-			const auto imageSize		= imageDataSet.imageSize("0");
-			const auto noPixels			= imageSize.width() * imageSize.height();
-			const auto noDimensions		= noPixels;
-			const auto noPoints			= noImages * noDimensions;
-			const auto total			= noImages;
+			const auto imageFilePaths		= sequence.imageFilePaths();
+			const auto noImages				= sequence.noImages();
+			const auto imageSize			= imagePointDataSet.imageSize("0");
+			const auto noPointsPerDimension = imagePointDataSet.noPointsPerDimension();
+			const auto noDimensions			= noPointsPerDimension;
+			const auto total				= noImages;
 
-			imageDataSet.setNoDimensions(noDimensions);
+			imagePointDataSet.setImageFilePaths(imageFilePaths);
+			imagePointDataSet.setNoDimensions(noDimensions);
 
-			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
+			auto& pointsData = imagePointDataSet.create();
 
-			auto& pointsData = imageDataSet.pointsData();
-
-			pointsData.clear();
-			pointsData.resize(noPoints);
+			qDebug() << imagePointDataSet;
 
 			foreach(const QString& imageFilePath, imageFilePaths) {
 				const auto imageIndex = imageFilePaths.indexOf(imageFilePath);
 
-				const auto pointIndexMapper = [noPixels, imageIndex, imageSize](int x, int y) -> int {
+				const auto pointIndexMapper = [noPointsPerDimension, imageIndex, imageSize](int x, int y) {
 					const auto localPixelIndex = y * imageSize.width() + x;
-					return imageIndex * noPixels + localPixelIndex;
+					return imageIndex * noPointsPerDimension + localPixelIndex;
 				};
 
 				loadImage(imageFilePath, imageSize, pointIndexMapper, pointsData);
@@ -102,8 +98,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
 			}
-
-			imageDataSet.setImageFilePaths(imageFilePaths);
 
 			emit message(QString("%1 image(s) loaded").arg(total));
 
@@ -115,46 +109,41 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			ImageCollection stack = imageCollections.map().first();
 
 			if (_subsampleImageSettings.enabled())
-				imageDataSet.setImageSize("0", stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				imagePointDataSet.setImageSize("0", stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
 			else
-				imageDataSet.setImageSize("0", stack.imageSize());
+				imagePointDataSet.setImageSize("0", stack.imageSize());
 
-			const auto imageFilePaths	= stack.imageFilePaths();
-			const auto noImages			= stack.noImages();
-			const auto imageSize		= imageDataSet.imageSize("0");
-			const auto noPixels			= imageSize.width() * imageSize.height();
-			const auto noDimensions		= noImages;
-			const auto noPoints			= noImages * noPixels;
-			const auto total			= noImages;
+			imagePointDataSet.setImageFilePaths(stack.imageFilePaths());
+			imagePointDataSet.setDimensionNames(imagePointDataSet.imageFilePaths());
+			imagePointDataSet.setNoDimensions(imagePointDataSet.noImages());
+
+			const auto noImages		= imagePointDataSet.noImages();
+			const auto imageSize	= imagePointDataSet.imageSize("0");
+			const auto noDimensions	= noImages;
 			
-			imageDataSet.setImageFilePaths(imageFilePaths);
-			imageDataSet.setNoDimensions(noImages);
-			imageDataSet.setDimensionNames(imageFilePaths);
+			//qDebug() << imagePointDataSet.imageSizes();
+			//qDebug() << imagePointDataSet.noImages();
+			//qDebug() << imageSize;
 
-			auto& pointsData = imageDataSet.pointsData();
+			auto& pointsData = imagePointDataSet.create();
 
-			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
+			foreach(const QString& imageFilePath, imagePointDataSet.imageFilePaths()) {
+				const auto imageIndex = imagePointDataSet.imageFilePaths().indexOf(imageFilePath);
 
-			pointsData.clear();
-			pointsData.resize(noPoints);
-
-			foreach(const QString& imageFilePath, imageFilePaths) {
-				const auto imageIndex = imageFilePaths.indexOf(imageFilePath);
-
-				const auto pointIndexMapper = [noImages, imageIndex, noPixels, imageSize](int x, int y) -> int {
+				const auto pointIndexMapper = [noImages, imageIndex, imageSize](int x, int y) {
 					const auto localPixelIndex = y * imageSize.width() + x;
 					return localPixelIndex * noImages + imageIndex;
 				};
 
 				loadImage(imageFilePath, imageSize, pointIndexMapper, pointsData);
 
-				const auto done			= imageFilePaths.indexOf(imageFilePath) + 1;
-				const auto percentage	= 100.0f * (done / static_cast<float>(total));
+				const auto done			= imagePointDataSet.imageFilePaths().indexOf(imageFilePath) + 1;
+				const auto percentage	= 100.0f * (done / static_cast<float>(noImages));
 
-				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(total), QString::number(percentage, 'f', 1)));
+				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(noImages), QString::number(percentage, 'f', 1)));
 			}
 
-			emit message(QString("%1 image(s) loaded").arg(total));
+			emit message(QString("%1 image(s) loaded").arg(noImages));
 			
 			break;
 		}
@@ -163,9 +152,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 		{
 			auto imageFilePaths = QStringList();
 
-			int noPoints = 0;
-
-			imageDataSet.setNoDimensions(imageCollections.map().first().noDimensions());
+			imagePointDataSet.setNoDimensions(imageCollections.map().first().noDimensions());
 
 			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
 				const auto imageFilePath = imageCollection.imageFilePaths().first();
@@ -177,18 +164,16 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				if (_subsampleImageSettings.enabled())
 					imageSize = imageCollection.imageSize() * (_subsampleImageSettings.ratio() / 100.f);
 
-				imageDataSet.setImageSize(imageFilePath, imageSize);
-
-				noPoints += imageSize.width() * imageSize.height() * imageDataSet.noDimensions();
+				imagePointDataSet.setImageSize(imageFilePath, imageSize);
 			}
 
 			const auto noImages = imageFilePaths.size();
 
-			imageDataSet.setImageFilePaths(imageFilePaths);
+			imagePointDataSet.setImageFilePaths(imageFilePaths);
 			
 			auto dimensionIds = std::vector<int>();
 
-			dimensionIds.resize(imageDataSet.noDimensions());
+			dimensionIds.resize(imagePointDataSet.noDimensions());
 			std::iota(std::begin(dimensionIds), std::end(dimensionIds), 0);
 
 			auto dimensionNames = QStringList();
@@ -198,12 +183,12 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				dimensionNames << QString("dim_%1").arg(dimensionId);
 			}
 
-			imageDataSet.setDimensionNames(dimensionNames);
+			imagePointDataSet.setDimensionNames(dimensionNames);
 			
-			auto& pointsData = imageDataSet.pointsData();
+			auto& pointsData = imagePointDataSet.pointsData();
 
 			pointsData.clear();
-			pointsData.resize(noPoints);
+			pointsData.resize(imagePointDataSet.noPointsTotal());
 			
 			emit message(QString("Loading %1 images").arg(QString::number(noImages)));
 			
@@ -211,38 +196,38 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
 				const auto imageFilePath	= imageCollection.imageFilePaths().first();
-				const auto imageSize		= imageDataSet.imageSize(imageFilePath);
+				const auto imageSize		= imagePointDataSet.imageSize(imageFilePath);
 
 				noPointsPerDimension += imageSize.width() * imageSize.height();
 			}
+
+			qDebug() << "LOADER::noPointsPerDimension" << noPointsPerDimension;
 			
-			auto pointIndexOffset	= 0;
-			auto done				= 0;
+			int imageOffset	= 0;
+			int done			= 0;
 
 			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
 				const auto imageFilePath	= imageCollection.imageFilePaths().first();
 				const auto imageIndex		= imageFilePaths.indexOf(imageFilePath);
-				const auto imageSize		= imageDataSet.imageSize(imageFilePath);
+				const auto imageSize		= imagePointDataSet.imageSize(imageFilePath);
 				
 				auto* multiBitmap = freeImageOpenMultiBitmap(imageFilePath);
 
 				if (multiBitmap != nullptr) {
 					const auto noPages = FreeImage_GetPageCount(multiBitmap);
 
-					qDebug() << "Number of pages: " << noPages;
+					qDebug() << "LOADER::imageOffset" << imageOffset;
 
 					for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
-						qDebug() << pageIndex;
-
-						const auto pointIndexMapper = [pointIndexOffset, noPointsPerDimension, pageIndex, imageSize](int x, int y) -> int {
+						const auto pointIndexMapper = [imageOffset, noPointsPerDimension, pageIndex, imageSize](int x, int y) {
 							const auto localPixelIndex = y * imageSize.width() + x;
-							return noPointsPerDimension * pageIndex + localPixelIndex;
+							return (pageIndex * noPointsPerDimension) + imageOffset + localPixelIndex;
 						};
 
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
-							qDebug() << pageIndex;
+							//qDebug() << pageIndex;
 
 							loadBitmap(pageBitmap, imageSize, pointIndexMapper, pointsData);
 
@@ -250,7 +235,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 						}
 					}
 
-					pointIndexOffset += imageSize.width() * imageSize.height();
+					imageOffset += imageSize.width() * imageSize.height();
 
 					done++;
 
@@ -269,9 +254,9 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			break;
 	}
 
-	qDebug() << imageDataSet;
+	qDebug() << imagePointDataSet;
 
-	emit endLoad(imageDataSet);
+	emit endLoad(imagePointDataSet);
 }
 
 template<typename PointIndexMapper>
@@ -279,22 +264,43 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 {
 	assert(bitmap != nullptr);
 
+	const auto image_type = FreeImage_GetImageType(bitmap);
+
 	auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(bitmap);
 
 	if (greyscaleBitmap) {
-		const auto image_type	= FreeImage_GetImageType(greyscaleBitmap);
-		const auto width		= FreeImage_GetWidth(greyscaleBitmap);
-		const auto height		= FreeImage_GetHeight(greyscaleBitmap);
-		const auto rescale		= QSize(width, height) != imageSize;
+
+		const auto width	= FreeImage_GetWidth(greyscaleBitmap);
+		const auto height	= FreeImage_GetHeight(greyscaleBitmap);
+		const auto rescale	= QSize(width, height) != imageSize;
 
 		auto* rescaledBitmap = rescale ? FreeImage_Rescale(greyscaleBitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : greyscaleBitmap;
 
 		if (rescaledBitmap) {
-			for (unsigned y = 0; y < imageSize.height(); y++) {
-				const BYTE *const bits = FreeImage_GetScanLine(rescaledBitmap, y);
+			const auto scaledWidth = imageSize.width();
 
-				for (unsigned x = 0; x < imageSize.width(); x++) {
-					pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
+			for (int y = 0; y < imageSize.height(); y++) {
+				switch (image_type)
+				{
+					case FIT_BITMAP:
+					{
+						const BYTE *const bits = FreeImage_GetScanLine(rescaledBitmap, y);
+
+						for (int x = 0; x < scaledWidth; x++) {
+							pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
+						}
+						break;
+					}
+
+					case FIT_UINT16:
+					{
+						unsigned short* bits = (unsigned short *)FreeImage_GetScanLine(rescaledBitmap, y);
+
+						for (int x = 0; x < scaledWidth; x++) {
+							pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
+						}
+						break;
+					}
 				}
 			}
 
@@ -304,6 +310,41 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 		if (rescale)
 			FreeImage_Unload(greyscaleBitmap);
 	}
+
+/*
+		case FIT_UINT16:
+		{
+			//qDebug() << "FIT_UINT16";
+			auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(bitmap);
+
+			const auto width = FreeImage_GetWidth(greyscaleBitmap);
+			const auto height = FreeImage_GetHeight(greyscaleBitmap);
+			const auto rescale = QSize(width, height) != imageSize;
+
+			auto* rescaledBitmap = rescale ? FreeImage_Rescale(greyscaleBitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : greyscaleBitmap;
+
+			if (rescaledBitmap) {
+				for (int y = 0; y < FreeImage_GetHeight(rescaledBitmap); y++) {
+					unsigned short *bits = (unsigned short *)FreeImage_GetScanLine(rescaledBitmap, y);
+					for (int x = 0; x < FreeImage_GetWidth(rescaledBitmap); x++) {
+						//if (pointIndexMapper(x, y) > pointsData.size())
+						//	qDebug() << "Problem!";
+						pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
+						//if (bits[x] > 100)
+						//	qDebug() << "FIT_UINT16" << bits[x];
+					}
+				}
+			}
+			//FreeImage_Unload(greyscaleBitmap);
+
+			break;
+		}
+
+		default:
+			break;
+	}
+	*/
+	
 }
 
 template<typename PointIndexMapper>

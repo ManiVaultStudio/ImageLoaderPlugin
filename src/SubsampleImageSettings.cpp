@@ -15,6 +15,10 @@ SubsampleImageSettings::SubsampleImageSettings(QSettings* settings) :
 	_filter		= ImageResamplingFilter(_settings->value(settingPath("filter"), "bilinear").toInt());
 
 	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
+
+	connect(this, &SubsampleImageSettings::enabledChanged, this, &SubsampleImageSettings::changed);
+	connect(this, &SubsampleImageSettings::ratioChanged, this, &SubsampleImageSettings::changed);
+	connect(this, &SubsampleImageSettings::filterChanged, this, &SubsampleImageSettings::changed);
 }
 
 SubsampleImageSettings::~SubsampleImageSettings()

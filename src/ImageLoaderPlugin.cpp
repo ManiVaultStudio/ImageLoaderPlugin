@@ -27,27 +27,25 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
+void ImageLoaderPlugin::addImagePointDataSet(ImagePointDataSet& imagePointDataSet)
 {
-	qDebug() << imageDataSet;
+	qDebug() << imagePointDataSet;
 	
-	const auto datasetName = _core->addData("Points", imageDataSet.name());
+	const auto datasetName = _core->addData("Points", imagePointDataSet.name());
 
 	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(datasetName));
 
-	//qDebug() << imageDataSet.pointsData() << imageDataSet.pointsData().size();
-
 	PointsPlugin& points = set.getData();
 
-	points.numDimensions = imageDataSet.noDimensions();
-	points.data.swap(imageDataSet.pointsData());
+	points.numDimensions = imagePointDataSet.noDimensions();
+	points.data.swap(imagePointDataSet.pointsData());
 	points.dimNames.clear();
 
-	foreach(const QString& dimensionName, imageDataSet.dimensionNames()) {
+	foreach(const QString& dimensionName, imagePointDataSet.dimensionNames()) {
 		points.dimNames.push_back(dimensionName);
 	}
 
-	switch (imageDataSet.type()) {
+	switch (imagePointDataSet.type()) {
 		case ImageCollectionType::Sequence:
 			points.setProperty("type", "SEQUENCE");
 			break;
@@ -64,8 +62,8 @@ void ImageLoaderPlugin::addImageDataSet(ImageDataSet& imageDataSet)
 			break;
 	}
 
-	points.setProperty("imageFilePaths", imageDataSet.imageFilePaths());
-	points.setProperty("imageSizes", imageDataSet.imageSizes());
+	points.setProperty("imageFilePaths", imagePointDataSet.imageFilePaths());
+	points.setProperty("imageSizes", imagePointDataSet.imageSizes());
 
 	_core->notifyDataAdded(datasetName);
 }

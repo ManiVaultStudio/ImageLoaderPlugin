@@ -14,10 +14,6 @@ ImageStackScanner::ImageStackScanner() :
 	setImageTypes(imageTypes);
 }
 
-ImageStackScanner::~ImageStackScanner()
-{
-}
-
 void ImageStackScanner::scan()
 {
 	emit beginScan();

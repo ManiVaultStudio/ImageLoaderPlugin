@@ -127,10 +127,10 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad(ImageDataSet& imageDataSet)
+void ImageSequenceWidget::onEndLoad(ImagePointDataSet& imagePointDataSet)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImageDataSet(imageDataSet);
+	_imageLoaderPlugin->addImagePointDataSet(imagePointDataSet);
 }

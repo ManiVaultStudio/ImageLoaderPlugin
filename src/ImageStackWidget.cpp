@@ -31,6 +31,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
 
+	connect(&_loader.subsampleImageSettings(), &SubsampleImageSettings::changed, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
+
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
 	_scanner.loadSettings();
@@ -94,10 +96,17 @@ void ImageStackWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad(ImageDataSet& imageDataSet)
+void ImageStackWidget::onEndLoad(ImagePointDataSet& imagePointDataSet)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImageDataSet(imageDataSet);
+	_imageLoaderPlugin->addImagePointDataSet(imagePointDataSet);
+}
+
+void ImageStackWidget::onSubsampleImageSettingsChanged()
+{
+	const auto loadable = _scanner.scanned().loadable();
+
+	_ui->loadPushButton->setEnabled(loadable);
 }

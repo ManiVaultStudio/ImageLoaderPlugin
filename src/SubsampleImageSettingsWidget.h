@@ -16,7 +16,6 @@ class SubsampleImageSettingsWidget : public QWidget
 {
 public:
 	SubsampleImageSettingsWidget(QWidget* parent);
-	~SubsampleImageSettingsWidget() override;
 
 	void initialize(SubsampleImageSettings* subsampleImageSettings);
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImageCollections.h"
-#include "ImageDataSet.h"
+#include "ImagePointDataSet.h"
 #include "SubsampleImageSettings.h"
 
 #include <QObject>
@@ -38,7 +38,7 @@ private:
 signals:
 	void datasetNameChanged(const QString&);
 	void beginLoad();
-	void endLoad(ImageDataSet& imageDataSet);
+	void endLoad(ImagePointDataSet& imagePointDataSet);
 	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
 	void message(const QString& message);
 

@@ -12,7 +12,6 @@ class ImageSequenceScanner : public ImageScanner {
 
 public:
 	ImageSequenceScanner();
-	~ImageSequenceScanner();
 
 public:
 	QString	imageType() const;

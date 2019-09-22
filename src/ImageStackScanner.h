@@ -14,7 +14,6 @@ class ImageStackScanner : public ImageScanner {
 
 public:
 	ImageStackScanner();
-	~ImageStackScanner();
 
 	void scan();
 	void scanDir(const QString& directory);

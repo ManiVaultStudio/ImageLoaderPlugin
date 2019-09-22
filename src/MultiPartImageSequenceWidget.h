@@ -30,7 +30,7 @@ private:
 	void onBeginScan();
 	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onBeginLoad();
-	void onEndLoad(ImageDataSet& imageDataSet);
+	void onEndLoad(ImagePointDataSet& imagePointDataSet);
 
 signals:
 	void message(const QString& message);

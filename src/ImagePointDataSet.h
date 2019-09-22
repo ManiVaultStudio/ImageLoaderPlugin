@@ -9,9 +9,9 @@
 
 using ImageSizes = QMap<QString, QSize>;
 
-class ImageDataSet {
+class ImagePointDataSet {
 public:
-	ImageDataSet(const ImageCollectionType& type);
+	ImagePointDataSet(const ImageCollectionType& type);
 
 public:
 	QString name() const;
@@ -30,6 +30,10 @@ public:
 	void setDimensionNames(const QStringList& dimensionNames);
 
 	FloatVector& pointsData();
+	FloatVector& create();
+
+	int noPointsPerDimension() const;
+	int noPointsTotal() const;
 
 protected:
 	ImageCollectionType		_type;
@@ -41,4 +45,4 @@ protected:
 	FloatVector				_pointsData;
 };
 
-QDebug operator<<(QDebug dbg, ImageDataSet& imageDataSet);
+QDebug operator<<(QDebug dbg, ImagePointDataSet& imageDataSet);

@@ -14,10 +14,6 @@ MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 	setImageTypes(imageTypes);
 }
 
-MultiPartImageSequenceScanner::~MultiPartImageSequenceScanner()
-{
-}
-
 void MultiPartImageSequenceScanner::scan()
 {
 	emit beginScan();

@@ -122,12 +122,12 @@ void MultiPartImageSequenceWidget::onBeginLoad()
 	qDebug() << "onBeginLoad";
 }
 
-void MultiPartImageSequenceWidget::onEndLoad(ImageDataSet& imageDataSet)
+void MultiPartImageSequenceWidget::onEndLoad(ImagePointDataSet& imagePointDataSet)
 {
 	qDebug() << "onEndLoad";
 
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImageDataSet(imageDataSet);
+	_imageLoaderPlugin->addImagePointDataSet(imagePointDataSet);
 }

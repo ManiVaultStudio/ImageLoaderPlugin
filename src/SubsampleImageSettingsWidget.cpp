@@ -14,10 +14,6 @@ SubsampleImageSettingsWidget::SubsampleImageSettingsWidget(QWidget* parent) :
 	_ui->setupUi(this);
 }
 
-SubsampleImageSettingsWidget::~SubsampleImageSettingsWidget()
-{
-}
-
 void SubsampleImageSettingsWidget::initialize(SubsampleImageSettings* subsampleImageSettings)
 {
 	_subsampleImageSettings = subsampleImageSettings;
