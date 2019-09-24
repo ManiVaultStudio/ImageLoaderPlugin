@@ -247,16 +247,19 @@ template<typename PointIndexMapper>
 void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize, const PointIndexMapper& pointIndexMapper, FloatVector& pointsData)
 {
 	assert(bitmap != nullptr);
-
-	const auto imageType	= FreeImage_GetImageType(bitmap);
-	const auto width		= FreeImage_GetWidth(bitmap);
-	const auto height		= FreeImage_GetHeight(bitmap);
-	const auto rescale		= QSize(width, height) != imageSize;
+	
+	const auto width	= FreeImage_GetWidth(bitmap);
+	const auto height	= FreeImage_GetHeight(bitmap);
+	const auto rescale	= QSize(width, height) != imageSize;
 	
 	auto* scaledBitmap = rescale ? FreeImage_Rescale(bitmap, imageSize.width(), imageSize.height(), static_cast<FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : bitmap;
 	
+	const auto scaledBitmapImageType = FreeImage_GetImageType(bitmap);
+
+	qDebug() << FreeImage_GetImageType(bitmap) << FreeImage_GetImageType(scaledBitmap);
+
 	if (scaledBitmap) {
-		switch (imageType) {
+		switch (scaledBitmapImageType) {
 			case FIT_BITMAP:
 			{
 				auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(scaledBitmap);
@@ -269,20 +272,17 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 							pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
 						}
 					}
-
-					//FreeImage_Unload(greyscaleBitmap);
 				}
 
 				break;
 			}
-
+			
 			case FIT_UINT16:
 			{
 				for (unsigned y = 0; y < imageSize.height(); y++) {
-					unsigned short* bits = (unsigned short*)FreeImage_GetScanLine(bitmap, y);
+					unsigned short* bits = (unsigned short*)FreeImage_GetScanLine(scaledBitmap, y);
 
-					for (int x = 0; x < imageSize.width(); x++) {
-						//qDebug() << static_cast<float>(bits[x]);
+					for (unsigned x = 0; x < imageSize.width(); x++) {
 						pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
 					}
 				}
@@ -291,7 +291,8 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 			}
 		}
 
-		FreeImage_Unload(scaledBitmap);
+		if (rescale)
+			FreeImage_Unload(scaledBitmap);
 	}
 	
 	//qDebug() << pointsData;
