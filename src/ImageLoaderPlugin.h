@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Common.h"
+#include "ImagePointDataSet.h"
+
 #include <LoaderPlugin.h>
 
 #include <QSettings>
@@ -11,21 +14,12 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
 	ImageLoaderPlugin();
-    ~ImageLoaderPlugin(void) override;
     
     void init() override;
 
     void loadData() Q_DECL_OVERRIDE;
 
-	enum ImageCollectionType
-	{
-		Sequence,
-		Stack
-	};
-
-	void addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames = QStringList());
-
-	QSettings _settings;
+	void addImagePointDataSet(ImagePointDataSet& imagePointDataSet);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

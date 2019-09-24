@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ImageCollectionsLoader.h"
+#include "MultiPartImageSequenceScanner.h"
+
 #include <memory>
 
 #include <QWidget>
-
-#include "ImageSequence.h"
 
 namespace Ui {
 	class MultiPartImageSequenceWidget;
@@ -14,29 +15,29 @@ class ImageLoaderPlugin;
 
 class MultiPartImageSequenceWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~MultiPartImageSequenceWidget() override;
 
 private:
-	/*
 	void onBecameDirty();
-	void onBeginScan();
-	void onEndScan();
-	void onMessage(const QString &message);
-	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
-	void onImageWidthChanged(int width);
-	void onImageHeightChanged(int height);
-	void onScan();
 	void onPickDirectory();
-	void onImageTypeChanged(const QString &imageType);
+	void onDirectoryChanged(const QString& directory);
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& dataSetName);
+	void onBeginScan();
+	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onBeginLoad();
-	void onEndLoad();
-	*/
+	void onEndLoad(ImagePointDataSet& imagePointDataSet);
+
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
-	//ImageSequence								_imageSequence;
+	MultiPartImageSequenceScanner						_scanner;
+	ImageCollectionsLoader								_loader;
 };

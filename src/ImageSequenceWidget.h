@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ImageCollectionsLoader.h"
+#include "ImageSequenceScanner.h"
+
 #include <memory>
 
 #include <QWidget>
-
-#include "ImageSequence.h"
 
 namespace Ui {
 	class ImageSequenceWidget;
@@ -14,6 +15,8 @@ class ImageLoaderPlugin;
 
 class ImageSequenceWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 	~ImageSequenceWidget() override;
@@ -21,20 +24,23 @@ public:
 private:
 	void onBecameDirty();
 	void onBeginScan();
-	void onEndScan();
-	void onMessage(const QString &message);
+	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& text);
 	void onImageWidthChanged(int width);
 	void onImageHeightChanged(int height);
-	void onScan();
 	void onPickDirectory();
 	void onImageTypeChanged(const QString &imageType);
 	void onBeginLoad();
-	void onEndLoad();
+	void onEndLoad(ImagePointDataSet& imagePointDataSet);
+	
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
-	ImageSequence								_imageSequence;
+	ImageSequenceScanner						_scanner;
+	ImageCollectionsLoader						_loader;
 };

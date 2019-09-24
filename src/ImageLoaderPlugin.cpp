@@ -1,6 +1,5 @@
 #include "ImageLoaderPlugin.h"
-
-#include "ImageSequence.h"
+#include "ImageLoaderDialog.h"
 
 #include "PointsPlugin.h"
 #include "Set.h"
@@ -8,21 +7,12 @@
 #include <QtCore>
 #include <QtDebug>
 
-#include <QImageReader>
 #include <vector>
-#include <QInputDialog>
-
-#include "ImageLoaderDialog.h"
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
-	LoaderPlugin("Image Loader"),
-	_settings("HDPS", "ImageViewer")
-{
-}
-
-ImageLoaderPlugin::~ImageLoaderPlugin(void)
+	LoaderPlugin("Image Loader")
 {
 }
 
@@ -37,34 +27,38 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionType, const QString &name, const QSize& size, const int& noImages, const int &noDimensions, std::vector<float> &pointsData, const QStringList& dimensionNames /*= QStringList()*/)
+void ImageLoaderPlugin::addImagePointDataSet(ImagePointDataSet& imagePointDataSet)
 {
-	qDebug() << "Adding sequence " << name;
+	qDebug() << imagePointDataSet;
+	
+	const auto datasetName = _core->addData("Points", imagePointDataSet.name());
 
-	const auto datasetName = _core->addData("Points", name);
-
-	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(name));
+	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(datasetName));
 
 	PointsPlugin& points = set.getData();
 
-	points.setData(pointsData.data(), noImages, noDimensions);
-
+	points.setData(imagePointDataSet.pointsData().data(), imagePointDataSet.noImages(), imagePointDataSet.noDimensions());
 	points.setDimensionNames(dimensionNames.toVector().toStdVector());
 
-	switch (imageCollectionType) {
+	switch (imagePointDataSet.type()) {
 		case ImageCollectionType::Sequence:
 			points.setProperty("type", "SEQUENCE");
 			break;
+			
 		case ImageCollectionType::Stack:
 			points.setProperty("type", "STACK");
+			break;
+
+		case ImageCollectionType::MultiPartSequence:
+			points.setProperty("type", "MULTI_PART_SEQUENCE");
 			break;
 
 		default:
 			break;
 	}
-	
-	points.setProperty("noImages", noImages);
-	points.setProperty("imageSize", size);
+
+	points.setProperty("imageFilePaths", imagePointDataSet.imageFilePaths());
+	points.setProperty("imageSizes", imagePointDataSet.imageSizes());
 
 	_core->notifyDataAdded(datasetName);
 }

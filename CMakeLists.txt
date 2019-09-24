@@ -29,41 +29,69 @@ set(PLUGIN_SOURCES
     src/ImageLoaderDialog.cpp
 	src/ImageUtilities.h
     src/ImageUtilities.cpp
+	src/SubsampleImageSettings.h
+	src/SubsampleImageSettings.cpp
+	src/SubsampleImageSettingsWidget.h
+	src/SubsampleImageSettingsWidget.cpp
+	src/ImagePointDataset.h
+	src/ImagePointDataset.cpp
     src/Common.h
 )
 
+set(LOADER_SOURCES
+	src/ImageCollection.h
+	src/ImageCollection.cpp
+	src/ImageCollections.h
+	src/ImageCollections.cpp
+	src/ImageCollectionsLoader.h
+	src/ImageCollectionsLoader.cpp
+)
+
+set(SCANNER_SOURCES
+	src/ImageScanner.h
+	src/ImageScanner.cpp
+)
+
 set(IMAGE_SEQUENCE_SOURCES
-	src/ImageSequence.h
-    src/ImageSequence.cpp
+	src/ImageSequenceScanner.h
+	src/ImageSequenceScanner.cpp
 	src/ImageSequenceWidget.h
     src/ImageSequenceWidget.cpp
 )
 
 set(IMAGE_STACK_SOURCES
-	src/ImageStack.h
-    src/ImageStack.cpp
-	src/ImageStacks.h
-    src/ImageStacks.cpp
+	src/ImageStackScanner.h
+    src/ImageStackScanner.cpp
 	src/ImageStackWidget.h
     src/ImageStackWidget.cpp
 )
 
 set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
+	src/MultiPartImageSequenceScanner.h
+	src/MultiPartImageSequenceScanner.cpp
 	src/MultiPartImageSequenceWidget.h
 	src/MultiPartImageSequenceWidget.cpp
 )
 
-set(SOURCES ${PLUGIN_SOURCES} ${IMAGE_SEQUENCE_SOURCES} ${IMAGE_STACK_SOURCES} ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
+set(SOURCES 
+	${PLUGIN_SOURCES}
+	${LOADER_SOURCES}
+	${SCANNER_SOURCES}
+	${IMAGE_SEQUENCE_SOURCES}
+	${IMAGE_STACK_SOURCES}
+	${MULTI_PART_IMAGE_SEQUENCE_SOURCES}
+)
 
 set(UIS 
 	src/ImageSequenceWidget.ui
 	src/ImageStackWidget.ui
 	src/MultipartImageSequenceWidget.ui
+	src/SubsampleImageSettingsWidget.ui
 )
 
 set(AUX src/ImageLoaderPlugin.json)
 
-source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
+source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
 source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
 source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
 source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})

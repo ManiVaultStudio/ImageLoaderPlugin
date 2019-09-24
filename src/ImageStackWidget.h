@@ -1,10 +1,11 @@
 #pragma once
 
+#include "ImageCollectionsLoader.h"
+#include "ImageStackScanner.h"
+
 #include <memory>
 
 #include <QWidget>
-
-#include "ImageStacks.h"
 
 namespace Ui {
 	class ImageStackWidget;
@@ -14,23 +15,28 @@ class ImageLoaderPlugin;
 
 class ImageStackWidget : public QWidget
 {
+	Q_OBJECT
+
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageStackWidget() override;
 
 private:
-	void onBecameDirty();
-	void onBeginScan();
-	void onEndScan();
-	void onMessage(const QString &message);
-	void onDirectoryChanged(const QString &directory);
-	void onLoadSequence();
 	void onPickDirectory();
-	void onBeginLoad(ImageStack* imageStack);
-	void onEndLoad(ImageStack* imageStack, std::vector<float>& pointsData);
+	void onDirectoryChanged(const QString &directory);
+	void onLoadPushButtonClicked();
+	void onDatasetNameChanged(const QString& dataSetName);
+	void onBeginScan();
+	void onEndScan(const ImageCollections& scannedImageCollections);
+	void onBeginLoad();
+	void onEndLoad(ImagePointDataSet& imagePointDataSet);
+	void onSubsampleImageSettingsChanged();
+
+signals:
+	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
-	ImageStacks								_imageStacks;
+	ImageStackScanner						_scanner;
+	ImageCollectionsLoader					_loader;
 };	
