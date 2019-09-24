@@ -126,8 +126,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			foreach(const QString& imageFilePath, imagePointDataSet.imageFilePaths()) {
 				const auto imageIndex = imagePointDataSet.imageFilePaths().indexOf(imageFilePath);
 
-				qDebug() << imageIndex;
-
 				const auto pointIndexMapper = [noImages, imageIndex, imageSize](int x, int y) {
 					const auto localPixelIndex = y * imageSize.width() + x;
 					return localPixelIndex * noImages + imageIndex;
@@ -280,16 +278,12 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 
 			case FIT_UINT16:
 			{
-				auto* greyscaleBitmap = FreeImage_ConvertToGreyscale(scaledBitmap);
+				for (unsigned y = 0; y < imageSize.height(); y++) {
+					unsigned short* bits = (unsigned short*)FreeImage_GetScanLine(bitmap, y);
 
-				if (bitmap) {
-					for (unsigned y = 0; y < imageSize.height(); y++) {
-						unsigned short* bits = (unsigned short*)FreeImage_GetScanLine(bitmap, y);
-
-						for (int x = 0; x < imageSize.width(); x++) {
-							//qDebug() << static_cast<float>(bits[x]);
-							pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
-						}
+					for (int x = 0; x < imageSize.width(); x++) {
+						//qDebug() << static_cast<float>(bits[x]);
+						pointsData[pointIndexMapper(x, y)] = static_cast<float>(bits[x]);
 					}
 				}
 
