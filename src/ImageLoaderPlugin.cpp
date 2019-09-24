@@ -47,14 +47,9 @@ void ImageLoaderPlugin::addSequence(const ImageCollectionType& imageCollectionTy
 
 	PointsPlugin& points = set.getData();
 
-	points.numDimensions = noDimensions;
-	points.data.swap(pointsData);
+	points.setData(pointsData.data(), noImages, noDimensions);
 
-	points.dimNames.clear();
-
-	foreach(const QString &dimensionName, dimensionNames) {
-		points.dimNames.push_back(dimensionName);
-	}
+	points.setDimensionNames(dimensionNames.toVector().toStdVector());
 
 	switch (imageCollectionType) {
 		case ImageCollectionType::Sequence:
