@@ -37,26 +37,30 @@ void ImageLoaderPlugin::addImagePointDataSet(ImagePointDataSet& imagePointDataSe
 
 	PointsPlugin& points = set.getData();
 
-	points.setData(imagePointDataSet.pointsData().data(), imagePointDataSet.noImages(), imagePointDataSet.noDimensions());
-	points.setDimensionNames(dimensionNames.toVector().toStdVector());
+	auto noPoints = 0;
 
 	switch (imagePointDataSet.type()) {
 		case ImageCollectionType::Sequence:
 			points.setProperty("type", "SEQUENCE");
+			noPoints = imagePointDataSet.noImages();
 			break;
-			
+
 		case ImageCollectionType::Stack:
 			points.setProperty("type", "STACK");
+			noPoints = imagePointDataSet.noPointsPerDimension();
 			break;
 
 		case ImageCollectionType::MultiPartSequence:
 			points.setProperty("type", "MULTI_PART_SEQUENCE");
+			noPoints = imagePointDataSet.noPointsPerDimension();
 			break;
 
 		default:
 			break;
 	}
 
+	points.setData(imagePointDataSet.pointsData().data(), noPoints, imagePointDataSet.noDimensions());
+	points.setDimensionNames(imagePointDataSet.dimensionNames().toVector().toStdVector());
 	points.setProperty("imageFilePaths", imagePointDataSet.imageFilePaths());
 	points.setProperty("imageSizes", imagePointDataSet.imageSizes());
 

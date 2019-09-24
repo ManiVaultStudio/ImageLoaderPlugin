@@ -92,7 +92,7 @@ void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImag
 	const auto loadable = _scanner.scanned().loadable();
 
 	_ui->imagesLabel->setEnabled(loadable);
-	_ui->imagesListWidget->setEnabled(loadable);
+	_ui->imagesListWidget->setEnabled(false);
 	_ui->datasetNameLabel->setEnabled(loadable);
 	_ui->datasetNameLineEdit->setEnabled(loadable);
 	_ui->loadPushButton->setEnabled(loadable);
@@ -119,13 +119,10 @@ void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImag
 
 void MultiPartImageSequenceWidget::onBeginLoad()
 {
-	qDebug() << "onBeginLoad";
 }
 
 void MultiPartImageSequenceWidget::onEndLoad(ImagePointDataSet& imagePointDataSet)
 {
-	qDebug() << "onEndLoad";
-
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 

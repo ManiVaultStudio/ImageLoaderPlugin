@@ -198,8 +198,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				if (multiBitmap != nullptr) {
 					const auto noPages = FreeImage_GetPageCount(multiBitmap);
 
-					qDebug() << "LOADER::imageOffset" << imageOffset;
-
 					for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
 						const auto pointIndexMapper = [imageOffset, noPointsPerDimension, pageIndex, imageSize](int x, int y) {
 							const auto localPixelIndex = y * imageSize.width() + x;
@@ -256,8 +254,6 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 	
 	const auto scaledBitmapImageType = FreeImage_GetImageType(bitmap);
 
-	qDebug() << FreeImage_GetImageType(bitmap) << FreeImage_GetImageType(scaledBitmap);
-
 	if (scaledBitmap) {
 		switch (scaledBitmapImageType) {
 			case FIT_BITMAP:
@@ -294,8 +290,6 @@ void ImageCollectionsLoader::loadBitmap(FIBITMAP* bitmap, const QSize& imageSize
 		if (rescale)
 			FreeImage_Unload(scaledBitmap);
 	}
-	
-	//qDebug() << pointsData;
 }
 
 template<typename PointIndexMapper>
