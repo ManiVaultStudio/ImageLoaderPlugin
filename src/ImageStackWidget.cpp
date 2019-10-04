@@ -38,6 +38,10 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_scanner.loadSettings();
 }
 
+ImageStackWidget::~ImageStackWidget()
+{
+}
+
 void ImageStackWidget::onPickDirectory()
 {
 	const auto initialDirectory = _scanner.directory();
