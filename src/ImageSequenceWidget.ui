@@ -275,7 +275,7 @@
   <customwidget>
    <class>SubsampleImageSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>subsampleimagesettingswidget.h</header>
+   <header>SubsampleImageSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
