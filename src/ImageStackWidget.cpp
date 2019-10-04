@@ -1,6 +1,6 @@
 #include "ImageStackWidget.h"
 
-#include "ui_imageStackWidget.h"
+#include "ui_ImageStackWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
