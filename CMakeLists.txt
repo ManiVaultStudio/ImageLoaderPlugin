@@ -85,7 +85,7 @@ set(SOURCES
 set(UIS 
 	src/ImageSequenceWidget.ui
 	src/ImageStackWidget.ui
-	src/MultipartImageSequenceWidget.ui
+	src/MultiPartImageSequenceWidget.ui
 	src/SubsampleImageSettingsWidget.ui
 )
 
