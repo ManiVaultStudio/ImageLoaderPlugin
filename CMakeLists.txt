@@ -104,8 +104,13 @@ add_library(${PROJECT} SHARED ${SOURCES} ${UIS})
 
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/HDPS_Public${CMAKE_STATIC_LIBRARY_SUFFIX}")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/PointsPlugin${CMAKE_STATIC_LIBRARY_SUFFIX}")
+if(MSVC)
+    set(LIB_SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    set(LIB_SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
+target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/HDPS_Public${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/PointsPlugin${LIB_SUFFIX}")
 target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
