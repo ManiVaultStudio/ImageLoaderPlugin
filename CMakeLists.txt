@@ -98,6 +98,7 @@ source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
+include_directories(src)
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS})
 
