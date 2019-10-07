@@ -104,6 +104,8 @@ include_directories(src)
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS})
 
+add_definitions(-DDISABLE_PERF_MEASUREMENT)
+ 
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
 if(MSVC)
