@@ -118,6 +118,8 @@ target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${
 target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
 if(MSVC)
     set(FreeImageName "FreeImage")
+elseif(APPLE)
+    set(FreeImageName "freeimage")
 else()
     set(FreeImageName "freeimage-3.18.0")
 endif()
