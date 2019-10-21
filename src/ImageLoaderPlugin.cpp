@@ -53,14 +53,7 @@ void ImageLoaderPlugin::addImages(Images& images)
 			break;
 	}
 
-	/*
-	points.setData(imagePointDataSet.pointsData().data(), noPoints, imagePointDataSet.noDimensions());
-	points.setDimensionNames(imagePointDataSet.dimensionNames().toVector().toStdVector());
-	points.setProperty("imageFilePaths", imagePointDataSet.imageFilePaths());
-	points.setProperty("imageSizes", imagePointDataSet.imageSizes());
-	*/
-
-	//_core->notifyDataAdded(datasetName);
+	_core->notifyDataAdded(datasetName);
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

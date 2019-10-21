@@ -104,6 +104,8 @@ include_directories("${FREEIMAGE_INCLUDE_PATH}")
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
+target_compile_features(${PROJECT} PRIVATE cxx_std_17)
+
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/HDPS_Public.lib")

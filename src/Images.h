@@ -30,12 +30,12 @@ public:
 	Image& add(const std::uint32_t& noComponents, const QString& imageFilePath);
 
 protected:
-	ImageCollectionType	_type;
-	QString				_name;
-	QSize				_size;
+	ImageCollectionType					_type;
+	QString								_name;
+	QSize								_size;
 	std::vector<Image>	_images;
-	QStringList			_imageFilePaths;
-	QStringList			_dimensionNames;
+	QStringList							_imageFilePaths;
+	QStringList							_dimensionNames;
 };
 
 QDebug operator<<(QDebug dbg, Images& imageDataSet);

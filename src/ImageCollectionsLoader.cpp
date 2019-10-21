@@ -54,14 +54,14 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 	ImageCollections imageCollections = scannedImageCollections;
 
-	Images images(_type);
-
-	images.setName(_datasetName);
-
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:
 		{
+			Images images(_type);
+
+			images.setName(_datasetName);
+
 			ImageCollection sequence = imageCollections.map().first();
 
 			images.setSize(sequence.imageSize());
@@ -82,6 +82,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
 			}
 
+			emit endLoad(images);
 			emit message(QString("%1 image(s) loaded").arg(images.noImages()));
 			
 			break;
@@ -89,6 +90,10 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 		case ImageCollectionType::Stack:
 		{
+			Images images(_type);
+
+			images.setName(_datasetName);
+
 			ImageCollection stack = imageCollections.map().first();
 
 			images.setSize(stack.imageSize());
@@ -110,6 +115,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
 			}
 
+			emit endLoad(images);
 			emit message(QString("%1 image(s) loaded").arg(images.noImages()));
 			
 			break;
@@ -117,98 +123,56 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 		case ImageCollectionType::MultiPartSequence:
 		{
-			/*
-			auto imageFilePaths = QStringList();
-
-			imagePointDataSet.setNoDimensions(imageCollections.map().first().noDimensions());
+			std::uint32_t done = 0;
+			
+			const auto noImages = imageCollections.map().size();
 
 			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
 				const auto imageFilePath = imageCollection.imageFilePaths().first();
 
-				imageFilePaths << imageFilePath;
+				Images images(_type);
 
-				auto imageSize = imageCollection.imageSize();
+				images.setName(QString("%1-%2").arg(_datasetName, imageFilePath));
+
+				images.setSize(imageCollection.imageSize());
 
 				if (_subsampleImageSettings.enabled())
-					imageSize = imageCollection.imageSize() * (_subsampleImageSettings.ratio() / 100.f);
+					images.setSize(imageCollection.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
 
-				imagePointDataSet.setImageSize(imageFilePath, imageSize);
-			}
-
-			const auto noImages = imageFilePaths.size();
-
-			imagePointDataSet.setImageFilePaths(imageFilePaths);
-			
-			auto dimensionIds = std::vector<int>();
-
-			dimensionIds.resize(imagePointDataSet.noDimensions());
-			std::iota(std::begin(dimensionIds), std::end(dimensionIds), 0);
-
-			auto dimensionNames = QStringList();
-
-			for (int dimensionId : dimensionIds)
-			{
-				dimensionNames << QString("dim_%1").arg(dimensionId);
-			}
-
-			imagePointDataSet.setDimensionNames(dimensionNames);
-			
-			auto& pointsData = imagePointDataSet.create();
-
-			auto noPointsPerDimension = imagePointDataSet.noPointsPerDimension();
-
-			int imageOffset	= 0;
-			int done		= 0;
-
-			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
-				const auto imageFilePath	= imageCollection.imageFilePaths().first();
-				const auto imageIndex		= imageFilePaths.indexOf(imageFilePath);
-				const auto imageSize		= imagePointDataSet.imageSize(imageFilePath);
-				
-				auto* multiBitmap = freeImageOpenMultiBitmap(imageFilePath);
+				auto* multiBitmap = FreeImage::freeImageOpenMultiBitmap(imageFilePath);
 
 				if (multiBitmap != nullptr) {
 					const auto noPages = FreeImage_GetPageCount(multiBitmap);
 
 					for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
-						const auto pointIndexMapper = [imageOffset, noPointsPerDimension, pageIndex, imageSize](int x, int y) {
-							const auto localPixelIndex = y * imageSize.width() + x;
-							return (pageIndex * noPointsPerDimension) + imageOffset + localPixelIndex;
-						};
-
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
-							//qDebug() << pageIndex;
-
-							loadBitmap(pageBitmap, imageSize, pointIndexMapper, pointsData);
+							loadBitmap(pageBitmap, images.size(), images.add(1, imageFilePath));
 
 							FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
 						}
 					}
 
-					imageOffset += imageSize.width() * imageSize.height();
-
 					done++;
 
 					FreeImage_CloseMultiBitmap(multiBitmap);
-
-					//qDebug() << pointsData;
-
-					const auto percentage = 100.0f * (done / static_cast<float>(noImages));
-
-					emit message(QString("Loaded %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(noImages), QString::number(percentage, 'f', 1)));
 				}
+				
+				const auto percentage = 100.0f * (done / static_cast<float>(noImages));
+
+				emit endLoad(images);
+				emit message(QString("Loaded %1 (%2%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(percentage)));
 			}
-			*/
+			
+			emit message(QString("Loaded %1 multipart images").arg(QString::number(noImages)));
+
 			break;
 		}
 
 		default:
 			break;
 	}
-
-	emit endLoad(images);
 }
 
 void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, const QSize& imageSize, Image& image)

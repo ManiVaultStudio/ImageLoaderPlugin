@@ -1,11 +1,5 @@
 #pragma once
 
-#include <vector>
-
-#include <QStringList>
-#include <QMap>
-#include <QSize>
-
 enum class ImageResamplingFilter
 {
 	Box,
@@ -15,6 +9,3 @@ enum class ImageResamplingFilter
 	CatmullRom,
 	Lanczos
 };
-
-using FloatVector = std::vector<float>;
-using ImageList = QStringList;

@@ -34,6 +34,9 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 
 	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
 
+	_ui->imagesLabel->setVisible(false);
+	_ui->imagesListWidget->setVisible(false);
+
 	_scanner.loadSettings();
 }
 
@@ -98,23 +101,6 @@ void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImag
 	_ui->loadPushButton->setEnabled(loadable);
 
 	_ui->imagesListWidget->clear();
-
-	/*
-	foreach(QString imageFilePath, imageFilePaths)
-	{
-		const auto imageFileName = QFileInfo(imageFilePath).fileName();
-
-		QListWidgetItem* fileItem = new QListWidgetItem;
-		
-		fileItem->setFlags(fileItem->flags() | Qt::ItemIsUserCheckable);
-		fileItem->setCheckState(imageFileName.contains("mask") ? Qt::Unchecked : Qt::Checked);
-		fileItem->setData(Qt::UserRole, QVariant(imageFilePath));
-		fileItem->setText(imageFileName);
-		fileItem->setToolTip(imageFilePath);
-
-		_ui->imagesListWidget->addItem(fileItem);
-	}
-	*/
 }
 
 void MultiPartImageSequenceWidget::onBeginLoad()
