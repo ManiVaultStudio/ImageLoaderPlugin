@@ -28,7 +28,7 @@ private:
 	void onBeginScan();
 	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onBeginLoad();
-	void onEndLoad(ImagePointDataSet& imagePointDataSet);
+	void onEndLoad(Images& imagePointDataSet);
 	void onSubsampleImageSettingsChanged();
 
 signals:

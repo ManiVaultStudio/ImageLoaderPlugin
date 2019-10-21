@@ -1,5 +1,4 @@
 #include "SubsampleImageSettings.h"
-#include "ImageUtilities.h"
 #include "ImageLoaderPlugin.h"
 
 #include <QDebug>

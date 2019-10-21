@@ -1,6 +1,6 @@
 {
-    "name" : "Image loader",
+    "name" : "Image Loader",
     "menuName" : "Images",
     "version" : "0.1.0",
-    "dependencies" : ["Points"]
+    "dependencies" : ["Image Data"]
 }

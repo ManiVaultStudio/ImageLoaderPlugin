@@ -2,6 +2,7 @@
 #include "ImageLoaderDialog.h"
 
 #include "PointsPlugin.h"
+#include "ImageData.h"
 #include "Set.h"
 
 #include <QtCore>
@@ -27,44 +28,39 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addImagePointDataSet(ImagePointDataSet& imagePointDataSet)
+void ImageLoaderPlugin::addImages(Images& images)
 {
-	qDebug() << imagePointDataSet;
+	const auto datasetName = _core->addData("Image Data", images.name());
+
+	const auto& dataSet = dynamic_cast<const ImageDataSet&>(_core->requestSet(datasetName));
 	
-	const auto datasetName = _core->addData("Points", imagePointDataSet.name());
-
-	const IndexSet& set = dynamic_cast<const IndexSet&>(_core->requestSet(datasetName));
-
-	PointsPlugin& points = set.getData();
-
-	auto noPoints = 0;
-
-	switch (imagePointDataSet.type()) {
+	ImageData& imageData = dynamic_cast<ImageData&>(dataSet.getData());
+	
+	switch (images.type()) {
 		case ImageCollectionType::Sequence:
-			points.setProperty("type", "SEQUENCE");
-			noPoints = imagePointDataSet.noImages();
+		{
+			imageData.setSequence(images.images(), images.size(), 1);
 			break;
+		}
 
 		case ImageCollectionType::Stack:
-			points.setProperty("type", "STACK");
-			noPoints = imagePointDataSet.noPointsPerDimension();
+		{
+			imageData.setStack(images.images(), images.size(), 1);
 			break;
-
-		case ImageCollectionType::MultiPartSequence:
-			points.setProperty("type", "MULTI_PART_SEQUENCE");
-			noPoints = imagePointDataSet.noPointsPerDimension();
-			break;
-
+		}
+			
 		default:
 			break;
 	}
 
+	/*
 	points.setData(imagePointDataSet.pointsData().data(), noPoints, imagePointDataSet.noDimensions());
 	points.setDimensionNames(imagePointDataSet.dimensionNames().toVector().toStdVector());
 	points.setProperty("imageFilePaths", imagePointDataSet.imageFilePaths());
 	points.setProperty("imageSizes", imagePointDataSet.imageSizes());
+	*/
 
-	_core->notifyDataAdded(datasetName);
+	//_core->notifyDataAdded(datasetName);
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

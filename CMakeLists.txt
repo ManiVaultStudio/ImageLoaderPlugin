@@ -27,14 +27,14 @@ set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.cpp
 	src/ImageLoaderDialog.h
     src/ImageLoaderDialog.cpp
-	src/ImageUtilities.h
-    src/ImageUtilities.cpp
+	src/FreeImage.h
+    src/FreeImage.cpp
 	src/SubsampleImageSettings.h
 	src/SubsampleImageSettings.cpp
 	src/SubsampleImageSettingsWidget.h
 	src/SubsampleImageSettingsWidget.cpp
-	src/ImagePointDataset.h
-	src/ImagePointDataset.cpp
+	src/Images.h
+	src/Images.cpp
     src/Common.h
 )
 
@@ -73,6 +73,8 @@ set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
 	src/MultiPartImageSequenceWidget.cpp
 )
 
+set(AUX src/ImageLoaderPlugin.json)
+
 set(SOURCES 
 	${PLUGIN_SOURCES}
 	${LOADER_SOURCES}
@@ -95,16 +97,17 @@ source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES}
 source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
 source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
 source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
+source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 
-add_library(${PROJECT} SHARED ${SOURCES} ${UIS})
+add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
 target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/HDPS_Public.lib")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/PointsPlugin.lib")
+target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/ImageData.lib")
 target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD

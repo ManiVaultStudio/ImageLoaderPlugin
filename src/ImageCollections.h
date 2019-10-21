@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ImageData.h"
 #include "ImageCollection.h"
 
 #include <QString>

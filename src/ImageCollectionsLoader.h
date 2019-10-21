@@ -1,15 +1,15 @@
 #pragma once
 
 #include "ImageCollections.h"
-#include "ImagePointDataSet.h"
+#include "Images.h"
 #include "SubsampleImageSettings.h"
 
 #include <QObject>
 #include <QString>
 
-struct FIBITMAP;
-
-using IndexerFunction = std::function<int(int, int)>;
+namespace fi {
+	#include <FreeImage.h>
+}
 
 class ImageCollectionsLoader : public QObject {
 	Q_OBJECT
@@ -29,17 +29,14 @@ public:
 	void setDatasetName(const QString& datasetName);
 
 private:
-	template<typename PointIndexMapper>
-	void loadBitmap(FIBITMAP* bitmap, const QSize & imageSize, const PointIndexMapper& pointIndexMapper, FloatVector & pointsData);
-
-	template<typename PointIndexMapper>
-	void loadImage(const QString& imageFilePath, const QSize& imageSize, const PointIndexMapper& pointIndexMapper, FloatVector& pointsData);
+	void loadBitmap(fi::FIBITMAP* bitmap, const QSize& imageSize, Image& image);
+	void loadImage(const QString &imageFilePath, Images& images);
 
 signals:
 	void datasetNameChanged(const QString&);
 	void beginLoad();
-	void endLoad(ImagePointDataSet& imagePointDataSet);
-	void imageLoaded(const QString &imageFilePath, const int &done, const int &total);
+	void endLoad(Images& images);
+	void imageLoaded(const QString &imageFilePath, const int& done, const int& total);
 	void message(const QString& message);
 
 protected:

@@ -1,5 +1,6 @@
 #include "MultiPartImageSequenceScanner.h"
-#include "ImageUtilities.h"
+#include "FreeImage.h"
+#include "ImageData.h"
 
 #include <QDebug>
 #include <QDir>
@@ -40,7 +41,7 @@ void MultiPartImageSequenceScanner::scan()
 	for (int i = 0; i < fileNames.size(); ++i)
 	{
 		const auto filePath		= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileNames.at(i));
-		const auto pageCount	= freeImageGetPageCount(filePath);
+		const auto pageCount	= FreeImage::freeImageGetPageCount(filePath);
 
 		if (!multiPartTiffs.contains(pageCount)) {
 			multiPartTiffs[pageCount] = QStringList();
@@ -57,7 +58,7 @@ void MultiPartImageSequenceScanner::scan()
 		const auto noDimensions = multiPartTiffs.keys().last();
 
 		foreach(const QString& imageFilePath, imageFilePaths) {
-			auto imageCollection = ImageCollection(freeImageGetSize(imageFilePath));
+			auto imageCollection = ImageCollection(FreeImage::freeImageGetSize(imageFilePath));
 
 			imageCollection.add(imageFilePath);
 			imageCollection.setNoDimensions(noDimensions);
