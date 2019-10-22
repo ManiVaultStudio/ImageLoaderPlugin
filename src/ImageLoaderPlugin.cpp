@@ -2,7 +2,7 @@
 #include "ImageLoaderDialog.h"
 
 #include "PointsPlugin.h"
-#include "ImageData.h"
+#include "ImageData/ImageData.h"
 #include "Set.h"
 
 #include <QtCore>

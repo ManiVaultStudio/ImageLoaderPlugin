@@ -1,6 +1,6 @@
 #include "MultiPartImageSequenceScanner.h"
 #include "FreeImage.h"
-#include "ImageData.h"
+#include "ImageData/ImageData.h"
 
 #include <QDebug>
 #include <QDir>
