@@ -33,7 +33,6 @@ protected:
 	ImageCollectionType		_type;
 	QString					_name;
 	QSize					_size;
-	std::uint32_t			_noComponents;
 	std::vector<Image>		_images;
 	QStringList				_imageFilePaths;
 	QStringList				_dimensionNames;

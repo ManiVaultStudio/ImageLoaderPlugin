@@ -21,6 +21,7 @@ public:
 
 private:
 	void onConvertToGrayscaleChanged(const bool& convertToGrayscaleChanged);
+	void onConvertToGrayscaleCheckBoxStateChanged(const int& state);
 
 private:
 	std::unique_ptr<Ui::ColorSettingsWidget>	_ui;

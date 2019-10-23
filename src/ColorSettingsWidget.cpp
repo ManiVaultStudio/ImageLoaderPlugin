@@ -19,6 +19,7 @@ void ColorSettingsWidget::initialize(ColorSettings* colorSettings)
 	_colorSettings = colorSettings;
 
 	connect(_colorSettings, &ColorSettings::convertToGrayscaleChanged, this, &ColorSettingsWidget::onConvertToGrayscaleChanged);
+	connect(_ui->convertToGrayscaleCheckbox, &QCheckBox::stateChanged, this, &ColorSettingsWidget::onConvertToGrayscaleCheckBoxStateChanged);
 
 	_colorSettings->emitAll();
 }
@@ -26,4 +27,11 @@ void ColorSettingsWidget::initialize(ColorSettings* colorSettings)
 void ColorSettingsWidget::onConvertToGrayscaleChanged(const bool& convertToGrayscaleChanged)
 {
 	_ui->convertToGrayscaleCheckbox->setChecked(convertToGrayscaleChanged);
+}
+
+void ColorSettingsWidget::onConvertToGrayscaleCheckBoxStateChanged(const int& state)
+{
+	const auto enabled = static_cast<bool>(state);
+
+	_colorSettings->setConvertToGrayscale(enabled);
 }

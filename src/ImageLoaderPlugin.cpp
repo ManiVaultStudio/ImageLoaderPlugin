@@ -39,13 +39,13 @@ void ImageLoaderPlugin::addImages(Images& images)
 	switch (images.type()) {
 		case ImageCollectionType::Sequence:
 		{
-			imageData.setSequence(images.images(), images.size(), 1);
+			imageData.setSequence(images.images(), images.size());
 			break;
 		}
 
 		case ImageCollectionType::Stack:
 		{
-			imageData.setStack(images.images(), images.size(), 1);
+			imageData.setStack(images.images(), images.size());
 			break;
 		}
 			
