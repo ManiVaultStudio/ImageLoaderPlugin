@@ -32,7 +32,8 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &MultiPartImageSequenceWidget::message);
 
-	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_ui->imagesLabel->setVisible(false);
 	_ui->imagesListWidget->setVisible(false);

@@ -1,9 +1,9 @@
-#include "SubsampleImageSettings.h"
+#include "SubsampleSettings.h"
 #include "ImageLoaderPlugin.h"
 
 #include <QDebug>
 
-SubsampleImageSettings::SubsampleImageSettings(QSettings* settings) :
+SubsampleSettings::SubsampleSettings(QSettings* settings) :
 	_settings(settings),
 	_enabled(false),
 	_ratio(100.0),
@@ -15,31 +15,31 @@ SubsampleImageSettings::SubsampleImageSettings(QSettings* settings) :
 
 	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
 
-	connect(this, &SubsampleImageSettings::enabledChanged, this, &SubsampleImageSettings::changed);
-	connect(this, &SubsampleImageSettings::ratioChanged, this, &SubsampleImageSettings::changed);
-	connect(this, &SubsampleImageSettings::filterChanged, this, &SubsampleImageSettings::changed);
+	connect(this, &SubsampleSettings::enabledChanged, this, &SubsampleSettings::changed);
+	connect(this, &SubsampleSettings::ratioChanged, this, &SubsampleSettings::changed);
+	connect(this, &SubsampleSettings::filterChanged, this, &SubsampleSettings::changed);
 }
 
-SubsampleImageSettings::~SubsampleImageSettings()
+SubsampleSettings::~SubsampleSettings()
 {
 	_settings->setValue(settingPath("enabled"), _enabled);
 	_settings->setValue(settingPath("ratio"), _ratio);
 	_settings->setValue(settingPath("filter"), static_cast<int>(_filter));
 }
 
-void SubsampleImageSettings::emitAll()
+void SubsampleSettings::emitAll()
 {
 	emit enabledChanged(_enabled);
 	emit ratioChanged(_ratio);
 	emit filterChanged(_filter);
 }
 
-bool SubsampleImageSettings::enabled() const
+bool SubsampleSettings::enabled() const
 {
 	return _enabled;
 }
 
-void SubsampleImageSettings::setEnabled(const bool& enabled)
+void SubsampleSettings::setEnabled(const bool& enabled)
 {
 	if (enabled == _enabled)
 		return;
@@ -51,12 +51,12 @@ void SubsampleImageSettings::setEnabled(const bool& enabled)
 	emit enabledChanged(_enabled);
 }
 
-double SubsampleImageSettings::ratio() const
+double SubsampleSettings::ratio() const
 {
 	return _ratio;
 }
 
-void SubsampleImageSettings::setRatio(const double& ratio)
+void SubsampleSettings::setRatio(const double& ratio)
 {
 	if (ratio == _ratio)
 		return;
@@ -68,12 +68,12 @@ void SubsampleImageSettings::setRatio(const double& ratio)
 	emit ratioChanged(_ratio);
 }
 
-ImageResamplingFilter SubsampleImageSettings::filter() const
+ImageResamplingFilter SubsampleSettings::filter() const
 {
 	return _filter;
 }
 
-void SubsampleImageSettings::setFilter(const ImageResamplingFilter& filter)
+void SubsampleSettings::setFilter(const ImageResamplingFilter& filter)
 {
 	if (filter == _filter)
 		return;
@@ -87,12 +87,12 @@ void SubsampleImageSettings::setFilter(const ImageResamplingFilter& filter)
 	emit filterChanged(_filter);
 }
 
-QStringList SubsampleImageSettings::filterNames() const
+QStringList SubsampleSettings::filterNames() const
 {
 	return _filterNames;
 }
 
-QString SubsampleImageSettings::settingPath(const QString& name) const
+QString SubsampleSettings::settingPath(const QString& name) const
 {
 	return QString("Resampling/%2").arg(name);
 }

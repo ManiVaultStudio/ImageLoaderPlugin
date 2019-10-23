@@ -9,7 +9,8 @@ ImageCollectionsLoader::ImageCollectionsLoader(const ImageCollectionType& type) 
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
 	_type(type),
 	_datasetName(),
-	_subsampleImageSettings(&_settings)
+	_subsampleSettings(&_settings),
+	_colorSettings(&_settings)
 {
 }
 
@@ -18,9 +19,14 @@ ImageCollectionType ImageCollectionsLoader::type() const
 	return _type;
 }
 
-SubsampleImageSettings & ImageCollectionsLoader::subsampleImageSettings()
+SubsampleSettings & ImageCollectionsLoader::subsampleImageSettings()
 {
-	return _subsampleImageSettings;
+	return _subsampleSettings;
+}
+
+ColorSettings& ImageCollectionsLoader::colorSettings()
+{
+	return _colorSettings;
 }
 
 QVariant ImageCollectionsLoader::setting(const QString& name, const QVariant& defaultValue) const
@@ -66,8 +72,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 			images.setSize(sequence.imageSize());
 
-			if (_subsampleImageSettings.enabled())
-				images.setSize(sequence.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			if (_subsampleSettings.enabled())
+				images.setSize(sequence.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
 			images.setImageFilePaths(sequence.imageFilePaths());
 
@@ -98,8 +104,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 			images.setSize(stack.imageSize());
 
-			if (_subsampleImageSettings.enabled())
-				images.setSize(stack.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+			if (_subsampleSettings.enabled())
+				images.setSize(stack.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
 			images.setImageFilePaths(stack.imageFilePaths());
 			images.setDimensionNames(images.imageFilePaths());
@@ -136,8 +142,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 				images.setSize(imageCollection.imageSize());
 
-				if (_subsampleImageSettings.enabled())
-					images.setSize(imageCollection.imageSize() * (_subsampleImageSettings.ratio() / 100.f));
+				if (_subsampleSettings.enabled())
+					images.setSize(imageCollection.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
 				auto* multiBitmap = FreeImage::freeImageOpenMultiBitmap(imageFilePath);
 
@@ -183,9 +189,13 @@ void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, const QSize& image
 	const auto height	= fi::FreeImage_GetHeight(bitmap);
 	const auto rescale	= QSize(width, height) != imageSize;
 	
-	auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, imageSize.width(), imageSize.height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleImageSettings.filter())) : bitmap;
+	auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, imageSize.width(), imageSize.height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleSettings.filter())) : bitmap;
 	
 	const auto scaledBitmapImageType = fi::FreeImage_GetImageType(bitmap);
+
+	auto pixel = std::vector<std::uint16_t>();
+
+	pixel.resize(image.noComponents());
 
 	if (scaledBitmap) {
 		switch (scaledBitmapImageType) {
@@ -198,8 +208,9 @@ void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, const QSize& image
 						const fi::BYTE *const bits = fi::FreeImage_GetScanLine(greyscaleBitmap, y);
 
 						for (std::int32_t x = 0; x < imageSize.width(); x++) {
-							const auto pixel = static_cast<std::uint16_t>(bits[x]);
-							image.setPixel(x, y, &pixel);
+							std::fill(pixel.begin(), pixel.end(), static_cast<std::uint16_t>(bits[x]));
+
+							image.setPixel(x, y, pixel.data());
 						}
 					}
 				}
@@ -210,14 +221,15 @@ void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, const QSize& image
 			case fi::FIT_UINT16:
 			{
 				for (std::int32_t y = 0; y < imageSize.height(); y++) {
-					unsigned short* bits = (unsigned short*)fi::FreeImage_GetScanLine(scaledBitmap, y);
+					const fi::BYTE *const scanline = fi::FreeImage_GetScanLine(scaledBitmap, y);
 
 					for (std::int32_t x = 0; x < imageSize.width(); x++) {
-						const auto pixel = bits[x];
-						image.setPixel(x, y, &pixel);
+						std::fill(pixel.begin(), pixel.end(), static_cast<std::uint16_t>(scanline[x]));
+
+						image.setPixel(x, y, pixel.data());
 					}
 				}
-
+				
 				break;
 			}
 		}
@@ -225,6 +237,10 @@ void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, const QSize& image
 		if (rescale)
 			fi::FreeImage_Unload(scaledBitmap);
 	}
+
+	qDebug() << image;
+
+	image.save("kjhg.jpg");
 }
 
 void ImageCollectionsLoader::loadImage(const QString &imageFilePath, Images& images)
@@ -234,7 +250,7 @@ void ImageCollectionsLoader::loadImage(const QString &imageFilePath, Images& ima
 	auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 	
 	if (bitmap) {
-		loadBitmap(bitmap, images.size(), images.add(1, imageFilePath));
+		loadBitmap(bitmap, images.size(), images.add(4, imageFilePath));
 
 		fi::FreeImage_Unload(bitmap);
 	}

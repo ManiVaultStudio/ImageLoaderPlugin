@@ -7,20 +7,14 @@
 
 class ImageLoaderPlugin;
 
-class SubsampleImageSettings : public QObject {
+class SubsampleSettings : public QObject {
 	Q_OBJECT
 
 public:
-	 SubsampleImageSettings(QSettings* settings);
-	 ~SubsampleImageSettings();
+	 SubsampleSettings(QSettings* settings);
+	 ~SubsampleSettings() override;
 
 	 void emitAll();
-
-signals:
-	void enabledChanged(const bool&);
-	void ratioChanged(const double&);
-	void filterChanged(const ImageResamplingFilter&);
-	void changed();
 
 public:
 	bool enabled() const;
@@ -33,6 +27,12 @@ public:
 
 private:
 	QString settingPath(const QString& name) const;
+
+signals:
+	void enabledChanged(const bool&);
+	void ratioChanged(const double&);
+	void filterChanged(const ImageResamplingFilter&);
+	void changed();
 
 private:
 	QSettings*				_settings;

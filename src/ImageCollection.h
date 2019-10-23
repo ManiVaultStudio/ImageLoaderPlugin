@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SubsampleImageSettings.h"
-
 #include <QObject>
 #include <QString>
 #include <QSize>

@@ -1,23 +1,21 @@
 #pragma once
 
-#include "SubsampleImageSettings.h"
+#include "SubsampleSettings.h"
 
 #include <memory>
 
 #include <QWidget>
 
 namespace Ui {
-	class SubsampleImageSettingsWidget;
+	class SubsampleSettingsWidget;
 }
 
-class ResampleImageSettings;
-
-class SubsampleImageSettingsWidget : public QWidget
+class SubsampleSettingsWidget : public QWidget
 {
 public:
-	SubsampleImageSettingsWidget(QWidget* parent);
+	SubsampleSettingsWidget(QWidget* parent);
 
-	void initialize(SubsampleImageSettings* subsampleImageSettings);
+	void initialize(SubsampleSettings* subsampleSettings);
 
 private:
 	void onEnabledChanged(const bool& enabled);
@@ -28,6 +26,6 @@ private:
 	void onFilterChanged(const ImageResamplingFilter& imageResamplingFilter);
 
 private:
-	std::unique_ptr<Ui::SubsampleImageSettingsWidget>	_ui;
-	SubsampleImageSettings*								_subsampleImageSettings;
+	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;
+	SubsampleSettings*								_subsampleSettings;
 };	

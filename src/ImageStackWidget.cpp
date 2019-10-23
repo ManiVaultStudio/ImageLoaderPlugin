@@ -31,9 +31,10 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
 
-	connect(&_loader.subsampleImageSettings(), &SubsampleImageSettings::changed, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
+	connect(&_loader.subsampleImageSettings(), &SubsampleSettings::changed, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
 
-	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_scanner.loadSettings();
 }

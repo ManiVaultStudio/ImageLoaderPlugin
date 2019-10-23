@@ -48,7 +48,8 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->imageTypeComboBox->addItem("bmp");
 	_ui->imageTypeComboBox->addItem("tif");
 
-	_ui->subsampleImageSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
+	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_scanner.loadSettings();
 }

@@ -32,35 +32,21 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="5" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="buttonsLayout">
-     <item>
-      <spacer name="buttonsSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadPushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Load image sequence</string>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <item row="1" column="0" colspan="2">
+    <widget class="SubsampleSettingsWidget" name="subsampleSettingsWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
    </item>
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="imagesGroupBox">
@@ -175,8 +161,38 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="SubsampleImageSettingsWidget" name="subsampleImageSettingsWidget" native="true">
+   <item row="6" column="0" colspan="2">
+    <layout class="QHBoxLayout" name="buttonsLayout">
+     <item>
+      <spacer name="buttonsSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="loadPushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>Load image sequence</string>
+       </property>
+       <property name="text">
+        <string>Load</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="ColorSettingsWidget" name="colorSettingsWidget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
        <horstretch>0</horstretch>
@@ -195,9 +211,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SubsampleImageSettingsWidget</class>
+   <class>SubsampleSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>subsampleimagesettingswidget.h</header>
+   <header>subsamplesettingswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColorSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>colorsettingswidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

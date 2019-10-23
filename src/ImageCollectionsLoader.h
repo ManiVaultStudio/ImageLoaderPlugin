@@ -2,7 +2,8 @@
 
 #include "ImageCollections.h"
 #include "Images.h"
-#include "SubsampleImageSettings.h"
+#include "SubsampleSettings.h"
+#include "ColorSettings.h"
 
 #include <QObject>
 #include <QString>
@@ -18,7 +19,9 @@ public:
 	ImageCollectionsLoader(const ImageCollectionType& type);
 
 	ImageCollectionType type() const;
-	SubsampleImageSettings& subsampleImageSettings();
+
+	SubsampleSettings& subsampleImageSettings();
+	ColorSettings& colorSettings();
 
 	void load(const ImageCollections& scannedImageCollections);
 
@@ -45,5 +48,6 @@ protected:
 private:
 	ImageCollectionType		_type;
 	QString					_datasetName;
-	SubsampleImageSettings	_subsampleImageSettings;
+	SubsampleSettings		_subsampleSettings;
+	ColorSettings			_colorSettings;
 };
