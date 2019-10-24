@@ -188,88 +188,99 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 	auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
 	if (bitmap) {
-		const auto noComponents = _colorSettings.convertToGrayscale() ? 1 : 3;
-
-		auto& image = images.add(noComponents, imageFilePath);
-
-		const auto width = fi::FreeImage_GetWidth(bitmap);
-		const auto height = fi::FreeImage_GetHeight(bitmap);
-		const auto rescale = QSize(width, height) != images.size();
+		const auto width	= fi::FreeImage_GetWidth(bitmap);
+		const auto height	= fi::FreeImage_GetHeight(bitmap);
+		const auto rescale	= QSize(width, height) != images.size();
 
 		auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, images.size().width(), images.size().height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleSettings.filter())) : bitmap;
 
 		if (scaledBitmap) {
-			fi::FIBITMAP* convertedBitmap = nullptr;
+			const auto imageType = fi::FreeImage_GetImageType(scaledBitmap);
 
-			switch (noComponents)
+			auto noComponents = _colorSettings.convertToGrayscale() ? 1 : 3;
+
+			/*
+			switch (switch_on)
 			{
-				case 1:
-					convertedBitmap = fi::FreeImage_ConvertToFloat(scaledBitmap);
-					break;
-
-				case 3:
-					convertedBitmap = fi::FreeImage_ConvertToRGBF(scaledBitmap);
-					break;
-
-				case 4:
-					convertedBitmap = fi::FreeImage_ConvertToRGBAF(scaledBitmap);
-					break;
-
 				default:
 					break;
 			}
+			*/
 
-			if (convertedBitmap) {
-				const auto imageType = fi::FreeImage_GetImageType(convertedBitmap);
+			auto& image = images.add(noComponents, imageFilePath);
 
-				//qDebug() << scaledBitmapImageType;
-				
-				auto pixel = std::vector<std::uint16_t>();
+			auto pixel = std::vector<std::uint16_t>();
 
-				pixel.resize(image.noComponents());
+			pixel.resize(image.noComponents());
 
-				if (scaledBitmap) {
-					switch (imageType) {
-						case fi::FIT_FLOAT:
+			if (scaledBitmap) {
+				const auto bpp = fi::FreeImage_GetBPP(scaledBitmap);
+
+				qDebug() << imageType;
+
+				switch (imageType) {
+					case fi::FIT_BITMAP:
+					{
+						for (std::int32_t y = 0; y < images.size().height(); y++)
 						{
-							for (std::int32_t y = 0; y < images.size().height(); y++) {
-								float* scanLine = (float*)fi::FreeImage_GetScanLine(scaledBitmap, y);
+							fi::BYTE* scanLine = (fi::BYTE*)fi::FreeImage_GetScanLine(scaledBitmap, y);
 
-								for (std::int32_t x = 0; x < images.size().width(); x++) {
-									pixel[0] = scanLine[x];
-									image.setPixel(x, y, pixel.data());
+							for (std::int32_t x = 0; x < images.size().width(); x++)
+							{
+								switch (bpp)
+								{
+									case 8:
+									{
+										for (std::int32_t c = 0; c < 3; c++)
+											pixel[c] = scanLine[x];
+											
+										break;
+									}
+
+									case 24:
+									{
+										pixel[0] = scanLine[x * image.noComponents() + FI_RGBA_RED];
+										pixel[1] = scanLine[x * image.noComponents() + FI_RGBA_GREEN];
+										pixel[2] = scanLine[x * image.noComponents() + FI_RGBA_BLUE];
+										break;
+									}
+
+									default:
+										break;
 								}
-							}
 
-							break;
+								image.setPixel(x, y, pixel.data());
+							}
 						}
 
-						case fi::FIT_RGBF:
-						{
-							for (std::int32_t y = 0; y < images.size().height(); y++) {
-								float* scanLine = (float*)fi::FreeImage_GetScanLine(scaledBitmap, y);
-
-								for (std::int32_t x = 0; x < images.size().width(); x++) {
-									pixel[0] = scanLine[x * 3 + 0];
-									pixel[1] = scanLine[x * 3 + 1];
-									pixel[2] = scanLine[x * 3 + 2];
-
-									image.setPixel(x, y, pixel.data());
-								}
-							}
-
-							break;
-						}
+						break;
 					}
 
-					if (rescale)
-						fi::FreeImage_Unload(scaledBitmap);
+					case fi::FIT_UINT16:
+					{
+						qDebug() << "USHORT";
+
+						for (std::int32_t y = 0; y < images.size().height(); y++) {
+							std::uint16_t* scanLine = (std::uint16_t*)fi::FreeImage_GetScanLine(scaledBitmap, y);
+
+							for (std::int32_t x = 0; x < images.size().width(); x++) {
+								pixel[0] = scanLine[x];
+
+								image.setPixel(x, y, pixel.data());
+
+								qDebug() << pixel;
+							}
+						}
+
+						break;
+					}
 				}
 
-				//qDebug() << image;
-
-				fi::FreeImage_Unload(bitmap);
+				if (rescale)
+					fi::FreeImage_Unload(scaledBitmap);
 			}
+
+			fi::FreeImage_Unload(bitmap);
 		}
 	}
 }
