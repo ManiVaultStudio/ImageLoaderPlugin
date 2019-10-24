@@ -197,15 +197,40 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 		if (scaledBitmap) {
 			const auto imageType = fi::FreeImage_GetImageType(scaledBitmap);
 
-			auto noComponents = _colorSettings.convertToGrayscale() ? 1 : 3;
+			auto noComponents = 1;
 
-			/*
-			switch (switch_on)
+			switch (imageType)
 			{
+				case fi::FIT_BITMAP:
+					noComponents = 3;
+					break;
+
+				case fi::FIT_UINT16:
+				case fi::FIT_INT16:
+				case fi::FIT_UINT32:
+				case fi::FIT_INT32:
+				case fi::FIT_FLOAT:
+				case fi::FIT_DOUBLE:
+				case fi::FIT_COMPLEX:
+					noComponents = 1;
+					break;
+				
+				case fi::FIT_RGB16:
+				case fi::FIT_RGBF:
+					noComponents = 3;
+					break;
+
+				case fi::FIT_RGBA16:
+				case fi::FIT_RGBAF:
+					noComponents = 4;
+					break;
+
 				default:
 					break;
 			}
-			*/
+
+			if (_colorSettings.convertToGrayscale())
+				noComponents = 1;
 
 			auto& image = images.add(noComponents, imageFilePath);
 
@@ -215,8 +240,6 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 
 			if (scaledBitmap) {
 				const auto bpp = fi::FreeImage_GetBPP(scaledBitmap);
-
-				qDebug() << imageType;
 
 				switch (imageType) {
 					case fi::FIT_BITMAP:
@@ -231,17 +254,51 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 								{
 									case 8:
 									{
-										for (std::int32_t c = 0; c < 3; c++)
-											pixel[c] = scanLine[x];
-											
+										switch (image.noComponents())
+										{
+											case 1:
+											{
+												pixel[0] = scanLine[x];
+												break;
+											}
+
+											case 3:
+											{
+												pixel[0] = scanLine[x];
+												pixel[1] = scanLine[x];
+												pixel[2] = scanLine[x];
+												break;
+											}
+
+											default:
+												break;
+										}
+
 										break;
 									}
 
 									case 24:
 									{
-										pixel[0] = scanLine[x * image.noComponents() + FI_RGBA_RED];
-										pixel[1] = scanLine[x * image.noComponents() + FI_RGBA_GREEN];
-										pixel[2] = scanLine[x * image.noComponents() + FI_RGBA_BLUE];
+										switch (image.noComponents())
+										{
+											case 1:
+											{
+												pixel[0] = scanLine[x * 3 + FI_RGBA_RED];
+												break;
+											}
+
+											case 3:
+											{
+												pixel[0] = scanLine[x * image.noComponents() + FI_RGBA_RED];
+												pixel[1] = scanLine[x * image.noComponents() + FI_RGBA_GREEN];
+												pixel[2] = scanLine[x * image.noComponents() + FI_RGBA_BLUE];
+												break;
+											}
+
+											default:
+												break;
+										}
+										
 										break;
 									}
 
@@ -258,17 +315,12 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 
 					case fi::FIT_UINT16:
 					{
-						qDebug() << "USHORT";
-
 						for (std::int32_t y = 0; y < images.size().height(); y++) {
 							std::uint16_t* scanLine = (std::uint16_t*)fi::FreeImage_GetScanLine(scaledBitmap, y);
 
 							for (std::int32_t x = 0; x < images.size().width(); x++) {
 								pixel[0] = scanLine[x];
-
 								image.setPixel(x, y, pixel.data());
-
-								qDebug() << pixel;
 							}
 						}
 
