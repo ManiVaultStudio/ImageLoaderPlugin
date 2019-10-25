@@ -80,12 +80,17 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			foreach(const QString& imageFilePath, images.imageFilePaths()) {
 				const auto imageIndex = images.imageFilePaths().indexOf(imageFilePath);
 
-				loadBitmap(imageFilePath, images);
+				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
-				const auto done			= images.imageFilePaths().indexOf(imageFilePath) + 1;
-				const auto percentage	= 100.0f * (done / static_cast<float>(images.noImages()));
+				if (bitmap != nullptr) {
+					loadBitmap(bitmap, images, imageFilePath);
+					fi::FreeImage_Unload(bitmap);
 
-				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
+					const auto done = images.imageFilePaths().indexOf(imageFilePath) + 1;
+					const auto percentage = 100.0f * (done / static_cast<float>(images.noImages()));
+
+					emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
+				}
 			}
 
 			emit endLoad(images);
@@ -113,12 +118,17 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 			foreach(const QString& imageFilePath, images.imageFilePaths()) {
 				const auto imageIndex = images.imageFilePaths().indexOf(imageFilePath);
 
-				loadBitmap(imageFilePath, images);
+				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
-				const auto done			= images.imageFilePaths().indexOf(imageFilePath) + 1;
-				const auto percentage	= 100.0f * (done / static_cast<float>(images.noImages()));
+				if (bitmap != nullptr) {
+					loadBitmap(bitmap, images, imageFilePath);
+					fi::FreeImage_Unload(bitmap);
 
-				emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
+					const auto done = images.imageFilePaths().indexOf(imageFilePath) + 1;
+					const auto percentage = 100.0f * (done / static_cast<float>(images.noImages()));
+
+					emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(images.noImages()), QString::number(percentage, 'f', 1)));
+				}
 			}
 
 			emit endLoad(images);
@@ -154,7 +164,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
-							//loadBitmap(pageBitmap, images.size(), images.add(1, imageFilePath));
+							loadBitmap(pageBitmap, images, imageFilePath);
 
 							FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
 						}
@@ -181,18 +191,15 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 	}
 }
 
-void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& images)
+void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath)
 {
-	const auto format = fi::FreeImage_GetFileType(imageFilePath.toUtf8(), 0);
-
-	auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
-
 	if (bitmap) {
-		const auto width	= fi::FreeImage_GetWidth(bitmap);
-		const auto height	= fi::FreeImage_GetHeight(bitmap);
-		const auto rescale	= QSize(width, height) != images.size();
+		const auto width		= fi::FreeImage_GetWidth(bitmap);
+		const auto height		= fi::FreeImage_GetHeight(bitmap);
+		const auto imageSize	= images.size();
+		const auto rescale		= QSize(width, height) != imageSize;
 
-		auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, images.size().width(), images.size().height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleSettings.filter())) : bitmap;
+		auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, imageSize.width(), imageSize.height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleSettings.filter())) : bitmap;
 
 		if (scaledBitmap) {
 			const auto imageType = fi::FreeImage_GetImageType(scaledBitmap);
@@ -232,23 +239,25 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 			if (_colorSettings.convertToGrayscale())
 				noComponents = 1;
 
-			auto& image = images.add(noComponents, imageFilePath);
-
 			auto pixel = std::vector<std::uint16_t>();
+
+			auto& image = images.add(noComponents, imageFilePath);
 
 			pixel.resize(image.noComponents());
 
 			if (scaledBitmap) {
-				const auto bpp = fi::FreeImage_GetBPP(scaledBitmap);
+				const auto bpp		= fi::FreeImage_GetBPP(scaledBitmap);
+				const auto width	= imageSize.width();
+				const auto height	= imageSize.height();
 
 				switch (imageType) {
 					case fi::FIT_BITMAP:
 					{
-						for (std::int32_t y = 0; y < images.size().height(); y++)
+						for (std::int32_t y = 0; y < height; y++)
 						{
 							fi::BYTE* scanLine = (fi::BYTE*)fi::FreeImage_GetScanLine(scaledBitmap, y);
 
-							for (std::int32_t x = 0; x < images.size().width(); x++)
+							for (std::int32_t x = 0; x < width; x++)
 							{
 								switch (bpp)
 								{
@@ -315,10 +324,10 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 
 					case fi::FIT_UINT16:
 					{
-						for (std::int32_t y = 0; y < images.size().height(); y++) {
+						for (std::int32_t y = 0; y < height; y++) {
 							std::uint16_t* scanLine = (std::uint16_t*)fi::FreeImage_GetScanLine(scaledBitmap, y);
 
-							for (std::int32_t x = 0; x < images.size().width(); x++) {
+							for (std::int32_t x = 0; x < width; x++) {
 								pixel[0] = scanLine[x];
 								image.setPixel(x, y, pixel.data());
 							}
@@ -331,8 +340,6 @@ void ImageCollectionsLoader::loadBitmap(const QString &imageFilePath, Images& im
 				if (rescale)
 					fi::FreeImage_Unload(scaledBitmap);
 			}
-
-			fi::FreeImage_Unload(bitmap);
 		}
 	}
 }

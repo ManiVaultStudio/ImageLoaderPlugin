@@ -43,6 +43,7 @@ void ImageLoaderPlugin::addImages(Images& images)
 			break;
 		}
 
+		case ImageCollectionType::MultiPartSequence:
 		case ImageCollectionType::Stack:
 		{
 			imageData.setStack(images.images(), images.size());
