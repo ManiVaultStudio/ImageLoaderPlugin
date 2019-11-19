@@ -53,7 +53,7 @@ void ImageLoaderPlugin::addImages(Images& images)
 		default:
 			break;
 	}
-
+	qDebug() << "IMAGE LOADER ADD" << datasetName;
 	_core->notifyDataAdded(datasetName);
 }
 
