@@ -1,8 +1,7 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
 
-#include "PointsPlugin.h"
-#include "ImageData/ImageData.h"
+#include "ImageData/ImageDataSet.h"
 #include "Set.h"
 
 #include <QtCore>
@@ -32,9 +31,11 @@ void ImageLoaderPlugin::addImages(Images& images)
 {
 	const auto datasetName = _core->addData("Image Data", images.name());
 
-	const auto& dataSet = dynamic_cast<const ImageDataSet&>(_core->requestSet(datasetName));
+	auto& imageDataSet = dynamic_cast<ImageDataSet&>(_core->requestSet(datasetName));
 	
-	ImageData& imageData = dynamic_cast<ImageData&>(dataSet.getData());
+	imageDataSet.setRoi(QRect(QPoint(), images.size()));
+
+	ImageData& imageData = dynamic_cast<ImageData&>(imageDataSet.imageData());
 	
 	switch (images.type()) {
 		case ImageCollectionType::Sequence:
@@ -53,7 +54,7 @@ void ImageLoaderPlugin::addImages(Images& images)
 		default:
 			break;
 	}
-	qDebug() << "IMAGE LOADER ADD" << datasetName;
+	
 	_core->notifyDataAdded(datasetName);
 }
 
