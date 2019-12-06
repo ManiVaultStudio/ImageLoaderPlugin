@@ -89,7 +89,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="directoryPushButton">
+           <widget class="QPushButton" name="pickDirectoryPushButton">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
               <horstretch>0</horstretch>
@@ -112,7 +112,17 @@
              <string>Click to pick directory containing image sequence</string>
             </property>
             <property name="text">
-             <string>...</string>
+             <string>Pick</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="previousDirectoriesComboBox">
+            <property name="toolTip">
+             <string>Pick previously chosen directory</string>
+            </property>
+            <property name="sizeAdjustPolicy">
+             <enum>QComboBox::AdjustToContents</enum>
             </property>
            </widget>
           </item>

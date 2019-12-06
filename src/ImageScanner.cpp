@@ -7,6 +7,7 @@
 ImageScanner::ImageScanner(const ImageCollectionType& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
 	_directory(),
+	_previousDirectories(),
 	_imageTypes(),
 	_scanned()
 {
@@ -24,6 +25,7 @@ void ImageScanner::loadSettings()
 	}
 
 	setImageTypes(_settings.value("Scan/ImageTypes", "").toStringList());
+	setPreviousDirectories(_settings.value("Scan/PreviousDirectories", QVariant::fromValue(QStringList())).toStringList());
 }
 
 QString ImageScanner::directory() const
@@ -33,13 +35,47 @@ QString ImageScanner::directory() const
 
 void ImageScanner::setDirectory(const QString& directory)
 {
+	if (directory == _directory)
+		return;
+
 	_directory = directory;
 
-	_settings.setValue("Scan/Directory", directory);
+	_settings.setValue("Scan/Directory", _directory);
 
 	emit directoryChanged(_directory);
 	
+	addPreviousDirectory(_directory);
+
 	emit becameDirty();
+}
+
+QStringList ImageScanner::previousDirectories() const
+{
+	return _previousDirectories;
+}
+
+void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories)
+{
+	if (previousDirectories == _previousDirectories)
+		return;
+
+	_previousDirectories = previousDirectories;
+
+	_settings.setValue("Scan/PreviousDirectories", _previousDirectories);
+
+	emit previousDirectoriesChanged(_previousDirectories);
+
+	emit becameDirty();
+}
+
+void ImageScanner::addPreviousDirectory(const QString& previousDirectory)
+{
+//	if (_previousDirectories.contains(previousDirectory))
+//		return;
+
+	auto previousDirectories = _previousDirectories << previousDirectory;
+
+	setPreviousDirectories(_previousDirectories);
 }
 
 QStringList ImageScanner::imageTypes() const

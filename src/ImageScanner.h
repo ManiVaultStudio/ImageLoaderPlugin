@@ -17,6 +17,9 @@ public:
 
 	QString	directory() const;
 	void setDirectory(const QString& directory);
+	QStringList	previousDirectories() const;
+	void setPreviousDirectories(const QStringList& previousDirectories);
+	void addPreviousDirectory(const QString& previousDirectory);
 	QStringList	imageTypes() const;
 	void setImageTypes(const QStringList& imageTypes);
 
@@ -30,12 +33,14 @@ signals:
 	void beginScan();
 	void endScan(const ImageCollections& scannedImageCollections);
 	void directoryChanged(const QString& directory);
+	void previousDirectoriesChanged(const QStringList& previousDirectories);
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);
 
 protected:
 	QSettings			_settings;
 	QString				_directory;
+	QStringList			_previousDirectories;
 	QStringList			_imageTypes;
 	ImageCollections	_scanned;
 };

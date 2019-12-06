@@ -16,11 +16,12 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->setupUi(this);
 	
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageStackScanner::setDirectory);
-	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
+	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
 	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
+	connect(&_scanner, &ImageStackScanner::previousDirectoriesChanged, [&](const QStringList& previousDirectories) { qDebug() << "=====" << previousDirectories; _ui->previousDirectoriesComboBox->clear(); _ui->previousDirectoriesComboBox->addItems(previousDirectories);  });
 	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 	

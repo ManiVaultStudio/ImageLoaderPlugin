@@ -5,9 +5,7 @@
 #include "Set.h"
 
 #include <QtCore>
-#include <QtDebug>
-
-#include <vector>
+#include <QDebug>
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
@@ -31,12 +29,20 @@ void ImageLoaderPlugin::addImages(Images& images)
 {
 	const auto datasetName = _core->addData("Image Data", images.name());
 
-	auto& imageDataSet = dynamic_cast<ImageDataSet&>(_core->requestSet(datasetName));
+	auto& imageDataSet = dynamic_cast<ImageDataSet&>(_core->requestData(datasetName));
 	
 	imageDataSet.setRoi(QRect(QPoint(), images.size()));
-
+	
 	ImageData& imageData = dynamic_cast<ImageData&>(imageDataSet.imageData());
 	
+	auto& points = dynamic_cast<Points&>(_core->requestData(imageData.datasetName()));
+	//points.getSelection().set
+	imageDataSet.setPoints(&points);
+
+	auto& selection = dynamic_cast<ImageDataSet&>(imageDataSet.getSelection());
+
+	selection.setPoints(&points);
+
 	switch (images.type()) {
 		case ImageCollectionType::Sequence:
 		{
