@@ -38,6 +38,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_scanner.loadSettings();
+
+	_ui->previousDirectoriesComboBox->setVisible(false);
 }
 
 void ImageStackWidget::onPickDirectory()

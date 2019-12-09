@@ -9,7 +9,7 @@ ImageStackScanner::ImageStackScanner() :
 {
 	auto imageTypes = QStringList();
 
-	imageTypes << "jpg" << "png" << "bmp" << "tif";
+	imageTypes << "jpg" << "png" << "bmp" << "tiff" << "tif";
 
 	setImageTypes(imageTypes);
 }

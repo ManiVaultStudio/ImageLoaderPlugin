@@ -33,15 +33,15 @@ void ImageLoaderPlugin::addImages(Images& images)
 	
 	imageDataSet.setRoi(QRect(QPoint(), images.size()));
 	
-	ImageData& imageData = dynamic_cast<ImageData&>(imageDataSet.imageData());
+	ImageData& imageData = imageDataSet.imageData();
 	
-	auto& points = dynamic_cast<Points&>(_core->requestData(imageData.datasetName()));
-	//points.getSelection().set
+	auto& points = dynamic_cast<Points&>(_core->requestData(imageData.pointsName()));
+	
 	imageDataSet.setPoints(&points);
 
-	auto& selection = dynamic_cast<ImageDataSet&>(imageDataSet.getSelection());
+	//auto& selection = dynamic_cast<ImageDataSet&>(imageDataSet.getSelection());
 
-	selection.setPoints(&points);
+	//selection.setPoints(&points);
 
 	switch (images.type()) {
 		case ImageCollectionType::Sequence:
