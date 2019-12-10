@@ -62,7 +62,7 @@ void MultiPartImageSequenceScanner::scan()
 
 			imageCollection.add(imageFilePath);
 			imageCollection.setNoDimensions(noDimensions);
-
+			
 			_scanned.map()[imageFilePath] = imageCollection;
 		}
 

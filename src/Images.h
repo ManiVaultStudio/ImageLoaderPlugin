@@ -22,8 +22,6 @@ public:
 	std::vector<Image>& images();
 	QStringList imageFilePaths() const;
 	void setImageFilePaths(const QStringList& imageFilePaths);
-	QStringList dimensionNames() const;
-	void setDimensionNames(const QStringList& dimensionNames);
 
 	std::uint32_t noImages() const;
 
@@ -35,7 +33,6 @@ protected:
 	QSize					_size;
 	std::vector<Image>		_images;
 	QStringList				_imageFilePaths;
-	QStringList				_dimensionNames;
 };
 
 QDebug operator<<(QDebug dbg, Images& imageDataSet);

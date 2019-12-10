@@ -6,8 +6,7 @@ Images::Images(const ImageCollectionType& type) :
 	_type(type),
 	_name(),
 	_images(),
-	_imageFilePaths(),
-	_dimensionNames()
+	_imageFilePaths()
 {
 }
 
@@ -66,16 +65,6 @@ Image& Images::add(const std::uint32_t& noComponents, const QString& imageFilePa
 	_images.push_back(Image(_size, noComponents, imageFilePath));
 
 	return _images.back();
-}
-
-QStringList Images::dimensionNames() const
-{
-	return _dimensionNames;
-}
-
-void Images::setDimensionNames(const QStringList & dimensionNames)
-{
-	_dimensionNames = dimensionNames;
 }
 
 QDebug operator<<(QDebug dbg, Images & imageDataSet)

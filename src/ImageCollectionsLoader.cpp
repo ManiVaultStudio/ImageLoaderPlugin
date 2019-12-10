@@ -113,7 +113,6 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				images.setSize(stack.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
 			images.setImageFilePaths(stack.imageFilePaths());
-			images.setDimensionNames(images.imageFilePaths());
 
 			foreach(const QString& imageFilePath, images.imageFilePaths()) {
 				const auto imageIndex = images.imageFilePaths().indexOf(imageFilePath);
@@ -121,7 +120,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
 				if (bitmap != nullptr) {
-					loadBitmap(bitmap, images, imageFilePath);
+					loadBitmap(bitmap, images, imageFilePath, QFileInfo(imageFilePath).fileName());
 					fi::FreeImage_Unload(bitmap);
 
 					const auto done = images.imageFilePaths().indexOf(imageFilePath) + 1;
@@ -150,6 +149,8 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 
 				images.setName(QString("%1-%2").arg(_datasetName, imageFilePath));
 
+				QStringList dimensionNames;
+
 				images.setSize(imageCollection.imageSize());
 
 				if (_subsampleSettings.enabled())
@@ -164,7 +165,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
-							loadBitmap(pageBitmap, images, imageFilePath);
+							loadBitmap(pageBitmap, images, imageFilePath, "A");
 
 							FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
 						}
@@ -191,7 +192,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 	}
 }
 
-void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath)
+void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
 {
 	if (bitmap) {
 		const auto width		= fi::FreeImage_GetWidth(bitmap);
@@ -242,6 +243,8 @@ void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, Images& images, co
 			auto pixel = std::vector<std::uint16_t>();
 
 			auto& image = images.add(noComponents, imageFilePath);
+
+			image.setDimensionName(dimensionName);
 
 			pixel.resize(image.noComponents());
 

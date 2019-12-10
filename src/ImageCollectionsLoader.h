@@ -32,7 +32,7 @@ public:
 	void setDatasetName(const QString& datasetName);
 
 private:
-	void loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath);
+	void loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath, const QString& dimensionName = "");
 
 signals:
 	void datasetNameChanged(const QString&);
