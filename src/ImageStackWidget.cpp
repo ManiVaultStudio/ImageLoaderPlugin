@@ -1,6 +1,6 @@
 #include "ImageStackWidget.h"
 
-#include "ui_imageStackWidget.h"
+#include "ui_ImageStackWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -40,6 +40,10 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_scanner.loadSettings();
 
 	_ui->previousDirectoriesComboBox->setVisible(false);
+}
+
+ImageStackWidget::~ImageStackWidget()
+{
 }
 
 void ImageStackWidget::onPickDirectory()

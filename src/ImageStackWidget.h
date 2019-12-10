@@ -19,6 +19,7 @@ class ImageStackWidget : public QWidget
 
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
+        ~ImageStackWidget() override;
 
 private:
 	void onPickDirectory();

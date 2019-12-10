@@ -10,6 +10,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP")
@@ -111,23 +113,38 @@ source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
+include_directories(src)
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
+add_definitions(-DDISABLE_PERF_MEASUREMENT)
+ 
 target_link_libraries(${PROJECT} Qt5::Widgets)
 target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/HDPS_Public.lib")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/ImageData.lib")
+if(MSVC)
+    set(LIB_SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    set(LIB_SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+endif()
+target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ImageData${LIB_SUFFIX}")
 target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
-
+if(MSVC)
+    set(FreeImageName "FreeImage")
+elseif(APPLE)
+    set(FreeImageName "freeimage")
+else()
+    set(FreeImageName "freeimage-3.18.0")
+endif()
+    
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different
 	"$<TARGET_FILE:${PROJECT}>"
 	"$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/Plugins/$<TARGET_FILE_NAME:${PROJECT}>"
 	COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-	"${FREEIMAGE_INCLUDE_PATH}/FreeImage.dll"
-	"$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/FreeImage.dll"
+	"${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+	"$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
 	COMMENT "Copying shared DLLs to HDPS_INSTALL_DIR"
 )

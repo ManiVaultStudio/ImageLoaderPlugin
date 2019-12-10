@@ -1,6 +1,6 @@
 #include "MultiPartImageSequenceWidget.h"
 
-#include "ui_multiPartImageSequenceWidget.h"
+#include "ui_MultiPartImageSequenceWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
