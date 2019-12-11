@@ -17,6 +17,9 @@ MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 
 void MultiPartImageSequenceScanner::scan()
 {
+	if (!_initialized)
+		return;
+
 	emit beginScan();
 
 	_scanned.reset();

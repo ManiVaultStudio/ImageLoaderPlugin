@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QSettings>
 #include <QStackedWidget>
+#include <QLabel>
 
 class QVBoxLayout;
 class QComboBox;

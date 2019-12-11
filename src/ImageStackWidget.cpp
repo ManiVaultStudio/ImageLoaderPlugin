@@ -14,9 +14,10 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_loader(ImageCollectionType::Stack)
 {
 	_ui->setupUi(this);
-	
+
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageStackScanner::setDirectory);
 	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
+	connect(_ui->scanPushButton, &QPushButton::clicked, &this->_scanner, &ImageStackScanner::scan);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
@@ -37,9 +38,9 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
-	_scanner.loadSettings();
-
 	_ui->previousDirectoriesComboBox->setVisible(false);
+
+	_scanner.loadSettings();
 }
 
 ImageStackWidget::~ImageStackWidget()

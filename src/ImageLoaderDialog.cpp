@@ -44,7 +44,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_typesComboBox->addItem("Stack");
 	_typesComboBox->addItem("Multipart");
 
-	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimenions is defined by the number of pixels", Qt::ToolTipRole);
+	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimensions is defined by the number of pixels", Qt::ToolTipRole);
 	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
 	_typesComboBox->setItemData(1, "Load in one or more multipart TIFF images", Qt::ToolTipRole);
 

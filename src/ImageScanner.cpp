@@ -9,7 +9,8 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 	_directory(),
 	_previousDirectories(),
 	_imageTypes(),
-	_scanned()
+	_scanned(),
+	_initialized(false)
 {
 }
 
@@ -26,6 +27,8 @@ void ImageScanner::loadSettings()
 
 	setImageTypes(_settings.value("Scan/ImageTypes", "").toStringList());
 	setPreviousDirectories(_settings.value("Scan/PreviousDirectories", QVariant::fromValue(QStringList())).toStringList());
+
+	_initialized = true;
 }
 
 QString ImageScanner::directory() const

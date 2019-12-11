@@ -43,4 +43,5 @@ protected:
 	QStringList			_previousDirectories;
 	QStringList			_imageTypes;
 	ImageCollections	_scanned;
+	bool				_initialized;
 };

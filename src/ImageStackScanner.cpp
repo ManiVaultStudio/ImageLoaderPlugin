@@ -16,6 +16,9 @@ ImageStackScanner::ImageStackScanner() :
 
 void ImageStackScanner::scan()
 {
+	if (!_initialized)
+		return;
+
 	emit beginScan();
 
 	_scanned.reset();

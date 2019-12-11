@@ -44,6 +44,9 @@ void ImageSequenceScanner::setImageSize(const QSize & imageSize)
 
 void ImageSequenceScanner::scan()
 {
+	if (!_initialized)
+		return;
+
 	emit beginScan();
 
 	emit message("Scanning for image files...");
