@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImageCollections.h"
-#include "Images.h"
+#include "Payload.h"
 #include "SubsampleSettings.h"
 #include "ColorSettings.h"
 
@@ -32,12 +32,12 @@ public:
 	void setDatasetName(const QString& datasetName);
 
 private:
-	void loadBitmap(fi::FIBITMAP* bitmap, Images& images, const QString& imageFilePath, const QString& dimensionName = "");
+	void loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QString& imageFilePath, const QString& dimensionName = "");
 
 signals:
 	void datasetNameChanged(const QString&);
 	void beginLoad();
-	void endLoad(Images& images);
+	void endLoad(Payload& payload);
 	void imageLoaded(const QString &imageFilePath, const int& done, const int& total);
 	void message(const QString& message);
 

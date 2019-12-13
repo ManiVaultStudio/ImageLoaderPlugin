@@ -109,10 +109,10 @@ void MultiPartImageSequenceWidget::onBeginLoad()
 {
 }
 
-void MultiPartImageSequenceWidget::onEndLoad(Images& images)
+void MultiPartImageSequenceWidget::onEndLoad(Payload& payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImages(images);
+	_imageLoaderPlugin->addImages(payload);
 }

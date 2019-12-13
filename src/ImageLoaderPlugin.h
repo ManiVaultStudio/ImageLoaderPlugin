@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Common.h"
-#include "Images.h"
+#include "Payload.h"
 
 #include <LoaderPlugin.h>
 
@@ -19,7 +19,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addImages(Images& images);
+	void addImages(Payload& payload);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

@@ -29,7 +29,7 @@ private:
 	void onBeginScan();
 	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onBeginLoad();
-	void onEndLoad(Images& imagePointDataSet);
+	void onEndLoad(Payload& payload);
 	void onSubsampleImageSettingsChanged();
 
 signals:

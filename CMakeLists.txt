@@ -31,8 +31,8 @@ set(PLUGIN_SOURCES
     src/ImageLoaderDialog.cpp
 	src/FreeImage.h
     src/FreeImage.cpp
-	src/Images.h
-	src/Images.cpp
+	src/Payload.h
+	src/Payload.cpp
     src/Common.h
 )
 

@@ -8,9 +8,9 @@
 #include <QMap>
 #include <QVariant>
 
-class Images {
+class Payload {
 public:
-	Images(const ImageCollectionType& type);
+	Payload(const ImageCollectionType& type);
 
 public:
 	ImageCollectionType type() const;
@@ -35,4 +35,4 @@ protected:
 	QStringList				_imageFilePaths;
 };
 
-QDebug operator<<(QDebug dbg, Images& imageDataSet);
+QDebug operator<<(QDebug dbg, Payload& payload);

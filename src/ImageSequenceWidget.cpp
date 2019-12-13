@@ -129,10 +129,10 @@ void ImageSequenceWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageSequenceWidget::onEndLoad(Images& images)
+void ImageSequenceWidget::onEndLoad(Payload& payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImages(images);
+	_imageLoaderPlugin->addImages(payload);
 }

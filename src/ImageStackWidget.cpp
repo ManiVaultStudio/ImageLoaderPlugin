@@ -105,12 +105,12 @@ void ImageStackWidget::onBeginLoad()
 	_ui->loadPushButton->setText("Loading");
 }
 
-void ImageStackWidget::onEndLoad(Images& images)
+void ImageStackWidget::onEndLoad(Payload& payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
-	_imageLoaderPlugin->addImages(images);
+	_imageLoaderPlugin->addImages(payload);
 }
 
 void ImageStackWidget::onSubsampleImageSettingsChanged()

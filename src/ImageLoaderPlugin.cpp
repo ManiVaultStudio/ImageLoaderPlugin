@@ -1,7 +1,7 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
 
-#include "ImageData/ImageDataSet.h"
+#include "ImageData/Images.h"
 #include "Set.h"
 
 #include <QtCore>
@@ -27,29 +27,29 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addImages(Images& images)
+void ImageLoaderPlugin::addImages(Payload& payload)
 {
-	const auto datasetName = _core->addData("Image Data", images.name());
+	const auto datasetName = _core->addData("Image Data", payload.name());
 
-	auto& imageDataSet = dynamic_cast<ImageDataSet&>(_core->requestData(datasetName));
+	auto& images = dynamic_cast<Images&>(_core->requestData(datasetName));
 	
-	imageDataSet.setRoi(QRect(QPoint(), images.size()));
+	images.setRoi(QRect(QPoint(), payload.size()));
 	
-	auto& points = _core->requestData<Points&>(imageDataSet.pointsName());
+	auto& points = _core->requestData<Points&>(images.pointsName());
 	
-	imageDataSet.setPoints(&points);
+	images.setPoints(&points);
 
-	switch (images.type()) {
+	switch (payload.type()) {
 		case ImageCollectionType::Sequence:
 		{
-			imageDataSet.setSequence(images.images(), images.size());
+			images.setSequence(payload.images(), payload.size());
 			break;
 		}
 
 		case ImageCollectionType::MultiPartSequence:
 		case ImageCollectionType::Stack:
 		{
-			imageDataSet.setStack(images.images(), images.size());
+			images.setStack(payload.images(), payload.size());
 			break;
 		}
 			
