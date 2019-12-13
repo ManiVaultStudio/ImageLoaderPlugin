@@ -7,6 +7,8 @@
 #include <QtCore>
 #include <QDebug>
 
+#include "PointData.h"
+
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
@@ -33,27 +35,21 @@ void ImageLoaderPlugin::addImages(Images& images)
 	
 	imageDataSet.setRoi(QRect(QPoint(), images.size()));
 	
-	ImageData& imageData = imageDataSet.imageData();
-	
-	auto& points = dynamic_cast<Points&>(_core->requestData(imageData.pointsName()));
+	auto& points = _core->requestData<Points&>(imageDataSet.pointsName());
 	
 	imageDataSet.setPoints(&points);
-
-	//auto& selection = dynamic_cast<ImageDataSet&>(imageDataSet.getSelection());
-
-	//selection.setPoints(&points);
 
 	switch (images.type()) {
 		case ImageCollectionType::Sequence:
 		{
-			imageData.setSequence(images.images(), images.size());
+			imageDataSet.setSequence(images.images(), images.size());
 			break;
 		}
 
 		case ImageCollectionType::MultiPartSequence:
 		case ImageCollectionType::Stack:
 		{
-			imageData.setStack(images.images(), images.size());
+			imageDataSet.setStack(images.images(), images.size());
 			break;
 		}
 			
