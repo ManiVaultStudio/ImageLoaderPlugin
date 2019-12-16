@@ -2,12 +2,12 @@
 
 #include "ImageCollectionsLoader.h"
 
-#include <QObject>
+#include <QThread>
 #include <QString>
 
 class QSettings;
 
-class ImageScanner : public QObject {
+class ImageScanner : public QThread {
 	Q_OBJECT
 
 public:
@@ -29,7 +29,7 @@ public:
 	virtual void scan() = 0;
 
 signals:
-	void becameDirty();
+	void settingsChanged();
 	void beginScan();
 	void endScan(const ImageCollections& scannedImageCollections);
 	void directoryChanged(const QString& directory);

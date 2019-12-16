@@ -16,6 +16,11 @@ ImageStackScanner::ImageStackScanner() :
 
 void ImageStackScanner::scan()
 {
+	start();
+}
+
+void ImageStackScanner::run()
+{
 	if (!_initialized)
 		return;
 

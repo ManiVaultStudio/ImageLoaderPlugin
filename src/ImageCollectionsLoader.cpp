@@ -12,6 +12,8 @@ ImageCollectionsLoader::ImageCollectionsLoader(const ImageCollectionType& type) 
 	_subsampleSettings(&_settings),
 	_colorSettings(&_settings)
 {
+	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageCollectionsLoader::settingsChanged);
+	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageCollectionsLoader::settingsChanged);
 }
 
 ImageCollectionType ImageCollectionsLoader::type() const
@@ -52,6 +54,7 @@ void ImageCollectionsLoader::setDatasetName(const QString& datasetName)
 	_datasetName = datasetName;
 
 	emit datasetNameChanged(_datasetName);
+	emit settingsChanged();
 }
 
 void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollections)

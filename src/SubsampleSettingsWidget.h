@@ -28,4 +28,4 @@ private:
 private:
 	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;
 	SubsampleSettings*								_subsampleSettings;
-};	
+};

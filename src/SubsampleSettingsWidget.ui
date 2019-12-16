@@ -129,6 +129,9 @@
         </item>
         <item row="0" column="0" colspan="3">
          <widget class="QCheckBox" name="enableSubsamplingCheckbox">
+          <property name="toolTip">
+           <string>Enable/disable subsampling</string>
+          </property>
           <property name="text">
            <string>Enable subsampling</string>
           </property>

@@ -17,7 +17,6 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageStackScanner::setDirectory);
 	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
-	connect(_ui->scanPushButton, &QPushButton::clicked, &this->_scanner, &ImageStackScanner::scan);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
@@ -33,7 +32,10 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
 
-	connect(&_loader.subsampleImageSettings(), &SubsampleSettings::changed, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
+	connect(&_loader.subsampleImageSettings(), &SubsampleSettings::settingsChanged, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
+
+	connect(&_scanner, &ImageStackScanner::settingsChanged, this, &ImageStackWidget::onScannerSettingsChanged);
+	connect(&_loader, &ImageCollectionsLoader::settingsChanged, this, &ImageStackWidget::onLoaderSettingsChanged);
 
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
@@ -43,8 +45,16 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_scanner.loadSettings();
 }
 
-ImageStackWidget::~ImageStackWidget()
+void ImageStackWidget::onScannerSettingsChanged()
 {
+	_scanner.scan();
+
+	_ui->loadPushButton->setEnabled(_scanner.scanned().loadable());
+}
+
+void ImageStackWidget::onLoaderSettingsChanged()
+{
+	_ui->loadPushButton->setEnabled(_scanner.scanned().loadable());
 }
 
 void ImageStackWidget::onPickDirectory()

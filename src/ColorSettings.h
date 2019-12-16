@@ -25,7 +25,7 @@ private:
 
 signals:
 	void convertToGrayscaleChanged(const bool&);
-	void changed();
+	void settingsChanged();
 
 private:
 	QSettings*	_settings;

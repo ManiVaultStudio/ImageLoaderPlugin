@@ -32,7 +32,7 @@ signals:
 	void enabledChanged(const bool&);
 	void ratioChanged(const double&);
 	void filterChanged(const ImageResamplingFilter&);
-	void changed();
+	void settingsChanged();
 
 private:
 	QSettings*				_settings;

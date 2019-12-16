@@ -9,7 +9,7 @@ ColorSettings::ColorSettings(QSettings* settings) :
 {
 	_convertToGrayscale = _settings->value(settingPath("convertToGrayscale"), false).toBool();
 
-	connect(this, &ColorSettings::convertToGrayscaleChanged, this, &ColorSettings::changed);
+	connect(this, &ColorSettings::convertToGrayscaleChanged, this, &ColorSettings::settingsChanged);
 }
 
 ColorSettings::~ColorSettings()
@@ -37,6 +37,7 @@ void ColorSettings::setConvertToGrayscale(const bool& convertToGrayscale)
 	qDebug() << "Convert to gray scale set to" << _convertToGrayscale;
 
 	emit convertToGrayscaleChanged(_convertToGrayscale);
+	emit settingsChanged();
 }
 
 QString ColorSettings::settingPath(const QString& name) const

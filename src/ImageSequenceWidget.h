@@ -19,10 +19,10 @@ class ImageSequenceWidget : public QWidget
 
 public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~ImageSequenceWidget() override;
 
 private:
-	void onBecameDirty();
+	void onScannerSettingsChanged();
+	void onLoaderSettingsChanged();
 	void onBeginScan();
 	void onEndScan(const ImageCollections& scannedImageCollections);
 	void onDirectoryChanged(const QString &directory);

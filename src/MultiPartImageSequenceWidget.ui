@@ -73,16 +73,6 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="scanPushButton">
-       <property name="toolTip">
-        <string>Scan for candidate images</string>
-       </property>
-       <property name="text">
-        <string>Scan</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="loadPushButton">
        <property name="enabled">
         <bool>false</bool>

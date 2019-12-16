@@ -17,6 +17,11 @@ MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 
 void MultiPartImageSequenceScanner::scan()
 {
+	start();
+}
+
+void MultiPartImageSequenceScanner::run()
+{
 	if (!_initialized)
 		return;
 

@@ -21,11 +21,12 @@ public:
 
 public:
 	void scan();
+	void run() override;
 	void scanDir(const QString& directory, ImageCollection& imageCollection);
 
 signals:
-	void imageTypeChanged(const QString &imageType);
-	void imageSizeChanged(const QSize &imageSize);
+	void imageTypeChanged(const QString& imageType);
+	void imageSizeChanged(const QSize& imageSize);
 
 private:
 	QString		_imageType;

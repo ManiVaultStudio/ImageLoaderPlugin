@@ -19,10 +19,10 @@ class MultiPartImageSequenceWidget : public QWidget
 
 public:
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
-	~MultiPartImageSequenceWidget() override;
 
 private:
-	void onBecameDirty();
+	void onScannerSettingsChanged();
+	void onLoaderSettingsChanged();
 	void onPickDirectory();
 	void onDirectoryChanged(const QString& directory);
 	void onLoadPushButtonClicked();

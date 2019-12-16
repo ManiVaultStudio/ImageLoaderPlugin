@@ -35,6 +35,7 @@ private:
 	void loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QString& imageFilePath, const QString& dimensionName = "");
 
 signals:
+	void settingsChanged();
 	void datasetNameChanged(const QString&);
 	void beginLoad();
 	void endLoad(Payload& payload);

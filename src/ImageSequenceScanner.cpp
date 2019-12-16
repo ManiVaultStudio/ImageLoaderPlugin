@@ -9,7 +9,7 @@ ImageSequenceScanner::ImageSequenceScanner() :
 {
 	auto imageTypes = QStringList();
 
-	imageTypes << "jpg" << "png" << "bmp" << "tif";
+	imageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
 	setImageTypes(imageTypes);
 }
@@ -24,8 +24,7 @@ void ImageSequenceScanner::setImageType(const QString & imageType)
 	_imageType = imageType;
 
 	emit imageTypeChanged(_imageType);
-
-	emit becameDirty();
+	emit settingsChanged();
 }
 
 QSize ImageSequenceScanner::imageSize() const
@@ -38,11 +37,15 @@ void ImageSequenceScanner::setImageSize(const QSize & imageSize)
 	_imageSize = imageSize;
 
 	emit imageSizeChanged(_imageSize);
-
-	emit becameDirty();
+	emit settingsChanged();
 }
 
 void ImageSequenceScanner::scan()
+{
+	start();
+}
+
+void ImageSequenceScanner::run()
 {
 	if (!_initialized)
 		return;

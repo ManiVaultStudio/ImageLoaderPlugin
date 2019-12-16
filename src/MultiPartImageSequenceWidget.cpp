@@ -18,7 +18,6 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &MultiPartImageSequenceScanner::setDirectory);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
-	connect(_ui->scanPushButton, &QPushButton::clicked, &this->_scanner, &MultiPartImageSequenceScanner::scan);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadPushButtonClicked);
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
 
@@ -33,6 +32,9 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
 	connect(&_loader, &ImageCollectionsLoader::message, this, &MultiPartImageSequenceWidget::message);
 
+	connect(&_scanner, &MultiPartImageSequenceScanner::settingsChanged, this, &MultiPartImageSequenceWidget::onScannerSettingsChanged);
+	connect(&_loader, &ImageCollectionsLoader::settingsChanged, this, &MultiPartImageSequenceWidget::onLoaderSettingsChanged);
+
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
@@ -42,13 +44,12 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_scanner.loadSettings();
 }
 
-MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget()
+void MultiPartImageSequenceWidget::onScannerSettingsChanged()
 {
 }
 
-void MultiPartImageSequenceWidget::onBecameDirty()
+void MultiPartImageSequenceWidget::onLoaderSettingsChanged()
 {
-//	_ui->scanPushButton->setEnabled(true);
 }
 
 void MultiPartImageSequenceWidget::onPickDirectory()

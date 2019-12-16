@@ -49,7 +49,7 @@ void ImageScanner::setDirectory(const QString& directory)
 	
 	addPreviousDirectory(_directory);
 
-	emit becameDirty();
+	emit settingsChanged();
 }
 
 QStringList ImageScanner::previousDirectories() const
@@ -68,7 +68,7 @@ void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories
 
 	emit previousDirectoriesChanged(_previousDirectories);
 
-	emit becameDirty();
+	emit settingsChanged();
 }
 
 void ImageScanner::addPreviousDirectory(const QString& previousDirectory)
@@ -94,7 +94,7 @@ void ImageScanner::setImageTypes(const QStringList& imageTypes)
 
 	emit imageTypesChanged(_imageTypes);
 
-	emit becameDirty();
+	emit settingsChanged();
 }
 
 ImageCollections & ImageScanner::scanned()

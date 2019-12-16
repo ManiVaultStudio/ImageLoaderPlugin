@@ -15,9 +15,9 @@ SubsampleSettings::SubsampleSettings(QSettings* settings) :
 
 	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
 
-	connect(this, &SubsampleSettings::enabledChanged, this, &SubsampleSettings::changed);
-	connect(this, &SubsampleSettings::ratioChanged, this, &SubsampleSettings::changed);
-	connect(this, &SubsampleSettings::filterChanged, this, &SubsampleSettings::changed);
+	connect(this, &SubsampleSettings::enabledChanged, this, &SubsampleSettings::settingsChanged);
+	connect(this, &SubsampleSettings::ratioChanged, this, &SubsampleSettings::settingsChanged);
+	connect(this, &SubsampleSettings::filterChanged, this, &SubsampleSettings::settingsChanged);
 }
 
 SubsampleSettings::~SubsampleSettings()
@@ -49,6 +49,7 @@ void SubsampleSettings::setEnabled(const bool& enabled)
 	_enabled = enabled;
 
 	emit enabledChanged(_enabled);
+	emit settingsChanged();
 }
 
 double SubsampleSettings::ratio() const
@@ -61,11 +62,12 @@ void SubsampleSettings::setRatio(const double& ratio)
 	if (ratio == _ratio)
 		return;
 
-	qDebug() << "Image resamping ratio changed to" << ratio;
+	qDebug() << "Image resampling ratio changed to" << ratio;
 
 	_ratio = ratio;
 
 	emit ratioChanged(_ratio);
+	emit settingsChanged();
 }
 
 ImageResamplingFilter SubsampleSettings::filter() const
@@ -80,11 +82,12 @@ void SubsampleSettings::setFilter(const ImageResamplingFilter& filter)
 	
 	const auto filterIndex = static_cast<int>(filter);
 
-	qDebug() << "Image resamping filter changed to" << _filterNames.at(filterIndex);
+	qDebug() << "Image resampling filter changed to" << _filterNames.at(filterIndex);
 
 	_filter = filter;
 
 	emit filterChanged(_filter);
+	emit settingsChanged();
 }
 
 QStringList SubsampleSettings::filterNames() const

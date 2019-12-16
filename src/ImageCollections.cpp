@@ -6,6 +6,7 @@ ImageCollections::ImageCollections(const ImageCollectionType& type /*= ImageColl
 	_type(type),
 	_map()
 {
+	qRegisterMetaType<ImageCollections>("ImageCollections");
 }
 
 ImageCollections::~ImageCollections()

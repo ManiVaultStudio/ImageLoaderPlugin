@@ -12,5 +12,6 @@ public:
 	MultiPartImageSequenceScanner();
 
 	void scan();
+	void run() override;
 	void scanDir(const QString& directory);
 };

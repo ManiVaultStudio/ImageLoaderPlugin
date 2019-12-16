@@ -19,9 +19,10 @@ class ImageStackWidget : public QWidget
 
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
-        ~ImageStackWidget() override;
 
 private:
+	void onScannerSettingsChanged();
+	void onLoaderSettingsChanged();
 	void onPickDirectory();
 	void onDirectoryChanged(const QString &directory);
 	void onLoadPushButtonClicked();
@@ -40,4 +41,4 @@ private:
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
 	ImageStackScanner						_scanner;
 	ImageCollectionsLoader					_loader;
-};	
+};
