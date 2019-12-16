@@ -2,5 +2,5 @@
     "name" : "Image Loader",
     "menuName" : "Images",
     "version" : "0.1.0",
-    "dependencies" : ["Image Data"]
+    "dependencies" : ["Images"]
 }

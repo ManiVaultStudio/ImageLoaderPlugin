@@ -29,7 +29,7 @@ void ImageLoaderPlugin::loadData()
 
 void ImageLoaderPlugin::addImages(Payload& payload)
 {
-	const auto datasetName = _core->addData("Image Data", payload.name());
+	const auto datasetName = _core->addData("Images", payload.name());
 
 	auto& images = dynamic_cast<Images&>(_core->requestData(datasetName));
 	
