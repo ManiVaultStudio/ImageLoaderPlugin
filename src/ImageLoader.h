@@ -12,11 +12,11 @@ namespace fi {
 	#include <FreeImage.h>
 }
 
-class ImageCollectionsLoader : public QObject {
+class ImageLoader : public QObject {
 	Q_OBJECT
 
 public:
-	ImageCollectionsLoader(const ImageCollectionType& type);
+	ImageLoader(const ImageCollectionType& type);
 
 	ImageCollectionType type() const;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageCollectionsLoader.h"
+#include "ImageLoader.h"
 
 #include <QThread>
 #include <QString>

@@ -18,24 +18,24 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageStackScanner::setDirectory);
 	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, this, &ImageStackWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageStackWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageLoader::setDatasetName);
 
 	connect(&_scanner, &ImageStackScanner::directoryChanged, this, &ImageStackWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageStackScanner::previousDirectoriesChanged, [&](const QStringList& previousDirectories) { _ui->previousDirectoriesComboBox->clear(); _ui->previousDirectoriesComboBox->addItems(previousDirectories);  });
 	connect(&_scanner, &ImageStackScanner::beginScan, this, &ImageStackWidget::onBeginScan);
 	connect(&_scanner, &ImageStackScanner::endScan, this, &ImageStackWidget::onEndScan);
 	
-	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageStackWidget::onBeginLoad);
-	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageStackWidget::onEndLoad);
-	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &ImageStackWidget::onDatasetNameChanged);
+	connect(&_loader, &ImageLoader::beginLoad, this, &ImageStackWidget::onBeginLoad);
+	connect(&_loader, &ImageLoader::endLoad, this, &ImageStackWidget::onEndLoad);
+	connect(&_loader, &ImageLoader::datasetNameChanged, this, &ImageStackWidget::onDatasetNameChanged);
 
 	connect(&_scanner, &ImageStackScanner::message, this, &ImageStackWidget::message);
-	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageStackWidget::message);
+	connect(&_loader, &ImageLoader::message, this, &ImageStackWidget::message);
 
 	connect(&_loader.subsampleImageSettings(), &SubsampleSettings::settingsChanged, this, &ImageStackWidget::onSubsampleImageSettingsChanged);
 
 	connect(&_scanner, &ImageStackScanner::settingsChanged, this, &ImageStackWidget::onScannerSettingsChanged);
-	connect(&_loader, &ImageCollectionsLoader::settingsChanged, this, &ImageStackWidget::onLoaderSettingsChanged);
+	connect(&_loader, &ImageLoader::settingsChanged, this, &ImageStackWidget::onLoaderSettingsChanged);
 
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());

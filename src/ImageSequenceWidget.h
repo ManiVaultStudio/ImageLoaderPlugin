@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageCollectionsLoader.h"
+#include "ImageLoader.h"
 #include "ImageSequenceScanner.h"
 
 #include <memory>
@@ -42,5 +42,5 @@ private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;
 	ImageSequenceScanner						_scanner;
-	ImageCollectionsLoader						_loader;
+	ImageLoader						_loader;
 };

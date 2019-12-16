@@ -41,8 +41,8 @@ set(LOADER_SOURCES
 	src/ImageCollection.cpp
 	src/ImageCollections.h
 	src/ImageCollections.cpp
-	src/ImageCollectionsLoader.h
-	src/ImageCollectionsLoader.cpp
+	src/ImageLoader.h
+	src/ImageLoader.cpp
 )
 
 set(SCANNER_SOURCES

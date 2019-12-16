@@ -19,21 +19,21 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &MultiPartImageSequenceScanner::setDirectory);
 	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onPickDirectory);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &MultiPartImageSequenceWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageLoader::setDatasetName);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, this, &MultiPartImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, this, &MultiPartImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, &MultiPartImageSequenceWidget::onEndScan);
 	
-	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &MultiPartImageSequenceWidget::onBeginLoad);
-	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &MultiPartImageSequenceWidget::onEndLoad);
-	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &MultiPartImageSequenceWidget::onDatasetNameChanged);
+	connect(&_loader, &ImageLoader::beginLoad, this, &MultiPartImageSequenceWidget::onBeginLoad);
+	connect(&_loader, &ImageLoader::endLoad, this, &MultiPartImageSequenceWidget::onEndLoad);
+	connect(&_loader, &ImageLoader::datasetNameChanged, this, &MultiPartImageSequenceWidget::onDatasetNameChanged);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
-	connect(&_loader, &ImageCollectionsLoader::message, this, &MultiPartImageSequenceWidget::message);
+	connect(&_loader, &ImageLoader::message, this, &MultiPartImageSequenceWidget::message);
 
 	connect(&_scanner, &MultiPartImageSequenceScanner::settingsChanged, this, &MultiPartImageSequenceWidget::onScannerSettingsChanged);
-	connect(&_loader, &ImageCollectionsLoader::settingsChanged, this, &MultiPartImageSequenceWidget::onLoaderSettingsChanged);
+	connect(&_loader, &ImageLoader::settingsChanged, this, &MultiPartImageSequenceWidget::onLoaderSettingsChanged);
 
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());

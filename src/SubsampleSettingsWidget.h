@@ -23,6 +23,7 @@ private:
 	void onRatioChanged(const double& ratio);
 	void onRatioSpinBoxValueChanged(const double& ratio);
 	void onRatioSliderValueChanged(const int& ratio);
+	void onFilterValueChanged(const int& filter);
 	void onFilterChanged(const ImageResamplingFilter& imageResamplingFilter);
 
 private:

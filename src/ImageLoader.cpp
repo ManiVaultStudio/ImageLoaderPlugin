@@ -1,52 +1,52 @@
-#include "ImageCollectionsLoader.h"
+#include "ImageLoader.h"
 #include "ImageScanner.h"
 #include "FreeImage.h"
 
 #include <QDebug>
 #include <QFileInfo>
 
-ImageCollectionsLoader::ImageCollectionsLoader(const ImageCollectionType& type) :
+ImageLoader::ImageLoader(const ImageCollectionType& type) :
 	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
 	_type(type),
 	_datasetName(),
 	_subsampleSettings(&_settings),
 	_colorSettings(&_settings)
 {
-	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageCollectionsLoader::settingsChanged);
-	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageCollectionsLoader::settingsChanged);
+	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageLoader::settingsChanged);
+	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageLoader::settingsChanged);
 }
 
-ImageCollectionType ImageCollectionsLoader::type() const
+ImageCollectionType ImageLoader::type() const
 {
 	return _type;
 }
 
-SubsampleSettings & ImageCollectionsLoader::subsampleImageSettings()
+SubsampleSettings & ImageLoader::subsampleImageSettings()
 {
 	return _subsampleSettings;
 }
 
-ColorSettings& ImageCollectionsLoader::colorSettings()
+ColorSettings& ImageLoader::colorSettings()
 {
 	return _colorSettings;
 }
 
-QVariant ImageCollectionsLoader::setting(const QString& name, const QVariant& defaultValue) const
+QVariant ImageLoader::setting(const QString& name, const QVariant& defaultValue) const
 {
 	return _settings.value(name, defaultValue).toString();
 }
 
-void ImageCollectionsLoader::setSetting(const QString& name, const QVariant& value)
+void ImageLoader::setSetting(const QString& name, const QVariant& value)
 {
 	_settings.setValue(name, value);
 }
 
-QString ImageCollectionsLoader::datasetName() const
+QString ImageLoader::datasetName() const
 {
 	return _datasetName;
 }
 
-void ImageCollectionsLoader::setDatasetName(const QString& datasetName)
+void ImageLoader::setDatasetName(const QString& datasetName)
 {
 	if (datasetName == _datasetName)
 		return;
@@ -57,7 +57,7 @@ void ImageCollectionsLoader::setDatasetName(const QString& datasetName)
 	emit settingsChanged();
 }
 
-void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollections)
+void ImageLoader::load(const ImageCollections& scannedImageCollections)
 {
 	emit beginLoad();
 
@@ -195,7 +195,7 @@ void ImageCollectionsLoader::load(const ImageCollections& scannedImageCollection
 	}
 }
 
-void ImageCollectionsLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
+void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
 {
 	if (bitmap) {
 		const auto width		= fi::FreeImage_GetWidth(bitmap);

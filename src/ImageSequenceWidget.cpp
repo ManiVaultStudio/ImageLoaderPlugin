@@ -31,20 +31,20 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
 	connect(_ui->scanPushButton, &QPushButton::clicked, &this->_scanner, &ImageSequenceScanner::scan);
 	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageCollectionsLoader::setDatasetName);
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageLoader::setDatasetName);
 
 	connect(&_scanner, &ImageSequenceScanner::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
 	connect(&_scanner, &ImageSequenceScanner::beginScan, this, &ImageSequenceWidget::onBeginScan);
 	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
-	connect(&_loader, &ImageCollectionsLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
-	connect(&_loader, &ImageCollectionsLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
-	connect(&_loader, &ImageCollectionsLoader::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
+	connect(&_loader, &ImageLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
+	connect(&_loader, &ImageLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
+	connect(&_loader, &ImageLoader::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
 	
-	connect(&_loader, &ImageCollectionsLoader::message, this, &ImageSequenceWidget::message);
+	connect(&_loader, &ImageLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
 
 	connect(&_scanner, &ImageSequenceScanner::settingsChanged, this, &ImageSequenceWidget::onScannerSettingsChanged);
-	connect(&_loader, &ImageCollectionsLoader::settingsChanged, this, &ImageSequenceWidget::onLoaderSettingsChanged);
+	connect(&_loader, &ImageLoader::settingsChanged, this, &ImageSequenceWidget::onLoaderSettingsChanged);
 
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
