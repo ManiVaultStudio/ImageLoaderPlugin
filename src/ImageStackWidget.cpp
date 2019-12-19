@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QEvent>
 
 #include "ImageLoaderPlugin.h"
 
@@ -47,14 +48,13 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 void ImageStackWidget::onScannerSettingsChanged()
 {
-	_scanner.scan();
-
-	_ui->loadPushButton->setEnabled(_scanner.scanned().loadable());
+	//qDebug() << "onScannerSettingsChanged" << _scanner.scanned();
+	_ui->loadPushButton->setEnabled(_scanner.scanned()->loadable());
 }
 
 void ImageStackWidget::onLoaderSettingsChanged()
 {
-	_ui->loadPushButton->setEnabled(_scanner.scanned().loadable());
+	_ui->loadPushButton->setEnabled(_scanner.scanned()->loadable());
 }
 
 void ImageStackWidget::onPickDirectory()
@@ -71,15 +71,13 @@ void ImageStackWidget::onDirectoryChanged(const QString& directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
-
-	_scanner.scan();
 }
 
 void ImageStackWidget::onLoadPushButtonClicked()
 {
-	foreach(QString key, _scanner.scanned().map().keys()) {
-		if (key != _ui->stacksComboBox->currentText()) {
-			_scanner.scanned().map().remove(key);
+	foreach(QString key, _scanner.scanned()->map().keys()) {
+		if (key != _ui->stacksComboBox->currentData().toString()) {
+			_scanner.scanned()->map().remove(key);
 		}
 	}
 
@@ -90,16 +88,16 @@ void ImageStackWidget::onLoadPushButtonClicked()
 
 void ImageStackWidget::onDatasetNameChanged(const QString& dataSetName)
 {
-	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned().loadable());
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned()->loadable());
 }
 
 void ImageStackWidget::onBeginScan()
 {
 }
 
-void ImageStackWidget::onEndScan(const ImageCollections& scannedImageCollections)
+void ImageStackWidget::onEndScan(std::shared_ptr<ImageCollections> scanned)
 {
-	const auto loadable = _scanner.scanned().loadable();
+	const auto loadable = scanned->loadable();
 
 	_ui->datasetNameLabel->setEnabled(loadable);
 	_ui->datasetNameLineEdit->setEnabled(loadable);
@@ -107,15 +105,26 @@ void ImageStackWidget::onEndScan(const ImageCollections& scannedImageCollections
 	_ui->loadPushButton->setEnabled(loadable);
 
 	_ui->stacksComboBox->clear();
-	_ui->stacksComboBox->addItems(_scanner.scanned().map().keys());
+
+	auto items = QStringList();
+
+	const auto stacks = _scanner.scanned()->map();
+
+	for (const auto& key : stacks.keys()) {
+		const auto title = QString("%1 (%2 dimensions)").arg(key, QString::number(stacks[key].noImages()));
+
+		_ui->stacksComboBox->addItem(title, QVariant::fromValue(key));
+	}
+
+	_ui->stacksComboBox->addItems(items);
 }
 
 void ImageStackWidget::onBeginLoad()
 {
-	_ui->loadPushButton->setText("Loading");
+	_ui->loadPushButton->setText("Loading...");
 }
 
-void ImageStackWidget::onEndLoad(Payload& payload)
+void ImageStackWidget::onEndLoad(std::shared_ptr<Payload> payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
@@ -125,7 +134,14 @@ void ImageStackWidget::onEndLoad(Payload& payload)
 
 void ImageStackWidget::onSubsampleImageSettingsChanged()
 {
-	const auto loadable = _scanner.scanned().loadable();
+	const auto loadable = _scanner.scanned()->loadable();
 
 	_ui->loadPushButton->setEnabled(loadable);
+}
+
+void ImageStackWidget::showEvent(QShowEvent* showEvent)
+{
+	_scanner.scan();
+
+	QWidget::showEvent(showEvent);
 }

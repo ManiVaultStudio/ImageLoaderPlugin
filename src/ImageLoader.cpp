@@ -57,107 +57,118 @@ void ImageLoader::setDatasetName(const QString& datasetName)
 	emit settingsChanged();
 }
 
-void ImageLoader::load(const ImageCollections& scannedImageCollections)
+std::shared_ptr<ImageCollections> ImageLoader::scanned() const
+{
+	return _scanned;
+}
+
+void ImageLoader::setScanned(std::shared_ptr<ImageCollections> scanned)
+{
+	_scanned = scanned;
+}
+
+void ImageLoader::load(std::shared_ptr<ImageCollections> scanned)
+{
+	_scanned = scanned;
+
+	start();
+}
+
+void ImageLoader::run()
 {
 	emit beginLoad();
 
-	ImageCollections imageCollections = scannedImageCollections;
+	auto payload = std::make_shared<Payload>(_type);
 
 	switch (_type)
 	{
 		case ImageCollectionType::Sequence:
 		{
-			Payload payload(_type);
+			payload->setName(_datasetName);
 
-			payload.setName(_datasetName);
+			auto& sequence = _scanned->map().first();
 
-			ImageCollection sequence = imageCollections.map().first();
-
-			payload.setSize(sequence.imageSize());
+			payload->setSize(sequence.imageSize());
 
 			if (_subsampleSettings.enabled())
-				payload.setSize(sequence.imageSize() * (_subsampleSettings.ratio() / 100.f));
+				payload->setSize(sequence.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
-			payload.setImageFilePaths(sequence.imageFilePaths());
+			payload->setImageFilePaths(sequence.imageFilePaths());
 
-			foreach(const QString& imageFilePath, payload.imageFilePaths()) {
-				const auto imageIndex = payload.imageFilePaths().indexOf(imageFilePath);
+			foreach(const QString& imageFilePath, payload->imageFilePaths()) {
+				const auto imageIndex = payload->imageFilePaths().indexOf(imageFilePath);
 
 				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
 				if (bitmap != nullptr) {
-					loadBitmap(bitmap, payload, imageFilePath);
+					loadBitmap(bitmap, payload.get(), imageFilePath);
 					fi::FreeImage_Unload(bitmap);
 
-					const auto done = payload.imageFilePaths().indexOf(imageFilePath) + 1;
-					const auto percentage = 100.0f * (done / static_cast<float>(payload.noImages()));
+					const auto done = payload->imageFilePaths().indexOf(imageFilePath) + 1;
+					const auto percentage = 100.0f * (done / static_cast<float>(sequence.noImages()));
 
-					emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(payload.noImages()), QString::number(percentage, 'f', 1)));
+					emit message(QString("Loading image %1 of %2 (%3%)").arg(QString::number(done), QString::number(sequence.noImages()), QString::number(percentage, 'f', 1)));
 				}
 			}
 
 			emit endLoad(payload);
-			emit message(QString("%1 image(s) loaded").arg(payload.noImages()));
-			
+			emit message(QString("%1 image(s) loaded").arg(payload->noImages()));
+
 			break;
 		}
 
 		case ImageCollectionType::Stack:
 		{
-			Payload payload(_type);
+			payload->setName(_datasetName);
 
-			payload.setName(_datasetName);
+			auto& stack = _scanned->map().first();
 
-			ImageCollection stack = imageCollections.map().first();
-
-			payload.setSize(stack.imageSize());
+			payload->setSize(stack.imageSize());
 
 			if (_subsampleSettings.enabled())
-				payload.setSize(stack.imageSize() * (_subsampleSettings.ratio() / 100.f));
+				payload->setSize(stack.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
-			payload.setImageFilePaths(stack.imageFilePaths());
+			payload->setImageFilePaths(stack.imageFilePaths());
 
-			foreach(const QString& imageFilePath, payload.imageFilePaths()) {
-				const auto imageIndex = payload.imageFilePaths().indexOf(imageFilePath);
+			foreach(const QString& imageFilePath, payload->imageFilePaths()) {
+				const auto imageIndex = payload->imageFilePaths().indexOf(imageFilePath);
 
 				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
 				if (bitmap != nullptr) {
-					loadBitmap(bitmap, payload, imageFilePath, QFileInfo(imageFilePath).fileName());
+					loadBitmap(bitmap, payload.get(), imageFilePath, QFileInfo(imageFilePath).fileName());
 					fi::FreeImage_Unload(bitmap);
 
-					const auto done = payload.imageFilePaths().indexOf(imageFilePath) + 1;
-					const auto percentage = 100.0f * (done / static_cast<float>(payload.noImages()));
+					const auto done			= payload->imageFilePaths().indexOf(imageFilePath) + 1;
+					const auto percentage	= 100.0f * (done / static_cast<float>(stack.noImages()));
 
-					emit message(QString("Loading %1 (%2/%3, %4%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(done), QString::number(payload.noImages()), QString::number(percentage, 'f', 1)));
+					emit message(QString("Loading image %1 of %2 (%3%)").arg(QString::number(done), QString::number(stack.noImages()), QString::number(percentage, 'f', 1)));
 				}
 			}
 
 			emit endLoad(payload);
-			emit message(QString("%1 image(s) loaded").arg(payload.noImages()));
-			
+			emit message(QString("%1 image(s) loaded").arg(payload->noImages()));
+
 			break;
 		}
 
 		case ImageCollectionType::MultiPartSequence:
 		{
 			std::uint32_t done = 0;
-			
-			const auto noImages = imageCollections.map().size();
 
-			foreach(const ImageCollection& imageCollection, imageCollections.map()) {
+			const auto noImages = _scanned->map().size();
+
+			foreach(const ImageCollection& imageCollection, _scanned->map()) {
 				const auto imageFilePath = imageCollection.imageFilePaths().first();
 
-				Payload payload(_type);
-
-				payload.setName(QString("%1-%2").arg(_datasetName, imageFilePath));
+				payload->setName(QString("%1-%2").arg(_datasetName, imageFilePath));
 
 				QStringList dimensionNames;
 
-				payload.setSize(imageCollection.imageSize());
+				payload->setSize(imageCollection.imageSize());
 
 				if (_subsampleSettings.enabled())
-					payload.setSize(imageCollection.imageSize() * (_subsampleSettings.ratio() / 100.f));
+					payload->setSize(imageCollection.imageSize() * (_subsampleSettings.ratio() / 100.f));
 
 				auto* multiBitmap = FreeImage::freeImageOpenMultiBitmap(imageFilePath);
 
@@ -168,7 +179,7 @@ void ImageLoader::load(const ImageCollections& scannedImageCollections)
 						auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 						if (pageBitmap != nullptr) {
-							loadBitmap(pageBitmap, payload, imageFilePath, "A");
+							loadBitmap(pageBitmap, payload.get(), imageFilePath, "A");
 
 							FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
 						}
@@ -178,13 +189,13 @@ void ImageLoader::load(const ImageCollections& scannedImageCollections)
 
 					FreeImage_CloseMultiBitmap(multiBitmap);
 				}
-				
+
 				const auto percentage = 100.0f * (done / static_cast<float>(noImages));
 
 				emit endLoad(payload);
-				emit message(QString("Loaded %1 (%2%)").arg(QFileInfo(imageFilePath).fileName(), QString::number(percentage)));
+				emit message(QString("Loaded image %1 of %2 (%3%)").arg(QString::number(percentage)));
 			}
-			
+
 			emit message(QString("Loaded %1 multipart images").arg(QString::number(noImages)));
 
 			break;
@@ -195,12 +206,12 @@ void ImageLoader::load(const ImageCollections& scannedImageCollections)
 	}
 }
 
-void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
+void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
 {
 	if (bitmap) {
 		const auto width		= fi::FreeImage_GetWidth(bitmap);
 		const auto height		= fi::FreeImage_GetHeight(bitmap);
-		const auto imageSize	= payload.size();
+		const auto imageSize	= payload->size();
 		const auto rescale		= QSize(width, height) != imageSize;
 
 		auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, imageSize.width(), imageSize.height(), static_cast<fi::FREE_IMAGE_FILTER>(_subsampleSettings.filter())) : bitmap;
@@ -245,7 +256,7 @@ void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload& payload, const QStri
 
 			auto pixel = std::vector<std::uint16_t>();
 
-			auto& image = payload.add(noComponents, imageFilePath);
+			auto& image = payload->add(noComponents, imageFilePath);
 
 			image.setDimensionName(dimensionName);
 

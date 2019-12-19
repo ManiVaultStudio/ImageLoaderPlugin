@@ -73,8 +73,6 @@ void MultiPartImageSequenceWidget::onDirectoryChanged(const QString& directory)
 
 	_ui->datasetNameLabel->setEnabled(validDirectory);
 	_ui->datasetNameLineEdit->setEnabled(validDirectory);
-
-	_scanner.scan();
 }
 
 void MultiPartImageSequenceWidget::onLoadPushButtonClicked()
@@ -86,16 +84,16 @@ void MultiPartImageSequenceWidget::onLoadPushButtonClicked()
 
 void MultiPartImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
 {
-	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned().loadable());
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() && _scanner.scanned()->loadable());
 }
 
 void MultiPartImageSequenceWidget::onBeginScan()
 {
 }
 
-void MultiPartImageSequenceWidget::onEndScan(const ImageCollections& scannedImageCollections)
+void MultiPartImageSequenceWidget::onEndScan(std::shared_ptr<ImageCollections> scanned)
 {
-	const auto loadable = _scanner.scanned().loadable();
+	const auto loadable = scanned->loadable();
 
 	_ui->imagesLabel->setEnabled(loadable);
 	_ui->imagesListWidget->setEnabled(false);
@@ -110,10 +108,17 @@ void MultiPartImageSequenceWidget::onBeginLoad()
 {
 }
 
-void MultiPartImageSequenceWidget::onEndLoad(Payload& payload)
+void MultiPartImageSequenceWidget::onEndLoad(std::shared_ptr<Payload> payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");
 
 	_imageLoaderPlugin->addImages(payload);
+}
+
+void MultiPartImageSequenceWidget::showEvent(QShowEvent* showEvent)
+{
+	_scanner.scan();
+
+	QWidget::showEvent(showEvent);
 }

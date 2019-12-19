@@ -10,7 +10,7 @@
 
 class Payload {
 public:
-	Payload(const ImageCollectionType& type);
+	Payload(const ImageCollectionType& type =  ImageCollectionType::Undefined);
 
 public:
 	ImageCollectionType type() const;

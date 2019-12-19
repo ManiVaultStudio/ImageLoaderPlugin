@@ -60,7 +60,7 @@ void SubsampleSettingsWidget::onRatioChanged(const double & ratio)
 	if (ratio != _ui->ratioSlider->value()) {
 		_ui->ratioSlider->blockSignals(true);
 		_ui->ratioSlider->setValue(ratio);
-		_ui->ratioSlider->blockSignals(true);
+		_ui->ratioSlider->blockSignals(false);
 	}
 }
 

@@ -13,6 +13,8 @@ namespace Ui {
 
 class ImageLoaderPlugin;
 
+class QEvent;
+
 class ImageStackWidget : public QWidget
 {
 	Q_OBJECT
@@ -28,10 +30,12 @@ private:
 	void onLoadPushButtonClicked();
 	void onDatasetNameChanged(const QString& dataSetName);
 	void onBeginScan();
-	void onEndScan(const ImageCollections& scannedImageCollections);
+	void onEndScan(std::shared_ptr<ImageCollections> scanned);
 	void onBeginLoad();
-	void onEndLoad(Payload& payload);
+	void onEndLoad(std::shared_ptr<Payload> payload);
 	void onSubsampleImageSettingsChanged();
+
+	void showEvent(QShowEvent* showEvent);
 
 signals:
 	void message(const QString& message);

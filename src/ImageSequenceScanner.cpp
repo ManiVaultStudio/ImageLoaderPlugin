@@ -54,7 +54,7 @@ void ImageSequenceScanner::run()
 
 	emit message("Scanning for image files...");
 
-	_scanned.reset();
+	_scanned->reset();
 
 	auto imageCollection = ImageCollection(_imageSize);
 
@@ -67,7 +67,7 @@ void ImageSequenceScanner::run()
 	if (noImages > 0) {
 		const auto datasetName = QDir(_directory).dirName();
 
-		_scanned.set(datasetName, imageCollection);
+		_scanned->set(datasetName, imageCollection);
 
 		emit message(QString("Found %1 images").arg(noImages));
 	}

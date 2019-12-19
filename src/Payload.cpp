@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-Payload::Payload(const ImageCollectionType& type) :
+Payload::Payload(const ImageCollectionType& type /*= ImageCollectionType::Undefined*/) :
 	_type(type),
 	_name(),
 	_images(),

@@ -19,7 +19,7 @@ public:
 
     void loadData() Q_DECL_OVERRIDE;
 
-	void addImages(Payload& payload);
+	void addImages(std::shared_ptr<Payload> payload);
 };
 
 class ImageLoaderPluginFactory : public LoaderPluginFactory

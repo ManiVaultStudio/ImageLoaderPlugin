@@ -8,11 +8,11 @@
 class ImageCollections {
 public:
 	ImageCollections(const ImageCollectionType& type = ImageCollectionType::Sequence);
-	~ImageCollections();
-
-	void load();
 
 	void reset();
+
+	ImageCollectionType type() const;
+	void setType(const ImageCollectionType& type);
 
 	void set(const QString& name, const ImageCollection& imageCollection)
 	{
@@ -22,8 +22,6 @@ public:
 	ImageCollectionMap& map() {
 		return _map;
 	}
-
-	ImageCollectionType type() const;
 
 	bool loadable() const;
 

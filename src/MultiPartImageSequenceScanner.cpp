@@ -27,7 +27,7 @@ void MultiPartImageSequenceScanner::run()
 
 	emit beginScan();
 
-	_scanned.reset();
+	_scanned->reset();
 
 	auto imageFiles = QDir(_directory);
 
@@ -71,7 +71,7 @@ void MultiPartImageSequenceScanner::run()
 			imageCollection.add(imageFilePath);
 			imageCollection.setNoDimensions(noDimensions);
 			
-			_scanned.map()[imageFilePath] = imageCollection;
+			_scanned->map()[imageFilePath] = imageCollection;
 		}
 
 		emit message(QString("Found %1 multipart image(s)").arg(imageFilePaths.size()));

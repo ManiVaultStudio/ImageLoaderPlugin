@@ -10,7 +10,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
@@ -117,7 +116,7 @@ include_directories(src)
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
-target_compile_features(${PROJECT} PRIVATE cxx_std_17)
+target_compile_features(${PROJECT} PRIVATE cxx_std_14)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  

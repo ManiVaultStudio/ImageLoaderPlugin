@@ -6,11 +6,6 @@ ImageCollections::ImageCollections(const ImageCollectionType& type /*= ImageColl
 	_type(type),
 	_map()
 {
-	qRegisterMetaType<ImageCollections>("ImageCollections");
-}
-
-ImageCollections::~ImageCollections()
-{
 }
 
 void ImageCollections::reset()
@@ -21,6 +16,11 @@ void ImageCollections::reset()
 ImageCollectionType ImageCollections::type() const
 {
 	return _type;
+}
+
+void ImageCollections::setType(const ImageCollectionType& type)
+{
+	_type = type;
 }
 
 bool ImageCollections::loadable() const

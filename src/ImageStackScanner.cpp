@@ -26,11 +26,11 @@ void ImageStackScanner::run()
 
 	emit beginScan();
 
-	_scanned.reset();
+	_scanned->reset();
 
 	scanDir(_directory);
 
-	const auto noStacks		= _scanned.map().size();
+	const auto noStacks		= _scanned->map().size();
 	const auto hasStacks	= noStacks > 0;
 
 	if (noStacks == 0) {
@@ -86,11 +86,11 @@ void ImageStackScanner::scanDir(const QString& directory)
 		if (size.width() > 0 && size.height() > 0) {
 			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
 
-			if (!_scanned.map().contains(sizeString)) {
-				_scanned.map()[sizeString] = ImageCollection(size);
+			if (!_scanned->map().contains(sizeString)) {
+				_scanned->map()[sizeString] = ImageCollection(size);
 			}
 			
-			_scanned.map()[sizeString].add(imageFilePath);
+			_scanned->map()[sizeString].add(imageFilePath);
 		}
 
 		scanDir(imageFilePath);

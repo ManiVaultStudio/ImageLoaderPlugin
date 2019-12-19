@@ -65,19 +65,19 @@ void ImageSequenceWidget::onScannerSettingsChanged()
 
 void ImageSequenceWidget::onLoaderSettingsChanged()
 {
-	const auto enableLoad = _scanner.scanned().loadable();
+	const auto enableLoad = _scanner.scanned()->loadable();
 
 	_ui->loadPushButton->setEnabled(enableLoad);
 }
 
 void ImageSequenceWidget::onBeginScan()
 {
-	_ui->scanPushButton->setText("Scanning");
+	_ui->scanPushButton->setText("Scanning...");
 }
 
-void ImageSequenceWidget::onEndScan(const ImageCollections& scannedImageCollections)
+void ImageSequenceWidget::onEndScan(std::shared_ptr<ImageCollections> scanned)
 {
-	const auto loadable = _scanner.scanned().loadable();
+	const auto loadable = scanned->loadable();
 
 	_ui->datasetNameLabel->setEnabled(loadable);
 	_ui->datasetNameLineEdit->setEnabled(loadable);
@@ -91,8 +91,6 @@ void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
 {
 	_ui->directoryLineEdit->setText(directory);
 	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
-
-	_scanner.scan();
 }
 
 void ImageSequenceWidget::onLoadPushButtonClicked()
@@ -104,7 +102,7 @@ void ImageSequenceWidget::onLoadPushButtonClicked()
 
 void ImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
 {
-	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() &&  _scanner.scanned().loadable());
+	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() &&  _scanner.scanned()->loadable());
 }
 
 void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
@@ -134,10 +132,10 @@ void ImageSequenceWidget::onImageTypeChanged(const QString & imageType)
 
 void ImageSequenceWidget::onBeginLoad()
 {
-	_ui->loadPushButton->setText("Loading");
+	_ui->loadPushButton->setText("Loading...");
 }
 
-void ImageSequenceWidget::onEndLoad(Payload& payload)
+void ImageSequenceWidget::onEndLoad(std::shared_ptr<Payload> payload)
 {
 	_ui->loadPushButton->setEnabled(false);
 	_ui->loadPushButton->setText("Load");

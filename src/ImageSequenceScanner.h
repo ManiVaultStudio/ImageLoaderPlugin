@@ -22,6 +22,8 @@ public:
 public:
 	void scan();
 	void run() override;
+
+private:
 	void scanDir(const QString& directory, ImageCollection& imageCollection);
 
 signals:

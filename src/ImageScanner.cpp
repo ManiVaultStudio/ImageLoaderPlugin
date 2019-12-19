@@ -9,7 +9,7 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 	_directory(),
 	_previousDirectories(),
 	_imageTypes(),
-	_scanned(),
+	_scanned(std::make_shared<ImageCollections>(type)),
 	_initialized(false)
 {
 }
@@ -97,7 +97,7 @@ void ImageScanner::setImageTypes(const QStringList& imageTypes)
 	emit settingsChanged();
 }
 
-ImageCollections & ImageScanner::scanned()
+std::shared_ptr<ImageCollections> ImageScanner::scanned()
 {
 	return _scanned;
 }
