@@ -6,11 +6,12 @@
 #include <QFileInfo>
 
 ImageLoader::ImageLoader(const ImageCollectionType& type) :
-	_settings("HDPS", QString("Plugins/ImageLoader/%1").arg(imageCollectionTypeName(type))),
+	QThread(),
+	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(imageCollectionTypeName(type))),
 	_type(type),
 	_datasetName(),
-	_subsampleSettings(&_settings),
-	_colorSettings(&_settings)
+	_subsampleSettings(prefix()),
+	_colorSettings(prefix())
 {
 	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageLoader::settingsChanged);
 	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageLoader::settingsChanged);
@@ -31,24 +32,14 @@ ColorSettings& ImageLoader::colorSettings()
 	return _colorSettings;
 }
 
-QVariant ImageLoader::setting(const QString& name, const QVariant& defaultValue) const
-{
-	return _settings.value(name, defaultValue).toString();
-}
-
-void ImageLoader::setSetting(const QString& name, const QVariant& value)
-{
-	_settings.setValue(name, value);
-}
-
 QString ImageLoader::datasetName() const
 {
 	return _datasetName;
 }
 
-void ImageLoader::setDatasetName(const QString& datasetName)
+void ImageLoader::setDatasetName(const QString& datasetName, const bool& forceUpdate /*= false*/)
 {
-	if (datasetName == _datasetName)
+	if (!forceUpdate && datasetName == _datasetName)
 		return;
 
 	_datasetName = datasetName;

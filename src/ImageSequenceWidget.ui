@@ -301,6 +301,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="squareCheckBox">
+            <property name="toolTip">
+             <string>Search for square images</string>
+            </property>
+            <property name="text">
+             <string>Square</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>

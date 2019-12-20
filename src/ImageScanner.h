@@ -1,30 +1,31 @@
 #pragma once
 
 #include "ImageLoader.h"
+#include "Settings.h"
 
 #include <QThread>
 #include <QString>
 
-class QSettings;
-
-class ImageScanner : public QThread {
+class ImageScanner : public QThread, public Settings {
 	Q_OBJECT
 
 public:
 	ImageScanner(const ImageCollectionType& type);
 
-	void loadSettings();
+	ImageCollectionType type() const;
 
+	virtual void loadSettings();
+	
 	QString	directory() const;
-	void setDirectory(const QString& directory);
+	void setDirectory(const QString& directory, const bool& forceUpdate = false);
 	QStringList	previousDirectories() const;
-	void setPreviousDirectories(const QStringList& previousDirectories);
+	void setPreviousDirectories(const QStringList& previousDirectories, const bool& forceUpdate = false);
 	void addPreviousDirectory(const QString& previousDirectory);
 	QStringList	imageTypes() const;
-	void setImageTypes(const QStringList& imageTypes);
+	void setImageTypes(const QStringList& imageTypes, const bool& forceUpdate = false);
 
 	std::shared_ptr<ImageCollections> scanned();
-
+	
 public:
 	virtual void scan() = 0;
 
@@ -38,7 +39,7 @@ signals:
 	void message(const QString& message);
 
 protected:
-	QSettings							_settings;
+	ImageCollectionType					_type;
 	QString								_directory;
 	QStringList							_previousDirectories;
 	QStringList							_imageTypes;

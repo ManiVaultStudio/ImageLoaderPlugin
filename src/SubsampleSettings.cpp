@@ -3,15 +3,16 @@
 
 #include <QDebug>
 
-SubsampleSettings::SubsampleSettings(QSettings* settings) :
-	_settings(settings),
+SubsampleSettings::SubsampleSettings(const QString& settingsPath) :
+	QObject(),
+	Settings("LKEB/CGV", "HDPS", settingsPath),
 	_enabled(false),
 	_ratio(100.0),
 	_filter(ImageResamplingFilter::Bilinear)
 {
-	_enabled	= _settings->value(settingPath("enabled"), false).toBool();
-	_ratio		= _settings->value(settingPath("ratio"), 100.0).toDouble();
-	_filter		= ImageResamplingFilter(_settings->value(settingPath("filter"), "bilinear").toInt());
+	_enabled	= setting("enabled", false).toBool();
+	_ratio		= setting("ratio", 100.0).toDouble();
+	_filter		= ImageResamplingFilter(setting("filter", "bilinear").toInt());
 
 	_filterNames << "Box" << "Bilinear" << "B-spline" << "Bicubic" << "Catmull-Rom" << "Lanczos";
 
@@ -20,18 +21,11 @@ SubsampleSettings::SubsampleSettings(QSettings* settings) :
 	connect(this, &SubsampleSettings::filterChanged, this, &SubsampleSettings::settingsChanged);
 }
 
-SubsampleSettings::~SubsampleSettings()
+void SubsampleSettings::loadSettings()
 {
-	_settings->setValue(settingPath("enabled"), _enabled);
-	_settings->setValue(settingPath("ratio"), _ratio);
-	_settings->setValue(settingPath("filter"), static_cast<int>(_filter));
-}
-
-void SubsampleSettings::emitAll()
-{
-	emit enabledChanged(_enabled);
-	emit ratioChanged(_ratio);
-	emit filterChanged(_filter);
+	setEnabled(setting("EnableSubsampling", false).toBool(), true);
+	setRatio(setting("SubsamplingRatio", 100.0).toDouble(), true);
+	setFilter(static_cast<ImageResamplingFilter>(setting("SubsamplingFilter", 0).toInt()), true);
 }
 
 bool SubsampleSettings::enabled() const
@@ -39,14 +33,16 @@ bool SubsampleSettings::enabled() const
 	return _enabled;
 }
 
-void SubsampleSettings::setEnabled(const bool& enabled)
+void SubsampleSettings::setEnabled(const bool& enabled, const bool& forceUpdate /*= false*/)
 {
-	if (enabled == _enabled)
+	if (!forceUpdate && enabled == _enabled)
 		return;
 
-	qDebug() << "Image resampling enabled changed to" << enabled;
-
 	_enabled = enabled;
+
+	setSetting("EnableSubsampling", _enabled);
+
+	qDebug() << "Set image subsampling enabled" << enabled;
 
 	emit enabledChanged(_enabled);
 	emit settingsChanged();
@@ -57,14 +53,16 @@ double SubsampleSettings::ratio() const
 	return _ratio;
 }
 
-void SubsampleSettings::setRatio(const double& ratio)
+void SubsampleSettings::setRatio(const double& resamplingRatio, const bool& forceUpdate /*= false*/)
 {
-	if (ratio == _ratio)
+	if (!forceUpdate && resamplingRatio == _ratio)
 		return;
 
-	qDebug() << "Image resampling ratio changed to" << ratio;
+	_ratio = resamplingRatio;
 
-	_ratio = ratio;
+	setSetting("SubsamplingRatio", _ratio);
+
+	qDebug() << "Set image subsampling ratio" << resamplingRatio;
 
 	emit ratioChanged(_ratio);
 	emit settingsChanged();
@@ -75,16 +73,18 @@ ImageResamplingFilter SubsampleSettings::filter() const
 	return _filter;
 }
 
-void SubsampleSettings::setFilter(const ImageResamplingFilter& filter)
+void SubsampleSettings::setFilter(const ImageResamplingFilter& imageResamplingFilter, const bool& forceUpdate /*= false*/)
 {
-	if (filter == _filter)
+	if (!forceUpdate && imageResamplingFilter == _filter)
 		return;
 	
-	const auto filterIndex = static_cast<int>(filter);
+	_filter = imageResamplingFilter;
 
-	qDebug() << "Image resampling filter changed to" << _filterNames.at(filterIndex);
+	const auto filterIndex = static_cast<int>(imageResamplingFilter);
 
-	_filter = filter;
+	setSetting("SubsamplingFilter", filterIndex);
+
+	qDebug() << "Set image subsampling filter" << _filterNames.at(filterIndex);
 
 	emit filterChanged(_filter);
 	emit settingsChanged();
@@ -93,9 +93,4 @@ void SubsampleSettings::setFilter(const ImageResamplingFilter& filter)
 QStringList SubsampleSettings::filterNames() const
 {
 	return _filterNames;
-}
-
-QString SubsampleSettings::settingPath(const QString& name) const
-{
-	return QString("Resampling/%2").arg(name);
 }

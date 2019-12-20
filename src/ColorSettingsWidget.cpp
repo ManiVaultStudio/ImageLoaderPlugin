@@ -21,7 +21,7 @@ void ColorSettingsWidget::initialize(ColorSettings* colorSettings)
 	connect(_colorSettings, &ColorSettings::convertToGrayscaleChanged, this, &ColorSettingsWidget::onConvertToGrayscaleChanged);
 	connect(_ui->convertToGrayscaleCheckbox, &QCheckBox::stateChanged, this, &ColorSettingsWidget::onConvertToGrayscaleCheckBoxStateChanged);
 
-	_colorSettings->emitAll();
+	_colorSettings->loadSettings();
 }
 
 void ColorSettingsWidget::onConvertToGrayscaleChanged(const bool& convertToGrayscaleChanged)

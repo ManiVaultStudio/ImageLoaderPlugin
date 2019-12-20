@@ -32,6 +32,8 @@ set(PLUGIN_SOURCES
     src/FreeImage.cpp
 	src/Payload.h
 	src/Payload.cpp
+	src/Settings.h
+	src/Settings.cpp
     src/Common.h
 )
 

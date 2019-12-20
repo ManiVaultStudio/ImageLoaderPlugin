@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Settings.h"
 #include "ImageCollections.h"
 #include "Payload.h"
 #include "SubsampleSettings.h"
@@ -12,7 +13,7 @@ namespace fi {
 	#include <FreeImage.h>
 }
 
-class ImageLoader : public QThread {
+class ImageLoader : public QThread, public Settings {
 	Q_OBJECT
 
 public:
@@ -27,10 +28,8 @@ public:
 	void run() override;
 
 public:
-	QVariant setting(const QString& name, const QVariant& defaultValue = QVariant()) const;
-	void setSetting(const QString& name, const QVariant& value);
 	QString datasetName() const;
-	void setDatasetName(const QString& datasetName);
+	void setDatasetName(const QString& datasetName, const bool& forceUpdate = false);
 	std::shared_ptr<ImageCollections> scanned() const;
 	void setScanned(std::shared_ptr<ImageCollections> scanned);
 
@@ -44,9 +43,6 @@ signals:
 	void endLoad(std::shared_ptr<Payload> payload);
 	void imageLoaded(const QString &imageFilePath, const int& done, const int& total);
 	void message(const QString& message);
-
-protected:
-	QSettings							_settings;
 
 private:
 	ImageCollectionType					_type;

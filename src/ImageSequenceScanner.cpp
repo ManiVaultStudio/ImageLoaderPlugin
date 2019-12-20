@@ -5,7 +5,10 @@
 #include <QImageReader>
 
 ImageSequenceScanner::ImageSequenceScanner() :
-	ImageScanner(ImageCollectionType::Sequence)
+	ImageScanner(ImageCollectionType::Sequence),
+	_imageType(),
+	_imageSize(),
+	_square(true)
 {
 	auto imageTypes = QStringList();
 
@@ -14,14 +17,30 @@ ImageSequenceScanner::ImageSequenceScanner() :
 	setImageTypes(imageTypes);
 }
 
+void ImageSequenceScanner::loadSettings()
+{
+	setImageType(setting("ImageType", "jpg").toString(), true);
+	setImageSize(setting("ImageSize", QSize(28, 28)).toSize(), true);
+	setSquare(setting("Square", true).toBool(), true);
+
+	ImageScanner::loadSettings();
+}
+
 QString ImageSequenceScanner::imageType() const
 {
 	return _imageType;
 }
 
-void ImageSequenceScanner::setImageType(const QString & imageType)
+void ImageSequenceScanner::setImageType(const QString &imageType, const bool& forceUpdate /*= false*/)
 {
+	if (!forceUpdate && imageType == _imageType)
+		return;
+
 	_imageType = imageType;
+
+	setSetting("ImageType", _imageType);
+
+	qDebug() << "Set image type" << _imageType;
 
 	emit imageTypeChanged(_imageType);
 	emit settingsChanged();
@@ -32,11 +51,76 @@ QSize ImageSequenceScanner::imageSize() const
 	return _imageSize;
 }
 
-void ImageSequenceScanner::setImageSize(const QSize & imageSize)
+void ImageSequenceScanner::setImageWidth(const std::uint32_t& imageWidth, const bool& forceUpdate /*= false*/)
 {
+	if (!forceUpdate && imageWidth == _imageSize.width())
+		return;
+
+	auto imageSize = _imageSize;
+
+	imageSize.setWidth(imageWidth);
+
+	if (_square) {
+		imageSize.setHeight(imageWidth);
+	}
+
+	setImageSize(imageSize, forceUpdate);
+}
+
+void ImageSequenceScanner::setImageHeight(const std::uint32_t& imageHeight, const bool& forceUpdate /*= false*/)
+{
+	if (!forceUpdate && imageHeight == _imageSize.height())
+		return;
+
+	if (_square)
+		return;
+
+	auto imageSize = _imageSize;
+
+	imageSize.setHeight(imageHeight);
+
+	setImageSize(imageSize, forceUpdate);
+}
+
+void ImageSequenceScanner::setImageSize(const QSize& imageSize, const bool& forceUpdate /*= false*/)
+{
+	if (!forceUpdate && imageSize == _imageSize)
+		return;
+
 	_imageSize = imageSize;
 
+	setSetting("ImageSize", _imageSize);
+
+	qDebug() << "Set image size" << _imageSize;
+
 	emit imageSizeChanged(_imageSize);
+	emit settingsChanged();
+}
+
+bool ImageSequenceScanner::square() const
+{
+	return _square;
+}
+
+void ImageSequenceScanner::setSquare(const bool& square, const bool& forceUpdate /*= false*/)
+{
+	if (!forceUpdate && square == _square)
+		return;
+
+	_square = square;
+
+	setSetting("Square", _square);
+
+	qDebug() << "Set square" << _square;
+
+	emit squareChanged(_square);
+	
+	auto imageSize = _imageSize;
+
+	imageSize.setHeight(imageSize.width());
+
+	setImageSize(imageSize);
+
 	emit settingsChanged();
 }
 

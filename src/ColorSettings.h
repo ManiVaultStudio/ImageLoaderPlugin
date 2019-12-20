@@ -1,33 +1,28 @@
 #pragma once
 
 #include "Common.h"
+#include "Settings.h"
 
 #include <QObject>
-#include <QSettings>
 
 class ImageLoaderPlugin;
 
-class ColorSettings : public QObject {
+class ColorSettings : public QObject, Settings {
 	Q_OBJECT
 
 public:
-	ColorSettings(QSettings* settings);
-	 ~ColorSettings() override;
+	ColorSettings(const QString& settingsPath);
 
-	 void emitAll();
+	void loadSettings();
 
 public:
 	bool convertToGrayscale() const;
-	void setConvertToGrayscale(const bool& convertToGrayscale);
-
-private:
-	QString settingPath(const QString& name) const;
+	void setConvertToGrayscale(const bool& convertToGrayscale, const bool& forceUpdate = false);
 
 signals:
 	void convertToGrayscaleChanged(const bool&);
 	void settingsChanged();
 
 private:
-	QSettings*	_settings;
 	bool		_convertToGrayscale;
 };

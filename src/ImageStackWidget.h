@@ -23,18 +23,6 @@ public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	void onScannerSettingsChanged();
-	void onLoaderSettingsChanged();
-	void onPickDirectory();
-	void onDirectoryChanged(const QString &directory);
-	void onLoadPushButtonClicked();
-	void onDatasetNameChanged(const QString& dataSetName);
-	void onBeginScan();
-	void onEndScan(std::shared_ptr<ImageCollections> scanned);
-	void onBeginLoad();
-	void onEndLoad(std::shared_ptr<Payload> payload);
-	void onSubsampleImageSettingsChanged();
-
 	void showEvent(QShowEvent* showEvent);
 
 signals:
@@ -44,5 +32,5 @@ private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;
 	ImageStackScanner						_scanner;
-	ImageLoader					_loader;
+	ImageLoader								_loader;
 };

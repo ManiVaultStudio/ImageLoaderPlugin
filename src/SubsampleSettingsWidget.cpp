@@ -20,73 +20,58 @@ void SubsampleSettingsWidget::initialize(SubsampleSettings* subsampleSettings)
 
 	_ui->filterComboBox->addItems(_subsampleSettings->filterNames());
 
-	connect(_subsampleSettings, &SubsampleSettings::enabledChanged, this, &SubsampleSettingsWidget::onEnabledChanged);
-	connect(_ui->enableSubsamplingCheckbox, &QCheckBox::stateChanged, this, &SubsampleSettingsWidget::onEnabledCheckBoxStateChanged);
+	connect(_subsampleSettings, &SubsampleSettings::enabledChanged, [&](bool enabled) {
+		_ui->enableSubsamplingCheckbox->blockSignals(true);
+		_ui->enableSubsamplingCheckbox->setChecked(enabled);
+		_ui->enableSubsamplingCheckbox->blockSignals(false);
 
-	connect(_subsampleSettings, &SubsampleSettings::ratioChanged, this, &SubsampleSettingsWidget::onRatioChanged);
-	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &SubsampleSettingsWidget::onRatioSpinBoxValueChanged);
-	connect(_ui->ratioSlider, &QSlider::valueChanged, this, &SubsampleSettingsWidget::onRatioSliderValueChanged);
-	connect(_ui->filterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SubsampleSettingsWidget::onFilterValueChanged);
+		_ui->ratioLabel->setEnabled(enabled);
+		_ui->ratioSpinBox->setEnabled(enabled);
+		_ui->ratioSlider->setEnabled(enabled);
+		_ui->filterLabel->setEnabled(enabled);
+		_ui->filterComboBox->setEnabled(enabled);
+	});
 
-	_subsampleSettings->emitAll();
-}
+	connect(_ui->enableSubsamplingCheckbox, &QCheckBox::stateChanged, [&](int state) {
+		_subsampleSettings->setEnabled(static_cast<bool>(state));
+	});
 
-void SubsampleSettingsWidget::onEnabledChanged(const bool& enabled)
-{
-	_ui->enableSubsamplingCheckbox->setChecked(enabled);
+	connect(_subsampleSettings, &SubsampleSettings::ratioChanged, [&](const double& ratio) {
+		if (ratio != _ui->ratioSpinBox->value()) {
+			_ui->ratioSpinBox->blockSignals(true);
+			_ui->ratioSpinBox->setValue(ratio);
+			_ui->ratioSpinBox->blockSignals(false);
+		}
 
-	_ui->ratioLabel->setEnabled(enabled);
-	_ui->ratioSpinBox->setEnabled(enabled);
-	_ui->ratioSlider->setEnabled(enabled);
-	_ui->filterLabel->setEnabled(enabled);
-	_ui->filterComboBox->setEnabled(enabled);
-}
+		if (ratio != _ui->ratioSlider->value()) {
+			_ui->ratioSlider->blockSignals(true);
+			_ui->ratioSlider->setValue(ratio);
+			_ui->ratioSlider->blockSignals(false);
+		}
+	});
 
-void SubsampleSettingsWidget::onEnabledCheckBoxStateChanged(const int& state)
-{
-	const auto enabled = static_cast<bool>(state);
+	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double ratio) {
+		_subsampleSettings->setRatio(ratio);
+	});
 
-	_subsampleSettings->setEnabled(enabled);
-}
+	connect(_ui->ratioSlider, &QSlider::valueChanged, [&](int ratio) {
+		_subsampleSettings->setRatio(static_cast<double>(ratio));
+	});
 
-void SubsampleSettingsWidget::onRatioChanged(const double & ratio)
-{
-	if (ratio != _ui->ratioSpinBox->value()) {
-		_ui->ratioSpinBox->blockSignals(true);
-		_ui->ratioSpinBox->setValue(ratio);
-		_ui->ratioSpinBox->blockSignals(false);
-	}
-	
-	if (ratio != _ui->ratioSlider->value()) {
-		_ui->ratioSlider->blockSignals(true);
-		_ui->ratioSlider->setValue(ratio);
-		_ui->ratioSlider->blockSignals(false);
-	}
-}
+	connect(_ui->filterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int filter) {
+		_subsampleSettings->setFilter(static_cast<ImageResamplingFilter>(filter));
+	});
 
-void SubsampleSettingsWidget::onRatioSpinBoxValueChanged(const double& ratio)
-{
-	_subsampleSettings->setRatio(ratio);
-}
+	connect(_subsampleSettings, &SubsampleSettings::filterChanged, [&](const ImageResamplingFilter& imageResamplingFilter) {
+		const int filterIndex = static_cast<int>(imageResamplingFilter);
 
-void SubsampleSettingsWidget::onRatioSliderValueChanged(const int& ratio)
-{
-	_subsampleSettings->setRatio(ratio);
-}
+		if (filterIndex == _ui->filterComboBox->currentIndex())
+			return;
 
-void SubsampleSettingsWidget::onFilterValueChanged(const int& filter)
-{
-	_subsampleSettings->setFilter(static_cast<ImageResamplingFilter>(filter));
-}
+		_ui->filterComboBox->blockSignals(true);
+		_ui->filterComboBox->setCurrentIndex(filterIndex);
+		_ui->filterComboBox->blockSignals(false);
+	});
 
-void SubsampleSettingsWidget::onFilterChanged(const ImageResamplingFilter& imageResamplingFilter)
-{
-	const int filterIndex = static_cast<int>(imageResamplingFilter);
-
-	if (filterIndex == _ui->filterComboBox->currentIndex())
-		return;
-
-	_ui->filterComboBox->blockSignals(true);
-	_ui->filterComboBox->setCurrentIndex(filterIndex);
-	_ui->filterComboBox->blockSignals(false);
+	_subsampleSettings->loadSettings();
 }

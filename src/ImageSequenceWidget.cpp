@@ -15,130 +15,128 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 {
 	_ui->setupUi(this);
 	
-	const auto width	= _loader.setting("ImageWidth", QVariant(28)).toInt();
-	const auto height	= _loader.setting("ImageHeight", QVariant(28)).toInt();
-
-	_scanner.setImageSize(QSize(width, height));
-
-	_ui->imageTypeComboBox->setCurrentText(_scanner.imageType());
-	_ui->imageWidthSpinBox->setValue(_scanner.imageSize().width());
-	_ui->imageHeightSpinBox->setValue(_scanner.imageSize().height());
-
-	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, this, &ImageSequenceWidget::onImageTypeChanged);
-	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, &_scanner, &ImageSequenceScanner::setDirectory);
-	connect(_ui->directoryPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onPickDirectory);
-	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageWidthChanged);
-	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &ImageSequenceWidget::onImageHeightChanged);
-	connect(_ui->scanPushButton, &QPushButton::clicked, &this->_scanner, &ImageSequenceScanner::scan);
-	connect(_ui->loadPushButton, &QPushButton::clicked, this, &ImageSequenceWidget::onLoadPushButtonClicked);
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, &_loader, &ImageLoader::setDatasetName);
-
-	connect(&_scanner, &ImageSequenceScanner::directoryChanged, this, &ImageSequenceWidget::onDirectoryChanged);
-	connect(&_scanner, &ImageSequenceScanner::beginScan, this, &ImageSequenceWidget::onBeginScan);
-	connect(&_scanner, &ImageSequenceScanner::endScan, this, &ImageSequenceWidget::onEndScan);
-	connect(&_loader, &ImageLoader::beginLoad, this, &ImageSequenceWidget::onBeginLoad);
-	connect(&_loader, &ImageLoader::endLoad, this, &ImageSequenceWidget::onEndLoad);
-	connect(&_loader, &ImageLoader::datasetNameChanged, this, &ImageSequenceWidget::onDatasetNameChanged);
-	
-	connect(&_loader, &ImageLoader::message, this, &ImageSequenceWidget::message);
-	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
-
-	connect(&_scanner, &ImageSequenceScanner::settingsChanged, this, &ImageSequenceWidget::onScannerSettingsChanged);
-	connect(&_loader, &ImageLoader::settingsChanged, this, &ImageSequenceWidget::onLoaderSettingsChanged);
-
 	_ui->imageTypeComboBox->addItem("jpg");
 	_ui->imageTypeComboBox->addItem("png");
 	_ui->imageTypeComboBox->addItem("bmp");
 	_ui->imageTypeComboBox->addItem("tif");
 	_ui->imageTypeComboBox->addItem("tiff");
 
+	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [=](QString directory)
+	{
+		_scanner.setDirectory(directory);
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::directoryChanged, [=](const QString& directory) {
+		_ui->directoryLineEdit->blockSignals(true);
+		_ui->directoryLineEdit->setText(directory);
+		_ui->directoryLineEdit->blockSignals(false);
+		_ui->datasetNameLineEdit->setEnabled(!directory.isEmpty());
+		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
+	});
+
+	connect(_ui->directoryPushButton, &QPushButton::clicked, [=]() {
+		const auto initialDirectory = _loader.setting("Directory").toString();
+		const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
+
+		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+			_scanner.setDirectory(pickedDirectory);
+		}
+	});
+
+	connect(_ui->imageTypeComboBox, &QComboBox::currentTextChanged, [=](QString imageType)
+	{
+		_scanner.setImageType(imageType);
+	});
+	
+	connect(&_scanner, &ImageSequenceScanner::imageTypeChanged, [=](const QString& imageType) {
+		_ui->imageTypeComboBox->blockSignals(true);
+		_ui->imageTypeComboBox->setCurrentText(imageType);
+		_ui->imageTypeComboBox->blockSignals(false);
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::imageSizeChanged, [=](const QSize& imageSize) {
+		_ui->directoryLineEdit->blockSignals(true);
+		_ui->imageWidthSpinBox->setValue(imageSize.width());
+		_ui->imageHeightSpinBox->setValue(imageSize.height());
+		_ui->directoryLineEdit->blockSignals(false);
+	});
+
+	connect(_ui->imageWidthSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), [=](int width) {
+		_scanner.setImageWidth(width);
+	});
+
+	connect(_ui->imageHeightSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), [=](int height) {
+		_scanner.setImageHeight(height);
+	});
+
+	connect(&_loader, &ImageLoader::datasetNameChanged, [=](const QString& datasetName) {
+		_ui->datasetNameLineEdit->blockSignals(true);
+		_ui->datasetNameLineEdit->setText(datasetName);
+		_ui->datasetNameLineEdit->blockSignals(false);
+	});
+
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [=](const QString& text) {
+		_loader.setDatasetName(text);
+	});
+
+	connect(_ui->squareCheckBox, &QCheckBox::stateChanged, [=](int state) {
+		_scanner.setSquare(static_cast<bool>(state));
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::squareChanged, [=](const bool& square) {
+		_ui->imageHeightSpinBox->setEnabled(!square);
+		_ui->squareCheckBox->setChecked(square);
+	});
+
+	connect(_ui->scanPushButton, &QPushButton::clicked, [=]() {
+		_scanner.scan();
+	});
+
+	connect(_ui->loadPushButton, &QPushButton::clicked, [=]() {
+		_loader.load(_scanner.scanned());
+		_ui->loadPushButton->setEnabled(false);
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::settingsChanged, [=]() {
+		_ui->scanPushButton->setEnabled(true);
+	});
+
+	connect(&_loader, &ImageLoader::settingsChanged, [=]() {
+		const auto enableLoad = _scanner.scanned()->loadable();
+		_ui->loadPushButton->setEnabled(enableLoad);
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::beginScan, [=]() {
+		_ui->scanPushButton->setText("Scanning...");
+	});
+
+	connect(&_scanner, &ImageSequenceScanner::endScan, [=](std::shared_ptr<ImageCollections> scanned) {
+		const auto loadable = scanned->loadable();
+
+		_ui->datasetNameLabel->setEnabled(loadable);
+		_ui->datasetNameLineEdit->setEnabled(loadable);
+		_ui->loadPushButton->setEnabled(loadable);
+
+		_ui->scanPushButton->setText("Scan");
+		_ui->scanPushButton->setEnabled(false);
+	});
+
+	connect(&_loader, &ImageLoader::beginLoad, [=]() {
+		_ui->loadPushButton->setText("Loading...");
+	});
+
+	connect(&_loader, &ImageLoader::endLoad, [=](std::shared_ptr<Payload> payload) {
+		_ui->loadPushButton->setEnabled(false);
+		_ui->loadPushButton->setText("Load");
+
+		_imageLoaderPlugin->addImages(payload);
+	});
+	
+	connect(&_loader, &ImageLoader::message, this, &ImageSequenceWidget::message);
+	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
+
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_scanner.loadSettings();
-}
-
-void ImageSequenceWidget::onScannerSettingsChanged()
-{
-	_ui->scanPushButton->setEnabled(true);
-}
-
-void ImageSequenceWidget::onLoaderSettingsChanged()
-{
-	const auto enableLoad = _scanner.scanned()->loadable();
-
-	_ui->loadPushButton->setEnabled(enableLoad);
-}
-
-void ImageSequenceWidget::onBeginScan()
-{
-	_ui->scanPushButton->setText("Scanning...");
-}
-
-void ImageSequenceWidget::onEndScan(std::shared_ptr<ImageCollections> scanned)
-{
-	const auto loadable = scanned->loadable();
-
-	_ui->datasetNameLabel->setEnabled(loadable);
-	_ui->datasetNameLineEdit->setEnabled(loadable);
-	_ui->loadPushButton->setEnabled(loadable);
-
-	_ui->scanPushButton->setText("Scan");
-	_ui->scanPushButton->setEnabled(false);
-}
-
-void ImageSequenceWidget::onDirectoryChanged(const QString& directory)
-{
-	_ui->directoryLineEdit->setText(directory);
-	_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
-}
-
-void ImageSequenceWidget::onLoadPushButtonClicked()
-{
-	_loader.load(_scanner.scanned());
-
-	_ui->loadPushButton->setEnabled(false);
-}
-
-void ImageSequenceWidget::onDatasetNameChanged(const QString& dataSetName)
-{
-	_ui->loadPushButton->setEnabled(!dataSetName.isEmpty() &&  _scanner.scanned()->loadable());
-}
-
-void ImageSequenceWidget::onImageWidthChanged(int imageWidth)
-{
-	_scanner.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-}
-
-void ImageSequenceWidget::onImageHeightChanged(int imageHeight)
-{
-	_scanner.setImageSize(QSize(_ui->imageWidthSpinBox->value(), _ui->imageHeightSpinBox->value()));
-}
-
-void ImageSequenceWidget::onPickDirectory()
-{
-	const auto initialDirectory = _loader.setting("Directory").toString();
-	const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
-
-	if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-		_scanner.setDirectory(pickedDirectory);
-	}
-}
-
-void ImageSequenceWidget::onImageTypeChanged(const QString & imageType)
-{
-	_scanner.setImageType(_ui->imageTypeComboBox->currentText());
-}
-
-void ImageSequenceWidget::onBeginLoad()
-{
-	_ui->loadPushButton->setText("Loading...");
-}
-
-void ImageSequenceWidget::onEndLoad(std::shared_ptr<Payload> payload)
-{
-	_ui->loadPushButton->setEnabled(false);
-	_ui->loadPushButton->setText("Load");
-
-	_imageLoaderPlugin->addImages(payload);
 }
