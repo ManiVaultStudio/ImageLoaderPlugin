@@ -19,6 +19,7 @@ class ImageSequenceWidget : public QWidget
 
 public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
+    ~ImageSequenceWidget();
 
 signals:
 	void message(const QString& message);

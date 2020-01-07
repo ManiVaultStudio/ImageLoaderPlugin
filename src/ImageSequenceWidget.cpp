@@ -140,3 +140,5 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	_scanner.loadSettings();
 }
+
+ImageSequenceWidget::~ImageSequenceWidget() = default;

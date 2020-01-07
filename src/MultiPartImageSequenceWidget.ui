@@ -238,13 +238,13 @@
   <customwidget>
    <class>SubsampleSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>subsamplesettingswidget.h</header>
+   <header>SubsampleSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ColorSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>colorsettingswidget.h</header>
+   <header>ColorSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

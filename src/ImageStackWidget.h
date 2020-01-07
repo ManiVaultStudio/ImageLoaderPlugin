@@ -21,6 +21,7 @@ class ImageStackWidget : public QWidget
 
 public:
 	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
+    ~ImageStackWidget();
 
 private:
 	void showEvent(QShowEvent* showEvent);

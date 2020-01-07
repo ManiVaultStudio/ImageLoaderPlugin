@@ -20,6 +20,7 @@ class MultiPartImageSequenceWidget : public QWidget
 public:
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 
+	~MultiPartImageSequenceWidget();
 private:
 	void onScannerSettingsChanged();
 	void onLoaderSettingsChanged();

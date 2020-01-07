@@ -46,6 +46,8 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_scanner.loadSettings();
 }
 
+MultiPartImageSequenceWidget::~MultiPartImageSequenceWidget() = default;
+
 void MultiPartImageSequenceWidget::onScannerSettingsChanged()
 {
 }

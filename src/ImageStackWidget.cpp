@@ -118,6 +118,8 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_scanner.loadSettings();
 }
 
+ImageStackWidget::~ImageStackWidget() = default;
+
 void ImageStackWidget::showEvent(QShowEvent* showEvent)
 {
 	_scanner.scan();

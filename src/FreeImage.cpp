@@ -12,7 +12,7 @@ fi::FIBITMAP* FreeImage::freeImageLoad(const QString & imageFilePath)
 	return fi::FreeImage_LoadU(format, wcharPtr);
 #else
 	const auto utf8 = imageFilePath.toUtf8();
-	const auto format = FreeImage_GetFileType(utf8);
+	const auto format = fi::FreeImage_GetFileType(utf8);
 
 	return FreeImage_Load(format, utf8);
 #endif
