@@ -13,14 +13,14 @@
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_settings("HDPS", "Plugins/ImageLoader/General"),
-	_mainLayout{new QVBoxLayout()},
-	_settingsLayout{new QVBoxLayout()},
-	_typesComboBox{new QComboBox()},
-	_pagesStackedWidget{new StackedWidget()},
-	_imageSequenceWidget{new ImageSequenceWidget(imageLoaderPlugin)},
-	_imageStackWidget{new ImageStackWidget(imageLoaderPlugin)},
-	_multiPartImageSequenceWidget{new MultiPartImageSequenceWidget(imageLoaderPlugin)},
-	_statusBar{new QStatusBar()}
+	_mainLayout(new QVBoxLayout()),
+	_settingsLayout(new QVBoxLayout()),
+	_typesComboBox(new QComboBox()),
+	_pagesStackedWidget(new StackedWidget()),
+	_imageSequenceWidget(new ImageSequenceWidget(imageLoaderPlugin)),
+	_imageStackWidget(new ImageStackWidget(imageLoaderPlugin)),
+	_multiPartImageSequenceWidget(new MultiPartImageSequenceWidget(imageLoaderPlugin)),
+	_statusBar(new QStatusBar())
 {
 	_mainLayout->setMargin(0);
 

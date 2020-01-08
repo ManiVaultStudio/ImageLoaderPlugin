@@ -18,20 +18,17 @@ void ColorSettingsWidget::initialize(ColorSettings* colorSettings)
 {
 	_colorSettings = colorSettings;
 
-	connect(_colorSettings, &ColorSettings::convertToGrayscaleChanged, this, &ColorSettingsWidget::onConvertToGrayscaleChanged);
-	connect(_ui->convertToGrayscaleCheckbox, &QCheckBox::stateChanged, this, &ColorSettingsWidget::onConvertToGrayscaleCheckBoxStateChanged);
+	connect(_colorSettings, &ColorSettings::convertToGrayscaleChanged, [&](const bool& convertToGrayscale)
+	{
+		_ui->convertToGrayscaleCheckbox->setChecked(convertToGrayscale);
+	});
+
+	connect(_ui->convertToGrayscaleCheckbox, &QCheckBox::stateChanged, [&](int state)
+	{
+		const auto enabled = static_cast<bool>(state);
+
+		_colorSettings->setConvertToGrayscale(enabled);
+	});
 
 	_colorSettings->loadSettings();
-}
-
-void ColorSettingsWidget::onConvertToGrayscaleChanged(const bool& convertToGrayscaleChanged)
-{
-	_ui->convertToGrayscaleCheckbox->setChecked(convertToGrayscaleChanged);
-}
-
-void ColorSettingsWidget::onConvertToGrayscaleCheckBoxStateChanged(const int& state)
-{
-	const auto enabled = static_cast<bool>(state);
-
-	_colorSettings->setConvertToGrayscale(enabled);
 }

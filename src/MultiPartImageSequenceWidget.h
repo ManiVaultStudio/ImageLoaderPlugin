@@ -19,20 +19,9 @@ class MultiPartImageSequenceWidget : public QWidget
 
 public:
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
-
 	~MultiPartImageSequenceWidget();
-private:
-	void onScannerSettingsChanged();
-	void onLoaderSettingsChanged();
-	void onPickDirectory();
-	void onDirectoryChanged(const QString& directory);
-	void onLoadPushButtonClicked();
-	void onDatasetNameChanged(const QString& dataSetName);
-	void onBeginScan();
-	void onEndScan(std::shared_ptr<ImageCollections> scanned);
-	void onBeginLoad();
-	void onEndLoad(std::shared_ptr<Payload> payload);
 
+private:
 	void showEvent(QShowEvent* showEvent);
 
 signals:
@@ -42,5 +31,5 @@ private:
 	ImageLoaderPlugin*									_imageLoaderPlugin;
 	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;
 	MultiPartImageSequenceScanner						_scanner;
-	ImageLoader								_loader;
+	ImageLoader											_loader;
 };

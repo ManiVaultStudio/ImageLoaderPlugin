@@ -32,7 +32,7 @@ public:
 signals:
 	void settingsChanged();
 	void beginScan();
-	void endScan(std::shared_ptr<ImageCollections> scannedImageCollections);
+	void endScan(std::shared_ptr<ImageCollections> scanned);
 	void directoryChanged(const QString& directory);
 	void previousDirectoriesChanged(const QStringList& previousDirectories);
 	void imageTypesChanged(const QStringList& imageTypes);

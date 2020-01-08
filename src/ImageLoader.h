@@ -38,7 +38,7 @@ private:
 
 signals:
 	void settingsChanged();
-	void datasetNameChanged(const QString&);
+	void datasetNameChanged(const QString& datasetName);
 	void beginLoad();
 	void endLoad(std::shared_ptr<Payload> payload);
 	void imageLoaded(const QString &imageFilePath, const int& done, const int& total);

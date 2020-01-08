@@ -20,10 +20,6 @@ public:
 	void initialize(ColorSettings* colorSettings);
 
 private:
-	void onConvertToGrayscaleChanged(const bool& convertToGrayscaleChanged);
-	void onConvertToGrayscaleCheckBoxStateChanged(const int& state);
-
-private:
 	std::unique_ptr<Ui::ColorSettingsWidget>	_ui;
 	ColorSettings*								_colorSettings;
 };	

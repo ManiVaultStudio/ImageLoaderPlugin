@@ -32,6 +32,8 @@ void ColorSettings::setConvertToGrayscale(const bool& convertToGrayscale, const 
 
 	setSetting("ConvertToGrayscale", _convertToGrayscale);
 
+	qDebug() << "Set convert to grayscale" << convertToGrayscale;
+
 	emit convertToGrayscaleChanged(_convertToGrayscale);
 	emit settingsChanged();
 }

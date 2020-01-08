@@ -2,7 +2,8 @@
 
 #include <QSettings>
 
-class Settings {
+class Settings
+{
 public:
 	Settings(const QString& organization, const QString& application, const QString& prefix);
 

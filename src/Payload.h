@@ -8,7 +8,8 @@
 #include <QMap>
 #include <QVariant>
 
-class Payload {
+class Payload
+{
 public:
 	Payload(const ImageCollectionType& type =  ImageCollectionType::Undefined);
 
