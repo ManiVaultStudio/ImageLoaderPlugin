@@ -24,7 +24,7 @@ public:
 	QStringList	imageTypes() const;
 	void setImageTypes(const QStringList& imageTypes, const bool& forceUpdate = false);
 
-	std::shared_ptr<ImageCollections> scanned();
+	std::shared_ptr<Scanned> scanned();
 	
 public:
 	virtual void scan() = 0;
@@ -32,17 +32,17 @@ public:
 signals:
 	void settingsChanged();
 	void beginScan();
-	void endScan(std::shared_ptr<ImageCollections> scanned);
+	void endScan(std::shared_ptr<Scanned> scanned);
 	void directoryChanged(const QString& directory);
 	void previousDirectoriesChanged(const QStringList& previousDirectories);
 	void imageTypesChanged(const QStringList& imageTypes);
 	void message(const QString& message);
 
 protected:
-	ImageCollectionType					_type;
-	QString								_directory;
-	QStringList							_previousDirectories;
-	QStringList							_imageTypes;
-	std::shared_ptr<ImageCollections>	_scanned;
-	bool								_initialized;
+	ImageCollectionType			_type;
+	QString						_directory;
+	QStringList					_previousDirectories;
+	QStringList					_imageTypes;
+	std::shared_ptr<Scanned>	_scanned;
+	bool						_initialized;
 };

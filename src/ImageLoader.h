@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Settings.h"
-#include "ImageCollections.h"
+#include "Scanned.h"
 #include "Payload.h"
 #include "SubsampleSettings.h"
 #include "ColorSettings.h"
@@ -24,14 +24,14 @@ public:
 	SubsampleSettings& subsampleImageSettings();
 	ColorSettings& colorSettings();
 
-	void load(std::shared_ptr<ImageCollections> scanned);
+	void load(std::shared_ptr<Scanned> scanned);
 	void run() override;
 
 public:
 	QString datasetName() const;
 	void setDatasetName(const QString& datasetName, const bool& forceUpdate = false);
-	std::shared_ptr<ImageCollections> scanned() const;
-	void setScanned(std::shared_ptr<ImageCollections> scanned);
+	std::shared_ptr<Scanned> scanned() const;
+	void setScanned(std::shared_ptr<Scanned> scanned);
 
 private:
 	void loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QString& imageFilePath, const QString& dimensionName = "");
@@ -45,9 +45,9 @@ signals:
 	void message(const QString& message);
 
 private:
-	ImageCollectionType					_type;
-	QString								_datasetName;
-	SubsampleSettings					_subsampleSettings;
-	ColorSettings						_colorSettings;
-	std::shared_ptr<ImageCollections>	_scanned;
+	ImageCollectionType			_type;
+	QString						_datasetName;
+	SubsampleSettings			_subsampleSettings;
+	ColorSettings				_colorSettings;
+	std::shared_ptr<Scanned>	_scanned;
 };

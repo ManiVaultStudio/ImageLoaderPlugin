@@ -72,7 +72,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(&_scanner, &ImageStackScanner::beginScan, [=]() {
 	});
 
-	connect(&_scanner, &ImageStackScanner::endScan, [=](std::shared_ptr<ImageCollections> scanned) {
+	connect(&_scanner, &ImageStackScanner::endScan, [=](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->datasetNameLabel->setEnabled(loadable);

@@ -24,5 +24,5 @@ signals:
 	void settingsChanged();
 
 private:
-	bool		_convertToGrayscale;
+	bool	_convertToGrayscale;
 };

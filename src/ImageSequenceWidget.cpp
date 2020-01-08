@@ -110,7 +110,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_ui->scanPushButton->setText("Scanning...");
 	});
 
-	connect(&_scanner, &ImageSequenceScanner::endScan, [=](std::shared_ptr<ImageCollections> scanned) {
+	connect(&_scanner, &ImageSequenceScanner::endScan, [=](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->datasetNameLabel->setEnabled(loadable);

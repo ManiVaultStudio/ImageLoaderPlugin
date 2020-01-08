@@ -1,6 +1,6 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
-#include "ImageCollections.h"
+#include "Scanned.h"
 
 #include "ImageData/Images.h"
 #include "Set.h"
@@ -15,7 +15,7 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader")
 {
-	qRegisterMetaType<std::shared_ptr<ImageCollections>>("std::shared_ptr<ImageCollections>");
+	qRegisterMetaType<std::shared_ptr<Scanned>>("std::shared_ptr<Scanned>");
 	qRegisterMetaType<std::shared_ptr<Payload>>("std::shared_ptr<Payload>");
 }
 

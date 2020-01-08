@@ -54,7 +54,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, [&]() {
 	});
 
-	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, [&](std::shared_ptr<ImageCollections> scanned) {
+	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, [&](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->imagesLabel->setEnabled(loadable);

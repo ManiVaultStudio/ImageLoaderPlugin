@@ -5,9 +5,9 @@
 
 #include <QString>
 
-class ImageCollections {
+class Scanned {
 public:
-	ImageCollections(const ImageCollectionType& type = ImageCollectionType::Sequence);
+	Scanned(const ImageCollectionType& type = ImageCollectionType::Sequence);
 
 	void reset();
 
@@ -30,4 +30,4 @@ protected:
 	ImageCollectionMap		_map;
 };
 
-QDebug operator<<(QDebug dbg, ImageCollections& imageCollections);
+QDebug operator<<(QDebug dbg, Scanned& scanned);

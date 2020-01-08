@@ -40,8 +40,8 @@ set(PLUGIN_SOURCES
 set(LOADER_SOURCES
 	src/ImageCollection.h
 	src/ImageCollection.cpp
-	src/ImageCollections.h
-	src/ImageCollections.cpp
+	src/Scanned.h
+	src/Scanned.cpp
 	src/ImageLoader.h
 	src/ImageLoader.cpp
 )

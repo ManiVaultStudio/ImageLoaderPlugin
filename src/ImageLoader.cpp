@@ -48,17 +48,17 @@ void ImageLoader::setDatasetName(const QString& datasetName, const bool& forceUp
 	emit settingsChanged();
 }
 
-std::shared_ptr<ImageCollections> ImageLoader::scanned() const
+std::shared_ptr<Scanned> ImageLoader::scanned() const
 {
 	return _scanned;
 }
 
-void ImageLoader::setScanned(std::shared_ptr<ImageCollections> scanned)
+void ImageLoader::setScanned(std::shared_ptr<Scanned> scanned)
 {
 	_scanned = scanned;
 }
 
-void ImageLoader::load(std::shared_ptr<ImageCollections> scanned)
+void ImageLoader::load(std::shared_ptr<Scanned> scanned)
 {
 	_scanned = scanned;
 
