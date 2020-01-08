@@ -7,6 +7,12 @@
 
 class QSettings;
 
+/*!
+	\class ImageStackScanner
+	\inherits ImageScanner
+	\brief Scans for image stacks
+	\ingroup ImageLoaderPlugin
+*/
 class ImageStackScanner : public ImageScanner {
 	Q_OBJECT
 

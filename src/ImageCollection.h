@@ -21,9 +21,9 @@ public:
 	void setNoDimensions(const int& noDimensions);
 	
 protected:
-	QSize			_imageSize;
-	QStringList		_imageFilePaths;
-	int				_noDimensions;
+	QSize			_imageSize;			/*!< Size of the image(s) */
+	QStringList		_imageFilePaths;	/*!< Absolute file path(s) of the image(s) */
+	int				_noDimensions;		/*!< Number of dimensions */
 };
 
 QDebug operator<<(QDebug dbg, const class ImageCollection& imageCollection);

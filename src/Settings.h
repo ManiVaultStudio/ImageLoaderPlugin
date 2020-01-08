@@ -2,6 +2,11 @@
 
 #include <QSettings>
 
+/*!
+	\class Settings
+	\brief Wrapper interface for interfacing with QSettings
+	\ingroup ImageLoaderPlugin
+*/
 class Settings
 {
 public:
@@ -13,6 +18,6 @@ public:
 	void setSetting(const QString& name, const QVariant& value);
 
 private:
-	QSettings	_settings;
-	QString		_prefix;
+	QSettings	_settings;		/*!< Wrapped QSettings object */
+	QString		_prefix;		/*!< Settings prefix */
 };

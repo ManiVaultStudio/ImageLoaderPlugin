@@ -40,14 +40,14 @@ private:
 	void onMessage(const QString& message);
 
 private:
-	QSettings						_settings;
-	ImageLoaderPlugin*				_imageLoaderPlugin;
-	QVBoxLayout*					_mainLayout;
-	QVBoxLayout*					_settingsLayout;
-	QComboBox*						_typesComboBox;
-	StackedWidget*					_pagesStackedWidget;
-	ImageSequenceWidget*			_imageSequenceWidget;
-	ImageStackWidget*				_imageStackWidget;
-	MultiPartImageSequenceWidget*	_multiPartImageSequenceWidget;
-	QStatusBar*						_statusBar;
+	QSettings						_settings;							/*!< Settings */
+	ImageLoaderPlugin*				_imageLoaderPlugin;					/*!< Image loader plugin */
+	QVBoxLayout*					_mainLayout;						/*!< Main UI layout */
+	QVBoxLayout*					_settingsLayout;					/*!< Settings layout */
+	QComboBox*						_typesComboBox;						/*!< Loader types combobox e.g. sequence, stack */
+	StackedWidget*					_pagesStackedWidget;				/*!< Stacked pages widget */
+	ImageSequenceWidget*			_imageSequenceWidget;				/*!< Image sequence widget */
+	ImageStackWidget*				_imageStackWidget;					/*!< Image stack widget */
+	MultiPartImageSequenceWidget*	_multiPartImageSequenceWidget;		/*!< Multi-part image sequence widget */
+	QStatusBar*						_statusBar;							/*!< Status bar widget */
 };

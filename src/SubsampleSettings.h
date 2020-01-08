@@ -31,8 +31,8 @@ signals:
 	void settingsChanged();
 
 private:
-	bool					_enabled;
-	double					_ratio;
-	ImageResamplingFilter	_filter;
-	QStringList				_filterNames;
+	bool					_enabled;			/*!< Whether subsampling is enabled or not */
+	double					_ratio;				/*!< Ratio of subsampling */
+	ImageResamplingFilter	_filter;			/*!< Subsampling filter e.g. box, bilinear */
+	QStringList				_filterNames;		/*!< Subsampling filter names */
 };

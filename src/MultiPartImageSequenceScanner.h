@@ -5,6 +5,12 @@
 #include <QObject>
 #include <QString>
 
+/*!
+	\class MultiPartImageSequenceScanner
+	\inherits ImageScanner
+	\brief Scans for multi-part image stacks
+	\ingroup ImageLoaderPlugin
+*/
 class MultiPartImageSequenceScanner : public ImageScanner {
 	Q_OBJECT
 

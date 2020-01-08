@@ -7,6 +7,12 @@
 
 class QSettings;
 
+/*!
+	\class ImageSequenceScanner
+	\inherits ImageScanner
+	\brief Scans for image sequence
+	\ingroup ImageLoaderPlugin
+*/
 class ImageSequenceScanner : public ImageScanner {
 	Q_OBJECT
 
@@ -38,7 +44,7 @@ signals:
 	void squareChanged(const bool& square);
 
 private:
-	QString		_imageType;
-	QSize		_imageSize;
-	bool		_square;
+	QString		_imageType;		/*!< Type of image e.g. tiff, jpg */
+	QSize		_imageSize;		/*!< Two-dimensional size of the image */
+	bool		_square;		/*!< Whether the image(s) are square */
 };

@@ -15,6 +15,14 @@ class ImageLoaderPlugin;
 
 class QEvent;
 
+/*!
+	\class ImageStackWidget
+	\inherits QWidget
+	\brief Provides a UI widget for interfacing with \a scanner and \a loader parameters
+	\relates ImageStackScanner
+	\relates ImageLoader
+	\ingroup ImageLoaderPlugin
+*/
 class ImageStackWidget : public QWidget
 {
 	Q_OBJECT
@@ -30,8 +38,8 @@ signals:
 	void message(const QString& message);
 
 private:
-	ImageLoaderPlugin*						_imageLoaderPlugin;
-	std::unique_ptr<Ui::ImageStackWidget>	_ui;
+	ImageLoaderPlugin*						_imageLoaderPlugin;		/*!< Pointer to the ImageLoaderPlugin */
+	std::unique_ptr<Ui::ImageStackWidget>	_ui;					/*!< Externally loaded UI */
 	ImageStackScanner						_scanner;
 	ImageLoader								_loader;
 };

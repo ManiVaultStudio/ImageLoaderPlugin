@@ -12,6 +12,12 @@ namespace Ui {
 
 class ColorSettings;
 
+/*!
+	\class ColorSettingsWidget
+	\inherits QWidget
+	\brief UI for interfacing with color settings
+	\ingroup ImageLoaderPlugin
+*/
 class ColorSettingsWidget : public QWidget
 {
 public:
@@ -20,6 +26,6 @@ public:
 	void initialize(ColorSettings* colorSettings);
 
 private:
-	std::unique_ptr<Ui::ColorSettingsWidget>	_ui;
-	ColorSettings*								_colorSettings;
-};	
+	std::unique_ptr<Ui::ColorSettingsWidget>	_ui;				/*!< Externally loaded UI */
+	ColorSettings*								_colorSettings;		/*!< Color settings */
+};

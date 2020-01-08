@@ -6,6 +6,13 @@
 #include <QThread>
 #include <QString>
 
+/*!
+	\class ImageScanner
+	\inherits QThread
+	\inherits Settings
+	\brief Abstract base scanner class for scanning images
+	\ingroup ImageLoaderPlugin
+*/
 class ImageScanner : public QThread, public Settings {
 	Q_OBJECT
 
@@ -39,10 +46,10 @@ signals:
 	void message(const QString& message);
 
 protected:
-	ImageCollectionType			_type;
-	QString						_directory;
-	QStringList					_previousDirectories;
-	QStringList					_imageTypes;
-	std::shared_ptr<Scanned>	_scanned;
-	bool						_initialized;
+	ImageCollectionType			_type;						/*!< Type of image collection e.g. sequence, stack */
+	QString						_directory;					/*!< Top directory to search in (recursively) */
+	QStringList					_previousDirectories;		/*!< List of previously visited directories */
+	QStringList					_imageTypes;				/*!< Image types to search for e.g. tiff, jpg */
+	std::shared_ptr<Scanned>	_scanned;					/*!< Result of scanning */
+	bool						_initialized;				/*!< Whether the scanner is initialized or not */
 };

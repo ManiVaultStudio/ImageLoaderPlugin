@@ -10,6 +10,12 @@
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
 
+/*!
+	\class ImageLoaderPlugin
+	\inherits LoaderPlugin
+	\brief Abstract base scanner class for scanning images
+	\ingroup ImageLoaderPlugin
+*/
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:

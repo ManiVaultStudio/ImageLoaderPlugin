@@ -7,6 +7,11 @@
 
 class ImageLoaderPlugin;
 
+/*!
+	\class ColorSettings
+	\brief Provides color settings for image loading
+	\ingroup ImageLoaderPlugin
+*/
 class ColorSettings : public QObject, Settings {
 	Q_OBJECT
 
@@ -24,5 +29,5 @@ signals:
 	void settingsChanged();
 
 private:
-	bool	_convertToGrayscale;
+	bool	_convertToGrayscale;	/*!< Whether to convert to grayscale or not */
 };

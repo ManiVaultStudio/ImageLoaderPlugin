@@ -45,9 +45,9 @@ signals:
 	void message(const QString& message);
 
 private:
-	ImageCollectionType			_type;
-	QString						_datasetName;
-	SubsampleSettings			_subsampleSettings;
-	ColorSettings				_colorSettings;
-	std::shared_ptr<Scanned>	_scanned;
+	ImageCollectionType			_type;					/*!< Type of image collection e.g. sequence, stack */
+	QString						_datasetName;			/*!< Name of the data set */
+	SubsampleSettings			_subsampleSettings;		/*!< Image subsample settings */
+	ColorSettings				_colorSettings;			/*!< Image color settings */
+	std::shared_ptr<Scanned>	_scanned;				/*!< Scanned image collections */
 };

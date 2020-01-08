@@ -5,6 +5,11 @@
 
 #include <QString>
 
+/*!
+	\class Scanned
+	\brief Contains the image collections that are eligible for loading
+	\ingroup ImageLoaderPlugin
+*/
 class Scanned {
 public:
 	Scanned(const ImageCollectionType& type = ImageCollectionType::Sequence);
@@ -26,8 +31,8 @@ public:
 	bool loadable() const;
 
 protected:
-	ImageCollectionType		_type;
-	ImageCollectionMap		_map;
+	ImageCollectionType		_type;		/*!< Type of image collection e.g. sequence, stack */
+	ImageCollectionMap		_map;		/*!< Map of image collections */
 };
 
 QDebug operator<<(QDebug dbg, Scanned& scanned);
