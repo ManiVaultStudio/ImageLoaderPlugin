@@ -11,7 +11,7 @@ class MultiPartImageSequenceScanner : public ImageScanner {
 public:
 	MultiPartImageSequenceScanner();
 
-	void scan();
+	void scan() override;
 	void run() override;
 
 private:

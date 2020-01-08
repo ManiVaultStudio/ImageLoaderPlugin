@@ -26,7 +26,7 @@ public:
 	void setSquare(const bool& square, const bool& forceUpdate = false);
 
 public:
-	void scan();
+	void scan() override;
 	void run() override;
 
 private:

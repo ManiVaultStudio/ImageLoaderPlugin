@@ -13,7 +13,7 @@ class ImageStackScanner : public ImageScanner {
 public:
 	ImageStackScanner();
 
-	void scan();
+	void scan() override;
 	void run() override;
 
 private:

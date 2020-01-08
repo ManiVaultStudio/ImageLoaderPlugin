@@ -343,6 +343,21 @@ void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QStri
 
 						break;
 					}
+
+					case fi::FIT_UNKNOWN:
+					case fi::FIT_INT16:
+					case fi::FIT_UINT32:
+					case fi::FIT_INT32:
+					case fi::FIT_FLOAT:
+					case fi::FIT_DOUBLE:
+					case fi::FIT_COMPLEX:
+					case fi::FIT_RGB16:
+					case fi::FIT_RGBA16:
+					case fi::FIT_RGBF:
+					case fi::FIT_RGBAF:
+					{
+						break;
+					}
 				}
 
 				if (rescale)
