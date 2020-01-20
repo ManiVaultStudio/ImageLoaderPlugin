@@ -72,5 +72,5 @@ protected:
 	QStringList				_imageFilePaths;	/** File paths of the loaded images */
 };
 
-/** Print the payload to the console */
+/** Print the Payload class to the console */
 QDebug operator<<(QDebug dbg, Payload& payload);
