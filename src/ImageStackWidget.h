@@ -40,6 +40,6 @@ signals:
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;		/*!< Pointer to the ImageLoaderPlugin */
 	std::unique_ptr<Ui::ImageStackWidget>	_ui;					/*!< Externally loaded UI */
-	ImageStackScanner						_scanner;
-	ImageLoader								_loader;
+	ImageStackScanner						_scanner;				/*!< Scanner */
+	ImageLoader								_loader;				/*!< Loader */
 };

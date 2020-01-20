@@ -7,11 +7,10 @@
 
 class ImageLoaderPlugin;
 
-/*!
-	\class ColorSettings
-	\brief Provides color settings for image loading
-	\ingroup ImageLoaderPlugin
-*/
+/**
+ * ColorSettings
+ * Provides color settings for image loading
+ */
 class ColorSettings : public QObject, Settings {
 	Q_OBJECT
 
