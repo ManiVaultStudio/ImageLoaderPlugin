@@ -16,15 +16,17 @@ ImageStackScanner::ImageStackScanner() :
 
 void ImageStackScanner::scan()
 {
+	emit beginScan();
+
 	start();
+
+	emit endScan(_scanned);
 }
 
 void ImageStackScanner::run()
 {
 	if (!_initialized)
 		return;
-
-	emit beginScan();
 
 	_scanned->reset();
 
@@ -39,8 +41,6 @@ void ImageStackScanner::run()
 	else {
 		emit message(QString("Found %1 image stack(s)").arg(noStacks));
 	}
-
-	emit endScan(_scanned);
 }
 
 void ImageStackScanner::scanDir(const QString& directory)

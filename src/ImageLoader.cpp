@@ -82,7 +82,7 @@ void ImageLoader::run()
 			payload->setSize(sequence.imageSize());
 
 			if (_subsampleSettings.enabled())
-				payload->setSize(sequence.imageSize() * (_subsampleSettings.ratio() / 100.f));
+				payload->setSize(sequence.imageSize() * (_subsampleSettings.ratio()));
 
 			payload->setImageFilePaths(sequence.imageFilePaths());
 

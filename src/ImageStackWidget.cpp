@@ -16,6 +16,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 {
 	_ui->setupUi(this);
 
+	
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [&](QString directory)
 	{
 		_scanner.setDirectory(directory);
@@ -47,7 +48,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [&](const QString& text) {
 		_loader.setDatasetName(text);
 	});
-
+	
 	connect(_ui->loadPushButton, &QPushButton::clicked, [&]() {
 		foreach(QString key, _scanner.scanned()->map().keys()) {
 			if (key != _ui->stacksComboBox->currentData().toString()) {
@@ -95,6 +96,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 		_ui->stacksComboBox->addItems(items);
 	});
+	
 
 	connect(&_loader, &ImageLoader::beginLoad, [&]() {
 		_ui->loadPushButton->setText("Loading...");
@@ -114,7 +116,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_ui->previousDirectoriesComboBox->setVisible(false);
-
+	
 	_scanner.loadSettings();
 }
 

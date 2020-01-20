@@ -38,6 +38,12 @@ QSize Payload::size() const
 void Payload::setSize(const QSize& size)
 {
 	_size = size;
+
+	if (_size.width() == 0)
+		_size.setWidth(1);
+
+	if (_size.height() == 0)
+		_size.setHeight(1);
 }
 
 std::vector<Image>& Payload::images()

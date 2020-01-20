@@ -39,23 +39,23 @@ void SubsampleSettingsWidget::initialize(SubsampleSettings* subsampleSettings)
 	connect(_subsampleSettings, &SubsampleSettings::ratioChanged, [&](const double& ratio) {
 		if (ratio != _ui->ratioSpinBox->value()) {
 			_ui->ratioSpinBox->blockSignals(true);
-			_ui->ratioSpinBox->setValue(ratio);
+			_ui->ratioSpinBox->setValue(100.0 * ratio);
 			_ui->ratioSpinBox->blockSignals(false);
 		}
 
 		if (ratio != _ui->ratioSlider->value()) {
 			_ui->ratioSlider->blockSignals(true);
-			_ui->ratioSlider->setValue(ratio);
+			_ui->ratioSlider->setValue(100.0 * ratio);
 			_ui->ratioSlider->blockSignals(false);
 		}
 	});
 
 	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double ratio) {
-		_subsampleSettings->setRatio(ratio);
+		_subsampleSettings->setRatio(0.01 * ratio);
 	});
 
 	connect(_ui->ratioSlider, &QSlider::valueChanged, [&](int ratio) {
-		_subsampleSettings->setRatio(static_cast<double>(ratio));
+		_subsampleSettings->setRatio(static_cast<double>(0.01 * ratio));
 	});
 
 	connect(_ui->filterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int filter) {
