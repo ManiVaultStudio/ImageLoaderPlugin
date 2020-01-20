@@ -36,9 +36,9 @@ QString ImageScanner::directory() const
 	return _directory;
 }
 
-void ImageScanner::setDirectory(const QString& directory, const bool& forceUpdate /*= false*/)
+void ImageScanner::setDirectory(const QString& directory, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && directory == _directory)
+	if (!notify && directory == _directory)
 		return;
 	
 	_directory = directory;
@@ -59,9 +59,9 @@ QStringList ImageScanner::previousDirectories() const
 	return _previousDirectories;
 }
 
-void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories, const bool& forceUpdate /*= false*/)
+void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && previousDirectories == _previousDirectories)
+	if (!notify && previousDirectories == _previousDirectories)
 		return;
 
 	_previousDirectories = previousDirectories;
@@ -90,9 +90,9 @@ QStringList ImageScanner::imageTypes() const
 	return _imageTypes;
 }
 
-void ImageScanner::setImageTypes(const QStringList& imageTypes, const bool& forceUpdate /*= false*/)
+void ImageScanner::setImageTypes(const QStringList& imageTypes, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && imageTypes == _imageTypes)
+	if (!notify && imageTypes == _imageTypes)
 		return;
 
 	_imageTypes = imageTypes;
