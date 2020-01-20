@@ -23,7 +23,10 @@ public:
 	 */
 	SubsampleSettingsWidget(QWidget* parent);
 
-	/** Initializes the subsample settings */
+	/**
+	 * Initializes the widget
+	 * @param subsampleSettings Pointer to subsample settings
+	 */
 	void initialize(SubsampleSettings* subsampleSettings);
 
 private:

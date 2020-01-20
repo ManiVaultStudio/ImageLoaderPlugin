@@ -12,17 +12,23 @@ namespace Ui {
 
 class ColorSettings;
 
-/*!
-	\class ColorSettingsWidget
-	\inherits QWidget
-	\brief UI for interfacing with color settings
-	\ingroup ImageLoaderPlugin
-*/
+/**
+ * Color settings widget
+ * User interface widget for color subsampling settings
+ */
 class ColorSettingsWidget : public QWidget
 {
 public:
+	/**
+	 * Constructor
+	 * @param parent Parent widget
+	 */
 	ColorSettingsWidget(QWidget* parent);
 
+	/**
+	 * Initializes the widget
+	 * @param colorSettings Pointer to color settings
+	 */
 	void initialize(ColorSettings* colorSettings);
 
 private:
