@@ -10,20 +10,23 @@ namespace Ui {
 	class SubsampleSettingsWidget;
 }
 
-/*!
-	\class SubsampleSettingsWidget
-	\inherits QWidget
-	\brief UI for interfacing with image subsample settings
-	\ingroup ImageLoaderPlugin
-*/
+/**
+ * Subsample settings widget
+ * User interface widget for image subsampling settings
+ */
 class SubsampleSettingsWidget : public QWidget
 {
 public:
+	/**
+	 * Constructor
+	 * @param parent Parent widget
+	 */
 	SubsampleSettingsWidget(QWidget* parent);
 
+	/** Initializes the subsample settings */
 	void initialize(SubsampleSettings* subsampleSettings);
 
 private:
-	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/*!< Externally loaded UI */
-	SubsampleSettings*								_subsampleSettings;		/*!< Subsample settings */
+	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/** Externally loaded UI */
+	SubsampleSettings*								_subsampleSettings;		/** Subsample settings */
 };
