@@ -23,9 +23,9 @@ bool ColorSettings::convertToGrayscale() const
 	return _convertToGrayscale;
 }
 
-void ColorSettings::setConvertToGrayscale(const bool& convertToGrayscale, const bool& forceUpdate /*= false*/)
+void ColorSettings::setConvertToGrayscale(const bool& convertToGrayscale, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && convertToGrayscale == _convertToGrayscale)
+	if (!notify && convertToGrayscale == _convertToGrayscale)
 		return;
 
 	_convertToGrayscale = convertToGrayscale;
