@@ -60,9 +60,9 @@ std::uint32_t Payload::noImages() const
 	return static_cast<std::uint32_t>(_images.size());
 }
 
-Image& Payload::add(const std::uint32_t& noComponents, const QString& imageFilePath)
+Image& Payload::add(const std::uint32_t& noComponentsPerPixel, const QString& imageFilePath)
 {
-	_images.push_back(Image(_size, noComponents, imageFilePath));
+	_images.push_back(Image(_size, noComponentsPerPixel, imageFilePath));
 
 	return _images.back();
 }

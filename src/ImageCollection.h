@@ -55,7 +55,7 @@ protected:
 	int				_noDimensions;		/** Number of dimensions */
 };
 
-/** Print the contents of the image collection */
+/** Print the image collection to the console */
 QDebug operator<<(QDebug dbg, const class ImageCollection& imageCollection);
 
 using ImageCollectionMap = QMap<QString, ImageCollection>;
