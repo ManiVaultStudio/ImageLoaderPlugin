@@ -16,12 +16,12 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 {
 	_ui->setupUi(this);
 
-	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [=](QString directory)
+	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [&](QString directory)
 	{
 		_scanner.setDirectory(directory);
 	});
 
-	connect(&_scanner, &ImageStackScanner::directoryChanged, [=](const QString& directory) {
+	connect(&_scanner, &ImageStackScanner::directoryChanged, [&](const QString& directory) {
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
@@ -29,7 +29,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 	});
 
-	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, [=]() {
+	connect(_ui->pickDirectoryPushButton, &QPushButton::clicked, [&]() {
 		const auto initialDirectory = _loader.setting("Directory").toString();
 		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image stack directory", initialDirectory);
 
@@ -38,17 +38,17 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		}
 	});
 
-	connect(&_loader, &ImageLoader::datasetNameChanged, [=](const QString& datasetName) {
+	connect(&_loader, &ImageLoader::datasetNameChanged, [&](const QString& datasetName) {
 		_ui->datasetNameLineEdit->blockSignals(true);
 		_ui->datasetNameLineEdit->setText(datasetName);
 		_ui->datasetNameLineEdit->blockSignals(false);
 	});
 
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [=](const QString& text) {
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [&](const QString& text) {
 		_loader.setDatasetName(text);
 	});
 
-	connect(_ui->loadPushButton, &QPushButton::clicked, [=]() {
+	connect(_ui->loadPushButton, &QPushButton::clicked, [&]() {
 		foreach(QString key, _scanner.scanned()->map().keys()) {
 			if (key != _ui->stacksComboBox->currentData().toString()) {
 				_scanner.scanned()->map().remove(key);
@@ -60,19 +60,19 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_ui->loadPushButton->setEnabled(false);
 	});
 
-	connect(&_scanner, &ImageStackScanner::settingsChanged, [=]() {
+	connect(&_scanner, &ImageStackScanner::settingsChanged, [&]() {
 		_scanner.scan();
 	});
 
-	connect(&_loader, &ImageLoader::settingsChanged, [=]() {
+	connect(&_loader, &ImageLoader::settingsChanged, [&]() {
 		const auto enableLoad = _scanner.scanned()->loadable();
 		_ui->loadPushButton->setEnabled(enableLoad);
 	});
 
-	connect(&_scanner, &ImageStackScanner::beginScan, [=]() {
+	connect(&_scanner, &ImageStackScanner::beginScan, [&]() {
 	});
 
-	connect(&_scanner, &ImageStackScanner::endScan, [=](std::shared_ptr<Scanned> scanned) {
+	connect(&_scanner, &ImageStackScanner::endScan, [&](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->datasetNameLabel->setEnabled(loadable);
@@ -96,11 +96,11 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_ui->stacksComboBox->addItems(items);
 	});
 
-	connect(&_loader, &ImageLoader::beginLoad, [=]() {
+	connect(&_loader, &ImageLoader::beginLoad, [&]() {
 		_ui->loadPushButton->setText("Loading...");
 	});
 
-	connect(&_loader, &ImageLoader::endLoad, [=](std::shared_ptr<Payload> payload) {
+	connect(&_loader, &ImageLoader::endLoad, [&](std::shared_ptr<Payload> payload) {
 		_ui->loadPushButton->setEnabled(false);
 		_ui->loadPushButton->setText("Load");
 
