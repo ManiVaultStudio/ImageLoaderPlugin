@@ -37,9 +37,9 @@ QString ImageLoader::datasetName() const
 	return _datasetName;
 }
 
-void ImageLoader::setDatasetName(const QString& datasetName, const bool& forceUpdate /*= false*/)
+void ImageLoader::setDatasetName(const QString& datasetName, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && datasetName == _datasetName)
+	if (!notify && datasetName == _datasetName)
 		return;
 
 	_datasetName = datasetName;

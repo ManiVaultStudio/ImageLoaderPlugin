@@ -54,9 +54,9 @@ public:
 	/**
 	 * Sets the dataset name
 	 * @param datasetName Name of the dataset
-	 * @param forceUpdate Whether to trigger the signal that the dataset name has changed
+	 * @param notify Whether to notify others of this change
 	 */
-	void setDatasetName(const QString& datasetName, const bool& forceUpdate = false);
+	void setDatasetName(const QString& datasetName, const bool& notify = false);
 
 	/**  Returns the scanned images */
 	std::shared_ptr<Scanned> scanned() const;

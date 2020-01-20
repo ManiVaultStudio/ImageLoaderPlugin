@@ -3,6 +3,8 @@
 
 #include <QDebug>
 
+#include <algorithm>
+
 SubsampleSettings::SubsampleSettings(const QString& settingsPath) :
 	QObject(),
 	Settings("LKEB/CGV", "HDPS", settingsPath),
@@ -33,9 +35,9 @@ bool SubsampleSettings::enabled() const
 	return _enabled;
 }
 
-void SubsampleSettings::setEnabled(const bool& enabled, const bool& forceUpdate /*= false*/)
+void SubsampleSettings::setEnabled(const bool& enabled, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && enabled == _enabled)
+	if (!notify && enabled == _enabled)
 		return;
 
 	_enabled = enabled;
@@ -53,12 +55,12 @@ double SubsampleSettings::ratio() const
 	return _ratio;
 }
 
-void SubsampleSettings::setRatio(const double& resamplingRatio, const bool& forceUpdate /*= false*/)
+void SubsampleSettings::setRatio(const double& resamplingRatio, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && resamplingRatio == _ratio)
+	if (!notify && resamplingRatio == _ratio)
 		return;
 
-	_ratio = resamplingRatio;
+	_ratio = std::max(0.01, std::min(resamplingRatio, 1.0));
 
 	setSetting("SubsamplingRatio", _ratio);
 
@@ -73,9 +75,9 @@ ImageResamplingFilter SubsampleSettings::filter() const
 	return _filter;
 }
 
-void SubsampleSettings::setFilter(const ImageResamplingFilter& imageResamplingFilter, const bool& forceUpdate /*= false*/)
+void SubsampleSettings::setFilter(const ImageResamplingFilter& imageResamplingFilter, const bool& notify /*= false*/)
 {
-	if (!forceUpdate && imageResamplingFilter == _filter)
+	if (!notify && imageResamplingFilter == _filter)
 		return;
 	
 	_filter = imageResamplingFilter;
