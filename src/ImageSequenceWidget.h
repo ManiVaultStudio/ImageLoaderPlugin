@@ -29,7 +29,7 @@ public:
 	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
 
 	/** Destructor */
-    ~ImageSequenceWidget();
+	~ImageSequenceWidget();
 
 signals:
 	/**
