@@ -15,7 +15,9 @@ namespace fi {
 
 /**
  * Image loader class
- * Class for loading image collections and producing an image payload for loading into HDPS
+ * Class for loading image collections and producing an 
+ * image payload for loading into HDPS
+ * @author Thomas Kroes
  */
 class ImageLoader : public QThread, public Settings {
 	Q_OBJECT

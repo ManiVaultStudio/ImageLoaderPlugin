@@ -16,6 +16,7 @@ class ImageLoaderPlugin;
 /**
  * Image sequence widget
  * User interface widget for image sequence loader/scanner settings
+ * @author Thomas Kroes
  */
 class ImageSequenceWidget : public QWidget
 {

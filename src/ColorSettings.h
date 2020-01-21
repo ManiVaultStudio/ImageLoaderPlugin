@@ -6,6 +6,7 @@
 /**
  * ColorSettings
  * Provides color settings for image loading
+ * @author Thomas Kroes
  */
 class ColorSettings : public QObject, Settings {
 	Q_OBJECT

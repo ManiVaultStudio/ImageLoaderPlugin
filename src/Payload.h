@@ -6,6 +6,7 @@
 /**
  * Payload class
  * The payload class contains loaded images for consumption by HDPS
+ * @author Thomas Kroes
  */
 class Payload
 {

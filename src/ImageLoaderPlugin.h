@@ -13,6 +13,7 @@ using hdps::plugin::LoaderPlugin;
 /**
  * Image loader plugin class
  * This loader plugin class provides functionality to load high-dimensional image data into HDPS
+ * @author Thomas Kroes
  */
 class ImageLoaderPlugin : public LoaderPlugin
 {

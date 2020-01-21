@@ -19,6 +19,7 @@ class ResampleImageSettingsWidget;
 /**
  * Stacked widget class
  * Helper class to ensure size hint
+ * @author Thomas Kroes
  */
 class StackedWidget : public QStackedWidget
 {

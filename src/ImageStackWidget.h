@@ -18,6 +18,7 @@ class QEvent;
 /**
  * Image stack widget
  * User interface widget for image stack loader/scanner settings
+ * @author Thomas Kroes
  */
 class ImageStackWidget : public QWidget
 {

@@ -5,8 +5,10 @@
 
 /**
  * Scanned class
- * The image scanner (recursively) scans a search directory and groups references to discovered images (e.g. sequence of 20x20 images and sequence of 128x128 images)
+ * The image scanner (recursively) scans a search directory and groups references
+ * to discovered images (e.g. sequence of 20x20 images and sequence of 128x128 images)
  * This class maps the collections of images that are eligible for loading
+ * @author Thomas Kroes
  */
 class Scanned {
 public:

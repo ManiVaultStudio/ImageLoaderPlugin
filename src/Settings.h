@@ -5,6 +5,7 @@
 /**
  * Settings class
  * Convenience class for serializing persistent image loader/scanner and UI parameters
+ * @author Thomas Kroes
  */
 class Settings
 {

@@ -16,6 +16,7 @@ class ImageLoaderPlugin;
 /**
  * Multi-part image sequence widget
  * User interface widget for multi-part image sequences loader/scanner settings
+ * @author Thomas Kroes
  */
 class MultiPartImageSequenceWidget : public QWidget
 {

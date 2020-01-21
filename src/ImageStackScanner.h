@@ -7,6 +7,7 @@ class QSettings;
 /**
  * Image stack scanner class
  * This class provides functionality for discovering image stacks
+ * @author Thomas Kroes
  */
 class ImageStackScanner : public ImageScanner {
 	Q_OBJECT

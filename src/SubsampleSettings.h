@@ -6,6 +6,7 @@
 /**
  * Subsample settings class
  * This class provide settings for image subsampling
+ * @author Thomas Kroes
  */
 class SubsampleSettings : public QObject, Settings {
 	Q_OBJECT

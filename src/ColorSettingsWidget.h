@@ -15,6 +15,7 @@ class ColorSettings;
 /**
  * Color settings widget
  * User interface widget for color subsampling settings
+ * @author Thomas Kroes
  */
 class ColorSettingsWidget : public QWidget
 {

@@ -8,6 +8,7 @@
  * Image collection class
  * Represents a collection of images that have a common image size
  * This class does not contain the actual images, it merely contains a list of file paths
+ * @author Thomas Kroes
  */
 class ImageCollection {
 public:

@@ -5,6 +5,7 @@
 /**
  * Multi-part Image stack scanner class
  * This class provides functionality for discovering multi-part image stacks
+ * @author Thomas Kroes
  */
 class MultiPartImageSequenceScanner : public ImageScanner {
 	Q_OBJECT

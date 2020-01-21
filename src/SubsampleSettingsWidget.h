@@ -13,6 +13,7 @@ namespace Ui {
 /**
  * Subsample settings widget
  * User interface widget for image subsampling settings
+ * @author Thomas Kroes
  */
 class SubsampleSettingsWidget : public QWidget
 {

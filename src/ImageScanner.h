@@ -7,7 +7,9 @@
 
 /**
  * Image scanner class
- * Provides functionality for (recursively) scanning a directory for candidate image collections e.g. sequence and stack
+ * Provides functionality for (recursively) scanning a directory
+ * for candidate image collections e.g. sequence and stack
+ * @author Thomas Kroes
  */
 class ImageScanner : public QThread, public Settings {
 	Q_OBJECT

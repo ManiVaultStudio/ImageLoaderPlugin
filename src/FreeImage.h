@@ -10,6 +10,7 @@ namespace fi {
 /**
  * FreeImage class
  * Wrapper class for FreeImage functionality
+ * @author Thomas Kroes
  */
 class FreeImage
 {
