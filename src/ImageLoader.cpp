@@ -82,7 +82,7 @@ void ImageLoader::run()
 			payload->setSize(sequence.imageSize());
 
 			if (_subsampleSettings.enabled())
-				payload->setSize(sequence.imageSize() * (_subsampleSettings.ratio()));
+				payload->setSize(_subsampleSettings.ratio() * sequence.imageSize());
 
 			payload->setImageFilePaths(sequence.imageFilePaths());
 
@@ -117,7 +117,7 @@ void ImageLoader::run()
 			payload->setSize(stack.imageSize());
 
 			if (_subsampleSettings.enabled())
-				payload->setSize(stack.imageSize() * (_subsampleSettings.ratio() / 100.f));
+				payload->setSize(_subsampleSettings.ratio() * stack.imageSize());
 
 			payload->setImageFilePaths(stack.imageFilePaths());
 
