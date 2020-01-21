@@ -12,7 +12,7 @@ MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
 
 	imageTypes << "tiff";
 
-	setImageTypes(imageTypes);
+	setSupportedImageTypes(imageTypes);
 }
 
 void MultiPartImageSequenceScanner::scan()
@@ -35,7 +35,7 @@ void MultiPartImageSequenceScanner::run()
 
 	auto nameFilters = QStringList();
 
-	foreach(QString imageType, imageTypes())
+	foreach(QString imageType, supportedImageTypes())
 	{
 		nameFilters << "*." + imageType;
 	}

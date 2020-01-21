@@ -11,7 +11,7 @@ ImageStackScanner::ImageStackScanner() :
 
 	imageTypes << "jpg" << "png" << "bmp" << "tiff" << "tif";
 
-	setImageTypes(imageTypes);
+	setSupportedImageTypes(imageTypes);
 }
 
 void ImageStackScanner::scan()
@@ -66,7 +66,7 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	auto nameFilters = QStringList();
 
-	foreach(QString imageType, imageTypes())
+	foreach(QString imageType, supportedImageTypes())
 	{
 		nameFilters << "*." + imageType;
 	}

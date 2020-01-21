@@ -7,7 +7,7 @@
 
 /**
  * Image scanner class
- * Provides functionality for (recursively) scanning a directory for candidate images
+ * Provides functionality for (recursively) scanning a directory for candidate image collections e.g. sequence and stack
  */
 class ImageScanner : public QThread, public Settings {
 	Q_OBJECT
@@ -51,15 +51,15 @@ public:
 	 */
 	void addPreviousDirectory(const QString& previousDirectory);
 
-	/** Returns the types of image this image scanner searches for */
-	QStringList	imageTypes() const;
+	/** Returns the support image types */
+	QStringList	supportedImageTypes() const;
 
 	/**
-	 * Sets the types of image this image scanner searches for
+	 * Sets the supported image types
 	 * @param imageTypes Types of images to search for
 	 * @param notify Whether to notify others of this change
 	 */
-	void setImageTypes(const QStringList& imageTypes, const bool& notify = false);
+	void setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify = false);
 
 	/** Returns the result of the scanning process */
 	std::shared_ptr<Scanned> scanned();
@@ -72,32 +72,32 @@ signals:
 	/** Signals that settings changed */
 	void settingsChanged();
 
-	/** Signals that scanning has begun */
+	/** Signals that scanning begun */
 	void beginScan();
 
 	/**
-	 * Signals that scanning has ended
+	 * Signals that scanning ended
 	 * @param scanned Scanned images
 	 */
 	void endScan(std::shared_ptr<Scanned> scanned);
 
 	/**
-	 * Signals that the search directory has changed
+	 * Signals that the search directory changed
 	 * @param directory Search directory
 	 */
 	void directoryChanged(const QString& directory);
 
 	/**
-	 * Signals that the previous search directory has changed
+	 * Signals that the previous search directory changed
 	 * @param previousDirectories Previous search directories
 	 */
 	void previousDirectoriesChanged(const QStringList& previousDirectories);
 
 	/**
-	 * Signals that the image types have changed
-	 * @param imageTypes Image types
+	 * Signals that the supported image types changed
+	 * @param supportedImageTypes Supported image types
 	 */
-	void imageTypesChanged(const QStringList& imageTypes);
+	void supportedImageTypesChanged(const QStringList& supportedImageTypes);
 
 	/**
 	 * Broadcasts a message
@@ -109,7 +109,7 @@ protected:
 	ImageCollectionType			_type;						/** Type of image collection e.g. sequence, stack */
 	QString						_directory;					/** Top directory to search in (recursively) */
 	QStringList					_previousDirectories;		/** List of previously visited directories */
-	QStringList					_imageTypes;				/** Image types to search for e.g. .tiff, .jpg */
+	QStringList					_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */
 	std::shared_ptr<Scanned>	_scanned;					/** Result of scanning */
 	bool						_initialized;				/** Whether the scanner is initialized or not */
 };

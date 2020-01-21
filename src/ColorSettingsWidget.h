@@ -21,7 +21,7 @@ class ColorSettingsWidget : public QWidget
 public:
 	/**
 	 * Constructor
-	 * @param parent Parent widget
+	 * @param parent Pointer to parent widget
 	 */
 	ColorSettingsWidget(QWidget* parent);
 

@@ -10,11 +10,11 @@ ImageSequenceScanner::ImageSequenceScanner() :
 	_imageSizeFilter(),
 	_square(true)
 {
-	auto imageTypes = QStringList();
+	auto supportedImageTypes = QStringList();
 
-	imageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
+	supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
-	setImageTypes(imageTypes);
+	setSupportedImageTypes(supportedImageTypes);
 }
 
 void ImageSequenceScanner::loadSettings()

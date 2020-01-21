@@ -5,7 +5,7 @@
 
 /**
  * Payload class
- * The payload class contains loaded images and meta data that can be handed over to high-dimensional image data plugin
+ * The payload class contains loaded images for consumption by HDPS
  */
 class Payload
 {

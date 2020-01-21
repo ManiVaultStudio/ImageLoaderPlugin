@@ -9,7 +9,7 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 	_type(type),
 	_directory(),
 	_previousDirectories(),
-	_imageTypes(),
+	_supportedImageTypes(),
 	_scanned(std::make_shared<Scanned>(type)),
 	_initialized(false)
 {
@@ -25,7 +25,7 @@ void ImageScanner::loadSettings()
 	const auto directory = setting("Directory", "").toString();
 
 	setDirectory(QDir(directory).exists() ? directory : "", true);
-	setImageTypes(setting("ImageTypes", QStringList()).toStringList(), true);
+	setSupportedImageTypes(setting("ImageTypes", QStringList()).toStringList(), true);
 	setPreviousDirectories(setting("PreviousDirectories", QVariant::fromValue(QStringList())).toStringList(), true);
 
 	_initialized = true;
@@ -85,23 +85,23 @@ void ImageScanner::addPreviousDirectory(const QString& previousDirectory)
 	setPreviousDirectories(_previousDirectories);
 }
 
-QStringList ImageScanner::imageTypes() const
+QStringList ImageScanner::supportedImageTypes() const
 {
-	return _imageTypes;
+	return _supportedImageTypes;
 }
 
-void ImageScanner::setImageTypes(const QStringList& imageTypes, const bool& notify /*= false*/)
+void ImageScanner::setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify /*= false*/)
 {
-	if (!notify && imageTypes == _imageTypes)
+	if (!notify && supportedImageTypes == _supportedImageTypes)
 		return;
 
-	_imageTypes = imageTypes;
+	_supportedImageTypes = supportedImageTypes;
 
-	setSetting("ImageTypes", _imageTypes);
+	setSetting("ImageTypes", _supportedImageTypes);
 
-	qDebug() << "Set image types" << _imageTypes;
+	qDebug() << "Set image types" << _supportedImageTypes;
 
-	emit imageTypesChanged(_imageTypes);
+	emit supportedImageTypesChanged(_supportedImageTypes);
 
 	emit settingsChanged();
 }
