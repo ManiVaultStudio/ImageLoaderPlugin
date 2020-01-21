@@ -13,31 +13,41 @@ namespace Ui {
 
 class ImageLoaderPlugin;
 
-/*!
-	\class MultiPartImageSequenceWidget
-	\inherits QWidget
-	\brief Provides a UI widget for interfacing with \a scanner and \a loader parameters
-	\relates MultiPartImageSequenceScanner
-	\relates ImageLoader
-	\ingroup ImageLoaderPlugin
-*/
+/**
+ * Multi-part image sequence widget
+ * User interface widget for multi-part image sequences loader/scanner settings
+ */
 class MultiPartImageSequenceWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
+	/**
+	 * Constructor
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 */
 	MultiPartImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
+
+	/** Destructor */
 	~MultiPartImageSequenceWidget();
 
 private:
+	/**
+	 * Invoked when the widget is show on the screen
+	 * @param showEvent Show event
+	 */
 	void showEvent(QShowEvent* showEvent);
 
 signals:
+	/**
+	 * Broadcasts a message
+	 * @param message Message to broadcast
+	 */
 	void message(const QString& message);
 
 private:
-	ImageLoaderPlugin*									_imageLoaderPlugin;		/*!< Pointer to the ImageLoaderPlugin */
-	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;					/*!< Externally loaded UI */
-	MultiPartImageSequenceScanner						_scanner;				/*!< Scanner */
-	ImageLoader											_loader;				/*!< Loader */
+	ImageLoaderPlugin*									_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
+	std::unique_ptr<Ui::MultiPartImageSequenceWidget>	_ui;					/** Externally loaded UI */
+	MultiPartImageSequenceScanner						_scanner;				/** Scanner */
+	ImageLoader											_loader;				/** Loader */
 };

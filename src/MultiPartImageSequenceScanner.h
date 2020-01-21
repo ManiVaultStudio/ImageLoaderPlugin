@@ -3,7 +3,7 @@
 #include "ImageScanner.h"
 
 /**
- * Image stack scanner class
+ * Multi-part Image stack scanner class
  * This class provides functionality for discovering multi-part image stacks
  */
 class MultiPartImageSequenceScanner : public ImageScanner {
