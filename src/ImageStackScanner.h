@@ -2,26 +2,29 @@
 
 #include "ImageScanner.h"
 
-#include <QObject>
-#include <QString>
-
 class QSettings;
 
-/*!
-	\class ImageStackScanner
-	\inherits ImageScanner
-	\brief Scans for image stacks
-	\ingroup ImageLoaderPlugin
-*/
+/**
+ * Image stack scanner class
+ * This class provides functionality for discovering image stacks
+ */
 class ImageStackScanner : public ImageScanner {
 	Q_OBJECT
 
 public:
+	/** Default constructor */
 	ImageStackScanner();
 
+	/** Scan for image stacks */
 	void scan() override;
+
+	/** Start scan thread */
 	void run() override;
 
 private:
+	/**
+	 * Scan directory
+	 * @param directory Search directory
+	 */
 	void scanDir(const QString& directory);
 };

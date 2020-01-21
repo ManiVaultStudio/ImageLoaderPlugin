@@ -9,7 +9,7 @@ class QSettings;
 
 /**
  * Image sequence scanner class
- * Scans for image sequences
+ * This class provides functionality for discovering image sequences
  */
 class ImageSequenceScanner : public ImageScanner {
 	Q_OBJECT
