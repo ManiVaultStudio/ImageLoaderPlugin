@@ -21,7 +21,12 @@ endif(MSVC)
 
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-find_package(FreeImage REQUIRED)
+find_package(FreeImage QUIET)
+
+if (NOT FREEIMAGE_FOUND)
+    message(WARNING "Failed to find FreeImage, not building ImageLoaderPlugin")
+    return()
+endif()
 
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
