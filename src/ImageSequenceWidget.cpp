@@ -108,7 +108,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 	QObject::connect(&_scanner, &ImageSequenceScanner::beginScan, this, [&]() {
 		_ui->scanPushButton->setText("Scanning...");
-	});
+	}, Qt::AutoConnection);
 
 	QObject::connect(&_scanner, &ImageSequenceScanner::endScan, this, [&](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
@@ -119,18 +119,18 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 
 		_ui->scanPushButton->setText("Scan");
 		_ui->scanPushButton->setEnabled(false);
-	}, Qt::QueuedConnection);
+	}, Qt::AutoConnection);
 
 	QObject::connect(&_loader, &ImageLoader::beginLoad, this, [&]() {
 		_ui->loadPushButton->setText("Loading...");
-	}, Qt::QueuedConnection);
+	}, Qt::AutoConnection);
 
 	QObject::connect(&_loader, &ImageLoader::endLoad, this, [&](std::shared_ptr<Payload> payload) {
 		_ui->loadPushButton->setEnabled(false);
 		_ui->loadPushButton->setText("Load");
 
 		_imageLoaderPlugin->addImages(payload);
-	}, Qt::QueuedConnection);
+	}, Qt::AutoConnection);
 	
 	connect(&_loader, &ImageLoader::message, this, &ImageSequenceWidget::message);
 	connect(&_scanner, &ImageSequenceScanner::message, this, &ImageSequenceWidget::message);
