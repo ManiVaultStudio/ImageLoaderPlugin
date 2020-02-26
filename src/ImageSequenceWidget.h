@@ -32,12 +32,11 @@ public:
 	/** Destructor */
 	~ImageSequenceWidget();
 
-signals:
-	/**
-	 * Broadcasts a message
-	 * @param message Message to broadcast
-	 */
-	void message(const QString& message);
+	/** Returns the image scanner */
+	ImageSequenceScanner& scanner() { return _scanner; }
+
+	/** Returns the image loader */
+	ImageLoader& loader() { return _loader; };
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */

@@ -31,7 +31,7 @@ void ImageLoaderPlugin::loadData()
 	dialog.exec();
 }
 
-void ImageLoaderPlugin::addImages(std::shared_ptr<Payload> payload)
+QString ImageLoaderPlugin::addImages(std::shared_ptr<Payload> payload)
 {
 	const auto datasetName = _core->addData("Images", payload->name());
 
@@ -62,6 +62,8 @@ void ImageLoaderPlugin::addImages(std::shared_ptr<Payload> payload)
 	}
 	
 	_core->notifyDataAdded(datasetName);
+
+	return datasetName;
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

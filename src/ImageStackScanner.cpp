@@ -78,7 +78,7 @@ void ImageStackScanner::scanDir(const QString& directory)
 	for (int i = 0; i < fileList.size(); ++i)
 	{
 		const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
-
+		
 		QImageReader imageReader(imageFilePath);
 
 		const auto size = imageReader.size();
@@ -92,7 +92,7 @@ void ImageStackScanner::scanDir(const QString& directory)
 			
 			_scanned->map()[sizeString].add(imageFilePath);
 		}
-
+		
 		scanDir(imageFilePath);
 	}
 }

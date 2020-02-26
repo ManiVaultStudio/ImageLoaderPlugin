@@ -34,19 +34,18 @@ public:
 	/** Destructor */
 	~ImageStackWidget();
 
+	/** Returns the image scanner */
+	ImageStackScanner& scanner() { return _scanner; }
+
+	/** Returns the image loader */
+	ImageLoader& loader() { return _loader; };
+
 private:
 	/**
 	 * Invoked when the widget is show on the screen
 	 * @param showEvent Show event
 	 */
 	void showEvent(QShowEvent* showEvent);
-
-signals:
-	/**
-	 * Broadcasts a message
-	 * @param message Message to broadcast
-	 */
-	void message(const QString& message);
 
 private:
 	ImageLoaderPlugin*						_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */

@@ -12,15 +12,15 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() },
 	_scanner(),
-	_loader(ImageCollectionType::MultiPartSequence)
+	_loader(imageLoaderPlugin, ImageCollectionType::MultiPartSequence)
 {
 	_ui->setupUi(this);
 
-	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [&](QString directory) {
+	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
 	});
 
-	connect(_ui->directoryPushButton, &QPushButton::clicked, [&]() {
+	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
 		const auto initialDirectory = _scanner.directory();
 		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose multipart image sequence directory", initialDirectory);
 
@@ -29,16 +29,16 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 		}
 	});
 
-	connect(_ui->loadPushButton, &QPushButton::clicked, [&]() {
+	connect(_ui->loadPushButton, &QPushButton::clicked, [this]() {
 		_loader.load(_scanner.scanned());
 		_ui->loadPushButton->setEnabled(false);
 	});
 
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [&](QString datasetName) {
+	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [this](QString datasetName) {
 		_loader.setDatasetName(datasetName);
 	});
 
-	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, [&](const QString& directory) {
+	connect(&_scanner, &MultiPartImageSequenceScanner::directoryChanged, [this](const QString& directory) {
 		const auto validDirectory = !directory.isEmpty() && QDir(directory).exists();
 
 		if (validDirectory) {
@@ -50,11 +50,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 		_ui->datasetNameLineEdit->setEnabled(validDirectory);
 	});
 
-
-	connect(&_scanner, &MultiPartImageSequenceScanner::beginScan, [&]() {
-	});
-
-	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, [&](std::shared_ptr<Scanned> scanned) {
+	connect(&_scanner, &MultiPartImageSequenceScanner::endScan, this, [this](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->imagesLabel->setEnabled(loadable);
@@ -64,31 +60,15 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 		_ui->loadPushButton->setEnabled(loadable);
 
 		_ui->imagesListWidget->clear();
-	});
+	}, Qt::QueuedConnection);
 
-
-	connect(&_loader, &ImageLoader::beginLoad, [&]() {
-	});
-
-	connect(&_loader, &ImageLoader::endLoad, [&](std::shared_ptr<Payload> payload) {
+	connect(&_loader, &ImageLoader::endLoad, this, [this](std::shared_ptr<Payload> payload) {
 		_ui->loadPushButton->setEnabled(false);
 		_ui->loadPushButton->setText("Load");
+	}, Qt::QueuedConnection);
 
-		_imageLoaderPlugin->addImages(payload);
-	});
-
-
-	connect(&_loader, &ImageLoader::datasetNameChanged, [&](const QString& datasetName) {
+	connect(&_loader, &ImageLoader::datasetNameChanged, [this](const QString& datasetName) {
 		_ui->loadPushButton->setEnabled(!datasetName.isEmpty() && _scanner.scanned()->loadable());
-	});
-
-	connect(&_scanner, &MultiPartImageSequenceScanner::message, this, &MultiPartImageSequenceWidget::message);
-	connect(&_loader, &ImageLoader::message, this, &MultiPartImageSequenceWidget::message);
-
-	connect(&_scanner, &MultiPartImageSequenceScanner::settingsChanged, [&]() {
-	});
-
-	connect(&_loader, &ImageLoader::settingsChanged, [&]() {
 	});
 
 	_ui->subsampleSettingsWidget->initialize(&_loader.subsampleImageSettings());

@@ -13,6 +13,8 @@ namespace fi {
 	#include <FreeImage.h>
 }
 
+class ImageLoaderPlugin;
+
 /**
  * Image loader class
  * Class for loading image collections and producing an 
@@ -27,7 +29,7 @@ public:
 	 * Constructor
 	 * @param type Type of image collection e.g. sequence, stack
 	 */
-	ImageLoader(const ImageCollectionType& type);
+	ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageCollectionType& type);
 
 	/** Returns the type of image collection */
 	ImageCollectionType type() const;
@@ -113,6 +115,7 @@ signals:
 	void message(const QString& message);
 
 private:
+	ImageLoaderPlugin*			_imageLoaderPlugin;		/** Image loader plugin  */
 	ImageCollectionType			_type;					/** Type of image collection e.g. sequence, stack */
 	QString						_datasetName;			/** Name of the data set */
 	SubsampleSettings			_subsampleSettings;		/** Image subsample settings */

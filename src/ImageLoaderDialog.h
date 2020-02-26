@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ImageLoader.h"
+
 #include <QDialog>
 #include <QSettings>
 #include <QStackedWidget>
@@ -9,6 +11,7 @@ class QVBoxLayout;
 class QComboBox;
 class QStackedWidget;
 class QStatusBar;
+class QProgressBar;
 
 class ImageLoaderPlugin;
 class ImageSequenceWidget;
@@ -71,4 +74,5 @@ private:
 	ImageStackWidget*				_imageStackWidget;					/** Image stack widget */
 	MultiPartImageSequenceWidget*	_multiPartImageSequenceWidget;		/** Multi-part image sequence widget */
 	QStatusBar*						_statusBar;							/** Status bar widget */
+	QProgressBar*					_progressBar;						/** Progress bar widget */
 };

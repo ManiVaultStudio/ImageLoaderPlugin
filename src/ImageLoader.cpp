@@ -1,3 +1,4 @@
+#include "ImageLoaderPlugin.h"
 #include "ImageLoader.h"
 #include "ImageScanner.h"
 #include "FreeImage.h"
@@ -5,9 +6,10 @@
 #include <QDebug>
 #include <QFileInfo>
 
-ImageLoader::ImageLoader(const ImageCollectionType& type) :
+ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageCollectionType& type) :
 	QThread(),
 	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(imageCollectionTypeName(type))),
+	_imageLoaderPlugin(imageLoaderPlugin),
 	_type(type),
 	_datasetName(),
 	_subsampleSettings(prefix()),
@@ -102,8 +104,13 @@ void ImageLoader::run()
 				}
 			}
 
+			emit message("Creating dataset");
+
+			const auto datasetName = _imageLoaderPlugin->addImages(payload);
+
 			emit endLoad(payload);
-			emit message(QString("%1 image(s) loaded").arg(payload->noImages()));
+			
+			emit message(QString("Image dataset '%1' loaded successfully").arg(datasetName));
 
 			break;
 		}
@@ -137,8 +144,13 @@ void ImageLoader::run()
 				}
 			}
 
+			emit message("Creating dataset");
+			
+			const auto datasetName = _imageLoaderPlugin->addImages(payload);
+
 			emit endLoad(payload);
-			emit message(QString("%1 image(s) loaded").arg(payload->noImages()));
+
+			emit message(QString("Image dataset '%1' loaded successfully").arg(datasetName));
 
 			break;
 		}

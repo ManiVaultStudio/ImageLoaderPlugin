@@ -31,7 +31,7 @@ public:
 	 * Add images to HDPS
 	 * @param payload High dimensional image data payload
 	 */
-	void addImages(std::shared_ptr<Payload> payload);
+	QString addImages(std::shared_ptr<Payload> payload);
 };
 
 /**

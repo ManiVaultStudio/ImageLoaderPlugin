@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QStatusBar>
+#include <QProgressBar>
 
 #include "ImageLoaderPlugin.h"
 #include "ImageSequenceWidget.h"
@@ -20,7 +21,8 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageSequenceWidget(new ImageSequenceWidget(imageLoaderPlugin)),
 	_imageStackWidget(new ImageStackWidget(imageLoaderPlugin)),
 	_multiPartImageSequenceWidget(new MultiPartImageSequenceWidget(imageLoaderPlugin)),
-	_statusBar(new QStatusBar())
+	_statusBar(new QStatusBar()),
+	_progressBar(new QProgressBar())
 {
 	_mainLayout->setMargin(0);
 
@@ -58,16 +60,23 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
 	setMinimumWidth(480);
 	setMinimumHeight(480);
 
-	connect(_imageSequenceWidget, &ImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
-	connect(_imageStackWidget, &ImageStackWidget::message, this, &ImageLoaderDialog::onMessage);
-	connect(_multiPartImageSequenceWidget, &MultiPartImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
+	connect(&_imageSequenceWidget->scanner(), &ImageScanner::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
+	connect(&_imageStackWidget->scanner(), &ImageScanner::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
+	connect(&_multiPartImageSequenceWidget->scanner(), &ImageScanner::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
+
+	connect(&_imageSequenceWidget->loader(), &ImageLoader::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
+	connect(&_imageStackWidget->loader(), &ImageLoader::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
+	connect(&_multiPartImageSequenceWidget->loader(), &ImageLoader::message, this, &ImageLoaderDialog::onMessage, Qt::QueuedConnection);
 	
-	const auto CurrentPage = _settings.value("CurrentPage", 0).toInt();
+	const auto currentPage = _settings.value("CurrentPage", 0).toInt();
 
-	_typesComboBox->setCurrentIndex(CurrentPage);
-	_pagesStackedWidget->setCurrentIndex(CurrentPage);
+	_typesComboBox->setCurrentIndex(currentPage);
+	_pagesStackedWidget->setCurrentIndex(currentPage);
 
+	//_statusBar->addPermanentWidget(_progressBar);
 	_statusBar->showMessage("Ready");
+
+	//setWindowFlags(windowFlags() ^ Qt::WindowCloseButtonHint);
 }
 
 ImageLoaderDialog::~ImageLoaderDialog()
@@ -78,4 +87,24 @@ ImageLoaderDialog::~ImageLoaderDialog()
 void ImageLoaderDialog::onMessage(const QString& message)
 {
 	_statusBar->showMessage(message);
+
+	/*
+	QRegExp regEx("(\\d+(\.\\d+)?)%");
+
+	QStringList list;
+
+	int pos = 0;
+
+	while ((pos = regEx.indexIn(message, pos)) != -1) {
+		list << regEx.cap(1);
+		pos += regEx.matchedLength();
+	}
+
+	if (!list.isEmpty()) {
+		const auto progress = list.first().toFloat();
+		_progressBar->setValue(progress);
+		_progressBar->setFormat(message);
+		_progressBar->setAlignment(Qt::AlignCenter);
+	}
+	*/
 }
