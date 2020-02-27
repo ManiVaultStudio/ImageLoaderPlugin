@@ -19,8 +19,6 @@ void ImageStackScanner::scan()
 	emit beginScan();
 
 	start();
-
-	emit endScan(_scanned);
 }
 
 void ImageStackScanner::run()
@@ -31,6 +29,8 @@ void ImageStackScanner::run()
 	_scanned->reset();
 
 	scanDir(_directory);
+
+	emit endScan(_scanned);
 
 	const auto noStacks		= _scanned->map().size();
 	const auto hasStacks	= noStacks > 0;

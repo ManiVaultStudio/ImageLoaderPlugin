@@ -68,7 +68,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		_ui->loadPushButton->setEnabled(enableLoad);
 	});
 
-	connect(&_scanner, &ImageStackScanner::endScan, [this](std::shared_ptr<Scanned> scanned) {
+	connect(&_scanner, &ImageStackScanner::endScan, this, [this](std::shared_ptr<Scanned> scanned) {
 		const auto loadable = scanned->loadable();
 
 		_ui->datasetNameLabel->setEnabled(loadable);
@@ -90,7 +90,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 		}
 
 		_ui->stacksComboBox->addItems(items);
-	});
+	}, Qt::QueuedConnection);
 	
 	connect(&_loader, &ImageLoader::beginLoad, this, [this]() {
 		_ui->loadPushButton->setText("Loading...");
