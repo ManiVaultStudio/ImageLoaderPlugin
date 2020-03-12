@@ -29,10 +29,10 @@ public:
 	 * Constructor
 	 * @param type Type of image collection e.g. sequence, stack
 	 */
-	ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageCollectionType& type);
+	ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type);
 
 	/** Returns the type of image collection */
-	ImageCollectionType type() const;
+	ImageData::Type type() const;
 
 	/** Returns the subsample image settings */
 	SubsampleSettings& subsampleImageSettings();
@@ -116,7 +116,7 @@ signals:
 
 private:
 	ImageLoaderPlugin*			_imageLoaderPlugin;		/** Image loader plugin  */
-	ImageCollectionType			_type;					/** Type of image collection e.g. sequence, stack */
+	ImageData::Type				_type;					/** Type of image collection e.g. sequence, stack */
 	QString						_datasetName;			/** Name of the data set */
 	SubsampleSettings			_subsampleSettings;		/** Image subsample settings */
 	ColorSettings				_colorSettings;			/** Image color settings */

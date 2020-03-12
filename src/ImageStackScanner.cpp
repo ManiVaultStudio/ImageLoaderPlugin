@@ -5,7 +5,7 @@
 #include <QImageReader>
 
 ImageStackScanner::ImageStackScanner() :
-	ImageScanner(ImageCollectionType::Stack)
+	ImageScanner(ImageData::Type::Stack)
 {
 	auto imageTypes = QStringList();
 

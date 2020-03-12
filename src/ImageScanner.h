@@ -19,10 +19,10 @@ public:
 	 * Constructor
 	 * @param type Type of image collection e.g. sequence, stack
 	 */
-	ImageScanner(const ImageCollectionType& type);
+	ImageScanner(const ImageData::Type& type);
 
 	/** Returns the type of image collection */
-	ImageCollectionType type() const;
+	ImageData::Type type() const;
 
 	/** Load image scanner settings */
 	virtual void loadSettings();
@@ -108,7 +108,7 @@ signals:
 	void message(const QString& message);
 
 protected:
-	ImageCollectionType			_type;						/** Type of image collection e.g. sequence, stack */
+	ImageData::Type				_type;						/** Type of image collection e.g. sequence, stack */
 	QString						_directory;					/** Top directory to search in (recursively) */
 	QStringList					_previousDirectories;		/** List of previously visited directories */
 	QStringList					_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */

@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-Scanned::Scanned(const ImageCollectionType& type /*= ImageCollectionType::Sequence*/) :
+Scanned::Scanned(const ImageData::Type& type /*= ImageData::Type::Sequence*/) :
 	_type(type),
 	_map()
 {
@@ -13,12 +13,12 @@ void Scanned::reset()
 	_map.clear();
 }
 
-ImageCollectionType Scanned::type() const
+ImageData::Type Scanned::type() const
 {
 	return _type;
 }
 
-void Scanned::setType(const ImageCollectionType& type)
+void Scanned::setType(const ImageData::Type& type)
 {
 	_type = type;
 }
@@ -30,7 +30,7 @@ bool Scanned::loadable() const
 
 QDebug operator<<(QDebug dbg, Scanned& scanned)
 {
-	dbg << imageCollectionTypeName(scanned.type());
+	dbg << ImageData::typeName(scanned.type());
 
 	foreach(QString key, scanned.map().keys()) {
 		dbg << key;

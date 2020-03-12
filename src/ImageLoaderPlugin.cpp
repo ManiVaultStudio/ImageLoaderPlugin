@@ -44,14 +44,14 @@ QString ImageLoaderPlugin::addImages(std::shared_ptr<Payload> payload)
 	images.setPoints(&points);
 
 	switch (payload->type()) {
-		case ImageCollectionType::Sequence:
+		case ImageData::Type::Sequence:
 		{
 			images.setSequence(payload->images(), payload->size());
 			break;
 		}
 
-		case ImageCollectionType::MultiPartSequence:
-		case ImageCollectionType::Stack:
+		case ImageData::Type::MultiPartSequence:
+		case ImageData::Type::Stack:
 		{
 			images.setStack(payload->images(), payload->size());
 			break;

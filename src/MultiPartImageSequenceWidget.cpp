@@ -12,7 +12,7 @@ MultiPartImageSequenceWidget::MultiPartImageSequenceWidget(ImageLoaderPlugin* im
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::MultiPartImageSequenceWidget>() },
 	_scanner(),
-	_loader(imageLoaderPlugin, ImageCollectionType::MultiPartSequence)
+	_loader(imageLoaderPlugin, ImageData::Type::MultiPartSequence)
 {
 	_ui->setupUi(this);
 

@@ -11,7 +11,7 @@ ImageSequenceWidget::ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageSequenceWidget>() },
 	_scanner(),
-	_loader(imageLoaderPlugin, ImageCollectionType::Sequence)
+	_loader(imageLoaderPlugin, ImageData::Type::Sequence)
 {
 	_ui->setupUi(this);
 	

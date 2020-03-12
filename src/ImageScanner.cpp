@@ -3,9 +3,9 @@
 #include <QDebug>
 #include <QDir>
 
-ImageScanner::ImageScanner(const ImageCollectionType& type) :
+ImageScanner::ImageScanner(const ImageData::Type& type) :
 	QThread(),
-	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Scanner").arg(imageCollectionTypeName(type))),
+	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Scanner").arg(ImageData::typeName(type))),
 	_type(type),
 	_directory(),
 	_previousDirectories(),
@@ -15,7 +15,7 @@ ImageScanner::ImageScanner(const ImageCollectionType& type) :
 {
 }
 
-ImageCollectionType ImageScanner::type() const
+ImageData::Type ImageScanner::type() const
 {
 	return _type;
 }

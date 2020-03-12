@@ -15,16 +15,16 @@ public:
 	 * Constructor
 	 * @param type Type of high-dimensional image collection
 	 */
-	Payload(const ImageCollectionType& type = ImageCollectionType::Undefined);
+	Payload(const ImageData::Type& type = ImageData::Type::Undefined);
 
 public:
 	/** Returns the type of high-dimensional image collection */
-	ImageCollectionType type() const;
+	ImageData::Type type() const;
 
 	/**
 	 * Sets the type of high dimensional image collection
 	 */
-	void setType(const ImageCollectionType& type);
+	void setType(const ImageData::Type& type);
 
 	/** Returns the name of the payload */
 	QString name() const;
@@ -66,7 +66,7 @@ public:
 	Image& add(const std::uint32_t& noComponentsPerPixel, const QString& imageFilePath);
 
 protected:
-	ImageCollectionType		_type;				/** Type of payload e.g. sequence, stack */
+	ImageData::Type			_type;				/** Type of payload e.g. sequence, stack */
 	QString					_name;				/** Name of the payload */
 	QSize					_size;				/** Size of the images */
 	std::vector<Image>		_images;			/** Loaded images */

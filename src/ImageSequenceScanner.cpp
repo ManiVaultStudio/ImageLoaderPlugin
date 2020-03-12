@@ -5,7 +5,7 @@
 #include <QImageReader>
 
 ImageSequenceScanner::ImageSequenceScanner() :
-	ImageScanner(ImageCollectionType::Sequence),
+	ImageScanner(ImageData::Type::Sequence),
 	_imageTypeFilter(),
 	_imageSizeFilter(),
 	_square(true)

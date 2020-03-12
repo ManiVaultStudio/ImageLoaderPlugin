@@ -12,7 +12,7 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_ui{ std::make_unique<Ui::ImageStackWidget>() },
 	_scanner(),
-	_loader(imageLoaderPlugin, ImageCollectionType::Stack)
+	_loader(imageLoaderPlugin, ImageData::Type::Stack)
 {
 	_ui->setupUi(this);
 

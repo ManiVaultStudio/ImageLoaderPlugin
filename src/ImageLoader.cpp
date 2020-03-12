@@ -6,9 +6,9 @@
 #include <QDebug>
 #include <QFileInfo>
 
-ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageCollectionType& type) :
+ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type) :
 	QThread(),
-	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(imageCollectionTypeName(type))),
+	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(ImageData::typeName(type))),
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_type(type),
 	_datasetName(),
@@ -19,7 +19,7 @@ ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageCollec
 	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageLoader::settingsChanged);
 }
 
-ImageCollectionType ImageLoader::type() const
+ImageData::Type ImageLoader::type() const
 {
 	return _type;
 }
@@ -75,7 +75,7 @@ void ImageLoader::run()
 
 	switch (_type)
 	{
-		case ImageCollectionType::Sequence:
+		case ImageData::Type::Sequence:
 		{
 			payload->setName(_datasetName);
 
@@ -115,7 +115,7 @@ void ImageLoader::run()
 			break;
 		}
 
-		case ImageCollectionType::Stack:
+		case ImageData::Type::Stack:
 		{
 			payload->setName(_datasetName);
 
@@ -155,7 +155,7 @@ void ImageLoader::run()
 			break;
 		}
 
-		case ImageCollectionType::MultiPartSequence:
+		case ImageData::Type::MultiPartSequence:
 		{
 			std::uint32_t done = 0;
 

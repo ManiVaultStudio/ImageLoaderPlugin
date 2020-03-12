@@ -16,19 +16,19 @@ public:
 	 * Constructor
 	 * @param type Type of image collection
 	 */
-	Scanned(const ImageCollectionType& type = ImageCollectionType::Sequence);
+	Scanned(const ImageData::Type& type = ImageData::Type::Sequence);
 
 	/** Reset the contents */
 	void reset();
 
 	/** Returns the type of image collection */
-	ImageCollectionType type() const;
+	ImageData::Type type() const;
 
 	/**
 	 * Sets the type of image collection
 	 * @param type Type of image collection
 	 */
-	void setType(const ImageCollectionType& type);
+	void setType(const ImageData::Type& type);
 
 	/**
 	 * Map a collection name to an image collection
@@ -49,7 +49,7 @@ public:
 	bool loadable() const;
 
 protected:
-	ImageCollectionType		_type;		/** Type of image collection e.g. sequence, stack */
+	ImageData::Type			_type;		/** Type of image collection e.g. sequence, stack */
 	ImageCollectionMap		_map;		/** Map of image collections */
 };
 

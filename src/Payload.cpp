@@ -2,7 +2,7 @@
 
 #include <QDebug>
 
-Payload::Payload(const ImageCollectionType& type /*= ImageCollectionType::Undefined*/) :
+Payload::Payload(const ImageData::Type& type /*= ImageData::Type::Undefined*/) :
 	_type(type),
 	_name(),
 	_images(),
@@ -10,12 +10,12 @@ Payload::Payload(const ImageCollectionType& type /*= ImageCollectionType::Undefi
 {
 }
 
-ImageCollectionType Payload::type() const
+ImageData::Type Payload::type() const
 {
 	return _type;
 }
 
-void Payload::setType(const ImageCollectionType& type)
+void Payload::setType(const ImageData::Type& type)
 {
 	_type = type;
 }
@@ -77,7 +77,7 @@ QDebug operator<<(QDebug dbg, Payload & payload)
 {
 	const auto noImages = QString::number(payload.noImages());
 
-	dbg << QString("Image dataset '%1' of type %2, %3 images").arg(payload.name(), imageCollectionTypeName(payload.type()), noImages);
+	dbg << QString("Image dataset '%1' of type %2, %3 images").arg(payload.name(), ImageData::typeName(payload.type()), noImages);
 
 	return dbg;
 }

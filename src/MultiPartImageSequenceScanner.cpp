@@ -6,7 +6,7 @@
 #include <QDir>
 
 MultiPartImageSequenceScanner::MultiPartImageSequenceScanner() :
-	ImageScanner(ImageCollectionType::MultiPartSequence)
+	ImageScanner(ImageData::Type::MultiPartSequence)
 {
 	auto imageTypes = QStringList();
 
