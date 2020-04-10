@@ -12,6 +12,9 @@ ImageStackScanner::ImageStackScanner() :
 	imageTypes << "jpg" << "png" << "bmp" << "tiff" << "tif";
 
 	setSupportedImageTypes(imageTypes);
+
+	for(const auto imageType : supportedImageTypes())
+		_filter << "*." + imageType;
 }
 
 void ImageStackScanner::scan()
@@ -64,14 +67,7 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	imageFiles.setFilter(QDir::Files);
 
-	auto nameFilters = QStringList();
-
-	foreach(QString imageType, supportedImageTypes())
-	{
-		nameFilters << "*." + imageType;
-	}
-
-	imageFiles.setNameFilters(nameFilters);
+	imageFiles.setNameFilters(_filter);
 
 	const auto fileList = imageFiles.entryList();
 
@@ -84,13 +80,13 @@ void ImageStackScanner::scanDir(const QString& directory)
 		const auto size = imageReader.size();
 
 		if (size.width() > 0 && size.height() > 0) {
-			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
+			const auto stackName = QString("%1:%2x%3").arg(QString(directory).replace(_directory, ""), QString::number(size.width()), QString::number(imageReader.size().height()));
 
-			if (!_scanned->map().contains(sizeString)) {
-				_scanned->map()[sizeString] = ImageCollection(size);
+			if (!_scanned->map().contains(stackName)) {
+				_scanned->map()[stackName] = ImageCollection(size);
 			}
 			
-			_scanned->map()[sizeString].add(imageFilePath);
+			_scanned->map()[stackName].add(imageFilePath);
 		}
 		
 		scanDir(imageFilePath);

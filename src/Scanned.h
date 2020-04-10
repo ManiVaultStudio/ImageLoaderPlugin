@@ -3,6 +3,8 @@
 #include "ImageData/ImageData.h"
 #include "ImageCollection.h"
 
+using namespace hdps;
+
 /**
  * Scanned class
  * The image scanner (recursively) scans a search directory and groups references

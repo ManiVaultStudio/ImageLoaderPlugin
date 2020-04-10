@@ -3,6 +3,8 @@
 #include "ImageData/ImageData.h"
 #include "Common.h"
 
+using namespace hdps;
+
 /**
  * Payload class
  * The payload class contains loaded images for consumption by HDPS

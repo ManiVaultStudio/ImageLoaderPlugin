@@ -28,4 +28,7 @@ private:
 	 * @param directory Search directory
 	 */
 	void scanDir(const QString& directory);
+
+private:
+	QStringList		_filter;
 };

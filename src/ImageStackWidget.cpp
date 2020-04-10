@@ -48,11 +48,13 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	});
 	
 	connect(_ui->loadPushButton, &QPushButton::clicked, [this]() {
+		/*
 		foreach(QString key, _scanner.scanned()->map().keys()) {
 			if (key != _ui->stacksComboBox->currentData().toString()) {
 				_scanner.scanned()->map().remove(key);
 			}
 		}
+		*/
 
 		_loader.load(_scanner.scanned());
 
