@@ -94,7 +94,7 @@ void ImageLoader::run()
 				auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
 
 				if (bitmap != nullptr) {
-					loadBitmap(bitmap, payload.get(), imageFilePath);
+					loadBitmap(bitmap, payload.get(), imageFilePath, QFileInfo(imageFilePath).fileName());
 					fi::FreeImage_Unload(bitmap);
 
 					const auto done = payload->imageFilePaths().indexOf(imageFilePath) + 1;
