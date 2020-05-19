@@ -37,8 +37,6 @@ QString ImageLoaderPlugin::addImages(std::shared_ptr<Payload> payload)
 
 	auto& images = dynamic_cast<Images&>(_core->requestData(datasetName));
 	
-	images.setRoi(QRect(QPoint(), payload->size()));
-	
 	auto& points = _core->requestData<Points&>(images.pointsName());
 	
 	images.setPoints(&points);
