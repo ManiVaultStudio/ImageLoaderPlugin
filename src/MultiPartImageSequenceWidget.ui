@@ -81,7 +81,7 @@
         <string>Load image sequence</string>
        </property>
        <property name="text">
-        <string>Load</string>
+        <string>&amp;Load</string>
        </property>
       </widget>
      </item>

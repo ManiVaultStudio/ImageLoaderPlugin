@@ -100,7 +100,7 @@
         <string>Scan for candidate images</string>
        </property>
        <property name="text">
-        <string>Scan</string>
+        <string>&amp;Scan</string>
        </property>
       </widget>
      </item>
@@ -113,7 +113,7 @@
         <string>Load image sequence</string>
        </property>
        <property name="text">
-        <string>Load</string>
+        <string>&amp;Load</string>
        </property>
       </widget>
      </item>
