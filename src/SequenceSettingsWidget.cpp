@@ -83,3 +83,10 @@ SequenceSettingsWidget::SequenceSettingsWidget(QObject* parent) :
 }
 
 SequenceSettingsWidget::~SequenceSettingsWidget() = default;
+
+void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
+{
+	_imageLoaderPlugin = imageLoaderPlugin;
+
+	_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
+}

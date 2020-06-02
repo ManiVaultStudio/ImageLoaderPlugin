@@ -35,8 +35,13 @@ public:
 	 */
 	QString addImages(std::shared_ptr<Payload> payload);
 
+public: // Model
+
+	/** Returns the image collections model */
+	ImageCollectionsModel& imageCollectionsModel() { return _imageCollectionsModel; }
+
 private:
-	ImageCollectionsModel		_imageCollectionsModel;		/** Image collections model */
+	ImageCollectionsModel	_imageCollectionsModel;		/** Image collections model */
 };
 
 /**

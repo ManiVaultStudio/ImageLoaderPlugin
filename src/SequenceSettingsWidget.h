@@ -22,7 +22,8 @@ class SequenceSettingsWidget : public QWidget
 {
 	Q_OBJECT
 
-public:
+public: // Construction/destruction
+
 	/**
 	 * Constructor 
 	 * @param parent Parent object
@@ -31,6 +32,14 @@ public:
 
 	/** Destructor */
 	~SequenceSettingsWidget();
+
+public: // Initialization
+
+	/**
+	 * Initializes the widget with a loader plugin
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 */
+	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 	/** Returns the image scanner */
 	ImageSequenceScanner& scanner() { return _scanner; }

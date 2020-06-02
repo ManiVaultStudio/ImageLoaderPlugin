@@ -30,7 +30,34 @@ public: // Nested image class
 		/** Default constructor */
 		Image();
 
+		/**
+		 * Constructor
+		 * @param name Name of the image
+		 * @param shouldLoad Whether the image should be loaded
+		 * @param filePath Absolute file path of the image
+		 * @param sourceSize Source size of the image
+		 */
+		Image(const QString& name, const bool& shouldLoad, const QString& filePath, const QSize& sourceSize);
+
 	public: // Getters/setters
+
+		/** Returns the parent image collection */
+		ImageCollection* imageCollection();
+
+		/**
+		 * Sets the parent image collection
+		 * @param imageCollection Parent image collection
+		 */
+		void setImageCollection(ImageCollection* imageCollection);
+
+		/** Returns the image name */
+		QString name() const;
+
+		/**
+		 * Sets the image name
+		 * @param name Image name
+		 */
+		void setName(const QString& name);
 
 		/** Returns whether the image should be loaded or not */
 		bool shouldLoad() const;
@@ -49,15 +76,6 @@ public: // Nested image class
 		 * @param filePath Absolute image file path
 		 */
 		void setShouldLoad(const QString& filePath);
-
-		/** Returns the image dimension name */
-		QString dimensionName() const;
-
-		/**
-		 * Sets the image dimension name
-		 * @param dimensionName Image dimension name
-		 */
-		void setDimensionName(const QString& dimensionName);
 
 		/** Returns the source image size */
 		QSize sourceSize() const;
@@ -78,11 +96,12 @@ public: // Nested image class
 		void setTargetSize(const QSize& targetSize);
 
 	private:
-		bool		_shouldLoad;		/** Whether the image should be loaded */
-		QString		_filePath;			/** The absolute image file path */
-		QString		_dimensionName;		/** The dimension name of the image */
-		QSize		_sourceSize;		/** Size of the source image */
-		QSize		_targetSize;		/** Size of the target image */
+		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
+		QString				_name;				/** The dimension name of the image */
+		bool				_shouldLoad;		/** Whether the image should be loaded */
+		QString				_filePath;			/** The absolute image file path */
+		QSize				_sourceSize;		/** Size of the source image */
+		QSize				_targetSize;		/** Size of the target image */
 	};
 
 public: // Construction
@@ -137,6 +156,15 @@ public: // Getters/setters
 	 */
 	void setTargetSize(const QSize& targetSize);
 
+	/** Returns the number of images */
+	std::uint32_t noImages() const;
+
+	/**
+	 * Get image by index
+	 * @param  index Image index
+	 */
+	Image* image(const std::uint32_t& index);
+
 public:
 
 	/**
@@ -146,10 +174,10 @@ public:
 	void add(const Image& image);
 
 private:
-	QString			_name;				/** The name of the image collection */
-	QString			_searchDir;			/** Initial directory where the search was started */
-	QString			_filePath;			/** Absolute file path (multi-layer TIFF) */
-	QSize			_sourceSize;		/** Size of the source image */
-	QSize			_targetSize;		/** Size of the target image */
-	QVector<Image>	_images;			/** Images */
+	QString				_name;				/** The name of the image collection */
+	QString				_searchDir;			/** Initial directory where the search was started */
+	QString				_filePath;			/** Absolute file path (multi-layer TIFF) */
+	QSize				_sourceSize;		/** Size of the source image */
+	QSize				_targetSize;		/** Size of the target image */
+	QVector<Image>		_images;			/** Images */
 };

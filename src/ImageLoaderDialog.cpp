@@ -49,4 +49,6 @@ ImageLoaderDialog::~ImageLoaderDialog()
 void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
+
+	_ui->sequenceSettingsWidget->initialize(_imageLoaderPlugin);
 }

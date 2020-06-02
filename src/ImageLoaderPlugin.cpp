@@ -21,6 +21,11 @@ ImageLoaderPlugin::ImageLoaderPlugin() :
 
 	ImageCollection imageCollection;
 
+	imageCollection.setName("Thomas");
+
+	imageCollection.add(ImageCollection::Image("Test A", true, "C:\test\a.jpg", QSize(32, 32)));
+	imageCollection.add(ImageCollection::Image("Test B", true, "C:\test\b.jpg", QSize(32, 32)));
+
 	_imageCollectionsModel.insert(0, imageCollection);
 }
 
