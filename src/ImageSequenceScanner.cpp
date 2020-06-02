@@ -6,8 +6,6 @@
 
 ImageSequenceScanner::ImageSequenceScanner() :
 	ImageScanner(ImageData::Type::Sequence),
-	_imageTypeFilter(),
-	_imageSizeFilter(),
 	_square(true)
 {
 	auto supportedImageTypes = QStringList();
@@ -19,109 +17,7 @@ ImageSequenceScanner::ImageSequenceScanner() :
 
 void ImageSequenceScanner::loadSettings()
 {
-	setImageTypeFilter(setting("ImageType", "jpg").toString(), true);
-	setImageSizeFilter(setting("ImageSize", QSize(28, 28)).toSize(), true);
-	setSquare(setting("Square", true).toBool(), true);
-
 	ImageScanner::loadSettings();
-}
-
-QString ImageSequenceScanner::imageTypeFilter() const
-{
-	return _imageTypeFilter;
-}
-
-void ImageSequenceScanner::setImageTypeFilter(const QString& imageTypeFilter, const bool& notify /*= false*/)
-{
-	if (!notify && imageTypeFilter == _imageTypeFilter)
-		return;
-
-	_imageTypeFilter = imageTypeFilter;
-
-	setSetting("ImageType", _imageTypeFilter);
-
-	qDebug() << "Set image type" << _imageTypeFilter;
-
-	emit imageTypeFilterChanged(_imageTypeFilter);
-	emit settingsChanged();
-}
-
-QSize ImageSequenceScanner::imageSizeFilter() const
-{
-	return _imageSizeFilter;
-}
-
-void ImageSequenceScanner::setImageWidthFilter(const std::uint32_t& imageWidthFilter, const bool& notify /*= false*/)
-{
-	if (!notify && imageWidthFilter == _imageSizeFilter.width())
-		return;
-
-	auto imageSize = _imageSizeFilter;
-
-	imageSize.setWidth(imageWidthFilter);
-
-	if (_square) {
-		imageSize.setHeight(imageWidthFilter);
-	}
-
-	setImageSizeFilter(imageSize, notify);
-}
-
-void ImageSequenceScanner::setImageHeightFilter(const std::uint32_t& imageHeightFilter, const bool& notify /*= false*/)
-{
-	if (!notify && imageHeightFilter == _imageSizeFilter.height())
-		return;
-
-	if (_square)
-		return;
-
-	auto imageSize = _imageSizeFilter;
-
-	imageSize.setHeight(imageHeightFilter);
-
-	setImageSizeFilter(imageSize, notify);
-}
-
-void ImageSequenceScanner::setImageSizeFilter(const QSize &imageSizeFilter, const bool& notify /*= false*/)
-{
-	if (!notify && imageSizeFilter == _imageSizeFilter)
-		return;
-
-	_imageSizeFilter = imageSizeFilter;
-
-	setSetting("ImageSize", _imageSizeFilter);
-
-	qDebug() << "Set image size" << _imageSizeFilter;
-
-	emit imageSizeFilterChanged(_imageSizeFilter);
-	emit settingsChanged();
-}
-
-bool ImageSequenceScanner::square() const
-{
-	return _square;
-}
-
-void ImageSequenceScanner::setSquare(const bool& square, const bool& notify /*= false*/)
-{
-	if (!notify && square == _square)
-		return;
-
-	_square = square;
-
-	setSetting("Square", _square);
-
-	qDebug() << "Set square" << _square;
-
-	emit squareChanged(_square);
-	
-	auto imageSize = _imageSizeFilter;
-
-	imageSize.setHeight(imageSize.width());
-
-	setImageSizeFilter(imageSize);
-
-	emit settingsChanged();
 }
 
 void ImageSequenceScanner::scan()
@@ -131,6 +27,7 @@ void ImageSequenceScanner::scan()
 
 void ImageSequenceScanner::run()
 {
+	/*
 	if (!_initialized)
 		return;
 
@@ -160,10 +57,12 @@ void ImageSequenceScanner::run()
 	}
 
 	emit endScan(_scanned);
+	*/
 }
-
+/*
 void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& imageCollection)
 {
+	
 	auto subDirectories = QDir(directory);
 
 	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -197,4 +96,6 @@ void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& im
 			emit message(QString("Found %1").arg(fileName));
 		}
 	}
+	
 }
+*/

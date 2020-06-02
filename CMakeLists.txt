@@ -59,22 +59,15 @@ set(SCANNER_SOURCES
 set(IMAGE_SEQUENCE_SOURCES
 	src/ImageSequenceScanner.h
 	src/ImageSequenceScanner.cpp
-	src/ImageSequenceWidget.h
-    src/ImageSequenceWidget.cpp
+	src/SequenceSettingsWidget.h
+    src/SequenceSettingsWidget.cpp
 )
 
 set(IMAGE_STACK_SOURCES
 	src/ImageStackScanner.h
     src/ImageStackScanner.cpp
-	src/ImageStackWidget.h
-    src/ImageStackWidget.cpp
-)
-
-set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
-	src/MultiPartImageSequenceScanner.h
-	src/MultiPartImageSequenceScanner.cpp
-	src/MultiPartImageSequenceWidget.h
-	src/MultiPartImageSequenceWidget.cpp
+	src/StackSettingsWidget.h 
+    src/StackSettingsWidget.cpp
 )
 
 set(SUBSAMPLE_SETTINGS_SOURCES
@@ -91,6 +84,8 @@ set(COLOR_SETTINGS_SOURCES
 	src/ColorSettingsWidget.cpp
 )
 
+file(GLOB MODEL_SOURCES src/*Model.*)
+
 set(AUX src/ImageLoaderPlugin.json)
 
 set(SOURCES 
@@ -99,9 +94,9 @@ set(SOURCES
 	${SCANNER_SOURCES}
 	${IMAGE_SEQUENCE_SOURCES}
 	${IMAGE_STACK_SOURCES}
-	${MULTI_PART_IMAGE_SEQUENCE_SOURCES}
 	${SUBSAMPLE_SETTINGS_SOURCES}
 	${COLOR_SETTINGS_SOURCES}
+	${MODEL_SOURCES}
 )
 
 file(GLOB UIS src/*.ui)
@@ -111,10 +106,10 @@ set(AUX src/ImageLoaderPlugin.json)
 source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
 source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
 source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
-source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(SubsampleSettings FILES ${SUBSAMPLE_SETTINGS_SOURCES})
 source_group(ColorSettings FILES ${COLOR_SETTINGS_SOURCES})
+source_group(Model FILES ${MODEL_SOURCES})
 source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")

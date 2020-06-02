@@ -8,7 +8,7 @@
 #include <QWidget>
 
 namespace Ui {
-	class ImageStackWidget;
+	class StackSettingsWidget;
 }
 
 class ImageLoaderPlugin;
@@ -20,19 +20,19 @@ class QEvent;
  * User interface widget for image stack loader/scanner settings
  * @author Thomas Kroes
  */
-class ImageStackWidget : public QWidget
+class StackSettingsWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
 	/**
 	 * Constructor
-	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 * @param parent Parent object
 	 */
-	ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin);
+	StackSettingsWidget(QObject* parent);
 
 	/** Destructor */
-	~ImageStackWidget();
+	~StackSettingsWidget();
 
 	/** Returns the image scanner */
 	ImageStackScanner& scanner() { return _scanner; }
@@ -48,8 +48,8 @@ private:
 	void showEvent(QShowEvent* showEvent);
 
 private:
-	ImageLoaderPlugin*						_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
-	std::unique_ptr<Ui::ImageStackWidget>	_ui;					/** Externally loaded UI */
-	ImageStackScanner						_scanner;				/** Scanner */
-	ImageLoader								_loader;				/** Loader */
+	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
+	std::unique_ptr<Ui::StackSettingsWidget>	_ui;					/** Externally loaded UI */
+	ImageStackScanner							_scanner;				/** Scanner */
+	ImageLoader									_loader;				/** Loader */
 };

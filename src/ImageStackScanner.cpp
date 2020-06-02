@@ -24,6 +24,7 @@ void ImageStackScanner::scan()
 	start();
 }
 
+/*
 void ImageStackScanner::run()
 {
 	if (!_initialized)
@@ -92,3 +93,4 @@ void ImageStackScanner::scanDir(const QString& directory)
 		scanDir(imageFilePath);
 	}
 }
+*/

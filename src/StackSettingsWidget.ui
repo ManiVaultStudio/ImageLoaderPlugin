@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImageStackWidget</class>
- <widget class="QWidget" name="ImageStackWidget">
+ <class>StackSettingsWidget</class>
+ <widget class="QWidget" name="StackSettingsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>382</width>
-    <height>290</height>
+    <width>351</width>
+    <height>284</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,16 +32,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <item row="3" column="0" colspan="2">
-    <widget class="SubsampleSettingsWidget" name="subsampleSettingsWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="imagesGroupBox">
      <property name="minimumSize">
@@ -63,13 +53,6 @@
           </property>
           <property name="toolTip">
            <string>The name of the data set in the HDPS GUI</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="directoryLabel">
-          <property name="text">
-           <string>Directory</string>
           </property>
          </widget>
         </item>
@@ -138,109 +121,33 @@
           </item>
          </layout>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="directoryLabel">
+          <property name="text">
+           <string>Directory</string>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="0">
          <widget class="QLabel" name="stacksLabel">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
           <property name="text">
            <string>Stacks</string>
           </property>
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QComboBox" name="stacksComboBox">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="stacksComboBox"/>
         </item>
        </layout>
+      </item>
+      <item row="3" column="0">
+       <widget class="QTreeView" name="imagesTreeView"/>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="ColorSettingsWidget" name="colorSettingsWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="helpPushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>24</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:9pt; font-weight:600;&quot;&gt;Description&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:9pt;&quot;&gt;Load a stack of images into HDPS. A single 'points' data set is created where each pixel coordinate represents a data point, and each image layer represents a dimension.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:9pt; font-weight:600;&quot;&gt;Usage&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:9pt;&quot;&gt;1. Pick the directory where the images are located&lt;br/&gt;2. Choose the desired image stack from the list of available stacks&lt;br/&gt;3. Set a data set name (optional)&lt;br/&gt;4. Load the data set&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>?</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="loadPushButton">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="toolTip">
-        <string>Load image stack</string>
-       </property>
-       <property name="text">
-        <string>Load</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>SubsampleSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>SubsampleSettingsWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ColorSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>ColorSettingsWidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

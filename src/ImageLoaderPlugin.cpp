@@ -13,11 +13,15 @@
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
-	LoaderPlugin("Image Loader")
+	LoaderPlugin("Image Loader"),
+	_imageCollectionsModel()
 {
 	qRegisterMetaType<std::shared_ptr<QImage>>("std::shared_ptr<QImage>");
-	qRegisterMetaType<std::shared_ptr<Scanned>>("std::shared_ptr<Scanned>");
 	qRegisterMetaType<std::shared_ptr<Payload>>("std::shared_ptr<Payload>");
+
+	ImageCollection imageCollection;
+
+	_imageCollectionsModel.insert(0, imageCollection);
 }
 
 void ImageLoaderPlugin::init()
@@ -26,7 +30,9 @@ void ImageLoaderPlugin::init()
 
 void ImageLoaderPlugin::loadData()
 {
-	ImageLoaderDialog dialog(this);
+	ImageLoaderDialog dialog;
+
+	dialog.initialize(this);
 	
 	dialog.exec();
 }

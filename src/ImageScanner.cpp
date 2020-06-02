@@ -10,7 +10,6 @@ ImageScanner::ImageScanner(const ImageData::Type& type) :
 	_directory(),
 	_previousDirectories(),
 	_supportedImageTypes(),
-	_scanned(std::make_shared<Scanned>(type)),
 	_initialized(false)
 {
 }
@@ -104,9 +103,4 @@ void ImageScanner::setSupportedImageTypes(const QStringList& supportedImageTypes
 	emit supportedImageTypesChanged(_supportedImageTypes);
 
 	emit settingsChanged();
-}
-
-std::shared_ptr<Scanned> ImageScanner::scanned()
-{
-	return _scanned;
 }

@@ -8,7 +8,7 @@
 #include <QWidget>
 
 namespace Ui {
-	class ImageSequenceWidget;
+	class SequenceSettingsWidget;
 }
 
 class ImageLoaderPlugin;
@@ -18,19 +18,19 @@ class ImageLoaderPlugin;
  * User interface widget for image sequence loader/scanner settings
  * @author Thomas Kroes
  */
-class ImageSequenceWidget : public QWidget
+class SequenceSettingsWidget : public QWidget
 {
 	Q_OBJECT
 
 public:
 	/**
-	 * Constructor
-	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 * Constructor 
+	 * @param parent Parent object
 	 */
-	ImageSequenceWidget(ImageLoaderPlugin* imageLoaderPlugin);
+	SequenceSettingsWidget(QObject* parent);
 
 	/** Destructor */
-	~ImageSequenceWidget();
+	~SequenceSettingsWidget();
 
 	/** Returns the image scanner */
 	ImageSequenceScanner& scanner() { return _scanner; }
@@ -40,7 +40,7 @@ public:
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
-	std::unique_ptr<Ui::ImageSequenceWidget>	_ui;					/** Externally loaded UI */
+	std::unique_ptr<Ui::SequenceSettingsWidget>	_ui;					/** Externally loaded UI */
 	ImageSequenceScanner						_scanner;				/** Scanner */
 	ImageLoader									_loader;				/** Loader */
 };

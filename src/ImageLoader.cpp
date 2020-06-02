@@ -50,6 +50,7 @@ void ImageLoader::setDatasetName(const QString& datasetName, const bool& notify 
 	emit settingsChanged();
 }
 
+/*
 std::shared_ptr<Scanned> ImageLoader::scanned() const
 {
 	return _scanned;
@@ -66,9 +67,11 @@ void ImageLoader::load(std::shared_ptr<Scanned> scanned)
 
 	start();
 }
+*/
 
 void ImageLoader::run()
 {
+	/*
 	emit beginLoad();
 
 	auto payload = std::make_shared<Payload>(_type);
@@ -207,10 +210,12 @@ void ImageLoader::run()
 		default:
 			break;
 	}
+	*/
 }
 
 void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
 {
+	/*
 	if (bitmap) {
 		const auto width		= fi::FreeImage_GetWidth(bitmap);
 		const auto height		= fi::FreeImage_GetHeight(bitmap);
@@ -377,4 +382,5 @@ void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QStri
 			}
 		}
 	}
+	*/
 }

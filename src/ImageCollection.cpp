@@ -2,60 +2,126 @@
 
 #include <QDebug>
 
+ImageCollection::Image::Image() :
+	_shouldLoad(true),
+	_filePath(),
+	_dimensionName(),
+	_sourceSize(),
+	_targetSize()
+{
+}
+
+bool ImageCollection::Image::shouldLoad() const
+{
+	return _shouldLoad;
+}
+
+void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
+{
+	_shouldLoad = shouldLoad;
+}
+
+void ImageCollection::Image::setShouldLoad(const QString& filePath)
+{
+	_filePath = filePath;
+}
+
+QString ImageCollection::Image::dimensionName() const
+{
+	return _dimensionName;
+}
+
+void ImageCollection::Image::setDimensionName(const QString& dimensionName)
+{
+	_dimensionName = dimensionName;
+}
+
+QSize ImageCollection::Image::sourceSize() const
+{
+	return _sourceSize;
+}
+
+void ImageCollection::Image::setSourceSize(const QSize& sourceSize)
+{
+	_sourceSize = sourceSize;
+}
+
+QSize ImageCollection::Image::targetSize() const
+{
+	return _targetSize;
+}
+
+void ImageCollection::Image::setTargetSize(const QSize& targetSize)
+{
+	_targetSize = targetSize;
+}
+
+QString ImageCollection::Image::filePath() const
+{
+	return _filePath;
+}
+
 ImageCollection::ImageCollection() :
-	_imageSize(),
-	_imageFilePaths(),
-	_noDimensions(0)
+	_name(),
+	_searchDir(),
+	_filePath(),
+	_sourceSize(),
+	_targetSize(),
+	_images()
 {
 }
 
-ImageCollection::ImageCollection(const QSize& imageSize) :
-	_imageSize(imageSize),
-	_imageFilePaths(),
-	_noDimensions(0)
+QString ImageCollection::name() const
 {
+	return _name;
 }
 
-int ImageCollection::noImages() const
+void ImageCollection::setName(const QString& name)
 {
-	return _imageFilePaths.size();
+	_name = name;
 }
 
-QSize ImageCollection::imageSize() const
+QString ImageCollection::searchDir() const
 {
-	return _imageSize;
+	return _searchDir;
 }
 
-void ImageCollection::setImageSize(const QSize& imageSize)
+void ImageCollection::setSearchDir(const QString& searchDir)
 {
-	_imageSize = imageSize;
+	_searchDir = searchDir;
 }
 
-QStringList ImageCollection::imageFilePaths() const
+QString ImageCollection::filePath() const
 {
-	return _imageFilePaths;
+	return _filePath;
 }
 
-void ImageCollection::add(const QString& imageFilePath)
+void ImageCollection::setFilePath(const QString& filePath)
 {
-	_imageFilePaths = _imageFilePaths << imageFilePath;
+	_filePath = filePath;
 }
 
-int ImageCollection::noDimensions() const
+QSize ImageCollection::sourceSize() const
 {
-	return _noDimensions;
+	return _sourceSize;
 }
 
-void ImageCollection::setNoDimensions(const int& noDimensions)
+void ImageCollection::setSourceSize(const QSize& sourceSize)
 {
-	_noDimensions = noDimensions;
+	_sourceSize = sourceSize;
 }
 
-QDebug operator<<(QDebug dbg, const ImageCollection& imageCollection)
+QSize ImageCollection::targetSize() const
 {
-	const auto imageSize = imageCollection.imageSize();
+	return _targetSize;
+}
 
-	dbg << QString("%1 images at %2x%3").arg(QString::number(imageCollection.imageFilePaths().size()), QString::number(imageSize.width()), QString::number(imageSize.height()));
+void ImageCollection::setTargetSize(const QSize& targetSize)
+{
+	_targetSize = targetSize;
+}
 
-	return dbg;
+void ImageCollection::add(const Image& image)
+{
+	_images << image;
 }

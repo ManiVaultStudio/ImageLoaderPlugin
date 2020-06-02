@@ -20,14 +20,14 @@ public:
 	void scan() override;
 
 	/** Start scan thread */
-	void run() override;
+	//void run() override;
 
 private:
 	/**
 	 * Scan directory
 	 * @param directory Search directory
 	 */
-	void scanDir(const QString& directory);
+	 //void scanDir(const QString& directory);
 
 private:
 	QStringList		_filter;

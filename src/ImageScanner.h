@@ -64,7 +64,7 @@ public:
 	void setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify = false);
 
 	/** Returns the result of the scanning process */
-	std::shared_ptr<Scanned> scanned();
+	//std::shared_ptr<Scanned> scanned();
 	
 public:
 	/** Scan for images */
@@ -81,7 +81,7 @@ signals:
 	 * Signals that scanning ended
 	 * @param scanned Scanned images
 	 */
-	void endScan(std::shared_ptr<Scanned> scanned);
+	//void endScan(std::shared_ptr<Scanned> scanned);
 
 	/**
 	 * Signals that the search directory changed
@@ -112,6 +112,5 @@ protected:
 	QString						_directory;					/** Top directory to search in (recursively) */
 	QStringList					_previousDirectories;		/** List of previously visited directories */
 	QStringList					_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */
-	std::shared_ptr<Scanned>	_scanned;					/** Result of scanning */
 	bool						_initialized;				/** Whether the scanner is initialized or not */
 };

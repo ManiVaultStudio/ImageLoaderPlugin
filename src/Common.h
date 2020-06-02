@@ -13,3 +13,9 @@ enum class ImageResamplingFilter
 	CatmullRom,		/** Catmull-rom filter */
 	Lanczos			/** Lanczos filter */
 };
+
+template <typename E>
+constexpr auto ult(E e) noexcept
+{
+	return static_cast<std::underlying_type_t<E>>(e);
+}

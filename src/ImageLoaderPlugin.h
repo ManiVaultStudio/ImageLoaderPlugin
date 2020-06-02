@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "Payload.h"
 
+#include "ImageCollectionsModel.h"
+
 #include <LoaderPlugin.h>
 
 #include <QSettings>
@@ -32,6 +34,9 @@ public:
 	 * @param payload High dimensional image data payload
 	 */
 	QString addImages(std::shared_ptr<Payload> payload);
+
+private:
+	ImageCollectionsModel		_imageCollectionsModel;		/** Image collections model */
 };
 
 /**

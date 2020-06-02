@@ -1,6 +1,6 @@
-#include "ImageStackWidget.h"
+#include "StackSettingsWidget.h"
 
-#include "ui_ImageStackWidget.h"
+#include "ui_StackSettingsWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -8,14 +8,15 @@
 
 #include "ImageLoaderPlugin.h"
 
-ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
-	_imageLoaderPlugin(imageLoaderPlugin),
-	_ui{ std::make_unique<Ui::ImageStackWidget>() },
+StackSettingsWidget::StackSettingsWidget(QObject* parent) :
+	_imageLoaderPlugin(nullptr),
+	_ui{ std::make_unique<Ui::StackSettingsWidget>() },
 	_scanner(),
-	_loader(imageLoaderPlugin, ImageData::Type::Stack)
+	_loader(nullptr, ImageData::Type::Stack)
 {
 	_ui->setupUi(this);
 
+	/*
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
 	});
@@ -48,13 +49,11 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	});
 	
 	connect(_ui->loadPushButton, &QPushButton::clicked, [this]() {
-		/*
-		foreach(QString key, _scanner.scanned()->map().keys()) {
-			if (key != _ui->stacksComboBox->currentData().toString()) {
-				_scanner.scanned()->map().remove(key);
-			}
-		}
-		*/
+		//foreach(QString key, _scanner.scanned()->map().keys()) {
+		//	if (key != _ui->stacksComboBox->currentData().toString()) {
+		//		_scanner.scanned()->map().remove(key);
+		//	}
+		//}
 
 		_loader.load(_scanner.scanned());
 
@@ -109,11 +108,12 @@ ImageStackWidget::ImageStackWidget(ImageLoaderPlugin* imageLoaderPlugin) :
 	_ui->previousDirectoriesComboBox->setVisible(false);
 	
 	_scanner.loadSettings();
+	*/
 }
 
-ImageStackWidget::~ImageStackWidget() = default;
+StackSettingsWidget::~StackSettingsWidget() = default;
 
-void ImageStackWidget::showEvent(QShowEvent* showEvent)
+void StackSettingsWidget::showEvent(QShowEvent* showEvent)
 {
 	_scanner.scan();
 

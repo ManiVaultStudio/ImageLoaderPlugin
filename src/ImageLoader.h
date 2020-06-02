@@ -44,7 +44,7 @@ public:
 	 * Load scanned images
 	 * @param scanned Scanned images
 	 */
-	void load(std::shared_ptr<Scanned> scanned);
+	//void load(std::shared_ptr<Scanned> scanned);
 
 	/**
 	 * Starts the loader thread
@@ -63,13 +63,13 @@ public:
 	void setDatasetName(const QString& datasetName, const bool& notify = false);
 
 	/**  Returns the scanned images */
-	std::shared_ptr<Scanned> scanned() const;
+	//std::shared_ptr<Scanned> scanned() const;
 
 	/**
 	 * Sets the scanned images
 	 * @param scanned Scanned images
 	 */
-	void setScanned(std::shared_ptr<Scanned> scanned);
+	//void setScanned(std::shared_ptr<Scanned> scanned);
 
 private:
 	/**
@@ -120,5 +120,4 @@ private:
 	QString						_datasetName;			/** Name of the data set */
 	SubsampleSettings			_subsampleSettings;		/** Image subsample settings */
 	ColorSettings				_colorSettings;			/** Image color settings */
-	std::shared_ptr<Scanned>	_scanned;				/** Scanned image collections */
 };
