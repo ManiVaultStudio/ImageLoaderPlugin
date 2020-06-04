@@ -200,25 +200,25 @@
   <customwidget>
    <class>SequenceSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>sequencesettingswidget.h</header>
+   <header>SequenceSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>StackSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>stacksettingswidget.h</header>
+   <header>StackSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ColorSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>colorsettingswidget.h</header>
+   <header>ColorSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>SubsampleSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>subsamplesettingswidget.h</header>
+   <header>SubsampleSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
