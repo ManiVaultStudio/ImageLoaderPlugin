@@ -22,12 +22,13 @@ void ImageSequenceScanner::loadSettings()
 
 void ImageSequenceScanner::scan()
 {
-	start();
+//	start();
 }
 
+/*
 void ImageSequenceScanner::run()
 {
-	/*
+	
 	if (!_initialized)
 		return;
 
@@ -57,8 +58,10 @@ void ImageSequenceScanner::run()
 	}
 
 	emit endScan(_scanned);
-	*/
+	
 }
+*/
+
 /*
 void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& imageCollection)
 {

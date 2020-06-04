@@ -19,9 +19,9 @@ ImageStackScanner::ImageStackScanner() :
 
 void ImageStackScanner::scan()
 {
-	emit beginScan();
+	//emit beginScan();
 
-	start();
+	//start();
 }
 
 /*

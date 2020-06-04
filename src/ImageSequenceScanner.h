@@ -23,11 +23,8 @@ public:
 	void loadSettings() override;
 
 public:
-	/** Scan for image sequences */
-	void scan() override;
-
-	/** Start scan thread */
-	void run() override;
+	/** Scan for images */
+	virtual void scan() override;
 
 private:
 	/**

@@ -8,15 +8,22 @@
 
 #include "ImageLoaderPlugin.h"
 
-StackSettingsWidget::StackSettingsWidget(QObject* parent) :
+StackSettingsWidget::StackSettingsWidget(QWidget* parent) :
+	QWidget(parent),
 	_imageLoaderPlugin(nullptr),
 	_ui{ std::make_unique<Ui::StackSettingsWidget>() },
 	_scanner(),
 	_loader(nullptr, ImageData::Type::Stack)
 {
 	_ui->setupUi(this);
+}
 
-	/*
+StackSettingsWidget::~StackSettingsWidget() = default;
+
+void StackSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
+{
+	_imageLoaderPlugin = imageLoaderPlugin;
+
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
 	});
@@ -38,6 +45,7 @@ StackSettingsWidget::StackSettingsWidget(QObject* parent) :
 		}
 	});
 
+
 	connect(&_loader, &ImageLoader::datasetNameChanged, [this](const QString& datasetName) {
 		_ui->datasetNameLineEdit->blockSignals(true);
 		_ui->datasetNameLineEdit->setText(datasetName);
@@ -47,19 +55,8 @@ StackSettingsWidget::StackSettingsWidget(QObject* parent) :
 	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [this](const QString& text) {
 		_loader.setDatasetName(text);
 	});
-	
-	connect(_ui->loadPushButton, &QPushButton::clicked, [this]() {
-		//foreach(QString key, _scanner.scanned()->map().keys()) {
-		//	if (key != _ui->stacksComboBox->currentData().toString()) {
-		//		_scanner.scanned()->map().remove(key);
-		//	}
-		//}
 
-		_loader.load(_scanner.scanned());
-
-		_ui->loadPushButton->setEnabled(false);
-	});
-
+	/*
 	connect(&_scanner, &ImageStackScanner::settingsChanged, [this]() {
 		_scanner.scan();
 	});
@@ -92,7 +89,7 @@ StackSettingsWidget::StackSettingsWidget(QObject* parent) :
 
 		_ui->stacksComboBox->addItems(items);
 	}, Qt::QueuedConnection);
-	
+
 	connect(&_loader, &ImageLoader::beginLoad, this, [this]() {
 		_ui->loadPushButton->setText("Loading...");
 	}, Qt::QueuedConnection);
@@ -106,12 +103,10 @@ StackSettingsWidget::StackSettingsWidget(QObject* parent) :
 	_ui->colorSettingsWidget->initialize(&_loader.colorSettings());
 
 	_ui->previousDirectoriesComboBox->setVisible(false);
-	
+
 	_scanner.loadSettings();
 	*/
 }
-
-StackSettingsWidget::~StackSettingsWidget() = default;
 
 void StackSettingsWidget::showEvent(QShowEvent* showEvent)
 {

@@ -84,7 +84,7 @@ set(COLOR_SETTINGS_SOURCES
 	src/ColorSettingsWidget.cpp
 )
 
-file(GLOB MODEL_SOURCES src/*Model.*)
+file(GLOB MODEL_SOURCES src/*Model.* )
 
 set(AUX src/ImageLoaderPlugin.json)
 

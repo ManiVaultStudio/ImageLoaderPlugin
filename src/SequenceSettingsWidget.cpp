@@ -7,14 +7,24 @@
 #include <QFileDialog>
 #include <QDir>
 
-SequenceSettingsWidget::SequenceSettingsWidget(QObject* parent) :
+SequenceSettingsWidget::SequenceSettingsWidget(QWidget* parent) :
+	QWidget(parent),
 	_imageLoaderPlugin(nullptr),
 	_ui{ std::make_unique<Ui::SequenceSettingsWidget>() },
 	_scanner(),
 	_loader(nullptr, ImageData::Type::Sequence)
 {
 	_ui->setupUi(this);
-	
+}
+
+SequenceSettingsWidget::~SequenceSettingsWidget() = default;
+
+void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
+{
+	_imageLoaderPlugin = imageLoaderPlugin;
+
+	//_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
+
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
 	});
@@ -26,10 +36,10 @@ SequenceSettingsWidget::SequenceSettingsWidget(QObject* parent) :
 		_ui->datasetNameLineEdit->setEnabled(!directory.isEmpty());
 		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 	});
-	
+
 	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
 		const auto initialDirectory = _loader.setting("Directory").toString();
-		const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
+		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
 		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
 			_scanner.setDirectory(pickedDirectory);
@@ -80,13 +90,4 @@ SequenceSettingsWidget::SequenceSettingsWidget(QObject* parent) :
 	}, Qt::QueuedConnection);
 
 	_scanner.loadSettings();
-}
-
-SequenceSettingsWidget::~SequenceSettingsWidget() = default;
-
-void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
-{
-	_imageLoaderPlugin = imageLoaderPlugin;
-
-	_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
 }

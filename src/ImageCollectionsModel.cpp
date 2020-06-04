@@ -117,8 +117,6 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
 		case Column::SearchDir:
 		case Column::FilePath:
-		case Column::Index:
-		case Column::ShouldLoad:
 		case Column::SourceSize:
 		case Column::TargetSize:
 			break;

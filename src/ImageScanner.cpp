@@ -4,7 +4,6 @@
 #include <QDir>
 
 ImageScanner::ImageScanner(const ImageData::Type& type) :
-	QThread(),
 	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Scanner").arg(ImageData::typeName(type))),
 	_type(type),
 	_directory(),
@@ -28,6 +27,11 @@ void ImageScanner::loadSettings()
 	setPreviousDirectories(setting("PreviousDirectories", QVariant::fromValue(QStringList())).toStringList(), true);
 
 	_initialized = true;
+}
+
+void ImageScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin)
+{
+	_imageLoaderPlugin = imageLoaderPlugin;
 }
 
 QString ImageScanner::directory() const

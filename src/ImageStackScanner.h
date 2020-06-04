@@ -16,11 +16,8 @@ public:
 	/** Default constructor */
 	ImageStackScanner();
 
-	/** Scan for image stacks */
-	void scan() override;
-
-	/** Start scan thread */
-	//void run() override;
+	/** Scan for images */
+	virtual void scan() override;
 
 private:
 	/**

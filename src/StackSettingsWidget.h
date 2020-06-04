@@ -17,7 +17,9 @@ class QEvent;
 
 /**
  * Image stack widget
+ *
  * User interface widget for image stack loader/scanner settings
+ *
  * @author Thomas Kroes
  */
 class StackSettingsWidget : public QWidget
@@ -27,12 +29,22 @@ class StackSettingsWidget : public QWidget
 public:
 	/**
 	 * Constructor
-	 * @param parent Parent object
+	 * @param parent Parent widget
 	 */
-	StackSettingsWidget(QObject* parent);
+	StackSettingsWidget(QWidget* parent);
 
 	/** Destructor */
 	~StackSettingsWidget();
+
+public: // Initialization
+
+	/**
+	 * Initializes the widget with a loader plugin
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 */
+	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
+
+public: // Miscellaneous
 
 	/** Returns the image scanner */
 	ImageStackScanner& scanner() { return _scanner; }
@@ -40,7 +52,8 @@ public:
 	/** Returns the image loader */
 	ImageLoader& loader() { return _loader; };
 
-private:
+public: // Miscellaneous
+
 	/**
 	 * Invoked when the widget is show on the screen
 	 * @param showEvent Show event
@@ -48,7 +61,7 @@ private:
 	void showEvent(QShowEvent* showEvent);
 
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
+	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with the image collections model) */
 	std::unique_ptr<Ui::StackSettingsWidget>	_ui;					/** Externally loaded UI */
 	ImageStackScanner							_scanner;				/** Scanner */
 	ImageLoader									_loader;				/** Loader */

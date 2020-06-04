@@ -3,15 +3,14 @@
 #include "ImageLoader.h"
 #include "Settings.h"
 
-#include <QThread>
-
 /**
  * Image scanner class
+ *
  * Provides functionality for (recursively) scanning a directory
  * for candidate image collections e.g. sequence and stack
  * @author Thomas Kroes
  */
-class ImageScanner : public QThread, public Settings {
+class ImageScanner : public QObject, public Settings {
 	Q_OBJECT
 
 public:
@@ -27,6 +26,12 @@ public:
 	/** Load image scanner settings */
 	virtual void loadSettings();
 	
+	/**
+	 * Sets the image loader plugin
+	 * @param imageLoaderPlugin Pointer to image loader plugin (for interfacing with the image collections model)
+	 */
+	void setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin);
+
 	/** Returns the search directory */
 	QString	directory() const;
 
@@ -108,9 +113,10 @@ signals:
 	void message(const QString& message);
 
 protected:
-	ImageData::Type				_type;						/** Type of image collection e.g. sequence, stack */
-	QString						_directory;					/** Top directory to search in (recursively) */
-	QStringList					_previousDirectories;		/** List of previously visited directories */
-	QStringList					_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */
-	bool						_initialized;				/** Whether the scanner is initialized or not */
+	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with the image collections model) */
+	ImageData::Type			_type;						/** Type of image collection e.g. sequence, stack */
+	QString					_directory;					/** Top directory to search in (recursively) */
+	QStringList				_previousDirectories;		/** List of previously visited directories */
+	QStringList				_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */
+	bool					_initialized;				/** Whether the scanner is initialized or not */
 };

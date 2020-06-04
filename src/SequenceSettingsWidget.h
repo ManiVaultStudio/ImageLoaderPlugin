@@ -15,7 +15,9 @@ class ImageLoaderPlugin;
 
 /**
  * Image sequence widget
+ *
  * User interface widget for image sequence loader/scanner settings
+ *
  * @author Thomas Kroes
  */
 class SequenceSettingsWidget : public QWidget
@@ -26,9 +28,9 @@ public: // Construction/destruction
 
 	/**
 	 * Constructor 
-	 * @param parent Parent object
+	 * @param parent Parent widget
 	 */
-	SequenceSettingsWidget(QObject* parent);
+	SequenceSettingsWidget(QWidget* parent);
 
 	/** Destructor */
 	~SequenceSettingsWidget();
@@ -41,6 +43,8 @@ public: // Initialization
 	 */
 	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
+public: // Miscellaneous
+
 	/** Returns the image scanner */
 	ImageSequenceScanner& scanner() { return _scanner; }
 
@@ -48,8 +52,8 @@ public: // Initialization
 	ImageLoader& loader() { return _loader; };
 
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to the ImageLoaderPlugin */
-	std::unique_ptr<Ui::SequenceSettingsWidget>	_ui;					/** Externally loaded UI */
-	ImageSequenceScanner						_scanner;				/** Scanner */
-	ImageLoader									_loader;				/** Loader */
+	ImageLoaderPlugin*								_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with the image collections model) */
+	std::unique_ptr<Ui::SequenceSettingsWidget>		_ui;						/** Externally loaded UI */
+	ImageSequenceScanner							_scanner;					/** Scanner */
+	ImageLoader										_loader;					/** Loader */
 };

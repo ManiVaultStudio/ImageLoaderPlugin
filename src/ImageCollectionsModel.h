@@ -17,20 +17,15 @@ class ImageCollectionsModel : public QAbstractListModel
 {
 public: // Enumerations
 
-	/**
-	 * Model columns
-	 * Defines the image collections model columns
-	 */
+	/** TODO: Write description */
 	enum class Column {
 		Name,				/** The name of the image (collection) */
 		SearchDir,			/** Initial directory where the search was started */
-		FilePath,			/** Absolute file path */
-		Index,				/** Image index */
-		ShouldLoad,			/** Whether the image should be loaded */
-		SourceSize,			/** Size of the source image */
-		TargetSize,			/** Size of the target image */
+		FilePath,			/** Absolute file path in case of multi-layer TIFF image */
+		SourceSize,			/** Size of the source image(s) */
+		TargetSize,			/** Size of the target image(s) */
 
-		Start = Index,		/** Column start */
+		Start = Name,		/** Column start */
 		End = TargetSize	/** Column End */
 	};
 
@@ -45,12 +40,6 @@ public: // Enumerations
 
 			case Column::FilePath:
 				return "File path";
-
-			case Column::Index:
-				return "Image index";
-
-			case Column::ShouldLoad:
-				return "Load";
 
 			case Column::SourceSize:
 				return "Source size";
