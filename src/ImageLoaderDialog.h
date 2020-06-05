@@ -14,7 +14,7 @@ class QStatusBar;
 class QProgressBar;
 
 class ImageLoaderPlugin;
-class SequenceSettingsWidget;
+class CommonSettingsWidget;
 class StackSettingsWidget;
 class MultiPartImageSequenceWidget;
 class ResampleImageSettingsWidget;

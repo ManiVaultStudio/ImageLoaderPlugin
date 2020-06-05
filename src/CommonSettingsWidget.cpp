@@ -1,25 +1,25 @@
-#include "SequenceSettingsWidget.h"
+#include "CommonSettingsWidget.h"
 #include "ImageLoaderPlugin.h"
 
-#include "ui_SequenceSettingsWidget.h"
+#include "ui_CommonSettingsWidget.h"
 
 #include <QDebug>
 #include <QFileDialog>
 #include <QDir>
 
-SequenceSettingsWidget::SequenceSettingsWidget(QWidget* parent) :
+CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
 	QWidget(parent),
 	_imageLoaderPlugin(nullptr),
-	_ui{ std::make_unique<Ui::SequenceSettingsWidget>() },
+	_ui{ std::make_unique<Ui::CommonSettingsWidget>() },
 	_scanner(),
 	_loader(nullptr, ImageData::Type::Sequence)
 {
 	_ui->setupUi(this);
 }
 
-SequenceSettingsWidget::~SequenceSettingsWidget() = default;
+CommonSettingsWidget::~CommonSettingsWidget() = default;
 
-void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
+void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 
@@ -27,8 +27,6 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->sequencesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
 	_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imagesModel());
-
-	
 
 	_scanner.scan();
 

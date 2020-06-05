@@ -72,6 +72,7 @@ public:
 	//std::shared_ptr<Scanned> scanned();
 	
 public:
+
 	/** Scan for images */
 	virtual void scan() = 0;
 

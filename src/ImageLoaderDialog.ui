@@ -45,7 +45,7 @@
     <number>9</number>
    </property>
    <item>
-    <widget class="SequenceSettingsWidget" name="commonSettingsWidget" native="true"/>
+    <widget class="CommonSettingsWidget" name="commonSettingsWidget" native="true"/>
    </item>
    <item>
     <widget class="SubsampleSettingsWidget" name="subsampleSettingswidget" native="true"/>
@@ -113,9 +113,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SequenceSettingsWidget</class>
+   <class>CommonSettingsWidget</class>
    <extends>QWidget</extends>
-   <header>SequenceSettingsWidget.h</header>
+   <header>CommonSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

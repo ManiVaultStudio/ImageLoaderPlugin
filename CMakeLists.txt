@@ -59,15 +59,8 @@ set(SCANNER_SOURCES
 set(IMAGE_SEQUENCE_SOURCES
 	src/ImageSequenceScanner.h
 	src/ImageSequenceScanner.cpp
-	src/SequenceSettingsWidget.h
-    src/SequenceSettingsWidget.cpp
-)
-
-set(IMAGE_STACK_SOURCES
-	src/ImageStackScanner.h
-    src/ImageStackScanner.cpp
-	src/StackSettingsWidget.h 
-    src/StackSettingsWidget.cpp
+	src/CommonSettingsWidget.h
+    src/CommonSettingsWidget.cpp
 )
 
 set(SUBSAMPLE_SETTINGS_SOURCES

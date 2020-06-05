@@ -8,19 +8,19 @@
 #include <QWidget>
 
 namespace Ui {
-	class SequenceSettingsWidget;
+	class CommonSettingsWidget;
 }
 
 class ImageLoaderPlugin;
 
 /**
- * Image sequence widget
+ * Common settings widget
  *
- * User interface widget for image sequence loader/scanner settings
+ * TODO
  *
  * @author Thomas Kroes
  */
-class SequenceSettingsWidget : public QWidget
+class CommonSettingsWidget : public QWidget
 {
 	Q_OBJECT
 
@@ -30,10 +30,10 @@ public: // Construction/destruction
 	 * Constructor 
 	 * @param parent Parent widget
 	 */
-	SequenceSettingsWidget(QWidget* parent);
+	CommonSettingsWidget(QWidget* parent);
 
 	/** Destructor */
-	~SequenceSettingsWidget();
+	~CommonSettingsWidget();
 
 public: // Initialization
 
@@ -52,8 +52,8 @@ public: // Miscellaneous
 	ImageLoader& loader() { return _loader; };
 
 private:
-	ImageLoaderPlugin*								_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
-	std::unique_ptr<Ui::SequenceSettingsWidget>		_ui;						/** Externally loaded UI */
-	ImageSequenceScanner							_scanner;					/** Scanner */
-	ImageLoader										_loader;					/** Loader */
+	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
+	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;						/** Externally loaded UI */
+	ImageSequenceScanner						_scanner;					/** Scanner */
+	ImageLoader									_loader;					/** Loader */
 };

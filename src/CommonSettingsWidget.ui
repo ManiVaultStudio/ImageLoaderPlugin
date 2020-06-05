@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SequenceSettingsWidget</class>
- <widget class="QWidget" name="SequenceSettingsWidget">
+ <class>CommonSettingsWidget</class>
+ <widget class="QWidget" name="CommonSettingsWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>666</width>
-    <height>462</height>
+    <height>517</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -49,7 +49,7 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
        <layout class="QGridLayout" name="imagesGridLayout">
-        <item row="5" column="1">
+        <item row="6" column="1">
          <widget class="QTreeView" name="imagesTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -62,17 +62,7 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="sequencesLabel">
-          <property name="text">
-           <string>Collections</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -87,6 +77,33 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="pickFileLabel">
+          <property name="text">
+           <string>Pick file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="sequencesLabel">
+          <property name="text">
+           <string>Collections</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="directoryLabel">
+          <property name="toolTip">
+           <string>Directory to search for images</string>
+          </property>
+          <property name="text">
+           <string>Pick directory</string>
+          </property>
+         </widget>
         </item>
         <item row="2" column="1">
          <layout class="QHBoxLayout" name="directoryLayout">
@@ -136,27 +153,7 @@
           </item>
          </layout>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="imagesLabel">
-          <property name="text">
-           <string>Image(s)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="directoryLabel">
-          <property name="toolTip">
-           <string>Directory to search for images</string>
-          </property>
-          <property name="text">
-           <string>Pick directory</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QTreeView" name="sequencesTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -175,17 +172,41 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="pickFileLabel">
-          <property name="text">
-           <string>Pick file</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="1">
          <widget class="QPushButton" name="pickFilePushButton">
           <property name="text">
            <string>...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="imagesLabel">
+          <property name="text">
+           <string>Image(s)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="loadAsComboBox">
+          <item>
+           <property name="text">
+            <string>Image sequence</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image stack</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="loadAsLabel">
+          <property name="text">
+           <string>Load as</string>
           </property>
          </widget>
         </item>
