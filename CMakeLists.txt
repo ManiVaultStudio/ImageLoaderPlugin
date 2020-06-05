@@ -21,6 +21,7 @@ endif(MSVC)
 
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
 
 if (NOT FREEIMAGE_FOUND)
