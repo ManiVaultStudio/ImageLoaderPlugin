@@ -28,7 +28,7 @@ public:
 	
 	/**
 	 * Sets the image loader plugin
-	 * @param imageLoaderPlugin Pointer to image loader plugin (for interfacing with the image collections model)
+	 * @param imageLoaderPlugin Pointer to image loader plugin (for interfacing with data models)
 	 */
 	void setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin);
 
@@ -113,7 +113,7 @@ signals:
 	void message(const QString& message);
 
 protected:
-	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with the image collections model) */
+	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
 	ImageData::Type			_type;						/** Type of image collection e.g. sequence, stack */
 	QString					_directory;					/** Top directory to search in (recursively) */
 	QStringList				_previousDirectories;		/** List of previously visited directories */

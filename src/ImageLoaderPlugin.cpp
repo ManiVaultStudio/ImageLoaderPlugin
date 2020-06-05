@@ -19,14 +19,16 @@ ImageLoaderPlugin::ImageLoaderPlugin() :
 	qRegisterMetaType<std::shared_ptr<QImage>>("std::shared_ptr<QImage>");
 	qRegisterMetaType<std::shared_ptr<Payload>>("std::shared_ptr<Payload>");
 
-	ImageCollection imageCollection;
+	/*
+	ImageCollection imageCollection("C:\test", "jpg", QSize(32, 32));
 
-	imageCollection.setName("Thomas");
+	imageCollection.setDatasetName("Thomas");
 
-	imageCollection.add(ImageCollection::Image("Test A", true, "C:\test\a.jpg", QSize(32, 32)));
-	imageCollection.add(ImageCollection::Image("Test B", true, "C:\test\b.jpg", QSize(32, 32)));
+	imageCollection.addImage("C:\test\a.jpg");
+	imageCollection.addImage("C:\test\b.jpg");
 
-	_imageCollectionsModel.insert(0, imageCollection);
+	_imageCollectionsModel.insert(0, std::vector<ImageCollection>({ imageCollection }));
+	*/
 }
 
 void ImageLoaderPlugin::init()

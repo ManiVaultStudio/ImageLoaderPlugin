@@ -38,7 +38,7 @@ public: // Construction/destruction
 public: // Initialization
 
 	/**
-	 * Initializes the widget with a loader plugin
+	 * Initializes the widget
 	 * @param imageLoaderPlugin Pointer to image loader plugin
 	 */
 	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
@@ -52,7 +52,7 @@ public: // Miscellaneous
 	ImageLoader& loader() { return _loader; };
 
 private:
-	ImageLoaderPlugin*								_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with the image collections model) */
+	ImageLoaderPlugin*								_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
 	std::unique_ptr<Ui::SequenceSettingsWidget>		_ui;						/** Externally loaded UI */
 	ImageSequenceScanner							_scanner;					/** Scanner */
 	ImageLoader										_loader;					/** Loader */

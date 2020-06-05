@@ -32,12 +32,10 @@ public: // Nested image class
 
 		/**
 		 * Constructor
-		 * @param name Name of the image
-		 * @param shouldLoad Whether the image should be loaded
 		 * @param filePath Absolute file path of the image
-		 * @param sourceSize Source size of the image
+		 * @param pageIndex Page index (in case of multi-layer TIFF)
 		 */
-		Image(const QString& name, const bool& shouldLoad, const QString& filePath, const QSize& sourceSize);
+		Image(const QString& filePath, const std::int32_t& pageIndex = -1);
 
 	public: // Getters/setters
 
@@ -50,14 +48,14 @@ public: // Nested image class
 		 */
 		void setImageCollection(ImageCollection* imageCollection);
 
-		/** Returns the image name */
-		QString name() const;
+		/** Returns the absolute image file path */
+		QString filePath() const;
 
 		/**
-		 * Sets the image name
-		 * @param name Image name
+		 * Sets the absolute image file path
+		 * @param filePath Absolute image file path
 		 */
-		void setName(const QString& name);
+		void setFilePath(const QString& filePath);
 
 		/** Returns whether the image should be loaded or not */
 		bool shouldLoad() const;
@@ -68,60 +66,36 @@ public: // Nested image class
 		 */
 		void setShouldLoad(const bool& shouldLoad);
 
-		/** Returns the absolute image file path */
-		QString filePath() const;
+		/** Returns the page index (in case of multi-layer TIFF) */
+		std::int32_t pageIndex() const;
 
 		/**
-		 * Sets the absolute image file path
-		 * @param filePath Absolute image file path
+		 * Sets the page index
+		 * @param pageIndex Page index
 		 */
-		void setShouldLoad(const QString& filePath);
-
-		/** Returns the source image size */
-		QSize sourceSize() const;
-
-		/**
-		 * Sets the source image size
-		 * @param sourceSize Size of the source image
-		 */
-		void setSourceSize(const QSize& sourceSize);
-
-		/** Returns the target image size */
-		QSize targetSize() const;
-
-		/**
-		 * Sets the target image size
-		 * @param targetSize Size of the target image
-		 */
-		void setTargetSize(const QSize& targetSize);
+		void setPageIndex(const std::int32_t& pageIndex);
 
 	private:
 		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
-		QString				_name;				/** The dimension name of the image */
-		bool				_shouldLoad;		/** Whether the image should be loaded */
 		QString				_filePath;			/** The absolute image file path */
-		QSize				_sourceSize;		/** Size of the source image */
-		QSize				_targetSize;		/** Size of the target image */
+		bool				_shouldLoad;		/** Whether the image should be loaded */
+		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
 	};
 
 public: // Construction
 
-	/** Default constructor */
-	ImageCollection();
+	/**
+	 * Constructor
+	 * @param searchDir Search directory
+	 * @param imageType Image type
+	 * @param sourceSize Source image size
+	 */
+	ImageCollection(const QString& searchDir, const QString& imageType, const QSize& sourceSize);
 
 public: // Getters/setters
 
-	/** Returns the image collection name */
-	QString name() const;
-
-	/**
-	 * Sets the image collection name
-	 * @param name Image collection name
-	 */
-	void setName(const QString& name);
-
 	/** Returns the search directory */
-	QString searchDir() const;
+	QVariant searchDir(const int& role) const;
 
 	/**
 	 * Sets the search directory
@@ -129,17 +103,17 @@ public: // Getters/setters
 	 */
 	void setSearchDir(const QString& searchDir);
 
-	/** Returns the absolute file path */
-	QString filePath() const;
+	/** Returns the image type */
+	QVariant imageType(const int& role) const;
 
 	/**
-	 * Sets the absolute file path
-	 * @param filePath Absolute file path
+	 * Sets the image type
+	 * @param imageType Image type
 	 */
-	void setFilePath(const QString& filePath);
+	void setImageType(const QString& imageType);
 
 	/** Returns the source image size */
-	QSize sourceSize() const;
+	QVariant sourceSize(const int& role) const;
 
 	/**
 	 * Sets the source image size
@@ -148,7 +122,7 @@ public: // Getters/setters
 	void setSourceSize(const QSize& sourceSize);
 
 	/** Returns the target image size */
-	QSize targetSize() const;
+	QVariant targetSize(const int& role) const;
 
 	/**
 	 * Sets the target image size
@@ -156,8 +130,17 @@ public: // Getters/setters
 	 */
 	void setTargetSize(const QSize& targetSize);
 
+	/** Returns the dataset name */
+	QVariant datasetName(const int& role) const;
+
+	/**
+	 * Sets the dataset name
+	 * @param datasetName Dataset name
+	 */
+	void setDatasetName(const QString& datasetName);
+
 	/** Returns the number of images */
-	std::uint32_t noImages() const;
+	QVariant noImages(const int& role) const;
 
 	/**
 	 * Get image by index
@@ -169,15 +152,16 @@ public:
 
 	/**
 	 * Add image to the collection
-	 * @param image Image to add
+	 * @param filePath Absolute file path of the image
+	 * @param pageIndex Page index (in case of multi-layer TIFF)
 	 */
-	void add(const Image& image);
+	void addImage(const QString& filePath, const std::int32_t& pageIndex = -1);
 
 private:
-	QString				_name;				/** The name of the image collection */
-	QString				_searchDir;			/** Initial directory where the search was started */
-	QString				_filePath;			/** Absolute file path (multi-layer TIFF) */
-	QSize				_sourceSize;		/** Size of the source image */
-	QSize				_targetSize;		/** Size of the target image */
-	QVector<Image>		_images;			/** Images */
+	QString					_searchDir;			/** Initial directory where the search was started */
+	QString					_imageType;			/** Type of image */
+	QSize					_sourceSize;		/** Size of the source image */
+	QSize					_targetSize;		/** Size of the target image */
+	QString					_datasetName;		/** The name of the dataset */
+	std::vector<Image>		_images;			/** Images */
 };

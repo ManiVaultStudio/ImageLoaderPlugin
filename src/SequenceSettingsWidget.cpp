@@ -23,6 +23,9 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 
+	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
+
+	_ui->sequencesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
 	//_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
 
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
@@ -33,21 +36,15 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
-		_ui->datasetNameLineEdit->setEnabled(!directory.isEmpty());
-		_ui->datasetNameLineEdit->setText(QDir(directory).dirName());
 	});
 
 	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
-		const auto initialDirectory = _loader.setting("Directory").toString();
-		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
+		const auto initialDirectory	= _scanner.directory();
+		const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
 		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
 			_scanner.setDirectory(pickedDirectory);
 		}
-	});
-
-	connect(_ui->datasetNameLineEdit, &QLineEdit::textChanged, [this](const QString& text) {
-		_loader.setDatasetName(text);
 	});
 
 	connect(_ui->scanPushButton, &QPushButton::clicked, [this]() {
@@ -73,12 +70,6 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->scanPushButton->setEnabled(false);
 	}, Qt::QueuedConnection);
 	*/
-
-	connect(&_loader, &ImageLoader::datasetNameChanged, [this](const QString& datasetName) {
-		_ui->datasetNameLineEdit->blockSignals(true);
-		_ui->datasetNameLineEdit->setText(datasetName);
-		_ui->datasetNameLineEdit->blockSignals(false);
-	});
 
 	/*
 	connect(&_loader, &ImageLoader::settingsChanged, [this]() {

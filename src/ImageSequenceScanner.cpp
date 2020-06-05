@@ -1,4 +1,5 @@
 #include "ImageSequenceScanner.h"
+#include "ImageLoaderPlugin.h"
 
 #include <QDebug>
 #include <QDir>
@@ -22,50 +23,32 @@ void ImageSequenceScanner::loadSettings()
 
 void ImageSequenceScanner::scan()
 {
-//	start();
+	std::vector<ImageCollection> sequences;
+
+	QStringList nameFilters;
+
+	for (const auto& supportedImageType : supportedImageTypes())
+		nameFilters << "*." + supportedImageType;
+
+	qDebug() << nameFilters;
+
+	scanDir(_directory, nameFilters, sequences);
+
+	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+	
+	imageCollectionsModel.clear();
+	imageCollectionsModel.insert(0, sequences);
 }
 
-/*
-void ImageSequenceScanner::run()
+auto ImageSequenceScanner::findSequence(std::vector<ImageCollection>& sequences, const QString& imageType, const QSize& imageSize)
 {
-	
-	if (!_initialized)
-		return;
-
-	emit beginScan();
-
-	emit message("Scanning for image files...");
-
-	_scanned->reset();
-
-	auto imageCollection = ImageCollection(_imageSizeFilter);
-
-	imageCollection.setNoDimensions(_imageSizeFilter.width() * _imageSizeFilter.height());
-
-	scanDir(_directory, imageCollection);
-
-	const auto noImages = imageCollection.noImages();
-
-	if (noImages > 0) {
-		const auto datasetName = QDir(_directory).dirName();
-
-		_scanned->set(datasetName, imageCollection);
-
-		emit message(QString("Found %1 images").arg(noImages));
-	}
-	else {
-		emit message("No images were found...");
-	}
-
-	emit endScan(_scanned);
-	
+	return std::find_if(sequences.begin(), sequences.end(), [&imageType, &imageSize](const auto& sequence) {
+		return sequence.imageType(Qt::EditRole).toString() == imageType && sequence.sourceSize(Qt::EditRole).toSize() == imageSize;
+	});
 }
-*/
 
-/*
-void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& imageCollection)
+void ImageSequenceScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences)
 {
-	
 	auto subDirectories = QDir(directory);
 
 	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -76,29 +59,40 @@ void ImageSequenceScanner::scanDir(const QString& directory, ImageCollection& im
 	{
 		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
 
-		scanDir(path, imageCollection);
+		scanDir(path, nameFilters, sequences);
 	}
-
+	
 	auto imageFiles = QDir(directory);
 
 	imageFiles.setFilter(QDir::Files);
-	imageFiles.setNameFilters(QStringList() << "*." + _imageTypeFilter);
+	imageFiles.setNameFilters(nameFilters);
 
 	const auto fileList = imageFiles.entryList();
 
 	for (int i = 0; i < fileList.size(); ++i)
 	{
-		const auto fileName = fileList.at(i);
-		const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+		const auto fileName			= fileList.at(i);
+		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+		const auto imageType		= QFileInfo(fileName).suffix();
 
 		QImageReader imageReader(imageFilePath);
 
-		if (imageReader.size() == _imageSizeFilter) {
-			imageCollection.add(imageFilePath);
+		const auto imageSize = imageReader.size();
+		
+		auto it = findSequence(sequences, imageType, imageSize);
 
-			emit message(QString("Found %1").arg(fileName));
+		if (it == sequences.end()) {
+			auto imageCollection = ImageCollection(_directory, imageType, imageSize);
+
+			imageCollection.addImage(imageFilePath);
+
+			sequences.push_back(imageCollection);
+
+			qDebug() << "Not found";
+		}
+		else {
+			
+			(*it).addImage(imageFilePath);
 		}
 	}
-	
 }
-*/

@@ -61,8 +61,8 @@ public: // Miscellaneous
 	void showEvent(QShowEvent* showEvent);
 
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with the image collections model) */
-	std::unique_ptr<Ui::StackSettingsWidget>	_ui;					/** Externally loaded UI */
-	ImageStackScanner							_scanner;				/** Scanner */
-	ImageLoader									_loader;				/** Loader */
+	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
+	std::unique_ptr<Ui::StackSettingsWidget>	_ui;					/** UI from Qt creator */
+	ImageStackScanner							_scanner;				/** Image sequence(s) scanner */
+	ImageLoader									_loader;				/** Image sequence loader */
 };

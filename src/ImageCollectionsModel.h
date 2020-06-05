@@ -19,33 +19,33 @@ public: // Enumerations
 
 	/** TODO: Write description */
 	enum class Column {
-		Name,				/** The name of the image (collection) */
-		SearchDir,			/** Initial directory where the search was started */
-		FilePath,			/** Absolute file path in case of multi-layer TIFF image */
-		SourceSize,			/** Size of the source image(s) */
-		TargetSize,			/** Size of the target image(s) */
+		DatasetName,			/** The name of the dataset */
+		NoImages,				/** Number of images in the collection */
+		SourceSize,				/** Size of the source image(s) */
+		TargetSize,				/** Size of the target image(s) */
+		SearchDir,				/** Initial directory where the search was started */
 
-		Start = Name,		/** Column start */
-		End = TargetSize	/** Column End */
+		Start = DatasetName,	/** Column start */
+		End = SearchDir			/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
 	static QString columnName(const Column& column) {
 		switch (column) {
-			case Column::Name:
+			case Column::DatasetName:
 				return "Name";
 
-			case Column::SearchDir:
-				return "Search directory";
-
-			case Column::FilePath:
-				return "File path";
+			case Column::NoImages:
+				return "#Images";
 
 			case Column::SourceSize:
 				return "Source size";
 
 			case Column::TargetSize:
 				return "Target size";
+
+			case Column::SearchDir:
+				return "Search directory";
 
 			default:
 				return QString();
@@ -99,13 +99,15 @@ public: // Inherited MVC
 
 public: // Miscellaneous
 
+	/** Clears the model */
+	void clear();
+
 	/**
-	 * Inserts an image collection into the model at the specified row give the parent index
-	 * @param row Row at which to insert the layer
-	 * @param imageCollection Image collection to insert
-	 * @return Whether the image collection was successfully inserted
+	 * Inserts image collections into the model at the specified row
+	 * @param row Row at which to insert the image collections
+	 * @param imageCollections Image collections to insert
 	 */
-	bool insert(int row, const ImageCollection& imageCollection);
+	void insert(int row, const std::vector<ImageCollection>& imageCollections);
 
 	/**
 	 * Returns an image collection by given row index
@@ -114,5 +116,5 @@ public: // Miscellaneous
 	const ImageCollection* imageCollection(const int& row) const;
 
 private:
-	QVector<ImageCollection>	_imageCollections;		/** Images collections */
+	std::vector<ImageCollection>	_imageCollections;		/** Images collections */
 };

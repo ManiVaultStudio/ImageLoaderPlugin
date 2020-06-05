@@ -9,30 +9,44 @@ class QSettings;
 
 /**
  * Image sequence scanner class
- * This class provides functionality for discovering image sequences
+ *
+ * This image scanner class is used to discovering image sequences
+ *
  * @author Thomas Kroes
  */
 class ImageSequenceScanner : public ImageScanner {
 	Q_OBJECT
 
-public:
+public: // Construction
+
 	/** Default constructor */
 	ImageSequenceScanner();
+
+public: // Miscellaneous
 
 	/** Load image scanner settings */
 	void loadSettings() override;
 
-public:
 	/** Scan for images */
 	virtual void scan() override;
 
-private:
 	/**
-	 * Scan directory
-	 * @param directory Search directory
-	 * @param imageCollection Resulting image collection
+	 * Finds a sequence in a collection of sequences based on image type and size
+	 * @param sequences Collection of sequences
+	 * @param imageType Type of image
+	 * @param imageSize Image size
 	 */
-	//void scanDir(const QString& directory, ImageCollection& imageCollection);
+	static auto findSequence(std::vector<ImageCollection>& sequences, const QString& imageType, const QSize& imageSize);
+
+private:
+
+	/**
+	 * Scan directory recursively
+	 * @param directory Search directory
+	 * @param nameFilters Image file types to filter
+	 * @param sequences Loaded image sequences
+	 */
+	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences);
 
 private:
 	bool		_square;				/** Whether the image(s) are square */

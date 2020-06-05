@@ -1,24 +1,21 @@
 #include "ImageCollection.h"
 
 #include <QDebug>
+#include <QDir>
 
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
-	_name(),
-	_shouldLoad(true),
 	_filePath(),
-	_sourceSize(),
-	_targetSize()
+	_shouldLoad(true),
+	_pageIndex(-1)
 {
 }
 
-ImageCollection::Image::Image(const QString& name, const bool& shouldLoad, const QString& filePath, const QSize& sourceSize) :
+ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
 	_imageCollection(nullptr),
-	_name(name),
-	_shouldLoad(shouldLoad),
+	_shouldLoad(true),
 	_filePath(filePath),
-	_sourceSize(sourceSize),
-	_targetSize(sourceSize)
+	_pageIndex(pageIndex)
 {
 }
 
@@ -32,14 +29,14 @@ void ImageCollection::Image::setImageCollection(ImageCollection* imageCollection
 	_imageCollection = imageCollection;
 }
 
-QString ImageCollection::Image::name() const
+QString ImageCollection::Image::filePath() const
 {
-	return _name;
+	return _filePath;
 }
 
-void ImageCollection::Image::setName(const QString& name)
+void ImageCollection::Image::setFilePath(const QString& filePath)
 {
-	_name = name;
+	_filePath = filePath;
 }
 
 bool ImageCollection::Image::shouldLoad() const
@@ -52,59 +49,45 @@ void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
 	_shouldLoad = shouldLoad;
 }
 
-void ImageCollection::Image::setShouldLoad(const QString& filePath)
+std::int32_t ImageCollection::Image::pageIndex() const
 {
-	_filePath = filePath;
+	return _pageIndex;
 }
 
-QString ImageCollection::Image::filePath() const
+void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 {
-	return _filePath;
+	_pageIndex = pageIndex;
 }
 
-QSize ImageCollection::Image::sourceSize() const
-{
-	return _sourceSize;
-}
-
-void ImageCollection::Image::setSourceSize(const QSize& sourceSize)
-{
-	_sourceSize = sourceSize;
-}
-
-QSize ImageCollection::Image::targetSize() const
-{
-	return _targetSize;
-}
-
-void ImageCollection::Image::setTargetSize(const QSize& targetSize)
-{
-	_targetSize = targetSize;
-}
-
-ImageCollection::ImageCollection() :
-	_name(),
-	_searchDir(),
-	_filePath(),
-	_sourceSize(),
-	_targetSize(),
+ImageCollection::ImageCollection(const QString& searchDir, const QString& imageType, const QSize& sourceSize) :
+	_searchDir(searchDir),
+	_imageType(imageType),
+	_sourceSize(sourceSize),
+	_targetSize(sourceSize),
+	_datasetName(),
 	_images()
 {
+	_datasetName = QString("%1_%2_%3_%4").arg(QDir(searchDir).dirName(), imageType, QString::number(sourceSize.width()), QString::number(sourceSize.height()));
 }
 
-QString ImageCollection::name() const
+QVariant ImageCollection::searchDir(const int& role) const
 {
-	return _name;
-}
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _searchDir;
 
-void ImageCollection::setName(const QString& name)
-{
-	_name = name;
-}
+		case Qt::EditRole:
+			return _searchDir;
 
-QString ImageCollection::searchDir() const
-{
-	return _searchDir;
+		case Qt::ToolTipRole:
+			return QString("Search directory: %1").arg(_searchDir);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::setSearchDir(const QString& searchDir)
@@ -112,19 +95,51 @@ void ImageCollection::setSearchDir(const QString& searchDir)
 	_searchDir = searchDir;
 }
 
-QString ImageCollection::filePath() const
+QVariant ImageCollection::imageType(const int& role) const
 {
-	return _filePath;
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _imageType;
+
+		case Qt::EditRole:
+			return _imageType;
+
+		case Qt::ToolTipRole:
+			return QString("Image type: %1").arg(_imageType);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
-void ImageCollection::setFilePath(const QString& filePath)
+void ImageCollection::setImageType(const QString& imageType)
 {
-	_filePath = filePath;
+	_imageType = imageType;
 }
 
-QSize ImageCollection::sourceSize() const
+QVariant ImageCollection::sourceSize(const int& role) const
 {
-	return _sourceSize;
+	const auto sourceSizeString = QString("%1x%2").arg(QString::number(_sourceSize.width()), QString::number(_sourceSize.height()));
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return sourceSizeString;
+
+		case Qt::EditRole:
+			return _sourceSize;
+
+		case Qt::ToolTipRole:
+			return QString("Source image size: %1").arg(sourceSizeString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::setSourceSize(const QSize& sourceSize)
@@ -132,9 +147,26 @@ void ImageCollection::setSourceSize(const QSize& sourceSize)
 	_sourceSize = sourceSize;
 }
 
-QSize ImageCollection::targetSize() const
+QVariant ImageCollection::targetSize(const int& role) const
 {
-	return _targetSize;
+	const auto targetSizeString = QString("%1x%2").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height()));
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return targetSizeString;
+
+		case Qt::EditRole:
+			return _targetSize;
+
+		case Qt::ToolTipRole:
+			return QString("Source image size: %1").arg(targetSizeString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::setTargetSize(const QSize& targetSize)
@@ -142,9 +174,51 @@ void ImageCollection::setTargetSize(const QSize& targetSize)
 	_targetSize = targetSize;
 }
 
-std::uint32_t ImageCollection::noImages() const
+QVariant ImageCollection::datasetName(const int& role) const
 {
-	return _images.count();
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _datasetName;
+
+		case Qt::EditRole:
+			return _datasetName;
+
+		case Qt::ToolTipRole:
+			return QString("Dataset name: %1").arg(_datasetName);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::setDatasetName(const QString& datasetName)
+{
+	_datasetName = datasetName;
+}
+
+QVariant ImageCollection::noImages(const int& role) const
+{
+	const auto noImagesString = QString::number(_images.size());
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return noImagesString;
+
+		case Qt::EditRole:
+			return _images.size();
+
+		case Qt::ToolTipRole:
+			return QString("Number of images: %1").arg(noImagesString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
@@ -152,9 +226,9 @@ ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
 	return &_images[index];
 }
 
-void ImageCollection::add(const Image& image)
+void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
-	_images << image;
+	_images.push_back(Image(filePath, pageIndex));
 
-	_images.last().setImageCollection(this);
+	_images.back().setImageCollection(this);
 }
