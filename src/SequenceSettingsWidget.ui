@@ -49,7 +49,7 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
        <layout class="QGridLayout" name="imagesGridLayout">
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QTreeView" name="imagesTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -62,17 +62,17 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="sequencesLabel">
           <property name="text">
-           <string>Sequences</string>
+           <string>Collections</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -82,7 +82,7 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>100</width>
+            <width>120</width>
             <height>0</height>
            </size>
           </property>
@@ -134,19 +134,9 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="scanPushButton">
-            <property name="toolTip">
-             <string>Scan for candidate images</string>
-            </property>
-            <property name="text">
-             <string>Scan</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
-        <item row="4" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="imagesLabel">
           <property name="text">
            <string>Image(s)</string>
@@ -162,11 +152,11 @@
            <string>Directory to search for images</string>
           </property>
           <property name="text">
-           <string>Directory</string>
+           <string>Pick directory</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="4" column="1">
          <widget class="QTreeView" name="sequencesTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -182,6 +172,20 @@
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="pickFileLabel">
+          <property name="text">
+           <string>Pick file</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="pickFilePushButton">
+          <property name="text">
+           <string>...</string>
           </property>
          </widget>
         </item>

@@ -87,8 +87,6 @@ void ImageSequenceScanner::scanDir(const QString& directory, QStringList nameFil
 			imageCollection.addImage(imageFilePath);
 
 			sequences.push_back(imageCollection);
-
-			qDebug() << "Not found";
 		}
 		else {
 			

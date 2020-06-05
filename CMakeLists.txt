@@ -77,13 +77,6 @@ set(SUBSAMPLE_SETTINGS_SOURCES
 	src/SubsampleSettingsWidget.cpp
 )
 
-set(COLOR_SETTINGS_SOURCES
-	src/ColorSettings.h
-	src/ColorSettings.cpp
-	src/ColorSettingsWidget.h
-	src/ColorSettingsWidget.cpp
-)
-
 file(GLOB MODEL_SOURCES src/*Model.* )
 
 set(AUX src/ImageLoaderPlugin.json)
@@ -95,7 +88,6 @@ set(SOURCES
 	${IMAGE_SEQUENCE_SOURCES}
 	${IMAGE_STACK_SOURCES}
 	${SUBSAMPLE_SETTINGS_SOURCES}
-	${COLOR_SETTINGS_SOURCES}
 	${MODEL_SOURCES}
 )
 
@@ -108,7 +100,6 @@ source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
 source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(SubsampleSettings FILES ${SUBSAMPLE_SETTINGS_SOURCES})
-source_group(ColorSettings FILES ${COLOR_SETTINGS_SOURCES})
 source_group(Model FILES ${MODEL_SOURCES})
 source_group(Aux FILES ${AUX})
 

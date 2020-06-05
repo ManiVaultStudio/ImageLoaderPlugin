@@ -4,7 +4,6 @@
 #include "Scanned.h"
 #include "Payload.h"
 #include "SubsampleSettings.h"
-#include "ColorSettings.h"
 
 #include <QThread>
 #include <QString>
@@ -36,9 +35,6 @@ public:
 
 	/** Returns the subsample image settings */
 	SubsampleSettings& subsampleImageSettings();
-
-	/** Returns the color settings */
-	ColorSettings& colorSettings();
 
 	/**
 	 * Load scanned images
@@ -119,5 +115,4 @@ private:
 	ImageData::Type				_type;					/** Type of image collection e.g. sequence, stack */
 	QString						_datasetName;			/** Name of the data set */
 	SubsampleSettings			_subsampleSettings;		/** Image subsample settings */
-	ColorSettings				_colorSettings;			/** Image color settings */
 };

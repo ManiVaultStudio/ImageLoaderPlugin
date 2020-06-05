@@ -133,9 +133,6 @@
     <widget class="SubsampleSettingsWidget" name="subsampleSettingswidget" native="true"/>
    </item>
    <item>
-    <widget class="ColorSettingsWidget" name="colorSettingsWidget" native="true"/>
-   </item>
-   <item>
     <spacer name="bottomVerticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -207,12 +204,6 @@
    <class>StackSettingsWidget</class>
    <extends>QWidget</extends>
    <header>StackSettingsWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ColorSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>ColorSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

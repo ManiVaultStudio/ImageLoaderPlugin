@@ -26,7 +26,11 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
 
 	_ui->sequencesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
-	//_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
+	_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imagesModel());
+
+	
+
+	_scanner.scan();
 
 	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
@@ -36,6 +40,8 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
+
+		_scanner.scan();
 	});
 
 	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
@@ -47,38 +53,11 @@ void SequenceSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	connect(_ui->scanPushButton, &QPushButton::clicked, [this]() {
-		_scanner.scan();
-	});
-
-	connect(&_scanner, &ImageSequenceScanner::settingsChanged, [this]() {
-		_ui->scanPushButton->setEnabled(true);
-	});
-
-	QObject::connect(&_scanner, &ImageSequenceScanner::beginScan, this, [this]() {
-		_ui->scanPushButton->setText("Scanning...");
-	}, Qt::QueuedConnection);
-
-	/*
-	QObject::connect(&_scanner, &ImageSequenceScanner::endScan, this, [this](std::shared_ptr<Scanned> scanned) {
-		const auto loadable = scanned->loadable();
-
-		_ui->datasetNameLabel->setEnabled(loadable);
-		_ui->datasetNameLineEdit->setEnabled(loadable);
-
-		_ui->scanPushButton->setText("Scan");
-		_ui->scanPushButton->setEnabled(false);
-	}, Qt::QueuedConnection);
-	*/
-
 	/*
 	connect(&_loader, &ImageLoader::settingsChanged, [this]() {
 		const auto enableLoad = _scanner.scanned()->loadable();
 	});
 	*/
-
-	QObject::connect(&_loader, &ImageLoader::beginLoad, this, [this]() {
-	}, Qt::QueuedConnection);
 
 	_scanner.loadSettings();
 }

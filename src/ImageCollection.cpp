@@ -221,6 +221,11 @@ QVariant ImageCollection::noImages(const int& role) const
 	return QVariant();
 }
 
+const std::vector<ImageCollection::Image>& ImageCollection::images() const
+{
+	return _images;
+}
+
 ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
 {
 	return &_images[index];

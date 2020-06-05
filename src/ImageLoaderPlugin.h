@@ -4,6 +4,7 @@
 #include "Payload.h"
 
 #include "ImageCollectionsModel.h"
+#include "ImagesModel.h"
 
 #include <LoaderPlugin.h>
 
@@ -35,13 +36,17 @@ public:
 	 */
 	QString addImages(std::shared_ptr<Payload> payload);
 
-public: // Model
+public: // Models
 
 	/** Returns the image collections model */
 	ImageCollectionsModel& imageCollectionsModel() { return _imageCollectionsModel; }
 
+	/** Returns the images model */
+	ImagesModel& imagesModel() { return _imagesModel; }
+
 private:
 	ImageCollectionsModel	_imageCollectionsModel;		/** Image collections model */
+	ImagesModel				_imagesModel;				/** Images model */
 };
 
 /**

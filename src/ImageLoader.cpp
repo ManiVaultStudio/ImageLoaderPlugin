@@ -12,11 +12,9 @@ ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_type(type),
 	_datasetName(),
-	_subsampleSettings(prefix()),
-	_colorSettings(prefix())
+	_subsampleSettings(prefix())
 {
 	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageLoader::settingsChanged);
-	connect(&_colorSettings, &ColorSettings::settingsChanged, this, &ImageLoader::settingsChanged);
 }
 
 ImageData::Type ImageLoader::type() const
@@ -27,11 +25,6 @@ ImageData::Type ImageLoader::type() const
 SubsampleSettings & ImageLoader::subsampleImageSettings()
 {
 	return _subsampleSettings;
-}
-
-ColorSettings& ImageLoader::colorSettings()
-{
-	return _colorSettings;
 }
 
 QString ImageLoader::datasetName() const

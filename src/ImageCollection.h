@@ -142,6 +142,9 @@ public: // Getters/setters
 	/** Returns the number of images */
 	QVariant noImages(const int& role) const;
 
+	/** Get images */
+	const std::vector<Image>& images() const;
+
 	/**
 	 * Get image by index
 	 * @param  index Image index
