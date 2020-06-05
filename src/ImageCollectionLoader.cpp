@@ -1,12 +1,12 @@
 #include "ImageLoaderPlugin.h"
-#include "ImageLoader.h"
-#include "ImageScanner.h"
+#include "ImageCollectionLoader.h"
+#include "ImageCollectionScanner.h"
 #include "FreeImage.h"
 
 #include <QDebug>
 #include <QFileInfo>
 
-ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type) :
+ImageCollectionLoader::ImageCollectionLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type) :
 	QThread(),
 	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(ImageData::typeName(type))),
 	_imageLoaderPlugin(imageLoaderPlugin),
@@ -14,25 +14,25 @@ ImageLoader::ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::
 	_datasetName(),
 	_subsampleSettings(prefix())
 {
-	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageLoader::settingsChanged);
+	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageCollectionLoader::settingsChanged);
 }
 
-ImageData::Type ImageLoader::type() const
+ImageData::Type ImageCollectionLoader::type() const
 {
 	return _type;
 }
 
-SubsampleSettings & ImageLoader::subsampleImageSettings()
+SubsampleSettings & ImageCollectionLoader::subsampleImageSettings()
 {
 	return _subsampleSettings;
 }
 
-QString ImageLoader::datasetName() const
+QString ImageCollectionLoader::datasetName() const
 {
 	return _datasetName;
 }
 
-void ImageLoader::setDatasetName(const QString& datasetName, const bool& notify /*= false*/)
+void ImageCollectionLoader::setDatasetName(const QString& datasetName, const bool& notify /*= false*/)
 {
 	if (!notify && datasetName == _datasetName)
 		return;
@@ -62,7 +62,7 @@ void ImageLoader::load(std::shared_ptr<Scanned> scanned)
 }
 */
 
-void ImageLoader::run()
+void ImageCollectionLoader::run()
 {
 	/*
 	emit beginLoad();
@@ -206,7 +206,7 @@ void ImageLoader::run()
 	*/
 }
 
-void ImageLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
+void ImageCollectionLoader::loadBitmap(fi::FIBITMAP* bitmap, Payload* payload, const QString& imageFilePath, const QString& dimensionName /*= ""*/)
 {
 	/*
 	if (bitmap) {

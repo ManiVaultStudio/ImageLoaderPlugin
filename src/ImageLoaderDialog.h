@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageLoader.h"
+#include "ImageCollectionLoader.h"
 
 #include <QDialog>
 #include <QSettings>
@@ -46,7 +46,7 @@ public:
 	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	std::unique_ptr<Ui::ImageLoaderDialog>		_ui;								/** Externally loaded UI */
-	QSettings									_settings;							/** Settings */
-	ImageLoaderPlugin*							_imageLoaderPlugin;					/** Image loader plugin */
+	std::unique_ptr<Ui::ImageLoaderDialog>		_ui;						/** Externally loaded UI */
+	QSettings									_settings;					/** Settings */
+	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Image loader plugin */
 };

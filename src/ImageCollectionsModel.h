@@ -5,6 +5,7 @@
 #include "ImageData/Images.h"
 
 #include <QAbstractListModel>
+#include <QItemSelectionModel>
 
 /**
  * Image collections model class
@@ -103,6 +104,9 @@ public: // Inherited MVC
 
 public: // Miscellaneous
 
+	/** Returns the selection model */
+	QItemSelectionModel& selectionModel() { return _selectionModel; }
+
 	/** Clears the model */
 	void clear();
 
@@ -121,4 +125,5 @@ public: // Miscellaneous
 
 private:
 	std::vector<ImageCollection>	_imageCollections;		/** Images collections */
+	QItemSelectionModel				_selectionModel;		/** Selection model */
 };

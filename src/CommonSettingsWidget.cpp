@@ -25,8 +25,13 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
 
-	_ui->sequencesTreeView->setModel(&_imageLoaderPlugin->imageCollectionsModel());
-	_ui->imagesTreeView->setModel(&_imageLoaderPlugin->imagesModel());
+	auto& imageCollectionsModel	= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imagesModel			= _imageLoaderPlugin->imagesModel();
+
+	_ui->imageCollectionsTreeView->setModel(&imageCollectionsModel);
+	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
+
+	_ui->imagesTreeView->setModel(&imagesModel);
 
 	_scanner.scan();
 
@@ -34,7 +39,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_scanner.setDirectory(directory);
 	});
 
-	connect(&_scanner, &ImageScanner::directoryChanged, [this](const QString& directory) {
+	connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
@@ -49,6 +54,13 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
 			_scanner.setDirectory(pickedDirectory);
 		}
+	});
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty())
+			qDebug() << selectedRows;
 	});
 
 	/*

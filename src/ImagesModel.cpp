@@ -8,7 +8,8 @@
 
 ImagesModel::ImagesModel() :
 	QAbstractListModel(),
-	_imageCollections()
+	_imageCollections(),
+	_selectionModel(this)
 {
 }
 

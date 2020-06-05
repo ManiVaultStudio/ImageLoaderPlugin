@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImageLoader.h"
+#include "ImageCollectionLoader.h"
 #include "Settings.h"
 
 /**
@@ -10,13 +10,13 @@
  * for candidate image collections e.g. sequence and stack
  * @author Thomas Kroes
  */
-class ImageScanner : public QObject, public Settings {
+class ImageCollectionScanner : public QObject, public Settings {
 	Q_OBJECT
 
 public:
 	/**
 	 * Default constructor */
-	ImageScanner();
+	ImageCollectionScanner();
 
 	/** Load image scanner settings */
 	virtual void loadSettings();

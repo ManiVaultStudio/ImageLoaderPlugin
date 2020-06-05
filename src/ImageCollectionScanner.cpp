@@ -1,11 +1,11 @@
-#include "ImageScanner.h"
+#include "ImageCollectionScanner.h"
 #include "ImageLoaderPlugin.h"
 
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
 
-ImageScanner::ImageScanner() :
+ImageCollectionScanner::ImageCollectionScanner() :
 	Settings("LKEB/CGV", "HDPS", "Plugins/ImageLoader/%1/Scanner"),
 	_directory(),
 	_previousDirectories(),
@@ -19,7 +19,7 @@ ImageScanner::ImageScanner() :
 	setSupportedImageTypes(supportedImageTypes);
 }
 
-void ImageScanner::loadSettings()
+void ImageCollectionScanner::loadSettings()
 {
 	const auto directory = setting("Directory", "").toString();
 
@@ -30,17 +30,17 @@ void ImageScanner::loadSettings()
 	_initialized = true;
 }
 
-void ImageScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin)
+void ImageCollectionScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 }
 
-QString ImageScanner::directory() const
+QString ImageCollectionScanner::directory() const
 {
 	return _directory;
 }
 
-void ImageScanner::setDirectory(const QString& directory, const bool& notify /*= false*/)
+void ImageCollectionScanner::setDirectory(const QString& directory, const bool& notify /*= false*/)
 {
 	if (!notify && directory == _directory)
 		return;
@@ -58,12 +58,12 @@ void ImageScanner::setDirectory(const QString& directory, const bool& notify /*=
 	emit settingsChanged();
 }
 
-QStringList ImageScanner::previousDirectories() const
+QStringList ImageCollectionScanner::previousDirectories() const
 {
 	return _previousDirectories;
 }
 
-void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories, const bool& notify /*= false*/)
+void ImageCollectionScanner::setPreviousDirectories(const QStringList& previousDirectories, const bool& notify /*= false*/)
 {
 	if (!notify && previousDirectories == _previousDirectories)
 		return;
@@ -79,7 +79,7 @@ void ImageScanner::setPreviousDirectories(const QStringList& previousDirectories
 	emit settingsChanged();
 }
 
-void ImageScanner::addPreviousDirectory(const QString& previousDirectory)
+void ImageCollectionScanner::addPreviousDirectory(const QString& previousDirectory)
 {
 //	if (_previousDirectories.contains(previousDirectory))
 //		return;
@@ -89,12 +89,12 @@ void ImageScanner::addPreviousDirectory(const QString& previousDirectory)
 	setPreviousDirectories(_previousDirectories);
 }
 
-QStringList ImageScanner::supportedImageTypes() const
+QStringList ImageCollectionScanner::supportedImageTypes() const
 {
 	return _supportedImageTypes;
 }
 
-void ImageScanner::setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify /*= false*/)
+void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify /*= false*/)
 {
 	if (!notify && supportedImageTypes == _supportedImageTypes)
 		return;
@@ -110,7 +110,7 @@ void ImageScanner::setSupportedImageTypes(const QStringList& supportedImageTypes
 	emit settingsChanged();
 }
 
-void ImageScanner::scan()
+void ImageCollectionScanner::scan()
 {
 	std::vector<ImageCollection> sequences;
 
@@ -129,14 +129,14 @@ void ImageScanner::scan()
 	imageCollectionsModel.insert(0, sequences);
 }
 
-auto ImageScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize)
+auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize)
 {
 	return std::find_if(imageCollections.begin(), imageCollections.end(), [&imageType, &imageSize](const auto& sequence) {
 		return sequence.imageType(Qt::EditRole).toString() == imageType && sequence.sourceSize(Qt::EditRole).toSize() == imageSize;
 	});
 }
 
-void ImageScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences)
+void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences)
 {
 	auto subDirectories = QDir(directory);
 

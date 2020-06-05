@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>582</width>
-    <height>134</height>
+    <height>108</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -52,29 +52,6 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
        <layout class="QGridLayout" name="resamplingGridLayout">
-        <item row="3" column="0">
-         <widget class="QLabel" name="filterLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Subsampling filter</string>
-          </property>
-          <property name="text">
-           <string>Resampling filter</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QComboBox" name="filterComboBox">
-          <property name="toolTip">
-           <string>The type of resampling filter to use</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <layout class="QHBoxLayout" name="resamplingRatioLayout">
           <property name="topMargin">
@@ -111,6 +88,39 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="0" colspan="3">
+         <widget class="QCheckBox" name="enableSubsamplingCheckbox">
+          <property name="toolTip">
+           <string>Enable/disable subsampling</string>
+          </property>
+          <property name="text">
+           <string>Enable subsampling</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="filterLabel">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Subsampling filter</string>
+          </property>
+          <property name="text">
+           <string>Resampling filter</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="filterComboBox">
+          <property name="toolTip">
+           <string>The type of resampling filter to use</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="0">
          <widget class="QLabel" name="ratioLabel">
           <property name="sizePolicy">
@@ -124,30 +134,6 @@
           </property>
           <property name="text">
            <string>Ratio (%)</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="3">
-         <widget class="QCheckBox" name="enableSubsamplingCheckbox">
-          <property name="toolTip">
-           <string>Enable/disable subsampling</string>
-          </property>
-          <property name="text">
-           <string>Enable subsampling</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="targetResolutionLabel">
-          <property name="text">
-           <string>Target size</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="targetResolutionLineEdit">
-          <property name="enabled">
-           <bool>false</bool>
           </property>
          </widget>
         </item>

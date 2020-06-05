@@ -31,14 +31,14 @@ endif()
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
-	src/ImageLoaderDialog.h
-    src/ImageLoaderDialog.cpp
 	src/FreeImage.h
     src/FreeImage.cpp
 	src/Payload.h 
 	src/Payload.cpp
 	src/Settings.h
 	src/Settings.cpp
+	src/SubsampleSettings.h
+	src/SubsampleSettings.cpp
     src/Common.h
 )
 
@@ -47,23 +47,20 @@ set(LOADER_SOURCES
 	src/ImageCollection.cpp
 	src/Scanned.h
 	src/Scanned.cpp
-	src/ImageLoader.h
-	src/ImageLoader.cpp
+	src/ImageCollectionLoader.h
+	src/ImageCollectionLoader.cpp
 )
 
 set(SCANNER_SOURCES
-	src/ImageScanner.h
-	src/ImageScanner.cpp
+	src/ImageCollectionScanner.h
+	src/ImageCollectionScanner.cpp
 )
 
-set(IMAGE_SEQUENCE_SOURCES
+set(WIDGET_SOURCES
 	src/CommonSettingsWidget.h
     src/CommonSettingsWidget.cpp
-)
-
-set(SUBSAMPLE_SETTINGS_SOURCES
-	src/SubsampleSettings.h
-	src/SubsampleSettings.cpp
+	src/ImageLoaderDialog.h
+    src/ImageLoaderDialog.cpp
 	src/SubsampleSettingsWidget.h
 	src/SubsampleSettingsWidget.cpp
 )
@@ -76,9 +73,7 @@ set(SOURCES
 	${PLUGIN_SOURCES}
 	${LOADER_SOURCES}
 	${SCANNER_SOURCES}
-	${IMAGE_SEQUENCE_SOURCES}
-	${IMAGE_STACK_SOURCES}
-	${SUBSAMPLE_SETTINGS_SOURCES}
+	${WIDGET_SOURCES}
 	${MODEL_SOURCES}
 )
 
@@ -87,10 +82,8 @@ file(GLOB UIS src/*.ui)
 set(AUX src/ImageLoaderPlugin.json)
 
 source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
-source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
-source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
+source_group(Widgets FILES ${WIDGET_SOURCES})
 source_group(UI FILES ${UIS})
-source_group(SubsampleSettings FILES ${SUBSAMPLE_SETTINGS_SOURCES})
 source_group(Model FILES ${MODEL_SOURCES})
 source_group(Aux FILES ${AUX})
 

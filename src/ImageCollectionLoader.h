@@ -20,7 +20,7 @@ class ImageLoaderPlugin;
  * image payload for loading into HDPS
  * @author Thomas Kroes
  */
-class ImageLoader : public QThread, public Settings {
+class ImageCollectionLoader : public QThread, public Settings {
 	Q_OBJECT
 
 public:
@@ -28,7 +28,7 @@ public:
 	 * Constructor
 	 * @param type Type of image collection e.g. sequence, stack
 	 */
-	ImageLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type);
+	ImageCollectionLoader(ImageLoaderPlugin* imageLoaderPlugin, const ImageData::Type& type);
 
 	/** Returns the type of image collection */
 	ImageData::Type type() const;
