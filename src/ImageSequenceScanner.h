@@ -36,7 +36,7 @@ public: // Miscellaneous
 	 * @param imageType Type of image
 	 * @param imageSize Image size
 	 */
-	static auto findSequence(std::vector<ImageCollection>& sequences, const QString& imageType, const QSize& imageSize);
+	static auto findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize);
 
 private:
 

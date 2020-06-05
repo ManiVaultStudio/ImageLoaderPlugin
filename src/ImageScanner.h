@@ -71,10 +71,28 @@ public:
 	/** Returns the result of the scanning process */
 	//std::shared_ptr<Scanned> scanned();
 	
+	/**
+	 * Finds an image collection based on image type and size
+	 * @param imageCollections Image collections
+	 * @param imageType Type of image
+	 * @param imageSize Image size
+	 */
+	static auto findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize);
+
 public:
 
 	/** Scan for images */
-	virtual void scan() = 0;
+	void scan();
+
+private:
+
+	/**
+	 * Scan directory recursively
+	 * @param directory Search directory
+	 * @param nameFilters Image file types to filter
+	 * @param sequences Loaded image sequences
+	 */
+	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences);
 
 signals:
 	/** Signals that settings changed */

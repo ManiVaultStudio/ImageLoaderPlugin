@@ -40,9 +40,9 @@ void ImageSequenceScanner::scan()
 	imageCollectionsModel.insert(0, sequences);
 }
 
-auto ImageSequenceScanner::findSequence(std::vector<ImageCollection>& sequences, const QString& imageType, const QSize& imageSize)
+auto ImageSequenceScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize)
 {
-	return std::find_if(sequences.begin(), sequences.end(), [&imageType, &imageSize](const auto& sequence) {
+	return std::find_if(imageCollections.begin(), imageCollections.end(), [&imageType, &imageSize](const auto& sequence) {
 		return sequence.imageType(Qt::EditRole).toString() == imageType && sequence.sourceSize(Qt::EditRole).toSize() == imageSize;
 	});
 }
@@ -79,7 +79,7 @@ void ImageSequenceScanner::scanDir(const QString& directory, QStringList nameFil
 
 		const auto imageSize = imageReader.size();
 		
-		auto it = findSequence(sequences, imageType, imageSize);
+		auto it = findImageCollection(sequences, imageType, imageSize);
 
 		if (it == sequences.end()) {
 			auto imageCollection = ImageCollection(_directory, imageType, imageSize);
