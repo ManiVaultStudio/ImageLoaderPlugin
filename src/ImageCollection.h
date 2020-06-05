@@ -139,6 +139,15 @@ public: // Getters/setters
 	 */
 	void setDatasetName(const QString& datasetName);
 
+	/** Returns whether to convert the images in the collection to grayscale */
+	QVariant grayscale(const int& role) const;
+
+	/**
+	 * Sets whether to convert the images in the collection to grayscale
+	 * @param grayscale Whether to convert the images in the collection to grayscale
+	 */
+	void setGrayscale(const bool& grayscale);
+
 	/** Returns the number of images */
 	QVariant noImages(const int& role) const;
 
@@ -166,5 +175,6 @@ private:
 	QSize					_sourceSize;		/** Size of the source image */
 	QSize					_targetSize;		/** Size of the target image */
 	QString					_datasetName;		/** The name of the dataset */
+	bool					_grayscale;			/** Whether to convert the images in the collection to grayscale */
 	std::vector<Image>		_images;			/** Images */
 };

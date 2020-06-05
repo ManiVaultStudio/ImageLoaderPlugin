@@ -65,6 +65,7 @@ ImageCollection::ImageCollection(const QString& searchDir, const QString& imageT
 	_sourceSize(sourceSize),
 	_targetSize(sourceSize),
 	_datasetName(),
+	_grayscale(true),
 	_images()
 {
 	_datasetName = QString("%1_%2_%3_%4").arg(QDir(searchDir).dirName(), imageType, QString::number(sourceSize.width()), QString::number(sourceSize.height()));
@@ -197,6 +198,36 @@ QVariant ImageCollection::datasetName(const int& role) const
 void ImageCollection::setDatasetName(const QString& datasetName)
 {
 	_datasetName = datasetName;
+}
+
+QVariant ImageCollection::grayscale(const int& role) const
+{
+	const auto grayscaleString = _grayscale ? "true" : "false";
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return grayscaleString;
+
+		case Qt::EditRole:
+			return _grayscale;
+
+		case Qt::ToolTipRole:
+			return QString("Convert images to grayscale: %1").arg(grayscaleString);
+
+		case Qt::CheckStateRole:
+			return _grayscale ? Qt::Checked : Qt::Unchecked;
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::setGrayscale(const bool& grayscale)
+{
+	_grayscale = grayscale;
 }
 
 QVariant ImageCollection::noImages(const int& role) const

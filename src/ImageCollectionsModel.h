@@ -21,6 +21,7 @@ public: // Enumerations
 	enum class Column {
 		DatasetName,			/** The name of the dataset */
 		NoImages,				/** Number of images in the collection */
+		Grayscale,				/** Whether to convert the images to grayscale */
 		SourceSize,				/** Size of the source image(s) */
 		TargetSize,				/** Size of the target image(s) */
 		SearchDir,				/** Initial directory where the search was started */
@@ -37,6 +38,9 @@ public: // Enumerations
 
 			case Column::NoImages:
 				return "#Images";
+
+			case Column::Grayscale:
+				return "Grayscale";
 
 			case Column::SourceSize:
 				return "Source size";

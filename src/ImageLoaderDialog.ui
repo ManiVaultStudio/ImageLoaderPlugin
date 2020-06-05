@@ -45,89 +45,7 @@
     <number>9</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="topButtonsHorizontalLayout">
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="sequencePushButton">
-       <property name="text">
-        <string>Sequence</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="stackPushButton">
-       <property name="text">
-        <string>Stack</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="topButtonsHorizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QStackedWidget" name="settingsStackedWidget">
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
-     <widget class="QWidget" name="sequenceSettingsPage">
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="SequenceSettingsWidget" name="sequenceSettingsWidget" native="true"/>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="stackSettingsPage">
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="StackSettingsWidget" name="stackSettingsWidget" native="true"/>
-       </item>
-      </layout>
-     </widget>
-    </widget>
+    <widget class="SequenceSettingsWidget" name="commonSettingsWidget" native="true"/>
    </item>
    <item>
     <widget class="SubsampleSettingsWidget" name="subsampleSettingswidget" native="true"/>
@@ -198,12 +116,6 @@
    <class>SequenceSettingsWidget</class>
    <extends>QWidget</extends>
    <header>SequenceSettingsWidget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>StackSettingsWidget</class>
-   <extends>QWidget</extends>
-   <header>StackSettingsWidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

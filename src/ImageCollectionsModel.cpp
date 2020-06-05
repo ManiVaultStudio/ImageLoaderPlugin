@@ -36,6 +36,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 		case ult(Column::NoImages):
 			return imageCollection.noImages(role);
 
+		case ult(Column::Grayscale):
+			return imageCollection.grayscale(role);
+
 		case ult(Column::SourceSize):
 			return imageCollection.sourceSize(role);
 
@@ -69,6 +72,9 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
 	switch (static_cast<Column>(index.column())) {
 		case Column::DatasetName:
+			break;
+
+		case Column::Grayscale:
 		{
 			flags |= Qt::ItemIsUserCheckable;
 

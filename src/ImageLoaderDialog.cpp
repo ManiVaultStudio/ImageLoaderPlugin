@@ -19,36 +19,13 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 
 	setMinimumWidth(480);
 	setMinimumHeight(600);
-
-	const auto currentPage = _settings.value("CurrentPage", 0).toInt();
-
-	_ui->settingsStackedWidget->setCurrentIndex(currentPage);
-
-	QObject::connect(_ui->sequencePushButton, &QPushButton::clicked, [this]() {
-		_ui->settingsStackedWidget->setCurrentIndex(0);
-	});
-
-	QObject::connect(_ui->stackPushButton, &QPushButton::clicked, [this]() {
-		_ui->settingsStackedWidget->setCurrentIndex(1);
-	});
-
-	_ui->sequencePushButton->setChecked(currentPage == 0);
-	_ui->stackPushButton->setChecked(currentPage == 1);
-
-	QObject::connect(_ui->settingsStackedWidget, &QStackedWidget::currentChanged, [this](int currentPage) {
-		_ui->sequencePushButton->setChecked(currentPage == 0);
-		_ui->stackPushButton->setChecked(currentPage == 1);
-	});
 }
 
-ImageLoaderDialog::~ImageLoaderDialog()
-{
-	_settings.setValue("CurrentPage", _ui->settingsStackedWidget->currentIndex());
-}
+ImageLoaderDialog::~ImageLoaderDialog() = default;
 
 void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 
-	_ui->sequenceSettingsWidget->initialize(_imageLoaderPlugin);
+	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
 }
