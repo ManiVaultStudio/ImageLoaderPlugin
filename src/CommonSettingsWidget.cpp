@@ -34,7 +34,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_scanner.setDirectory(directory);
 	});
 
-	connect(&_scanner, &ImageSequenceScanner::directoryChanged, [this](const QString& directory) {
+	connect(&_scanner, &ImageScanner::directoryChanged, [this](const QString& directory) {
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);

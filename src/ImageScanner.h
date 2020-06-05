@@ -15,13 +15,8 @@ class ImageScanner : public QObject, public Settings {
 
 public:
 	/**
-	 * Constructor
-	 * @param type Type of image collection e.g. sequence, stack
-	 */
-	ImageScanner(const ImageData::Type& type);
-
-	/** Returns the type of image collection */
-	ImageData::Type type() const;
+	 * Default constructor */
+	ImageScanner();
 
 	/** Load image scanner settings */
 	virtual void loadSettings();
@@ -133,7 +128,6 @@ signals:
 
 protected:
 	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
-	ImageData::Type			_type;						/** Type of image collection e.g. sequence, stack */
 	QString					_directory;					/** Top directory to search in (recursively) */
 	QStringList				_previousDirectories;		/** List of previously visited directories */
 	QStringList				_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */

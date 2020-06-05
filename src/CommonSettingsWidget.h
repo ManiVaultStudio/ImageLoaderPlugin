@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ImageLoader.h"
-#include "ImageSequenceScanner.h"
+#include "ImageScanner.h"
 
 #include <memory>
 
@@ -45,15 +45,15 @@ public: // Initialization
 
 public: // Miscellaneous
 
-	/** Returns the image scanner */
-	ImageSequenceScanner& scanner() { return _scanner; }
+	/** Returns the image collection scanner */
+	ImageScanner& scanner() { return _scanner; }
 
-	/** Returns the image loader */
+	/** Returns the image collection loader */
 	ImageLoader& loader() { return _loader; };
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
 	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;						/** Externally loaded UI */
-	ImageSequenceScanner						_scanner;					/** Scanner */
-	ImageLoader									_loader;					/** Loader */
+	ImageScanner								_scanner;					/** Image collection scanner */
+	ImageLoader									_loader;					/** Image collection loader */
 };

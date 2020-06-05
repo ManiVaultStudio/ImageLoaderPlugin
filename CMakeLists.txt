@@ -57,8 +57,6 @@ set(SCANNER_SOURCES
 )
 
 set(IMAGE_SEQUENCE_SOURCES
-	src/ImageSequenceScanner.h
-	src/ImageSequenceScanner.cpp
 	src/CommonSettingsWidget.h
     src/CommonSettingsWidget.cpp
 )

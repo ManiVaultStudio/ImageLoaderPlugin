@@ -5,9 +5,8 @@
 #include <QDir>
 #include <QImageReader>
 
-ImageScanner::ImageScanner(const ImageData::Type& type) :
-	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Scanner").arg(ImageData::typeName(type))),
-	_type(type),
+ImageScanner::ImageScanner() :
+	Settings("LKEB/CGV", "HDPS", "Plugins/ImageLoader/%1/Scanner"),
 	_directory(),
 	_previousDirectories(),
 	_supportedImageTypes(),
@@ -18,11 +17,6 @@ ImageScanner::ImageScanner(const ImageData::Type& type) :
 	supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
 	setSupportedImageTypes(supportedImageTypes);
-}
-
-ImageData::Type ImageScanner::type() const
-{
-	return _type;
 }
 
 void ImageScanner::loadSettings()
