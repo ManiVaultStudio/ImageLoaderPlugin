@@ -20,18 +20,21 @@ public: // Enumerations
 
 	/** TODO: Write description */
 	enum class Column {
-		DatasetName,			/** The name of the dataset */
-		ImageType,				/** The type of image(s) */
-		NoImages,				/** Number of images in the collection */
-		NoSelectedImages,		/** Number of selected images in the collection */
-		ToGrayscale,			/** Whether to convert the images to grayscale */
-		SourceSize,				/** Size of the source image(s) */
-		TargetSize,				/** Size of the target image(s) */
-		SearchDir,				/** Initial directory where the search was started */
-		Type,					/** Load as image sequence (0) or image stack (1) */
+		DatasetName,				/** The name of the dataset */
+		ImageType,					/** The type of image(s) */
+		NoImages,					/** Number of images in the collection */
+		NoSelectedImages,			/** Number of selected images in the collection */
+		ToGrayscale,				/** Whether to convert the images to grayscale */
+		SourceSize,					/** Size of the source image(s) */
+		TargetSize,					/** Size of the target image(s) */
+		SearchDir,					/** Initial directory where the search was started */
+		Type,						/** Load as image sequence (0) or image stack (1) */
+		SubsamplingEnabled,			/** Whether subsampling is enabled */
+		SubsamplingRatio,			/** Subsampling ratio */
+		SubsamplingFilter,			/** Subsampling filter */
 
-		Start = DatasetName,	/** Column start */
-		End = Type			/** Column End */
+		Start = DatasetName,		/** Column start */
+		End = SubsamplingFilter		/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
@@ -63,6 +66,15 @@ public: // Enumerations
 
 			case Column::Type:
 				return "Load as";
+
+			case Column::SubsamplingEnabled:
+				return "Subsampling enabled";
+
+			case Column::SubsamplingRatio:
+				return "Subsampling ratio";
+
+			case Column::SubsamplingFilter:
+				return "Subsampling filter";
 
 			default:
 				return QString();

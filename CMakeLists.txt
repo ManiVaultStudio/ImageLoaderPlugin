@@ -38,9 +38,7 @@ set(PLUGIN_SOURCES
 	src/Payload.cpp
 	src/Settings.h
 	src/Settings.cpp
-	src/SubsampleSettings.h
-	src/SubsampleSettings.cpp
-    src/Common.h
+	src/Common.h
 )
 
 set(LOADER_SOURCES
@@ -94,7 +92,7 @@ include_directories(src)
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
-target_compile_features(${PROJECT} PRIVATE cxx_std_14)
+target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  

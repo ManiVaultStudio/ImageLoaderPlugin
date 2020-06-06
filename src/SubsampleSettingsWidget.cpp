@@ -8,14 +8,14 @@
 #include "ImageLoaderPlugin.h"
 
 SubsampleSettingsWidget::SubsampleSettingsWidget(QWidget* parent) :
-	_ui{ std::make_unique<Ui::SubsampleSettingsWidget>() },
-	_subsampleSettings(nullptr)
+	_ui{ std::make_unique<Ui::SubsampleSettingsWidget>() }
 {
 	_ui->setupUi(this);
 }
 
-void SubsampleSettingsWidget::initialize(SubsampleSettings* subsampleSettings)
+void SubsampleSettingsWidget::initialize()
 {
+	/*
 	_subsampleSettings = subsampleSettings;
 
 	_ui->filterComboBox->addItems(_subsampleSettings->filterNames());
@@ -74,4 +74,5 @@ void SubsampleSettingsWidget::initialize(SubsampleSettings* subsampleSettings)
 	});
 
 	_subsampleSettings->loadSettings();
+	*/
 }

@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QFileInfo>
 
+#include <algorithm>
+
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
 	_filePath(),
@@ -135,6 +137,94 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 	_pageIndex = pageIndex;
 }
 
+ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+	_enabled(enabled),
+	_ratio(ratio),
+	_filter(filter)
+{
+}
+
+QVariant ImageCollection::SubSampling::enabled(const int& role) const
+{
+	const auto enabledString = _enabled ? "true" : "false";
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return enabledString;
+
+		case Qt::EditRole:
+			return _enabled;
+
+		case Qt::ToolTipRole:
+			return QString("Subsampling: %1").arg(enabledString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::SubSampling::setEnabled(const bool& enabled)
+{
+	_enabled = enabled;
+}
+
+QVariant ImageCollection::SubSampling::ratio(const int& role) const
+{
+	const auto ratioString = QString::number(_ratio, 'f', 1);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return ratioString;
+
+		case Qt::EditRole:
+			return _enabled;
+
+		case Qt::ToolTipRole:
+			return QString("Subsampling: %1").arg(ratioString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::SubSampling::setRatio(const float& ratio)
+{
+	_ratio = std::clamp(ratio, 0.0f, 1.0f);
+}
+
+QVariant ImageCollection::SubSampling::filter(const int& role) const
+{
+	const auto filterString = imageResamplingFilterName(_filter);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return filterString;
+
+		case Qt::EditRole:
+			return _enabled;
+
+		case Qt::ToolTipRole:
+			return QString("Subsampling: %1").arg(filterString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter)
+{
+	_filter = filter;
+}
+
 ImageCollection::ImageCollection(const QString& searchDir, const QString& imageType, const QSize& sourceSize) :
 	_searchDir(searchDir),
 	_imageType(imageType),
@@ -143,6 +233,7 @@ ImageCollection::ImageCollection(const QString& searchDir, const QString& imageT
 	_datasetName(),
 	_toGrayscale(true),
 	_type(ImageData::Type::Sequence),
+	_subsampling(),
 	_images()
 {
 }

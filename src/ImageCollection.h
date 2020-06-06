@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common.h"
+
 #include "ImageData/Images.h"
 
 #include <QObject>
@@ -102,6 +104,111 @@ public: // Nested image class
 		QString				_name;				/** The image name */
 		bool				_shouldLoad;		/** Whether the image should be loaded */
 		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
+	};
+
+	/**
+	 * 
+	 */
+	class SubSampling
+	{
+	public: // Enumerations
+
+		/**
+		 * Image resampling filter
+		 * Defines image resampling filters for image subsampling
+		 */
+		enum class ImageResamplingFilter
+		{
+			Box,			/** Box filter */
+			Bilinear,		/** Bilinear filter */
+			BSpline,		/** B-spline filter */
+			Bicubic,		/** B-cubic filter */
+			CatmullRom,		/** Catmull-rom filter */
+			Lanczos			/** Lanczos filter */
+		};
+
+		/** Get string representation of image resampling filter enumeration */
+		static QString imageResamplingFilterName(const ImageResamplingFilter& imageResamplingFilter) {
+			switch (imageResamplingFilter)
+			{
+				case ImageResamplingFilter::Box:
+					return "Box";
+
+				case ImageResamplingFilter::Bilinear:
+					return "Bilinear";
+
+				case ImageResamplingFilter::BSpline:
+					return "BSpline";
+
+				case ImageResamplingFilter::Bicubic:
+					return "Bicubic";
+
+				case ImageResamplingFilter::CatmullRom:
+					return "CatmullRom";
+
+				case ImageResamplingFilter::Lanczos:
+					return "Lanczos";
+			}
+
+			return "";
+		}
+
+	public: // Construction/destruction
+
+		/**
+		 * Constructor
+		 * @param enabled Whether subsampling is enabled
+		 * @param ratio The subsampling ratio
+		 * @param filter The subsampling filter
+		 */
+		SubSampling(const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
+
+	public: // Getters/setters
+		
+		/**
+		 * Returns whether subsampling is enabled
+		 * @param role Data role
+		 * @return Whether subsampling is enabled in variant form
+		 */
+		QVariant enabled(const int& role) const;
+
+		/**
+		 * Sets whether subsampling is enabled
+		 * @param enabled Whether subsampling is enabled
+		 */
+		void setEnabled(const bool& enabled);
+
+		/**
+		 * Returns the subsampling ratio
+		 * @param role Data role
+		 * @return The subsampling ratio in variant form
+		 */
+		QVariant ratio(const int& role) const;
+
+		/**
+		 * Sets the subsampling ratio
+		 * @param enabled The subsampling ratio
+		 */
+		void setRatio(const float& ratio);
+
+		/**
+		 * Returns the subsampling filter
+		 * @param role Data role
+		 * @return The subsampling filter in variant form
+		 */
+		QVariant filter(const int& role) const;
+
+		/**
+		 * Sets the subsampling filter
+		 * @param filter The subsampling filter
+		 */
+		void setFilter(const ImageResamplingFilter& filter);
+
+
+	private:
+		bool					_enabled;				/** Whether subsampling is enabled */
+		float					_ratio;		/** Subsampling ratio */
+		ImageResamplingFilter	_filter;				/** Subsampling filter e.g. box, bilinear */
 	};
 
 public: // Construction
@@ -211,12 +318,13 @@ public:
 	void computeDatasetName();
 
 private:
-	QString					_searchDir;			/** Initial directory where the search was started */
-	QString					_imageType;			/** Type of image */
-	QSize					_sourceSize;		/** Size of the source image */
-	QSize					_targetSize;		/** Size of the target image */
-	QString					_datasetName;		/** The name of the dataset */
-	bool					_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
-	ImageData::Type			_type;				/** How to load the collection (as image sequence or image stack) */
-	std::vector<Image>		_images;			/** Images */
+	QString					_searchDir;					/** Initial directory where the search was started */
+	QString					_imageType;					/** Type of image */
+	QSize					_sourceSize;				/** Size of the source image */
+	QSize					_targetSize;				/** Size of the target image */
+	QString					_datasetName;				/** The name of the dataset */
+	bool					_toGrayscale;				/** Whether to convert the images in the collection to grayscale */
+	ImageData::Type			_type;						/** How to load the collection (as image sequence or image stack) */
+	SubSampling				_subsampling;				/** Subsampling parameters */
+	std::vector<Image>		_images;					/** Images */
 };

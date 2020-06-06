@@ -3,7 +3,6 @@
 #include "Settings.h"
 #include "Scanned.h"
 #include "Payload.h"
-#include "SubsampleSettings.h"
 
 #include <QThread>
 #include <QString>
@@ -32,9 +31,6 @@ public:
 
 	/** Returns the type of image collection */
 	ImageData::Type type() const;
-
-	/** Returns the subsample image settings */
-	SubsampleSettings& subsampleImageSettings();
 
 	/**
 	 * Load scanned images
@@ -114,5 +110,4 @@ private:
 	ImageLoaderPlugin*			_imageLoaderPlugin;		/** Image loader plugin  */
 	ImageData::Type				_type;					/** Type of image collection e.g. sequence, stack */
 	QString						_datasetName;			/** Name of the data set */
-	SubsampleSettings			_subsampleSettings;		/** Image subsample settings */
 };

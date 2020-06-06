@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SubsampleSettings.h"
-
 #include <memory>
 
 #include <QWidget>
@@ -28,9 +26,8 @@ public:
 	 * Initializes the widget
 	 * @param subsampleSettings Pointer to subsample settings
 	 */
-	void initialize(SubsampleSettings* subsampleSettings);
+	void initialize();
 
 private:
 	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/** Externally loaded UI */
-	SubsampleSettings*								_subsampleSettings;		/** Subsample settings */
 };

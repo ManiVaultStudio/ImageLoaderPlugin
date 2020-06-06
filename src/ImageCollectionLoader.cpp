@@ -11,20 +11,13 @@ ImageCollectionLoader::ImageCollectionLoader(ImageLoaderPlugin* imageLoaderPlugi
 	Settings("LKEB/CGV", "HDPS", QString("Plugins/ImageLoader/%1/Loader").arg(ImageData::typeName(type))),
 	_imageLoaderPlugin(imageLoaderPlugin),
 	_type(type),
-	_datasetName(),
-	_subsampleSettings(prefix())
+	_datasetName()
 {
-	connect(&_subsampleSettings, &SubsampleSettings::settingsChanged, this, &ImageCollectionLoader::settingsChanged);
 }
 
 ImageData::Type ImageCollectionLoader::type() const
 {
 	return _type;
-}
-
-SubsampleSettings & ImageCollectionLoader::subsampleImageSettings()
-{
-	return _subsampleSettings;
 }
 
 QString ImageCollectionLoader::datasetName() const
