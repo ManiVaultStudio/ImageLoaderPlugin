@@ -34,11 +34,17 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 		case ult(Column::DatasetName):
 			return imageCollection.datasetName(role);
 
+		case ult(Column::ImageType):
+			return imageCollection.imageType(role);
+
 		case ult(Column::NoImages):
 			return imageCollection.noImages(role);
 
-		case ult(Column::Grayscale):
-			return imageCollection.grayscale(role);
+		case ult(Column::NoSelectedImages):
+			return imageCollection.noSelectedImages(role);
+
+		case ult(Column::ToGrayscale):
+			return imageCollection.toGrayscale(role);
 
 		case ult(Column::SourceSize):
 			return imageCollection.sourceSize(role);
@@ -48,9 +54,67 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
 		case ult(Column::SearchDir):
 			return imageCollection.searchDir(role);
+
+		case ult(Column::Type):
+			return imageCollection.type(role);
 	}
 
 	return QVariant();
+}
+
+bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
+{
+	auto& imageCollection = _imageCollections[index.row()];
+
+	const auto column = static_cast<Column>(index.column());
+
+	switch (role)
+	{
+		case Qt::EditRole:
+		{
+			switch (column) {
+				case Column::DatasetName:
+				{
+					imageCollection.setDatasetName(value.toString());
+					break;
+				}
+
+				case Column::Type:
+				{
+					imageCollection.setType(static_cast<ImageData::Type>(value.toInt()));
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			break;
+		}
+
+		case Qt::CheckStateRole:
+		{
+			switch (column) {
+				case Column::ToGrayscale:
+				{
+					imageCollection.setToGrayscale(value.toBool());
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	emit dataChanged(index, index);
+
+	return true;
 }
 
 QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
@@ -73,9 +137,12 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
 	switch (static_cast<Column>(index.column())) {
 		case Column::DatasetName:
+		{
+			flags |= Qt::ItemIsEditable;
 			break;
+		}
 
-		case Column::Grayscale:
+		case Column::ToGrayscale:
 		{
 			flags |= Qt::ItemIsUserCheckable;
 

@@ -8,14 +8,17 @@
 
 ImagesModel::ImagesModel() :
 	QAbstractListModel(),
-	_imageCollections(),
+	_imageCollection(nullptr),
 	_selectionModel(this)
 {
 }
 
 int ImagesModel::rowCount(const QModelIndex& parent /* = QModelIndex() */) const
 {
-	return _imageCollections.size();
+	if (_imageCollection == nullptr)
+		return 0;
+
+	return _imageCollection->noImages(Qt::EditRole).toInt();
 }
 
 int ImagesModel::columnCount(const QModelIndex& parent) const
@@ -28,26 +31,51 @@ QVariant ImagesModel::data(const QModelIndex& index, int role /* = Qt::DisplayRo
 	if (!index.isValid())
 		return QVariant();
 
-	const auto imageCollection = _imageCollections[index.row()];
+	const auto image = _imageCollection->image(index.row());
 
 	switch (index.column()) {
-		case ult(Column::DatasetName):
-			return imageCollection.datasetName(role);
+		case ult(Column::Name):
+			return image->name(role);
 
-		case ult(Column::NoImages):
-			return imageCollection.noImages(role);
+		case ult(Column::FilePath):
+			return image->filePath(role);
 
-		case ult(Column::SourceSize):
-			return imageCollection.sourceSize(role);
-
-		case ult(Column::TargetSize):
-			return imageCollection.targetSize(role);
-
-		case ult(Column::SearchDir):
-			return imageCollection.searchDir(role);
+		case ult(Column::ShouldLoad):
+			return image->shouldLoad(role);
 	}
 
 	return QVariant();
+}
+
+bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
+{
+	auto image = _imageCollection->image(index.row());
+	
+	const auto column = static_cast<Column>(index.column());
+
+	switch (role)
+	{
+		case Qt::CheckStateRole:
+		{
+			switch (column) {
+				case Column::Name:
+				{
+					image->setShouldLoad(value.toBool());
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	return true;
 }
 
 QVariant ImagesModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
@@ -69,7 +97,7 @@ Qt::ItemFlags ImagesModel::flags(const QModelIndex& index) const
 	//const auto type = static_cast<Type>(_type);
 
 	switch (static_cast<Column>(index.column())) {
-		case Column::DatasetName:
+		case Column::Name:
 		{
 			flags |= Qt::ItemIsUserCheckable;
 
@@ -79,9 +107,8 @@ Qt::ItemFlags ImagesModel::flags(const QModelIndex& index) const
 			break;
 		}
 
-		case Column::SearchDir:
-		case Column::SourceSize:
-		case Column::TargetSize:
+		case Column::FilePath:
+		case Column::ShouldLoad:
 			break;
 
 		default:
@@ -91,30 +118,14 @@ Qt::ItemFlags ImagesModel::flags(const QModelIndex& index) const
 	return flags;
 }
 
-void ImagesModel::clear()
+void ImagesModel::setImageCollection(ImageCollection* imageCollection)
 {
 	beginResetModel();
-	{
-		_imageCollections.clear();
-	}
 	endResetModel();
-}
 
-void ImagesModel::insert(int row, const std::vector<ImageCollection>& imageCollections)
-{
-	beginInsertRows(QModelIndex(), _imageCollections.size(), _imageCollections.size() + imageCollections.size());
+	beginInsertRows(QModelIndex(), 0, imageCollection->noImages(Qt::EditRole).toInt());
 	{
-		_imageCollections.insert(_imageCollections.end(), imageCollections.begin(), imageCollections.end());
+		_imageCollection = imageCollection;
 	}
 	endInsertRows();
-}
-
-const ImageCollection* ImagesModel::imageCollection(const int& row) const
-{
-	const auto colorMapIndex = index(row, 0);
-
-	if (!colorMapIndex.isValid())
-		return nullptr;
-
-	return &_imageCollections.at(row);
 }

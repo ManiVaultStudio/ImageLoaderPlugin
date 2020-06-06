@@ -30,8 +30,31 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->imageCollectionsTreeView->setModel(&imageCollectionsModel);
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::DatasetName));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::NoImages));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::NoSelectedImages));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Grayscale));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SourceSize));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetSize));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SearchDir));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Type));
 
 	_ui->imagesTreeView->setModel(&imagesModel);
+	_ui->imagesTreeView->setSelectionModel(&imagesModel.selectionModel());
+	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
+	_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
+	_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
+
+	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::Name), 300);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 100);
+
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::Name), QHeaderView::Interactive);
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
+
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Stretch);
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FilePath), QHeaderView::Stretch);
+	//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::Name));
+	//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
 
 	_scanner.scan();
 
@@ -56,11 +79,41 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &imageCollectionsModel](int currentIndex) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
-		if (!selectedRows.isEmpty())
-			qDebug() << selectedRows;
+		if (!selectedRows.isEmpty()) {
+			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), currentIndex);
+		}
+	});
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::DatasetName));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ImageType));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::NoImages));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::NoSelectedImages));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ToGrayscale));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::SourceSize));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetSize));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::SearchDir));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::Type));
+	});
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imagesModel](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty()) {
+			const auto firstRow = selectedRows.first();
+
+			imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(firstRow.row())));
+
+			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::Name));
+			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
+
+			const auto imageCollectionType = imageCollectionsModel.data(firstRow.siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::EditRole).toInt();
+
+			_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
+		}
 	});
 
 	/*

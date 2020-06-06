@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include <QDir>
+#include <QFileInfo>
 
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
@@ -15,8 +16,11 @@ ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageI
 	_imageCollection(nullptr),
 	_shouldLoad(true),
 	_filePath(filePath),
+	_name(QFileInfo(filePath).fileName()),
 	_pageIndex(pageIndex)
 {
+	if (pageIndex >= 0)
+		_name += QString::number(_pageIndex);
 }
 
 ImageCollection* ImageCollection::Image::imageCollection()
@@ -29,9 +33,47 @@ void ImageCollection::Image::setImageCollection(ImageCollection* imageCollection
 	_imageCollection = imageCollection;
 }
 
-QString ImageCollection::Image::filePath() const
+QVariant ImageCollection::Image::name(const int& role) const
 {
-	return _filePath;
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _name;
+
+		case Qt::EditRole:
+			return _name;
+
+		case Qt::ToolTipRole:
+			return QString("File: %1").arg(_filePath);
+
+		case Qt::CheckStateRole:
+			return _shouldLoad ? Qt::Checked : Qt::Unchecked;
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::Image::filePath(const int& role) const
+{
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _filePath;
+
+		case Qt::EditRole:
+			return _filePath;
+
+		case Qt::ToolTipRole:
+			return QString("File path: %1").arg(_filePath);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::Image::setFilePath(const QString& filePath)
@@ -39,9 +81,26 @@ void ImageCollection::Image::setFilePath(const QString& filePath)
 	_filePath = filePath;
 }
 
-bool ImageCollection::Image::shouldLoad() const
+QVariant ImageCollection::Image::shouldLoad(const int& role) const
 {
-	return _shouldLoad;
+	const auto shouldLoadString = _shouldLoad ? "true" : "false";
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return "";
+
+		case Qt::EditRole:
+			return _shouldLoad;
+
+		case Qt::ToolTipRole:
+			return QString("Should load: %1").arg(shouldLoadString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
@@ -49,9 +108,26 @@ void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
 	_shouldLoad = shouldLoad;
 }
 
-std::int32_t ImageCollection::Image::pageIndex() const
+QVariant ImageCollection::Image::pageIndex(const int& role) const
 {
-	return _pageIndex;
+	const auto pageIndexString = QString::number(_pageIndex);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return pageIndexString;
+
+		case Qt::EditRole:
+			return _pageIndex;
+
+		case Qt::ToolTipRole:
+			return QString("Page index: %1").arg(pageIndexString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
 }
 
 void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
@@ -65,10 +141,10 @@ ImageCollection::ImageCollection(const QString& searchDir, const QString& imageT
 	_sourceSize(sourceSize),
 	_targetSize(sourceSize),
 	_datasetName(),
-	_grayscale(true),
+	_toGrayscale(true),
+	_type(ImageData::Type::Sequence),
 	_images()
 {
-	_datasetName = QString("%1_%2_%3_%4").arg(QDir(searchDir).dirName(), imageType, QString::number(sourceSize.width()), QString::number(sourceSize.height()));
 }
 
 QVariant ImageCollection::searchDir(const int& role) const
@@ -200,23 +276,23 @@ void ImageCollection::setDatasetName(const QString& datasetName)
 	_datasetName = datasetName;
 }
 
-QVariant ImageCollection::grayscale(const int& role) const
+QVariant ImageCollection::toGrayscale(const int& role) const
 {
-	const auto grayscaleString = _grayscale ? "true" : "false";
+	const auto toGrayscaleString = _toGrayscale ? "true" : "false";
 
 	switch (role)
 	{
 		case Qt::DisplayRole:
-			return grayscaleString;
+			return "";
 
 		case Qt::EditRole:
-			return _grayscale;
+			return _toGrayscale;
 
 		case Qt::ToolTipRole:
-			return QString("Convert images to grayscale: %1").arg(grayscaleString);
+			return QString("Convert images to grayscale: %1").arg(toGrayscaleString);
 
 		case Qt::CheckStateRole:
-			return _grayscale ? Qt::Checked : Qt::Unchecked;
+			return _toGrayscale ? Qt::Checked : Qt::Unchecked;
 
 		default:
 			break;
@@ -225,9 +301,36 @@ QVariant ImageCollection::grayscale(const int& role) const
 	return QVariant();
 }
 
-void ImageCollection::setGrayscale(const bool& grayscale)
+void ImageCollection::setToGrayscale(const bool& toGrayscale)
 {
-	_grayscale = grayscale;
+	_toGrayscale = toGrayscale;
+}
+
+QVariant ImageCollection::type(const int& role) const
+{
+	const auto typeString = ImageData::typeName(_type);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return typeString;
+
+		case Qt::EditRole:
+			return _type;
+
+		case Qt::ToolTipRole:
+			return QString("Image collection type: %1").arg(typeString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::setType(const ImageData::Type & type)
+{
+	_type = type;
 }
 
 QVariant ImageCollection::noImages(const int& role) const
@@ -252,6 +355,29 @@ QVariant ImageCollection::noImages(const int& role) const
 	return QVariant();
 }
 
+QVariant ImageCollection::noSelectedImages(const int& role) const
+{
+	const auto noSelectedImages			= std::count_if(_images.begin(), _images.end(), [](auto& image) { return image.shouldLoad(Qt::EditRole).toBool(); });
+	const auto noSelectedImagesString	= QString::number(_images.size());
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return noSelectedImagesString;
+
+		case Qt::EditRole:
+			return _images.size();
+
+		case Qt::ToolTipRole:
+			return QString("Number of selected images: %1").arg(noSelectedImagesString);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
 const std::vector<ImageCollection::Image>& ImageCollection::images() const
 {
 	return _images;
@@ -267,4 +393,18 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 	_images.push_back(Image(filePath, pageIndex));
 
 	_images.back().setImageCollection(this);
+}
+
+void ImageCollection::computeDatasetName()
+{
+	QString rootDir = "";
+
+	for (const auto& image : _images) {
+		const auto path = QFileInfo(image.filePath(Qt::EditRole).toString()).absoluteDir().path();
+
+		if (rootDir == "" || path.size() < rootDir)
+			rootDir = path;
+	}
+
+	setDatasetName(QString("%1").arg(QDir(rootDir).dirName(), QString::number(_targetSize.width()), QString::number(_targetSize.height())));
 }

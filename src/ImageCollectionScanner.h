@@ -87,7 +87,7 @@ private:
 	 * @param nameFilters Image file types to filter
 	 * @param sequences Loaded image sequences
 	 */
-	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences);
+	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& imageCollections);
 
 signals:
 	/** Signals that settings changed */

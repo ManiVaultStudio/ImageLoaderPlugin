@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ImageData/Images.h"
+
 #include <QObject>
 #include <QString>
 #include <QSize>
@@ -48,8 +50,19 @@ public: // Nested image class
 		 */
 		void setImageCollection(ImageCollection* imageCollection);
 
-		/** Returns the absolute image file path */
-		QString filePath() const;
+		/**
+		 * Returns the image name
+		 * @param role Data role
+		 * @return Image name in variant form
+		 */
+		QVariant name(const int& role) const;
+
+		/**
+		 * Returns the absolute image file path
+		 * @param role Data role
+		 * @return The absolute image file path in variant form
+		 */
+		QVariant filePath(const int& role) const;
 
 		/**
 		 * Sets the absolute image file path
@@ -57,8 +70,12 @@ public: // Nested image class
 		 */
 		void setFilePath(const QString& filePath);
 
-		/** Returns whether the image should be loaded or not */
-		bool shouldLoad() const;
+		/**
+		 * Returns whether the image should be loaded or not
+		 * @param role Data role
+		 * @return Whether the image should be loaded or not in variant form
+		 */
+		QVariant shouldLoad(const int& role) const;
 
 		/**
 		 * Sets whether the image should be loaded or not
@@ -66,8 +83,12 @@ public: // Nested image class
 		 */
 		void setShouldLoad(const bool& shouldLoad);
 
-		/** Returns the page index (in case of multi-layer TIFF) */
-		std::int32_t pageIndex() const;
+		/**
+		 * Returns the multi-layer TIFF page index
+		 * @param role Data role
+		 * @return The page index in variant form
+		 */
+		QVariant pageIndex(const int& role) const;
 
 		/**
 		 * Sets the page index
@@ -78,6 +99,7 @@ public: // Nested image class
 	private:
 		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
 		QString				_filePath;			/** The absolute image file path */
+		QString				_name;				/** The image name */
 		bool				_shouldLoad;		/** Whether the image should be loaded */
 		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
 	};
@@ -140,16 +162,32 @@ public: // Getters/setters
 	void setDatasetName(const QString& datasetName);
 
 	/** Returns whether to convert the images in the collection to grayscale */
-	QVariant grayscale(const int& role) const;
+	QVariant toGrayscale(const int& role) const;
 
 	/**
 	 * Sets whether to convert the images in the collection to grayscale
 	 * @param grayscale Whether to convert the images in the collection to grayscale
 	 */
-	void setGrayscale(const bool& grayscale);
+	void setToGrayscale(const bool& grayscale);
+
+	/**
+	 * Returns the image collection type (image sequence or image stack)
+	 * @param role Data role
+	 * @return Image collection type in variant form
+	 */
+	QVariant type(const int& role) const;
+
+	/**
+	 * Sets the image collection type (image sequence or stack)
+	 * @param type Image collection type
+	 */
+	void setType(const ImageData::Type	& type);
 
 	/** Returns the number of images */
 	QVariant noImages(const int& role) const;
+
+	/** Returns the number of selected images */
+	QVariant noSelectedImages(const int& role) const;
 
 	/** Get images */
 	const std::vector<Image>& images() const;
@@ -169,12 +207,16 @@ public:
 	 */
 	void addImage(const QString& filePath, const std::int32_t& pageIndex = -1);
 
+	/** Computes the dataset name based on the loaded images and their respective file paths */
+	void computeDatasetName();
+
 private:
 	QString					_searchDir;			/** Initial directory where the search was started */
 	QString					_imageType;			/** Type of image */
 	QSize					_sourceSize;		/** Size of the source image */
 	QSize					_targetSize;		/** Size of the target image */
 	QString					_datasetName;		/** The name of the dataset */
-	bool					_grayscale;			/** Whether to convert the images in the collection to grayscale */
+	bool					_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
+	ImageData::Type			_type;				/** How to load the collection (as image sequence or image stack) */
 	std::vector<Image>		_images;			/** Images */
 };

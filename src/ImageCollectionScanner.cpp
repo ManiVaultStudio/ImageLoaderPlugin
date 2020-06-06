@@ -112,7 +112,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 
 void ImageCollectionScanner::scan()
 {
-	std::vector<ImageCollection> sequences;
+	std::vector<ImageCollection> imageCollections;
 
 	QStringList nameFilters;
 
@@ -121,12 +121,15 @@ void ImageCollectionScanner::scan()
 
 	qDebug() << nameFilters;
 
-	scanDir(_directory, nameFilters, sequences);
+	scanDir(_directory, nameFilters, imageCollections);
+
+	for (auto& imageCollection : imageCollections)
+		imageCollection.computeDatasetName();
 
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
 	imageCollectionsModel.clear();
-	imageCollectionsModel.insert(0, sequences);
+	imageCollectionsModel.insert(0, imageCollections);
 }
 
 auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize)
@@ -136,7 +139,7 @@ auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& i
 	});
 }
 
-void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& sequences)
+void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& imageCollections)
 {
 	auto subDirectories = QDir(directory);
 
@@ -148,7 +151,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 	{
 		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
 
-		scanDir(path, nameFilters, sequences);
+		scanDir(path, nameFilters, imageCollections);
 	}
 
 	auto imageFiles = QDir(directory);
@@ -168,14 +171,14 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		const auto imageSize = imageReader.size();
 
-		auto it = findImageCollection(sequences, imageType, imageSize);
+		auto it = findImageCollection(imageCollections, imageType, imageSize);
 
-		if (it == sequences.end()) {
+		if (it == imageCollections.end()) {
 			auto imageCollection = ImageCollection(_directory, imageType, imageSize);
 
 			imageCollection.addImage(imageFilePath);
 
-			sequences.push_back(imageCollection);
+			imageCollections.push_back(imageCollection);
 		}
 		else {
 

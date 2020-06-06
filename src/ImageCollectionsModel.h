@@ -21,27 +21,36 @@ public: // Enumerations
 	/** TODO: Write description */
 	enum class Column {
 		DatasetName,			/** The name of the dataset */
+		ImageType,				/** The type of image(s) */
 		NoImages,				/** Number of images in the collection */
-		Grayscale,				/** Whether to convert the images to grayscale */
+		NoSelectedImages,		/** Number of selected images in the collection */
+		ToGrayscale,			/** Whether to convert the images to grayscale */
 		SourceSize,				/** Size of the source image(s) */
 		TargetSize,				/** Size of the target image(s) */
 		SearchDir,				/** Initial directory where the search was started */
+		Type,					/** Load as image sequence (0) or image stack (1) */
 
 		Start = DatasetName,	/** Column start */
-		End = SearchDir			/** Column End */
+		End = Type			/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
 	static QString columnName(const Column& column) {
 		switch (column) {
 			case Column::DatasetName:
-				return "Name";
+				return "Dataset name";
 
+			case Column::ImageType:
+				return "Type";
+				
 			case Column::NoImages:
 				return "#Images";
 
-			case Column::Grayscale:
-				return "Grayscale";
+			case Column::NoSelectedImages:
+				return "#Selected images";
+
+			case Column::ToGrayscale:
+				return "To grayscale";
 
 			case Column::SourceSize:
 				return "Source size";
@@ -51,6 +60,9 @@ public: // Enumerations
 
 			case Column::SearchDir:
 				return "Search directory";
+
+			case Column::Type:
+				return "Load as";
 
 			default:
 				return QString();
@@ -85,6 +97,15 @@ public: // Inherited MVC
 	 * @param role The data role
 	 */
 	QVariant data(const QModelIndex& index, int role /* = Qt::DisplayRole */) const override;
+
+	/**
+	 * Sets the data value for the given model index and data role
+	 * @param index Model index
+	 * @param value Data value in variant form
+	 * @param role Data role
+	 * @return Whether the data was properly set or not
+	 */
+	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
 
 	/**
 	 * Returns the header data for the given section, orientation and data role

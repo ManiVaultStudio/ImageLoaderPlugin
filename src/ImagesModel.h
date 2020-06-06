@@ -20,33 +20,25 @@ public: // Enumerations
 
 	/** TODO: Write description */
 	enum class Column {
-		DatasetName,			/** The name of the dataset */
-		NoImages,				/** Number of images in the collection */
-		SourceSize,				/** Size of the source image(s) */
-		TargetSize,				/** Size of the target image(s) */
-		SearchDir,				/** Initial directory where the search was started */
+		Name,				/** The name of the dataset */
+		FilePath,			/** Number of images in the collection */
+		ShouldLoad,			/** Whether to load the image or not */
 
-		Start = DatasetName,	/** Column start */
-		End = SearchDir			/** Column End */
+		Start = Name,		/** Column start */
+		End = ShouldLoad	/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
 	static QString columnName(const Column& column) {
 		switch (column) {
-			case Column::DatasetName:
+			case Column::Name:
 				return "Name";
 
-			case Column::NoImages:
-				return "#Images";
+			case Column::FilePath:
+				return "File path";
 
-			case Column::SourceSize:
-				return "Source size";
-
-			case Column::TargetSize:
-				return "Target size";
-
-			case Column::SearchDir:
-				return "Search directory";
+			case Column::ShouldLoad:
+				return "Load";
 
 			default:
 				return QString();
@@ -83,6 +75,15 @@ public: // Inherited MVC
 	QVariant data(const QModelIndex& index, int role /* = Qt::DisplayRole */) const override;
 
 	/**
+	 * Sets the data value for the given model index and data role
+	 * @param index Model index
+	 * @param value Data value in variant form
+	 * @param role Data role
+	 * @return Whether the data was properly set or not
+	 */
+	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole) override;
+
+	/**
 	 * Returns the header data for the given section, orientation and data role
 	 * @param section Model section
 	 * @param orientation Orientation (e.g. horizontal or vertical)
@@ -103,24 +104,13 @@ public: // Miscellaneous
 	/** Returns the selection model */
 	QItemSelectionModel& selectionModel() { return _selectionModel; }
 
-	/** Clears the model */
-	void clear();
-
 	/**
-	 * Inserts image collections into the model at the specified row
-	 * @param row Row at which to insert the image collections
-	 * @param imageCollections Image collections to insert
+	 * Sets the image collection from which this model retrieves the images
+	 * @param images Images to insert
 	 */
-	void insert(int row, const std::vector<ImageCollection>& imageCollections);
-
-	/**
-	 * Returns an image collection by given row index
-	 * @param row Row index
-	 */
-	const ImageCollection* imageCollection(const int& row) const;
-
+	void setImageCollection(ImageCollection* imageCollection);
 
 private:
-	std::vector<ImageCollection>	_imageCollections;		/** Images collections */
-	QItemSelectionModel				_selectionModel;		/** Selection model */
+	ImageCollection*		_imageCollection;		/** Pointer to image collection */
+	QItemSelectionModel		_selectionModel;		/** Selection model */
 };
