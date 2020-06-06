@@ -33,12 +33,6 @@ public:
 	ImageData::Type type() const;
 
 	/**
-	 * Load scanned images
-	 * @param scanned Scanned images
-	 */
-	//void load(std::shared_ptr<Scanned> scanned);
-
-	/**
 	 * Starts the loader thread
 	 */
 	void run() override;
@@ -53,15 +47,6 @@ public:
 	 * @param notify Whether to notify others of this change
 	 */
 	void setDatasetName(const QString& datasetName, const bool& notify = false);
-
-	/**  Returns the scanned images */
-	//std::shared_ptr<Scanned> scanned() const;
-
-	/**
-	 * Sets the scanned images
-	 * @param scanned Scanned images
-	 */
-	//void setScanned(std::shared_ptr<Scanned> scanned);
 
 private:
 	/**

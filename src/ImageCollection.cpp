@@ -137,7 +137,7 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 	_pageIndex = pageIndex;
 }
 
-ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 1.0f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
 	_enabled(enabled),
 	_ratio(ratio),
 	_filter(filter)
@@ -157,7 +157,7 @@ QVariant ImageCollection::SubSampling::enabled(const int& role) const
 			return _enabled;
 
 		case Qt::ToolTipRole:
-			return QString("Subsampling: %1").arg(enabledString);
+			return QString("Subsampling enabled: %1").arg(enabledString);
 
 		default:
 			break;
@@ -173,7 +173,7 @@ void ImageCollection::SubSampling::setEnabled(const bool& enabled)
 
 QVariant ImageCollection::SubSampling::ratio(const int& role) const
 {
-	const auto ratioString = QString::number(_ratio, 'f', 1);
+	const auto ratioString = QString("%1%").arg(QString::number(100.0f * _ratio, 'f', 1));
 
 	switch (role)
 	{
@@ -181,10 +181,10 @@ QVariant ImageCollection::SubSampling::ratio(const int& role) const
 			return ratioString;
 
 		case Qt::EditRole:
-			return _enabled;
+			return _ratio;
 
 		case Qt::ToolTipRole:
-			return QString("Subsampling: %1").arg(ratioString);
+			return QString("Subsampling ratio: %1").arg(ratioString);
 
 		default:
 			break;
@@ -208,10 +208,10 @@ QVariant ImageCollection::SubSampling::filter(const int& role) const
 			return filterString;
 
 		case Qt::EditRole:
-			return _enabled;
+			return static_cast<int>(_filter);
 
 		case Qt::ToolTipRole:
-			return QString("Subsampling: %1").arg(filterString);
+			return QString("Subsampling filter: %1").arg(filterString);
 
 		default:
 			break;
@@ -337,6 +337,56 @@ QVariant ImageCollection::targetSize(const int& role) const
 	return QVariant();
 }
 
+QVariant ImageCollection::targetWidth(const int& role) const
+{
+	const auto targetWidthString = QString::number(_targetSize.width());
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return targetWidthString;
+
+		case Qt::EditRole:
+			return _targetSize.width();
+
+		case Qt::ToolTipRole:
+			return QString("Target width: %1").arg(targetWidthString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::targetheight(const int& role) const
+{
+	const auto targetHeightString = QString::number(_targetSize.height());
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return targetHeightString;
+
+		case Qt::EditRole:
+			return _targetSize.height();
+
+		case Qt::ToolTipRole:
+			return QString("Target height: %1").arg(targetHeightString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
 void ImageCollection::setTargetSize(const QSize& targetSize)
 {
 	_targetSize = targetSize;
@@ -439,6 +489,9 @@ QVariant ImageCollection::noImages(const int& role) const
 		case Qt::ToolTipRole:
 			return QString("Number of images: %1").arg(noImagesString);
 
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
 		default:
 			break;
 	}
@@ -462,11 +515,19 @@ QVariant ImageCollection::noSelectedImages(const int& role) const
 		case Qt::ToolTipRole:
 			return QString("Number of selected images: %1").arg(noSelectedImagesString);
 
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
+
 		default:
 			break;
 	}
 
 	return QVariant();
+}
+
+ImageCollection::SubSampling& ImageCollection::subsampling()
+{
+	return _subsampling;
 }
 
 const std::vector<ImageCollection::Image>& ImageCollection::images() const

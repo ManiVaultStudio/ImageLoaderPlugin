@@ -161,7 +161,7 @@ public: // Nested image class
 		 * @param ratio The subsampling ratio
 		 * @param filter The subsampling filter
 		 */
-		SubSampling(const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
+		SubSampling(const bool& enabled = false, const float& ratio = 1.0f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
 
 	public: // Getters/setters
 		
@@ -253,6 +253,12 @@ public: // Getters/setters
 	/** Returns the target image size */
 	QVariant targetSize(const int& role) const;
 
+	/** Returns the target image width */
+	QVariant targetWidth(const int& role) const;
+
+	/** Returns the target image height */
+	QVariant targetheight(const int& role) const;
+
 	/**
 	 * Sets the target image size
 	 * @param targetSize Size of the target image
@@ -295,6 +301,9 @@ public: // Getters/setters
 
 	/** Returns the number of selected images */
 	QVariant noSelectedImages(const int& role) const;
+
+	/** Get subsampling parameters */
+	SubSampling& subsampling();
 
 	/** Get images */
 	const std::vector<Image>& images() const;

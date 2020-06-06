@@ -36,25 +36,6 @@ void ImageCollectionLoader::setDatasetName(const QString& datasetName, const boo
 	emit settingsChanged();
 }
 
-/*
-std::shared_ptr<Scanned> ImageLoader::scanned() const
-{
-	return _scanned;
-}
-
-void ImageLoader::setScanned(std::shared_ptr<Scanned> scanned)
-{
-	_scanned = scanned;
-}
-
-void ImageLoader::load(std::shared_ptr<Scanned> scanned)
-{
-	_scanned = scanned;
-
-	start();
-}
-*/
-
 void ImageCollectionLoader::run()
 {
 	/*

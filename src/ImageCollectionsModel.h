@@ -27,6 +27,8 @@ public: // Enumerations
 		ToGrayscale,				/** Whether to convert the images to grayscale */
 		SourceSize,					/** Size of the source image(s) */
 		TargetSize,					/** Size of the target image(s) */
+		TargetWidth,				/** Target width of the image(s) */
+		TargetHeight,				/** Target height of the image(s) */
 		SearchDir,					/** Initial directory where the search was started */
 		Type,						/** Load as image sequence (0) or image stack (1) */
 		SubsamplingEnabled,			/** Whether subsampling is enabled */
@@ -60,6 +62,12 @@ public: // Enumerations
 
 			case Column::TargetSize:
 				return "Target size";
+
+			case Column::TargetWidth:
+				return "Width";
+
+			case Column::TargetHeight:
+				return "Height";
 
 			case Column::SearchDir:
 				return "Search directory";

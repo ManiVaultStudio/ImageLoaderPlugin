@@ -30,23 +30,34 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->imageCollectionsTreeView->setModel(&imageCollectionsModel);
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
+
+	// Column visibility
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::DatasetName));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::NoImages));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::NoSelectedImages));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Grayscale));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SourceSize));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetSize));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SourceSize));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetSize));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetWidth));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetHeight));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SearchDir));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Type));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingEnabled));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingRatio));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingFilter));
+	
+	//_ui->imageCollectionsTreeView->header()->setStretchLastSection(false);
 
 	_ui->imagesTreeView->setModel(&imagesModel);
 	_ui->imagesTreeView->setSelectionModel(&imagesModel.selectionModel());
+
+	// Column visibility
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
 	_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
 	_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
 
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::Name), 300);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 100);
+	//_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::Name), 300);
+	//_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 100);
 
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::Name), QHeaderView::Interactive);
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
@@ -95,6 +106,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ToGrayscale));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::SourceSize));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetSize));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetWidth));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetHeight));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::SearchDir));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::Type));
 	});

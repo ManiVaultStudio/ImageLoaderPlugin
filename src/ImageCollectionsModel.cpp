@@ -28,7 +28,7 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 	if (!index.isValid())
 		return QVariant();
 
-	const auto imageCollection = _imageCollections[index.row()];
+	auto imageCollection = _imageCollections[index.row()];
 
 	switch (index.column()) {
 		case ult(Column::DatasetName):
@@ -52,11 +52,26 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 		case ult(Column::TargetSize):
 			return imageCollection.targetSize(role);
 
+		case ult(Column::TargetWidth):
+			return imageCollection.targetWidth(role);
+
+		case ult(Column::TargetHeight):
+			return imageCollection.targetheight(role);
+
 		case ult(Column::SearchDir):
 			return imageCollection.searchDir(role);
 
 		case ult(Column::Type):
 			return imageCollection.type(role);
+
+		case ult(Column::SubsamplingEnabled):
+			return imageCollection.subsampling().enabled(role);
+
+		case ult(Column::SubsamplingRatio):
+			return imageCollection.subsampling().ratio(role);
+
+		case ult(Column::SubsamplingFilter):
+			return imageCollection.subsampling().filter(role);
 	}
 
 	return QVariant();
@@ -64,6 +79,10 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
 bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
 {
+	QModelIndexList affectedIndices;
+
+	affectedIndices << index;
+
 	auto& imageCollection = _imageCollections[index.row()];
 
 	const auto column = static_cast<Column>(index.column());
@@ -82,6 +101,32 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 				case Column::Type:
 				{
 					imageCollection.setType(static_cast<ImageData::Type>(value.toInt()));
+					break;
+				}
+
+				case Column::SubsamplingEnabled:
+				{
+					imageCollection.subsampling().setEnabled(value.toBool());
+					break;
+				}
+
+				case Column::SubsamplingRatio:
+				{
+					imageCollection.subsampling().setRatio(value.toFloat());
+
+					const auto sourceSize = imageCollection.sourceSize(Qt::EditRole).toSize();
+
+					imageCollection.setTargetSize(value.toFloat() * sourceSize);
+
+					affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
+					affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
+					affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
+					break;
+				}
+
+				case Column::SubsamplingFilter:
+				{
+					imageCollection.subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
 					break;
 				}
 
@@ -112,7 +157,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			break;
 	}
 
-	emit dataChanged(index, index);
+	for (auto affectedIndex : affectedIndices)
+		emit dataChanged(affectedIndex, affectedIndex);
 
 	return true;
 }
@@ -155,6 +201,8 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 		case Column::SearchDir:
 		case Column::SourceSize:
 		case Column::TargetSize:
+		case Column::TargetWidth:
+		case Column::TargetHeight:
 			break;
 
 		default:

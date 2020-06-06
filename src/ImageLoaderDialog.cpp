@@ -43,6 +43,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_imageLoaderPlugin = imageLoaderPlugin;
 
 	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
+	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
 
 	const auto closeAfterLoaded = _settings.value("CloseAfterLoaded", true).toBool();
 
