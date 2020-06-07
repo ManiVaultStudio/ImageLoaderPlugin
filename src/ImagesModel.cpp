@@ -34,14 +34,17 @@ QVariant ImagesModel::data(const QModelIndex& index, int role /* = Qt::DisplayRo
 	const auto image = _imageCollection->image(index.row());
 
 	switch (index.column()) {
-		case ult(Column::Name):
-			return image->name(role);
+		case ult(Column::ShouldLoad):
+			return image->shouldLoad(role);
+
+		case ult(Column::FileName):
+			return image->fileName(role);
+
+		case ult(Column::DimensionName):
+			return image->dimensionName(role);
 
 		case ult(Column::FilePath):
 			return image->filePath(role);
-
-		case ult(Column::ShouldLoad):
-			return image->shouldLoad(role);
 	}
 
 	return QVariant();
@@ -49,20 +52,52 @@ QVariant ImagesModel::data(const QModelIndex& index, int role /* = Qt::DisplayRo
 
 bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
 {
+	QModelIndexList affectedIndices;
+
+	affectedIndices << index;
+
 	auto image = _imageCollection->image(index.row());
 	
 	const auto column = static_cast<Column>(index.column());
 
 	switch (role)
 	{
+		case Qt::EditRole:
+		{
+			switch (column) {
+				case Column::ShouldLoad:
+				case Column::FileName:
+					break;
+
+				case Column::DimensionName:
+				{
+					image->setDimensionName(value.toString());
+					break;
+				}
+
+				case Column::FilePath:
+					break;
+
+				default:
+					break;
+			}
+
+			break;
+		}
+
 		case Qt::CheckStateRole:
 		{
 			switch (column) {
-				case Column::Name:
+				case Column::ShouldLoad:
 				{
 					image->setShouldLoad(value.toBool());
 					break;
 				}
+
+				case Column::FileName:
+				case Column::DimensionName:
+				case Column::FilePath:
+					break;
 
 				default:
 					break;
@@ -74,6 +109,9 @@ bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int r
 		default:
 			break;
 	}
+
+	for (auto affectedIndex : affectedIndices)
+		emit dataChanged(affectedIndex, affectedIndex);
 
 	return true;
 }
@@ -94,10 +132,8 @@ Qt::ItemFlags ImagesModel::flags(const QModelIndex& index) const
 {
 	int flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 
-	//const auto type = static_cast<Type>(_type);
-
 	switch (static_cast<Column>(index.column())) {
-		case Column::Name:
+		case Column::ShouldLoad:
 		{
 			flags |= Qt::ItemIsUserCheckable;
 
@@ -107,8 +143,16 @@ Qt::ItemFlags ImagesModel::flags(const QModelIndex& index) const
 			break;
 		}
 
+		case Column::FileName:
+			break;
+
+		case Column::DimensionName:
+		{
+			flags |= Qt::ItemIsEditable;
+			break;
+		}
+
 		case Column::FilePath:
-		case Column::ShouldLoad:
 			break;
 
 		default:

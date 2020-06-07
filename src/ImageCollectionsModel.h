@@ -24,7 +24,6 @@ public: // Enumerations
 		ImageType,					/** The type of image(s) */
 		NoImages,					/** Number of images in the collection */
 		NoSelectedImages,			/** Number of selected images in the collection */
-		ToGrayscale,				/** Whether to convert the images to grayscale */
 		SourceSize,					/** Size of the source image(s) */
 		TargetSize,					/** Size of the target image(s) */
 		TargetWidth,				/** Target width of the image(s) */
@@ -34,9 +33,10 @@ public: // Enumerations
 		SubsamplingEnabled,			/** Whether subsampling is enabled */
 		SubsamplingRatio,			/** Subsampling ratio */
 		SubsamplingFilter,			/** Subsampling filter */
+		ToGrayscale,				/** Whether to convert the images to grayscale */
 
 		Start = DatasetName,		/** Column start */
-		End = SubsamplingFilter		/** Column End */
+		End = ToGrayscale			/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
@@ -53,9 +53,6 @@ public: // Enumerations
 
 			case Column::NoSelectedImages:
 				return "#Selected images";
-
-			case Column::ToGrayscale:
-				return "To grayscale";
 
 			case Column::SourceSize:
 				return "Source size";
@@ -83,6 +80,9 @@ public: // Enumerations
 
 			case Column::SubsamplingFilter:
 				return "Subsampling filter";
+
+			case Column::ToGrayscale:
+				return "Convert to grayscale";
 
 			default:
 				return QString();

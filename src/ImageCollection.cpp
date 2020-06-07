@@ -9,6 +9,8 @@
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
 	_filePath(),
+	_name(),
+	_dimensionName(),
 	_shouldLoad(true),
 	_pageIndex(-1)
 {
@@ -16,13 +18,16 @@ ImageCollection::Image::Image() :
 
 ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
 	_imageCollection(nullptr),
-	_shouldLoad(true),
 	_filePath(filePath),
 	_name(QFileInfo(filePath).fileName()),
+	_dimensionName(),
+	_shouldLoad(true),
 	_pageIndex(pageIndex)
 {
 	if (pageIndex >= 0)
 		_name += QString::number(_pageIndex);
+
+	_dimensionName = QFileInfo(filePath).fileName();
 }
 
 ImageCollection* ImageCollection::Image::imageCollection()
@@ -35,7 +40,37 @@ void ImageCollection::Image::setImageCollection(ImageCollection* imageCollection
 	_imageCollection = imageCollection;
 }
 
-QVariant ImageCollection::Image::name(const int& role) const
+QVariant ImageCollection::Image::shouldLoad(const int& role) const
+{
+	const auto shouldLoadString = _shouldLoad ? "true" : "false";
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return "";
+
+		case Qt::EditRole:
+			return _shouldLoad;
+
+		case Qt::ToolTipRole:
+			return QString("Should load: %1").arg(shouldLoadString);
+
+		case Qt::CheckStateRole:
+			return _shouldLoad ? Qt::Checked : Qt::Unchecked;
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
+{
+	_shouldLoad = shouldLoad;
+}
+
+QVariant ImageCollection::Image::fileName(const int& role) const
 {
 	switch (role)
 	{
@@ -48,14 +83,36 @@ QVariant ImageCollection::Image::name(const int& role) const
 		case Qt::ToolTipRole:
 			return QString("File: %1").arg(_filePath);
 
-		case Qt::CheckStateRole:
-			return _shouldLoad ? Qt::Checked : Qt::Unchecked;
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::Image::dimensionName(const int& role) const
+{
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return _dimensionName;
+
+		case Qt::EditRole:
+			return _dimensionName;
+
+		case Qt::ToolTipRole:
+			return QString("Dimension name: %1").arg(_dimensionName);
 
 		default:
 			break;
 	}
 
 	return QVariant();
+}
+
+void ImageCollection::Image::setDimensionName(const QString& dimensionName)
+{
+	_dimensionName = dimensionName;
 }
 
 QVariant ImageCollection::Image::filePath(const int& role) const
@@ -81,33 +138,6 @@ QVariant ImageCollection::Image::filePath(const int& role) const
 void ImageCollection::Image::setFilePath(const QString& filePath)
 {
 	_filePath = filePath;
-}
-
-QVariant ImageCollection::Image::shouldLoad(const int& role) const
-{
-	const auto shouldLoadString = _shouldLoad ? "true" : "false";
-
-	switch (role)
-	{
-		case Qt::DisplayRole:
-			return "";
-
-		case Qt::EditRole:
-			return _shouldLoad;
-
-		case Qt::ToolTipRole:
-			return QString("Should load: %1").arg(shouldLoadString);
-
-		default:
-			break;
-	}
-
-	return QVariant();
-}
-
-void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
-{
-	_shouldLoad = shouldLoad;
 }
 
 QVariant ImageCollection::Image::pageIndex(const int& role) const
@@ -542,9 +572,11 @@ ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
 
 void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
-	_images.push_back(Image(filePath, pageIndex));
+	auto& image = Image(filePath, pageIndex);
 
-	_images.back().setImageCollection(this);
+	image.setImageCollection(this);
+
+	_images.push_back(image);
 }
 
 void ImageCollection::computeDatasetName()

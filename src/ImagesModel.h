@@ -20,25 +20,29 @@ public: // Enumerations
 
 	/** TODO: Write description */
 	enum class Column {
-		Name,				/** The name of the dataset */
-		FilePath,			/** Number of images in the collection */
-		ShouldLoad,			/** Whether to load the image or not */
+		ShouldLoad,				/** Whether to load the image or not */
+		FileName,				/** The filename of the dataset */
+		DimensionName,			/** Dimension name (in case of image stack) */
+		FilePath,				/** Number of images in the collection */
 
-		Start = Name,		/** Column start */
-		End = ShouldLoad	/** Column End */
+		Start = ShouldLoad,		/** Column start */
+		End = FilePath			/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
 	static QString columnName(const Column& column) {
 		switch (column) {
-			case Column::Name:
-				return "Name";
+			case Column::ShouldLoad:
+				return "";
+
+			case Column::FileName:
+				return "Filename";
+
+			case Column::DimensionName:
+				return "Dimension name";
 
 			case Column::FilePath:
 				return "File path";
-
-			case Column::ShouldLoad:
-				return "Load";
 
 			default:
 				return QString();

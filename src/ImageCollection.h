@@ -53,11 +53,37 @@ public: // Nested image class
 		void setImageCollection(ImageCollection* imageCollection);
 
 		/**
-		 * Returns the image name
+		 * Returns whether the image should be loaded or not
 		 * @param role Data role
-		 * @return Image name in variant form
+		 * @return Whether the image should be loaded or not in variant form
 		 */
-		QVariant name(const int& role) const;
+		QVariant shouldLoad(const int& role) const;
+
+		/**
+		 * Sets whether the image should be loaded or not
+		 * @param shouldLoad Whether the image should be loaded
+		 */
+		void setShouldLoad(const bool& shouldLoad);
+
+		/**
+		 * Returns the image filename
+		 * @param role Data role
+		 * @return Image filename in variant form
+		 */
+		QVariant fileName(const int& role) const;
+
+		/**
+		 * Returns the dimension name (in case of image stack)
+		 * @param role Data role
+		 * @return The dimension name in variant form
+		 */
+		QVariant dimensionName(const int& role) const;
+
+		/**
+		 * Sets the dimension name (in case of image stack)
+		 * @param dimensionName Dimension name
+		 */
+		void setDimensionName(const QString& dimensionName);
 
 		/**
 		 * Returns the absolute image file path
@@ -71,19 +97,6 @@ public: // Nested image class
 		 * @param filePath Absolute image file path
 		 */
 		void setFilePath(const QString& filePath);
-
-		/**
-		 * Returns whether the image should be loaded or not
-		 * @param role Data role
-		 * @return Whether the image should be loaded or not in variant form
-		 */
-		QVariant shouldLoad(const int& role) const;
-
-		/**
-		 * Sets whether the image should be loaded or not
-		 * @param shouldLoad Whether the image should be loaded
-		 */
-		void setShouldLoad(const bool& shouldLoad);
 
 		/**
 		 * Returns the multi-layer TIFF page index
@@ -102,6 +115,7 @@ public: // Nested image class
 		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
 		QString				_filePath;			/** The absolute image file path */
 		QString				_name;				/** The image name */
+		QString				_dimensionName;		/** Dimension name (in case of image stack) */
 		bool				_shouldLoad;		/** Whether the image should be loaded */
 		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
 	};
