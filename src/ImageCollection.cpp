@@ -9,7 +9,7 @@
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
 	_filePath(),
-	_name(),
+	_fileName(),
 	_dimensionName(),
 	_shouldLoad(true),
 	_pageIndex(-1)
@@ -19,15 +19,15 @@ ImageCollection::Image::Image() :
 ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
 	_imageCollection(nullptr),
 	_filePath(filePath),
-	_name(QFileInfo(filePath).fileName()),
+	_fileName(QFileInfo(filePath).completeBaseName()),
 	_dimensionName(),
 	_shouldLoad(true),
 	_pageIndex(pageIndex)
 {
 	if (pageIndex >= 0)
-		_name += QString::number(_pageIndex);
+		_fileName += QString::number(_pageIndex);
 
-	_dimensionName = QFileInfo(filePath).fileName();
+	_dimensionName = QFileInfo(filePath).completeBaseName();
 }
 
 ImageCollection* ImageCollection::Image::imageCollection()
@@ -75,10 +75,10 @@ QVariant ImageCollection::Image::fileName(const int& role) const
 	switch (role)
 	{
 		case Qt::DisplayRole:
-			return _name;
+			return _fileName;
 
 		case Qt::EditRole:
-			return _name;
+			return _fileName;
 
 		case Qt::ToolTipRole:
 			return QString("File: %1").arg(_filePath);
@@ -560,7 +560,7 @@ ImageCollection::SubSampling& ImageCollection::subsampling()
 	return _subsampling;
 }
 
-const std::vector<ImageCollection::Image>& ImageCollection::images() const
+std::vector<ImageCollection::Image>& ImageCollection::images()
 {
 	return _images;
 }

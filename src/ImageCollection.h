@@ -114,7 +114,7 @@ public: // Nested image class
 	private:
 		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
 		QString				_filePath;			/** The absolute image file path */
-		QString				_name;				/** The image name */
+		QString				_fileName;				/** The image name */
 		QString				_dimensionName;		/** Dimension name (in case of image stack) */
 		bool				_shouldLoad;		/** Whether the image should be loaded */
 		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
@@ -320,7 +320,7 @@ public: // Getters/setters
 	SubSampling& subsampling();
 
 	/** Get images */
-	const std::vector<Image>& images() const;
+	std::vector<Image>& images();
 
 	/**
 	 * Get image by index

@@ -57,7 +57,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::DimensionName));
-	_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
+	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
 	
 	// Column resize mode
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
@@ -123,9 +123,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(firstRow.row())));
 
 			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
-			_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FileName));
-			_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::DimensionName));
-			_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FilePath));
+			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FileName));
+			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::DimensionName));
+			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FilePath));
 
 			const auto imageCollectionType = imageCollectionsModel.data(firstRow.siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::EditRole).toInt();
 
@@ -133,12 +133,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
 		}
 	});
-
-	/*
-	connect(&_loader, &ImageLoader::settingsChanged, [this]() {
-		const auto enableLoad = _scanner.scanned()->loadable();
-	});
-	*/
 
 	_scanner.loadSettings();
 }

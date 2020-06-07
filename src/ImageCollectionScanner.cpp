@@ -5,6 +5,10 @@
 #include <QDir>
 #include <QImageReader>
 
+namespace fi {
+	#include <FreeImage.h>
+}
+
 ImageCollectionScanner::ImageCollectionScanner() :
 	Settings("LKEB/CGV", "HDPS", "Plugins/ImageLoader/%1/Scanner"),
 	_directory(),
@@ -163,9 +167,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 	for (int i = 0; i < fileList.size(); ++i)
 	{
-		const auto fileName = fileList.at(i);
-		const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
-		const auto imageType = QFileInfo(fileName).suffix();
+		const auto fileName			= fileList.at(i);
+		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+		const auto imageType		= QFileInfo(fileName).suffix();
 
 		QImageReader imageReader(imageFilePath);
 
@@ -176,7 +180,38 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		if (it == imageCollections.end()) {
 			auto imageCollection = ImageCollection(_directory, imageType, imageSize);
 
-			imageCollection.addImage(imageFilePath);
+			auto loadOne = true;
+
+			if (imageType == "tiff") {
+				fi::FIMULTIBITMAP* multiBitmap = fi::FreeImage_OpenMultiBitmap(fi::FIF_TIFF, imageFilePath.toUtf8(), false, false);
+
+				if (multiBitmap != nullptr) {
+					const auto pageCount = fi::FreeImage_GetPageCount(multiBitmap);
+
+					
+					if (pageCount > 1) {
+						for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+							/*
+							auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
+
+							fi::FITAG* tag;
+
+							fi::FreeImage_GetMetadata(fi::FREE_IMAGE_MDMODEL::FIMD_CUSTOM, pageBitmap, "DESCRIPTION", &tag);
+							*/
+
+							imageCollection.addImage(imageFilePath, pageIndex);
+
+							imageCollection.images().back().setDimensionName(QString("Dim %1").arg(pageIndex));
+						}
+
+						loadOne = false;
+					}
+				}
+			}
+			
+			if (loadOne) {
+				imageCollection.addImage(imageFilePath);
+			}
 
 			imageCollections.push_back(imageCollection);
 		}
