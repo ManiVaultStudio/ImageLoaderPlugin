@@ -12,6 +12,7 @@ namespace fi {
 ImageCollectionScanner::ImageCollectionScanner() :
 	Settings("LKEB/CGV", "HDPS", "Plugins/ImageLoader/%1/Scanner"),
 	_directory(),
+	_separateByDirectory(false),
 	_previousDirectories(),
 	_supportedImageTypes(),
 	_initialized(false)
@@ -28,8 +29,8 @@ void ImageCollectionScanner::loadSettings()
 	const auto directory = setting("Directory", "").toString();
 
 	setDirectory(QDir(directory).exists() ? directory : "", true);
+	setSeparateByDirectory(setting("SeparateByDirectory", true).toBool());
 	setSupportedImageTypes(setting("ImageTypes", QStringList()).toStringList(), true);
-	setPreviousDirectories(setting("PreviousDirectories", QVariant::fromValue(QStringList())).toStringList(), true);
 
 	_initialized = true;
 }
@@ -57,40 +58,25 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 
 	emit directoryChanged(_directory);
 	
-	addPreviousDirectory(_directory);
-
 	emit settingsChanged();
 }
 
-QStringList ImageCollectionScanner::previousDirectories() const
+bool ImageCollectionScanner::separateByDirectory() const
 {
-	return _previousDirectories;
+	return _separateByDirectory;
 }
 
-void ImageCollectionScanner::setPreviousDirectories(const QStringList& previousDirectories, const bool& notify /*= false*/)
+void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirectory, const bool& notify /*= false*/)
 {
-	if (!notify && previousDirectories == _previousDirectories)
+	if (separateByDirectory == _separateByDirectory)
 		return;
 
-	_previousDirectories = previousDirectories;
+	_separateByDirectory = separateByDirectory;
 
-	setSetting("PreviousDirectories", _previousDirectories);
+	setSetting("SeparateByDirectory", _separateByDirectory);
 
-	qDebug() << "Set previous directories" << _previousDirectories;
-
-	emit previousDirectoriesChanged(_previousDirectories);
-
+	emit separateByDirectoryChanged(_separateByDirectory);
 	emit settingsChanged();
-}
-
-void ImageCollectionScanner::addPreviousDirectory(const QString& previousDirectory)
-{
-//	if (_previousDirectories.contains(previousDirectory))
-//		return;
-
-	auto previousDirectories = _previousDirectories << previousDirectory;
-
-	setPreviousDirectories(_previousDirectories);
 }
 
 QStringList ImageCollectionScanner::supportedImageTypes() const
@@ -136,10 +122,19 @@ void ImageCollectionScanner::scan()
 	imageCollectionsModel.insert(0, imageCollections);
 }
 
-auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& imageType, const QSize& imageSize)
+auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
-	return std::find_if(imageCollections.begin(), imageCollections.end(), [&imageType, &imageSize](const auto& sequence) {
-		return sequence.imageType(Qt::EditRole).toString() == imageType && sequence.sourceSize(Qt::EditRole).toSize() == imageSize;
+	return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
+		if (_separateByDirectory && imageCollection.directory(Qt::EditRole).toString() != directory)
+			return false;
+
+		if (imageCollection.imageType(Qt::EditRole).toString() != imageType)
+			return false;
+
+		if (imageCollection.sourceSize(Qt::EditRole).toSize() != imageSize)
+			return false;
+
+		return true;
 	});
 }
 
@@ -170,15 +165,16 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		const auto fileName			= fileList.at(i);
 		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
 		const auto imageType		= QFileInfo(fileName).suffix();
+		const auto rootDir			= QFileInfo(imageFilePath).absoluteDir().path();
 
 		QImageReader imageReader(imageFilePath);
 
 		const auto imageSize = imageReader.size();
 
-		auto it = findImageCollection(imageCollections, imageType, imageSize);
+		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = ImageCollection(_directory, imageType, imageSize);
+			auto imageCollection = ImageCollection(rootDir, imageType, imageSize);
 
 			auto loadOne = true;
 

@@ -58,8 +58,8 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 		case ult(Column::TargetHeight):
 			return imageCollection.targetheight(role);
 
-		case ult(Column::SearchDir):
-			return imageCollection.searchDir(role);
+		case ult(Column::Directory):
+			return imageCollection.directory(role);
 
 		case ult(Column::Type):
 			return imageCollection.type(role);
@@ -87,6 +87,18 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 	const auto column = static_cast<Column>(index.column());
 
+	auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
+		const auto subsamplingEnabled	= imageCollection.subsampling().enabled(Qt::EditRole).toBool();
+		const auto subsamplingRatio		= imageCollection.subsampling().ratio(Qt::EditRole).toFloat();
+		const auto sourceSize			= imageCollection.sourceSize(Qt::EditRole).toSize();
+
+		imageCollection.setTargetSize(subsamplingEnabled ? subsamplingRatio * sourceSize : sourceSize);
+
+		affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
+		affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
+		affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
+	};
+
 	switch (role)
 	{
 		case Qt::EditRole:
@@ -107,20 +119,14 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 				case Column::SubsamplingEnabled:
 				{
 					imageCollection.subsampling().setEnabled(value.toBool());
+					updateTargetSize();
 					break;
 				}
 
 				case Column::SubsamplingRatio:
 				{
 					imageCollection.subsampling().setRatio(value.toFloat());
-
-					const auto sourceSize = imageCollection.sourceSize(Qt::EditRole).toSize();
-
-					imageCollection.setTargetSize(value.toFloat() * sourceSize);
-
-					affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
-					affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
-					affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
+					updateTargetSize();
 					break;
 				}
 
@@ -198,7 +204,7 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 			break;
 		}
 
-		case Column::SearchDir:
+		case Column::Directory:
 		case Column::SourceSize:
 		case Column::TargetSize:
 		case Column::TargetWidth:

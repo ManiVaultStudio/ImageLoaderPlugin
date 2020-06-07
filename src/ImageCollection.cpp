@@ -24,9 +24,6 @@ ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageI
 	_shouldLoad(true),
 	_pageIndex(pageIndex)
 {
-	if (pageIndex >= 0)
-		_fileName += QString::number(_pageIndex);
-
 	_dimensionName = QFileInfo(filePath).completeBaseName();
 }
 
@@ -167,7 +164,7 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 	_pageIndex = pageIndex;
 }
 
-ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 1.0f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
 	_enabled(enabled),
 	_ratio(ratio),
 	_filter(filter)
@@ -255,8 +252,8 @@ void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter
 	_filter = filter;
 }
 
-ImageCollection::ImageCollection(const QString& searchDir, const QString& imageType, const QSize& sourceSize) :
-	_searchDir(searchDir),
+ImageCollection::ImageCollection(const QString& directory, const QString& imageType, const QSize& sourceSize) :
+	_directory(directory),
 	_imageType(imageType),
 	_sourceSize(sourceSize),
 	_targetSize(sourceSize),
@@ -268,18 +265,18 @@ ImageCollection::ImageCollection(const QString& searchDir, const QString& imageT
 {
 }
 
-QVariant ImageCollection::searchDir(const int& role) const
+QVariant ImageCollection::directory(const int& role) const
 {
 	switch (role)
 	{
 		case Qt::DisplayRole:
-			return _searchDir;
+			return _directory;
 
 		case Qt::EditRole:
-			return _searchDir;
+			return _directory;
 
 		case Qt::ToolTipRole:
-			return QString("Search directory: %1").arg(_searchDir);
+			return QString("Directory: %1").arg(_directory);
 
 		default:
 			break;
@@ -288,9 +285,9 @@ QVariant ImageCollection::searchDir(const int& role) const
 	return QVariant();
 }
 
-void ImageCollection::setSearchDir(const QString& searchDir)
+void ImageCollection::setDirectory(const QString& directory)
 {
-	_searchDir = searchDir;
+	_directory = directory;
 }
 
 QVariant ImageCollection::imageType(const int& role) const
@@ -583,12 +580,32 @@ void ImageCollection::computeDatasetName()
 {
 	QString rootDir = "";
 
+	QSet<QString> rootDirs;
+
 	for (const auto& image : _images) {
 		const auto path = QFileInfo(image.filePath(Qt::EditRole).toString()).absoluteDir().path();
 
-		if (rootDir == "" || path.size() < rootDir)
+		if (rootDir == "")
 			rootDir = path;
+
+		if (path.size() < rootDir) {
+			rootDir = path;
+
+			rootDirs.insert(path);
+		}
 	}
 
-	setDatasetName(QString("%1").arg(QDir(rootDir).dirName(), QString::number(_targetSize.width()), QString::number(_targetSize.height())));
+	//qDebug() << rootDirs;
+
+	if (rootDirs.count() > 1) {
+		QDir childDir(rootDir);
+
+		childDir.cdUp();
+
+		rootDir = childDir.dirName();
+
+		setDirectory(childDir.absolutePath());
+	}
+	
+	setDatasetName(QString("%1").arg(QDir(rootDir).dirName()));
 }

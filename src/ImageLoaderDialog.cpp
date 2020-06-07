@@ -23,19 +23,7 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 
 ImageLoaderDialog::~ImageLoaderDialog()
 {
-	switch (_ui->closeAfterLoadedCheckBox->checkState())
-	{
-		case Qt::Checked:
-			_settings.setValue("CloseAfterLoaded", true);
-			break;
-
-		case Qt::Unchecked:
-			_settings.setValue("CloseAfterLoaded", false);
-			break;
-
-		default:
-			break;
-	}
+	_settings.setValue("CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
 }
 
 void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
@@ -45,9 +33,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
 	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
 
-	const auto closeAfterLoaded = _settings.value("CloseAfterLoaded", true).toBool();
-
-	_ui->closeAfterLoadedCheckBox->setCheckState(closeAfterLoaded ? Qt::Checked : Qt::Unchecked);
+	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
 
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 

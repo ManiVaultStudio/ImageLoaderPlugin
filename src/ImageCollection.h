@@ -175,7 +175,7 @@ public: // Nested image class
 		 * @param ratio The subsampling ratio
 		 * @param filter The subsampling filter
 		 */
-		SubSampling(const bool& enabled = false, const float& ratio = 1.0f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
+		SubSampling(const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
 
 	public: // Getters/setters
 		
@@ -229,22 +229,22 @@ public: // Construction
 
 	/**
 	 * Constructor
-	 * @param searchDir Search directory
+	 * @param directory Search directory
 	 * @param imageType Image type
 	 * @param sourceSize Source image size
 	 */
-	ImageCollection(const QString& searchDir, const QString& imageType, const QSize& sourceSize);
+	ImageCollection(const QString& directory, const QString& imageType, const QSize& sourceSize);
 
 public: // Getters/setters
 
-	/** Returns the search directory */
-	QVariant searchDir(const int& role) const;
+	/** Returns the root directory */
+	QVariant directory(const int& role) const;
 
 	/**
-	 * Sets the search directory
-	 * @param searchDir Search directory
+	 * Sets the root directory
+	 * @param rootDir Search directory
 	 */
-	void setSearchDir(const QString& searchDir);
+	void setDirectory(const QString& directory);
 
 	/** Returns the image type */
 	QVariant imageType(const int& role) const;
@@ -341,13 +341,13 @@ public:
 	void computeDatasetName();
 
 private:
-	QString					_searchDir;					/** Initial directory where the search was started */
-	QString					_imageType;					/** Type of image */
-	QSize					_sourceSize;				/** Size of the source image */
-	QSize					_targetSize;				/** Size of the target image */
-	QString					_datasetName;				/** The name of the dataset */
-	bool					_toGrayscale;				/** Whether to convert the images in the collection to grayscale */
-	ImageData::Type			_type;						/** How to load the collection (as image sequence or image stack) */
-	SubSampling				_subsampling;				/** Subsampling parameters */
-	std::vector<Image>		_images;					/** Images */
+	QString					_directory;			/** Root directory of the images */
+	QString					_imageType;			/** Type of image */
+	QSize					_sourceSize;		/** Size of the source image */
+	QSize					_targetSize;		/** Size of the target image */
+	QString					_datasetName;		/** The name of the dataset */
+	bool					_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
+	ImageData::Type			_type;				/** How to load the collection (as image sequence or image stack) */
+	SubSampling				_subsampling;		/** Subsampling parameters */
+	std::vector<Image>		_images;			/** Images */
 };

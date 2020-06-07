@@ -28,15 +28,15 @@ public: // Enumerations
 		TargetSize,					/** Size of the target image(s) */
 		TargetWidth,				/** Target width of the image(s) */
 		TargetHeight,				/** Target height of the image(s) */
-		SearchDir,					/** Initial directory where the search was started */
 		Type,						/** Load as image sequence (0) or image stack (1) */
 		SubsamplingEnabled,			/** Whether subsampling is enabled */
 		SubsamplingRatio,			/** Subsampling ratio */
 		SubsamplingFilter,			/** Subsampling filter */
 		ToGrayscale,				/** Whether to convert the images to grayscale */
+		Directory,					/** Directory */
 
 		Start = DatasetName,		/** Column start */
-		End = ToGrayscale			/** Column End */
+		End = Directory			/** Column End */
 	};
 
 	/** Get string representation of column enumeration */
@@ -66,8 +66,8 @@ public: // Enumerations
 			case Column::TargetHeight:
 				return "Height";
 
-			case Column::SearchDir:
-				return "Search directory";
+			case Column::Directory:
+				return "Directory";
 
 			case Column::Type:
 				return "Load as";

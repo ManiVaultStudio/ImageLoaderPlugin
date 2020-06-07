@@ -25,6 +25,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
 
+	_ui->separateByDirectoryCheckBox->setChecked(_scanner.separateByDirectory());
+
 	auto& imageCollectionsModel	= _imageLoaderPlugin->imageCollectionsModel();
 	auto& imagesModel			= _imageLoaderPlugin->imagesModel();
 
@@ -39,12 +41,12 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetSize));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetWidth));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::TargetHeight));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SearchDir));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Type));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingEnabled));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingRatio));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::SubsamplingFilter));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Grayscale));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Directory));
 
 	//_ui->imageCollectionsTreeView->header()->setStretchLastSection(false);
 
@@ -71,11 +73,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_scanner.scan();
 
-	connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
+	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
 	});
 
-	connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
+	QObject::connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
@@ -83,7 +85,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_scanner.scan();
 	});
 
-	connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
+	QObject::connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
+		_scanner.setSeparateByDirectory(state == Qt::Checked);
+	});
+
+	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
 		const auto initialDirectory	= _scanner.directory();
 		const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
@@ -109,7 +115,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetSize));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetWidth));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::TargetHeight));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::SearchDir));
+		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::Directory));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::Type));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ToGrayscale));
 	});
@@ -132,6 +138,10 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
 			_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
 		}
+	});
+
+	QObject::connect(&_scanner, &ImageCollectionScanner::settingsChanged, [this]() {
+		_scanner.scan();
 	});
 
 	_scanner.loadSettings();
