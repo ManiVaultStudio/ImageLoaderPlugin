@@ -37,7 +37,7 @@ public: // Nested image class
 		/**
 		 * Constructor
 		 * @param filePath Absolute file path of the image
-		 * @param pageIndex Page index (in case of multi-layer TIFF)
+		 * @param pageIndex Page index (in case of multi-page TIFF)
 		 */
 		Image(const QString& filePath, const std::int32_t& pageIndex = -1);
 
@@ -99,7 +99,7 @@ public: // Nested image class
 		void setFilePath(const QString& filePath);
 
 		/**
-		 * Returns the multi-layer TIFF page index
+		 * Returns the multi-page TIFF page index
 		 * @param role Data role
 		 * @return The page index in variant form
 		 */
@@ -114,10 +114,10 @@ public: // Nested image class
 	private:
 		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
 		QString				_filePath;			/** The absolute image file path */
-		QString				_fileName;				/** The image name */
+		QString				_fileName;			/** The file name */
 		QString				_dimensionName;		/** Dimension name (in case of image stack) */
 		bool				_shouldLoad;		/** Whether the image should be loaded */
-		std::int32_t		_pageIndex;			/** Page index (in case of multi-layer TIFF) */
+		std::int32_t		_pageIndex;			/** Page index (in case of multi-page TIFF) */
 	};
 
 	/**
@@ -333,7 +333,7 @@ public:
 	/**
 	 * Add image to the collection
 	 * @param filePath Absolute file path of the image
-	 * @param pageIndex Page index (in case of multi-layer TIFF)
+	 * @param pageIndex Page index (in case of multi-page TIFF)
 	 */
 	void addImage(const QString& filePath, const std::int32_t& pageIndex = -1);
 

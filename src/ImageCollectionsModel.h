@@ -36,60 +36,8 @@ public: // Enumerations
 		Directory,					/** Directory */
 
 		Start = DatasetName,		/** Column start */
-		End = Directory			/** Column End */
+		End = Directory				/** Column End */
 	};
-
-	/** Get string representation of column enumeration */
-	static QString columnName(const Column& column) {
-		switch (column) {
-			case Column::DatasetName:
-				return "Dataset name";
-
-			case Column::ImageType:
-				return "Type";
-				
-			case Column::NoImages:
-				return "#Images";
-
-			case Column::NoSelectedImages:
-				return "#Selected images";
-
-			case Column::SourceSize:
-				return "Source size";
-
-			case Column::TargetSize:
-				return "Target size";
-
-			case Column::TargetWidth:
-				return "Width";
-
-			case Column::TargetHeight:
-				return "Height";
-
-			case Column::Directory:
-				return "Directory";
-
-			case Column::Type:
-				return "Load as";
-
-			case Column::SubsamplingEnabled:
-				return "Subsampling enabled";
-
-			case Column::SubsamplingRatio:
-				return "Subsampling ratio";
-
-			case Column::SubsamplingFilter:
-				return "Subsampling filter";
-
-			case Column::ToGrayscale:
-				return "Convert to grayscale";
-
-			default:
-				return QString();
-		}
-
-		return QString();
-	}
 
 public: // Construction
 

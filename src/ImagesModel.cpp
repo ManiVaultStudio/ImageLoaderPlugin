@@ -118,11 +118,57 @@ bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int r
 
 QVariant ImagesModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-	if (role != Qt::DisplayRole)
-		return QVariant();
+	auto tooltip = [](const QString& title, const QString& description) {
+		return QString("<html><head/><body><p><span style='font-weight: 600;'>%1</span><br/>%2</p></body></html>").arg(title, description);
+	};
 
 	if (orientation == Qt::Horizontal) {
-		return columnName(static_cast<Column>(section));
+		switch (role)
+		{
+			case Qt::DisplayRole:
+			{
+				switch (static_cast<Column>(section)) {
+					case Column::ShouldLoad:
+						return "";
+
+					case Column::FileName:
+						return "Filename";
+
+					case Column::DimensionName:
+						return "Dimension name";
+
+					case Column::FilePath:
+						return "File path";
+
+					default:
+						return QString();
+				}
+
+				break;
+			}
+
+			case Qt::ToolTipRole:
+			{
+				switch (static_cast<Column>(section)) {
+					case Column::ShouldLoad:
+						return tooltip("Load", "Whether to load the image or not");
+
+					case Column::FileName:
+						return tooltip("Filename", "Name of the image file");
+
+					case Column::DimensionName:
+						return tooltip("Dimension name", "Name of the dimension in the high-dimensional dataset");
+
+					case Column::FilePath:
+						return tooltip("File path", "The absolute file path of the image");
+
+					default:
+						return QString();
+				}
+
+				break;
+			}
+		}
 	}
 
 	return QVariant();

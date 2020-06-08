@@ -71,31 +71,31 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 20);
 
-	_scanner.scan();
-
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
+	});
+
+	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
+		const auto initialDirectory = _scanner.directory();
+		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
+
+		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
+			_scanner.setDirectory(pickedDirectory);
+		}
 	});
 
 	QObject::connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
 		_ui->directoryLineEdit->blockSignals(true);
 		_ui->directoryLineEdit->setText(directory);
 		_ui->directoryLineEdit->blockSignals(false);
-
-		_scanner.scan();
 	});
 
 	QObject::connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
 		_scanner.setSeparateByDirectory(state == Qt::Checked);
 	});
 
-	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
-		const auto initialDirectory	= _scanner.directory();
-		const auto pickedDirectory	= QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
-
-		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-			_scanner.setDirectory(pickedDirectory);
-		}
+	QObject::connect(&_scanner, &ImageCollectionScanner::separateByDirectoryChanged, [this](const bool& separateByDirectory) {
+		
 	});
 
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &imageCollectionsModel](int currentIndex) {
@@ -138,10 +138,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
 			_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
 		}
-	});
-
-	QObject::connect(&_scanner, &ImageCollectionScanner::settingsChanged, [this]() {
-		_scanner.scan();
 	});
 
 	_scanner.loadSettings();

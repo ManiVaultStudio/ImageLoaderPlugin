@@ -6,6 +6,10 @@
 
 #include <algorithm>
 
+namespace fi {
+	#include <FreeImage.h>
+}
+
 ImageCollection::Image::Image() :
 	_imageCollection(nullptr),
 	_filePath(),
@@ -89,6 +93,21 @@ QVariant ImageCollection::Image::fileName(const int& role) const
 
 QVariant ImageCollection::Image::dimensionName(const int& role) const
 {
+	/*
+	auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
+
+	fi::FITAG* tag;
+
+	fi::FreeImage_GetMetadata(fi::FREE_IMAGE_MDMODEL::FIMD_CUSTOM, pageBitmap, "DESCRIPTION", &tag);
+	
+	if (_dimensionName.isEmpty()) {
+		_dimensionName = QFileInfo(_filePath).completeBaseName();
+
+		if (_pageIndex >= 0)
+			_dimensionName = QString("Dim %1").arg(QString::number(_pageIndex));
+	}
+	*/
+
 	switch (role)
 	{
 		case Qt::DisplayRole:

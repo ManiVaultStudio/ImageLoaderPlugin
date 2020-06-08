@@ -171,11 +171,117 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-	if (role != Qt::DisplayRole)
-		return QVariant();
+	auto tooltip = [](const QString& title, const QString& description) {
+		return QString("<html><head/><body><p><span style='font-weight: 600;'>%1</span><br/>%2</p></body></html>").arg(title, description);
+	};
 
 	if (orientation == Qt::Horizontal) {
-		return columnName(static_cast<Column>(section));
+		switch (role)
+		{
+			case Qt::DisplayRole:
+			{
+				switch (static_cast<Column>(section)) {
+					case Column::DatasetName:
+						return "Dataset name";
+
+					case Column::ImageType:
+						return "Type";
+
+					case Column::NoImages:
+						return "#Images";
+
+					case Column::NoSelectedImages:
+						return "#Selected images";
+
+					case Column::SourceSize:
+						return "Source size";
+
+					case Column::TargetSize:
+						return "Target size";
+
+					case Column::TargetWidth:
+						return "Width";
+
+					case Column::TargetHeight:
+						return "Height";
+
+					case Column::Directory:
+						return "Directory";
+
+					case Column::Type:
+						return "Load as";
+
+					case Column::SubsamplingEnabled:
+						return "Subsampling enabled";
+
+					case Column::SubsamplingRatio:
+						return "Subsampling ratio";
+
+					case Column::SubsamplingFilter:
+						return "Subsampling filter";
+
+					case Column::ToGrayscale:
+						return "Convert to grayscale";
+
+					default:
+						return QString();
+				}
+
+				break;
+			}
+
+			case Qt::ToolTipRole:
+			{
+				switch (static_cast<Column>(section)) {
+					case Column::DatasetName:
+						return tooltip("Dataset name", "The name of the high-dimensional dataset");
+
+					case Column::ImageType:
+						return tooltip("Type", "The type of images in the scanned image collection");
+
+					case Column::NoImages:
+						return tooltip("#Images", "The number of images in the collection");
+
+					case Column::NoSelectedImages:
+						return tooltip("#Selected images", "The number of selected images in the collection");
+
+					case Column::SourceSize:
+						return tooltip("Source size", "The size of the images on disk");
+
+					case Column::TargetSize:
+						return tooltip("Target size", "The size of the images when loaded as high-dimensional data");
+
+					case Column::TargetWidth:
+						return tooltip("Width", "The width of the images when loaded as high-dimensional data");
+
+					case Column::TargetHeight:
+						return tooltip("Height", "The height of the images when loaded as high-dimensional data");
+
+					case Column::Directory:
+						return tooltip("Directory", "The top-level directory where the images were found");
+
+					case Column::Type:
+						return tooltip("Load as", "How to interpret the images as high-dimensional data");
+
+					case Column::SubsamplingEnabled:
+						return tooltip("Subsampling enabled", "Whether images are sub-sampled when loaded as high-dimensional data");
+
+					case Column::SubsamplingRatio:
+						return tooltip("Subsampling ratio", "The amount of subsampling");
+
+					case Column::SubsamplingFilter:
+						return tooltip("Subsampling filter", "The subsampling filter to use");
+
+					case Column::ToGrayscale:
+						return tooltip("Convert to grayscale", "Whether all image channels are combined in to one (grayscale)");
+
+					default:
+						return QString();
+				}
+
+				break;
+			}
+		}
 	}
 
 	return QVariant();

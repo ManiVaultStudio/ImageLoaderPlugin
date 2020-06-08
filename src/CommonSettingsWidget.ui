@@ -41,7 +41,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Images loading configuration</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images scanning&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="title">
       <string>Images</string>
@@ -64,6 +64,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Manually enter the search directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -105,6 +108,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image(s)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Lists image(s) that belong to an image collection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
@@ -112,6 +118,9 @@
         </item>
         <item row="5" column="0">
          <widget class="QLabel" name="imagesLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scanned image(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Image(s)</string>
           </property>
@@ -122,6 +131,9 @@
         </item>
         <item row="4" column="0">
          <widget class="QLabel" name="sequencesLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scanned image collection(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Collection(s)</string>
           </property>
@@ -133,10 +145,10 @@
         <item row="2" column="0">
          <widget class="QLabel" name="directoryLabel">
           <property name="toolTip">
-           <string>Directory to search for images</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Pick directory</string>
+           <string>Scan directory</string>
           </property>
          </widget>
         </item>
@@ -154,6 +166,9 @@
             <height>10</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Lists scanned image collections&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
@@ -161,13 +176,19 @@
         </item>
         <item row="6" column="0">
          <widget class="QLabel" name="loadAsLabel">
+          <property name="toolTip">
+           <string>Interpret images as high-dimensional image data</string>
+          </property>
           <property name="text">
-           <string>Load as</string>
+           <string>Interpret as</string>
           </property>
          </widget>
         </item>
         <item row="6" column="1">
          <widget class="QComboBox" name="loadAsComboBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Load as&lt;br/&gt;&lt;/span&gt;Specifies how to interpret the images as high-dimensional image data.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Image sequence&lt;/span&gt;&lt;br/&gt;Each image is considered a high-dimensional data point, each pixel is a dimension&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Image stack&lt;/span&gt;&lt;br/&gt;Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <item>
            <property name="text">
             <string>Image sequence</string>
@@ -182,6 +203,9 @@
         </item>
         <item row="3" column="1">
          <widget class="QCheckBox" name="separateByDirectoryCheckBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Off&lt;/span&gt;&lt;br/&gt;Images are grouped by [image type, resolution]&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;On&lt;/span&gt;&lt;br/&gt;Images are grouped by [image type, resolution, directory]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Separate by directory</string>
           </property>

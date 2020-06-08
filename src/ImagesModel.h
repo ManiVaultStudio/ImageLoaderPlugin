@@ -29,28 +29,6 @@ public: // Enumerations
 		End = FilePath			/** Column End */
 	};
 
-	/** Get string representation of column enumeration */
-	static QString columnName(const Column& column) {
-		switch (column) {
-			case Column::ShouldLoad:
-				return "";
-
-			case Column::FileName:
-				return "Filename";
-
-			case Column::DimensionName:
-				return "Dimension name";
-
-			case Column::FilePath:
-				return "File path";
-
-			default:
-				return QString();
-		}
-
-		return QString();
-	}
-
 public: // Construction
 
 	/** Default constructor */

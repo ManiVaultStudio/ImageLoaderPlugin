@@ -59,6 +59,9 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 	emit directoryChanged(_directory);
 	
 	emit settingsChanged();
+
+	if (_initialized)
+		scan();
 }
 
 bool ImageCollectionScanner::separateByDirectory() const
@@ -77,6 +80,9 @@ void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirect
 
 	emit separateByDirectoryChanged(_separateByDirectory);
 	emit settingsChanged();
+
+	if (_initialized)
+		scan();
 }
 
 QStringList ImageCollectionScanner::supportedImageTypes() const
@@ -98,6 +104,9 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 	emit supportedImageTypesChanged(_supportedImageTypes);
 
 	emit settingsChanged();
+
+	if (_initialized)
+		scan();
 }
 
 void ImageCollectionScanner::scan()
@@ -169,6 +178,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		QImageReader imageReader(imageFilePath);
 
+		if (imageReader.imageCount() > 1)
+			qDebug() << "=====" << imageReader.imageCount();
+
 		const auto imageSize = imageReader.size();
 
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
@@ -184,24 +196,15 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 				if (multiBitmap != nullptr) {
 					const auto pageCount = fi::FreeImage_GetPageCount(multiBitmap);
 
-					
 					if (pageCount > 1) {
 						for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-							/*
-							auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
-
-							fi::FITAG* tag;
-
-							fi::FreeImage_GetMetadata(fi::FREE_IMAGE_MDMODEL::FIMD_CUSTOM, pageBitmap, "DESCRIPTION", &tag);
-							*/
-
 							imageCollection.addImage(imageFilePath, pageIndex);
-
-							imageCollection.images().back().setDimensionName(QString("Dim %1").arg(pageIndex));
 						}
 
 						loadOne = false;
 					}
+
+					fi::FreeImage_CloseMultiBitmap(multiBitmap);
 				}
 			}
 			
