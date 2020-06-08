@@ -7,15 +7,29 @@
 #include <QPainter>
 
 ImageCollectionsModel::ImageCollectionsModel() :
-	QAbstractListModel(),
-	_imageCollections(),
+	QAbstractItemModel(),
+	//_imageCollections(),
+	_root(new TreeItem(nullptr)),
 	_selectionModel(this)
 {
 }
 
+ImageCollectionsModel::~ImageCollectionsModel()
+{
+	delete _root;
+}
+
 int ImageCollectionsModel::rowCount(const QModelIndex& parent /* = QModelIndex() */) const
 {
-	return _imageCollections.size();
+	TreeItem* parentItem;
+
+	if (parent.column() > 0)
+		return 0;
+
+	if (!parent.isValid())
+		return _root->childCount();
+	else
+		return static_cast<TreeItem*>(parent.internalPointer())->childCount();
 }
 
 int ImageCollectionsModel::columnCount(const QModelIndex& parent) const
@@ -28,50 +42,52 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 	if (!index.isValid())
 		return QVariant();
 
-	auto imageCollection = _imageCollections[index.row()];
+	if (index.parent() == QModelIndex()) {
+		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-	switch (index.column()) {
-		case ult(Column::DatasetName):
-			return imageCollection.datasetName(role);
+		switch (index.column()) {
+			case ult(Column::DatasetName):
+				return imageCollection->datasetName(role);
 
-		case ult(Column::ImageType):
-			return imageCollection.imageType(role);
+			case ult(Column::ImageType):
+				return imageCollection->imageType(role);
 
-		case ult(Column::NoImages):
-			return imageCollection.noImages(role);
+			case ult(Column::NoImages):
+				return imageCollection->noImages(role);
 
-		case ult(Column::NoSelectedImages):
-			return imageCollection.noSelectedImages(role);
+			case ult(Column::NoSelectedImages):
+				return imageCollection->noSelectedImages(role);
 
-		case ult(Column::ToGrayscale):
-			return imageCollection.toGrayscale(role);
+			case ult(Column::ToGrayscale):
+				return imageCollection->toGrayscale(role);
 
-		case ult(Column::SourceSize):
-			return imageCollection.sourceSize(role);
+			case ult(Column::SourceSize):
+				return imageCollection->sourceSize(role);
 
-		case ult(Column::TargetSize):
-			return imageCollection.targetSize(role);
+			case ult(Column::TargetSize):
+				return imageCollection->targetSize(role);
 
-		case ult(Column::TargetWidth):
-			return imageCollection.targetWidth(role);
+			case ult(Column::TargetWidth):
+				return imageCollection->targetWidth(role);
 
-		case ult(Column::TargetHeight):
-			return imageCollection.targetheight(role);
+			case ult(Column::TargetHeight):
+				return imageCollection->targetheight(role);
 
-		case ult(Column::Directory):
-			return imageCollection.directory(role);
+			case ult(Column::Directory):
+				return imageCollection->directory(role);
 
-		case ult(Column::Type):
-			return imageCollection.type(role);
+			case ult(Column::Type):
+				return imageCollection->type(role);
 
-		case ult(Column::SubsamplingEnabled):
-			return imageCollection.subsampling().enabled(role);
+			case ult(Column::SubsamplingEnabled):
+				return imageCollection->subsampling().enabled(role);
 
-		case ult(Column::SubsamplingRatio):
-			return imageCollection.subsampling().ratio(role);
+			case ult(Column::SubsamplingRatio):
+				return imageCollection->subsampling().ratio(role);
 
-		case ult(Column::SubsamplingFilter):
-			return imageCollection.subsampling().filter(role);
+			case ult(Column::SubsamplingFilter):
+				return imageCollection->subsampling().filter(role);
+		}
 	}
 
 	return QVariant();
@@ -83,84 +99,86 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 	affectedIndices << index;
 
-	auto& imageCollection = _imageCollections[index.row()];
+	if (index.parent() == QModelIndex()) {
+		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-	const auto column = static_cast<Column>(index.column());
+		const auto column = static_cast<Column>(index.column());
 
-	auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
-		const auto subsamplingEnabled	= imageCollection.subsampling().enabled(Qt::EditRole).toBool();
-		const auto subsamplingRatio		= imageCollection.subsampling().ratio(Qt::EditRole).toFloat();
-		const auto sourceSize			= imageCollection.sourceSize(Qt::EditRole).toSize();
+		auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
+			const auto subsamplingEnabled	= imageCollection->subsampling().enabled(Qt::EditRole).toBool();
+			const auto subsamplingRatio		= imageCollection->subsampling().ratio(Qt::EditRole).toFloat();
+			const auto sourceSize			= imageCollection->sourceSize(Qt::EditRole).toSize();
 
-		imageCollection.setTargetSize(subsamplingEnabled ? subsamplingRatio * sourceSize : sourceSize);
+			imageCollection->setTargetSize(subsamplingEnabled ? subsamplingRatio * sourceSize : sourceSize);
 
-		affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
-		affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
-		affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
-	};
+			affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
+			affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
+			affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
+		};
 
-	switch (role)
-	{
-		case Qt::EditRole:
+		switch (role)
 		{
-			switch (column) {
-				case Column::DatasetName:
-				{
-					imageCollection.setDatasetName(value.toString());
-					break;
+			case Qt::EditRole:
+			{
+				switch (column) {
+					case Column::DatasetName:
+					{
+						imageCollection->setDatasetName(value.toString());
+						break;
+					}
+
+					case Column::Type:
+					{
+						imageCollection->setType(static_cast<ImageData::Type>(value.toInt()));
+						break;
+					}
+
+					case Column::SubsamplingEnabled:
+					{
+						imageCollection->subsampling().setEnabled(value.toBool());
+						updateTargetSize();
+						break;
+					}
+
+					case Column::SubsamplingRatio:
+					{
+						imageCollection->subsampling().setRatio(value.toFloat());
+						updateTargetSize();
+						break;
+					}
+
+					case Column::SubsamplingFilter:
+					{
+						imageCollection->subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
+						break;
+					}
+
+					default:
+						break;
 				}
 
-				case Column::Type:
-				{
-					imageCollection.setType(static_cast<ImageData::Type>(value.toInt()));
-					break;
-				}
-
-				case Column::SubsamplingEnabled:
-				{
-					imageCollection.subsampling().setEnabled(value.toBool());
-					updateTargetSize();
-					break;
-				}
-
-				case Column::SubsamplingRatio:
-				{
-					imageCollection.subsampling().setRatio(value.toFloat());
-					updateTargetSize();
-					break;
-				}
-
-				case Column::SubsamplingFilter:
-				{
-					imageCollection.subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
-					break;
-				}
-
-				default:
-					break;
+				break;
 			}
 
-			break;
-		}
+			case Qt::CheckStateRole:
+			{
+				switch (column) {
+					case Column::ToGrayscale:
+					{
+						imageCollection->setToGrayscale(value.toBool());
+						break;
+					}
 
-		case Qt::CheckStateRole:
-		{
-			switch (column) {
-				case Column::ToGrayscale:
-				{
-					imageCollection.setToGrayscale(value.toBool());
-					break;
+					default:
+						break;
 				}
 
-				default:
-					break;
+				break;
 			}
 
-			break;
+			default:
+				break;
 		}
-
-		default:
-			break;
 	}
 
 	for (auto affectedIndex : affectedIndices)
@@ -221,7 +239,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return "Subsampling filter";
 
 					case Column::ToGrayscale:
-						return "Convert to grayscale";
+						return "Grayscale";
 
 					default:
 						return QString();
@@ -234,7 +252,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 			{
 				switch (static_cast<Column>(section)) {
 					case Column::DatasetName:
-						return tooltip("Dataset name", "The name of the high-dimensional dataset");
+						return tooltip("Dataset name", "The name of the high-dimensional dataset, click to edit");
 
 					case Column::ImageType:
 						return tooltip("Type", "The type of images in the scanned image collection");
@@ -324,30 +342,67 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 	return flags;
 }
 
+QModelIndex ImageCollectionsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
+{
+	if (!hasIndex(row, column, parent))
+		return QModelIndex();
+
+	TreeItem *parentItem;
+
+	if (!parent.isValid())
+		parentItem = _root;
+	else
+		parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+	TreeItem *childItem = parentItem->child(row);
+	if (childItem)
+		return createIndex(row, column, childItem);
+	return QModelIndex();
+}
+
+QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
+{
+	if (!index.isValid())
+		return QModelIndex();
+
+	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+	TreeItem *parentItem = childItem->parentItem();
+
+	if (parentItem == _root)
+		return QModelIndex();
+
+	return createIndex(parentItem->row(), 0, parentItem);
+}
+
 void ImageCollectionsModel::clear()
 {
 	beginResetModel();
 	{
-		_imageCollections.clear();
+		//_imageCollections.clear();
 	}
 	endResetModel();
 }
 
 void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection>& imageCollections)
 {
-	beginInsertRows(QModelIndex(), _imageCollections.size(), _imageCollections.size() + imageCollections.size());
+	beginInsertRows(QModelIndex(), _root->childCount(), _root->childCount() + imageCollections.size());
 	{
-		_imageCollections.insert(_imageCollections.end(), imageCollections.begin(), imageCollections.end());
+		for (auto& imageCollection : imageCollections)
+			_root->appendChild(new ImageCollection(imageCollection));
 	}
 	endInsertRows();
 }
 
 const ImageCollection* ImageCollectionsModel::imageCollection(const int& row) const
 {
+	return nullptr;
+
+	/*
 	const auto imageCollectionIndex = index(row, 0);
 
 	if (!imageCollectionIndex.isValid())
 		return nullptr;
 
 	return &_imageCollections.at(row);
+	*/
 }

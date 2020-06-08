@@ -4,7 +4,7 @@
 
 #include "ImageData/Images.h"
 
-#include <QAbstractListModel>
+#include <QAbstractItemModel>
 #include <QItemSelectionModel>
 
 /**
@@ -14,7 +14,7 @@
  *
  * @author Thomas Kroes
  */
-class ImageCollectionsModel : public QAbstractListModel
+class ImageCollectionsModel : public QAbstractItemModel
 {
 public: // Enumerations
 
@@ -34,15 +34,19 @@ public: // Enumerations
 		SubsamplingFilter,			/** Subsampling filter */
 		ToGrayscale,				/** Whether to convert the images to grayscale */
 		Directory,					/** Directory */
+		Images,						/** Images */
 
 		Start = DatasetName,		/** Column start */
-		End = Directory				/** Column End */
+		End = Images				/** Column End */
 	};
 
-public: // Construction
+public: // Construction/destruction
 
 	/** Default constructor */
 	ImageCollectionsModel();
+
+	/** Default destructor */
+	~ImageCollectionsModel();
 
 public: // Inherited MVC
 
@@ -91,6 +95,22 @@ public: // Inherited MVC
 	 */
 	Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+	/**
+	 * Returns the model for the given row and column and parent model index
+	 * @param row Row
+	 * @param column Column
+	 * @param parent Parent model index
+	 * @return Model index
+	 */
+	QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	
+	/**
+	 * Returns the parent model index of the given model index
+	 * @param index Model index
+	 * @return Parent model index
+	 */
+	QModelIndex parent(const QModelIndex& index) const;
+
 public: // Miscellaneous
 
 	/** Returns the selection model */
@@ -112,7 +132,11 @@ public: // Miscellaneous
 	 */
 	const ImageCollection* imageCollection(const int& row) const;
 
+	/** Get root tree item */
+	TreeItem* rootItem() { return _root; };
+
 private:
-	std::vector<ImageCollection>	_imageCollections;		/** Images collections */
+	//std::vector<ImageCollection>	_imageCollections;		/** Images collections */
+	TreeItem*						_root;					/** Root tree item */
 	QItemSelectionModel				_selectionModel;		/** Selection model */
 };

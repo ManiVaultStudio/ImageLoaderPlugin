@@ -48,9 +48,10 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Grayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Directory));
 
-	_ui->imagesTreeView->setModel(&imagesModel);
-	_ui->imagesTreeView->setSelectionModel(&imagesModel.selectionModel());
-
+	//_ui->imagesTreeView->setModel(&imagesModel);
+	//_ui->imagesTreeView->setSelectionModel(&imagesModel.selectionModel());
+	_ui->imagesTreeView->header()->setHidden(true);
+	
 	// Column visibility
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
@@ -58,17 +59,21 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
 	
 	// Column resize mode
+	/*
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::DimensionName), QHeaderView::Interactive);
 	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
+	*/
 
 	// Column size
+	/*
 	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 20);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FileName), 200);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::DimensionName), 200);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FilePath), 200);
+	*/
 
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
@@ -107,21 +112,16 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
+	/*
 	auto selectImageCollection = [this, &imageCollectionsModel, &imagesModel](const QModelIndex& index) {
 		imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(index.row())));
-
-		/*
-		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
-		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FileName));
-		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::DimensionName));
-		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FilePath));
-		*/
 
 		const auto imageCollectionType = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::EditRole).toInt();
 
 		_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
 		_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
 	};
+	*/
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::DatasetName));
@@ -136,8 +136,12 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::Type));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ToGrayscale));
 	});
+	/*
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel, &imagesModel, selectImageCollection]() {
+		imagesModel.setImageCollection(nullptr);
+	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imagesModel, selectImageCollection](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles /*= QVector<int>()*/) {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imagesModel, selectImageCollection](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row() && topLeft.column() == ult(ImageCollectionsModel::Column::Type)) {
@@ -153,6 +157,19 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
+	
+	QObject::connect(&imagesModel, &ImagesModel::rowsInserted, [this]() {
+		_ui->imagesLabel->setEnabled(true);
+		_ui->imagesTreeView->setEnabled(true);
+		_ui->imagesTreeView->header()->setHidden(false);
+	});
+
+	QObject::connect(&imagesModel, &ImagesModel::modelReset, [this]() {
+		_ui->imagesLabel->setEnabled(false);
+		_ui->imagesTreeView->setEnabled(false);
+		_ui->imagesTreeView->header()->setHidden(true);
+	});
+	*/
 	_scanner.loadSettings();
 	_scanner.scan();
 }

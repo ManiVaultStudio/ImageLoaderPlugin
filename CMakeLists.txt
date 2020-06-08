@@ -38,6 +38,8 @@ set(PLUGIN_SOURCES
 	src/Payload.cpp
 	src/Settings.h
 	src/Settings.cpp
+	src/TreeItem.h
+	src/TreeItem.cpp
 	src/Common.h
 )
 

@@ -157,7 +157,7 @@ QVariant ImagesModel::headerData(int section, Qt::Orientation orientation, int r
 						return tooltip("Filename", "Name of the image file");
 
 					case Column::DimensionName:
-						return tooltip("Dimension name", "Name of the dimension in the high-dimensional dataset");
+						return tooltip("Dimension name", "Name of the dimension in the high-dimensional dataset, click to edit");
 
 					case Column::FilePath:
 						return tooltip("File path", "The absolute file path of the image");
@@ -213,9 +213,10 @@ void ImagesModel::setImageCollection(ImageCollection* imageCollection)
 	beginResetModel();
 	endResetModel();
 
-	beginInsertRows(QModelIndex(), 0, imageCollection->noImages(Qt::EditRole).toInt());
-	{
-		_imageCollection = imageCollection;
+	_imageCollection = imageCollection;
+
+	if (imageCollection != nullptr) {
+		beginInsertRows(QModelIndex(), 0, imageCollection->noImages(Qt::EditRole).toInt());
+		endInsertRows();
 	}
-	endInsertRows();
 }

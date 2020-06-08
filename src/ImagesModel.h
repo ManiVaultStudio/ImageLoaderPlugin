@@ -93,6 +93,6 @@ public: // Miscellaneous
 	void setImageCollection(ImageCollection* imageCollection);
 
 private:
-	ImageCollection*		_imageCollection;		/** Pointer to image collection */
-	QItemSelectionModel		_selectionModel;		/** Selection model */
+	ImageCollection*			_imageCollection;			/** Pointer to image collection */
+	QItemSelectionModel			_selectionModel;			/** Selection model */
 };

@@ -181,7 +181,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = ImageCollection(rootDir, imageType, imageSize);
+			auto imageCollection = ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageSize);
 
 			auto loadOne = true;
 

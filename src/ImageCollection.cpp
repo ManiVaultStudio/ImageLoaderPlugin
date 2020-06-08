@@ -10,7 +10,8 @@ namespace fi {
 	#include <FreeImage.h>
 }
 
-ImageCollection::Image::Image() :
+ImageCollection::Image::Image(TreeItem* parent) :
+	TreeItem(parent),
 	_imageCollection(nullptr),
 	_filePath(),
 	_fileName(),
@@ -20,7 +21,8 @@ ImageCollection::Image::Image() :
 {
 }
 
-ImageCollection::Image::Image(const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
+ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
+	TreeItem(parent),
 	_imageCollection(nullptr),
 	_filePath(filePath),
 	_fileName(QFileInfo(filePath).completeBaseName()),
@@ -271,7 +273,8 @@ void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter
 	_filter = filter;
 }
 
-ImageCollection::ImageCollection(const QString& directory, const QString& imageType, const QSize& sourceSize) :
+ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QSize& sourceSize) :
+	TreeItem(parent),
 	_directory(directory),
 	_imageType(imageType),
 	_sourceSize(sourceSize),
@@ -588,7 +591,7 @@ ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
 
 void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
-	auto& image = Image(filePath, pageIndex);
+	auto& image = Image(this, filePath, pageIndex);
 
 	image.setImageCollection(this);
 

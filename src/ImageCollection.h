@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "TreeItem.h"
 
 #include "ImageData/Images.h"
 
@@ -16,7 +17,7 @@
  *
  * @author Thomas Kroes
 */
-class ImageCollection
+class ImageCollection : public TreeItem
 {
 public: // Nested image class
 
@@ -27,19 +28,23 @@ public: // Nested image class
 	 *
 	 * @author Thomas Kroes
 	 */
-	class Image
+	class Image : public TreeItem
 	{
 	public: // Construction
 
-		/** Default constructor */
-		Image();
+		/**
+		 * Constructor
+		 * @param parent Parent tree item
+		 */
+		Image(TreeItem* parent);
 
 		/**
 		 * Constructor
+		 * @param parent Parent tree item
 		 * @param filePath Absolute file path of the image
 		 * @param pageIndex Page index (in case of multi-page TIFF)
 		 */
-		Image(const QString& filePath, const std::int32_t& pageIndex = -1);
+		Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex = -1);
 
 	public: // Getters/setters
 
@@ -229,11 +234,12 @@ public: // Construction
 
 	/**
 	 * Constructor
+	 * @param parent Parent tree item
 	 * @param directory Search directory
 	 * @param imageType Image type
 	 * @param sourceSize Source image size
 	 */
-	ImageCollection(const QString& directory, const QString& imageType, const QSize& sourceSize);
+	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QSize& sourceSize);
 
 public: // Getters/setters
 

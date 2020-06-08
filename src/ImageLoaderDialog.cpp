@@ -31,12 +31,13 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_imageLoaderPlugin = imageLoaderPlugin;
 
 	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
-	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
+	//_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
 
 	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
 
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
+	/*
 	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows	= imageCollectionsModel.selectionModel().selectedRows();
 		const auto hasSelection	= !selectedRows.isEmpty();
@@ -52,7 +53,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles /*= QVector<int>()*/) {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
@@ -65,4 +66,5 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
 		}
 	});
+	*/
 }

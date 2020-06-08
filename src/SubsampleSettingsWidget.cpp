@@ -23,6 +23,14 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, this, &SubsampleSettingsWidget::updateData);
 
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
+		updateData(QModelIndex(), QModelIndex());
+	});
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this]() {
+		updateData(QModelIndex(), QModelIndex());
+	});
+
 	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
