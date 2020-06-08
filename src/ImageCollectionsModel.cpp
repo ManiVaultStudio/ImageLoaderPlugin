@@ -28,13 +28,14 @@ int ImageCollectionsModel::rowCount(const QModelIndex& parent /* = QModelIndex()
 
 	if (!parent.isValid())
 		return _root->childCount();
-	else
+	else {
 		return static_cast<TreeItem*>(parent.internalPointer())->childCount();
+	}
 }
 
 int ImageCollectionsModel::columnCount(const QModelIndex& parent) const
 {
-	return ult(Column::End) + 1;
+	return ult(ImageCollection::Column::End) + 1;
 }
 
 QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt::DisplayRole */) const
@@ -45,48 +46,65 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 	if (index.parent() == QModelIndex()) {
 		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		switch (index.column()) {
-			case ult(Column::DatasetName):
+		switch (static_cast<ImageCollection::Column>(index.column())) {
+			case ImageCollection::Column::DatasetName:
 				return imageCollection->datasetName(role);
 
-			case ult(Column::ImageType):
+			case ImageCollection::Column::ImageType:
 				return imageCollection->imageType(role);
 
-			case ult(Column::NoImages):
+			case ImageCollection::Column::NoImages:
 				return imageCollection->noImages(role);
 
-			case ult(Column::NoSelectedImages):
+			case ImageCollection::Column::NoSelectedImages:
 				return imageCollection->noSelectedImages(role);
 
-			case ult(Column::ToGrayscale):
+			case ImageCollection::Column::ToGrayscale:
 				return imageCollection->toGrayscale(role);
 
-			case ult(Column::SourceSize):
+			case ImageCollection::Column::SourceSize:
 				return imageCollection->sourceSize(role);
 
-			case ult(Column::TargetSize):
+			case ImageCollection::Column::TargetSize:
 				return imageCollection->targetSize(role);
 
-			case ult(Column::TargetWidth):
+			case ImageCollection::Column::TargetWidth:
 				return imageCollection->targetWidth(role);
 
-			case ult(Column::TargetHeight):
+			case ImageCollection::Column::TargetHeight:
 				return imageCollection->targetheight(role);
 
-			case ult(Column::Directory):
+			case ImageCollection::Column::Directory:
 				return imageCollection->directory(role);
 
-			case ult(Column::Type):
+			case ImageCollection::Column::Type:
 				return imageCollection->type(role);
 
-			case ult(Column::SubsamplingEnabled):
+			case ImageCollection::Column::SubsamplingEnabled:
 				return imageCollection->subsampling().enabled(role);
 
-			case ult(Column::SubsamplingRatio):
+			case ImageCollection::Column::SubsamplingRatio:
 				return imageCollection->subsampling().ratio(role);
 
-			case ult(Column::SubsamplingFilter):
+			case ImageCollection::Column::SubsamplingFilter:
 				return imageCollection->subsampling().filter(role);
+		}
+	}
+	else {
+		auto image = static_cast<ImageCollection::Image*>((void*)index.internalPointer());
+
+		switch (static_cast<ImageCollection::Image::Column>(index.column())) {
+			case ImageCollection::Image::Column::ShouldLoad:
+				return image->shouldLoad(role);
+
+			case ImageCollection::Image::Column::FileName:
+				return image->fileName(role);
+
+			case ImageCollection::Image::Column::DimensionName:
+				return image->dimensionName(role);
+
+			case ImageCollection::Image::Column::FilePath:
+				return image->filePath(role);
 		}
 	}
 
@@ -102,7 +120,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 	if (index.parent() == QModelIndex()) {
 		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		const auto column = static_cast<Column>(index.column());
+		const auto column = static_cast<ImageCollection::Column>(index.column());
 
 		auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
 			const auto subsamplingEnabled	= imageCollection->subsampling().enabled(Qt::EditRole).toBool();
@@ -111,9 +129,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 			imageCollection->setTargetSize(subsamplingEnabled ? subsamplingRatio * sourceSize : sourceSize);
 
-			affectedIndices << index.siblingAtColumn(ult(Column::TargetSize));
-			affectedIndices << index.siblingAtColumn(ult(Column::TargetWidth));
-			affectedIndices << index.siblingAtColumn(ult(Column::TargetHeight));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetSize));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetWidth));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetHeight));
 		};
 
 		switch (role)
@@ -121,33 +139,33 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			case Qt::EditRole:
 			{
 				switch (column) {
-					case Column::DatasetName:
+					case ImageCollection::Column::DatasetName:
 					{
 						imageCollection->setDatasetName(value.toString());
 						break;
 					}
 
-					case Column::Type:
+					case ImageCollection::Column::Type:
 					{
 						imageCollection->setType(static_cast<ImageData::Type>(value.toInt()));
 						break;
 					}
 
-					case Column::SubsamplingEnabled:
+					case ImageCollection::Column::SubsamplingEnabled:
 					{
 						imageCollection->subsampling().setEnabled(value.toBool());
 						updateTargetSize();
 						break;
 					}
 
-					case Column::SubsamplingRatio:
+					case ImageCollection::Column::SubsamplingRatio:
 					{
 						imageCollection->subsampling().setRatio(value.toFloat());
 						updateTargetSize();
 						break;
 					}
 
-					case Column::SubsamplingFilter:
+					case ImageCollection::Column::SubsamplingFilter:
 					{
 						imageCollection->subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
 						break;
@@ -163,11 +181,66 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			case Qt::CheckStateRole:
 			{
 				switch (column) {
-					case Column::ToGrayscale:
+					case ImageCollection::Column::ToGrayscale:
 					{
 						imageCollection->setToGrayscale(value.toBool());
 						break;
 					}
+
+					default:
+						break;
+				}
+
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+	else {
+		auto image = static_cast<ImageCollection::Image*>((void*)index.internalPointer());
+
+		const auto column = static_cast<ImageCollection::Image::Column>(index.column());
+
+		switch (role)
+		{
+			case Qt::EditRole:
+			{
+				switch (column) {
+					case ImageCollection::Image::Column::ShouldLoad:
+					case ImageCollection::Image::Column::FileName:
+						break;
+
+					case ImageCollection::Image::Column::DimensionName:
+					{
+						image->setDimensionName(value.toString());
+						break;
+					}
+
+					case ImageCollection::Image::Column::FilePath:
+						break;
+
+					default:
+						break;
+				}
+
+				break;
+			}
+
+			case Qt::CheckStateRole:
+			{
+				switch (column) {
+					case ImageCollection::Image::Column::ShouldLoad:
+					{
+						image->setShouldLoad(value.toBool());
+						break;
+					}
+
+					case ImageCollection::Image::Column::FileName:
+					case ImageCollection::Image::Column::DimensionName:
+					case ImageCollection::Image::Column::FilePath:
+						break;
 
 					default:
 						break;
@@ -198,47 +271,47 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 		{
 			case Qt::DisplayRole:
 			{
-				switch (static_cast<Column>(section)) {
-					case Column::DatasetName:
+				switch (static_cast<ImageCollection::Column>(section)) {
+					case ImageCollection::Column::DatasetName:
 						return "Dataset name";
 
-					case Column::ImageType:
+					case ImageCollection::Column::ImageType:
 						return "Type";
 
-					case Column::NoImages:
+					case ImageCollection::Column::NoImages:
 						return "#Images";
 
-					case Column::NoSelectedImages:
+					case ImageCollection::Column::NoSelectedImages:
 						return "#Selected images";
 
-					case Column::SourceSize:
+					case ImageCollection::Column::SourceSize:
 						return "Source size";
 
-					case Column::TargetSize:
+					case ImageCollection::Column::TargetSize:
 						return "Target size";
 
-					case Column::TargetWidth:
+					case ImageCollection::Column::TargetWidth:
 						return "Width";
 
-					case Column::TargetHeight:
+					case ImageCollection::Column::TargetHeight:
 						return "Height";
 
-					case Column::Directory:
+					case ImageCollection::Column::Directory:
 						return "Directory";
 
-					case Column::Type:
+					case ImageCollection::Column::Type:
 						return "Load as";
 
-					case Column::SubsamplingEnabled:
+					case ImageCollection::Column::SubsamplingEnabled:
 						return "Subsampling enabled";
 
-					case Column::SubsamplingRatio:
+					case ImageCollection::Column::SubsamplingRatio:
 						return "Subsampling ratio";
 
-					case Column::SubsamplingFilter:
+					case ImageCollection::Column::SubsamplingFilter:
 						return "Subsampling filter";
 
-					case Column::ToGrayscale:
+					case ImageCollection::Column::ToGrayscale:
 						return "Grayscale";
 
 					default:
@@ -250,47 +323,47 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 			case Qt::ToolTipRole:
 			{
-				switch (static_cast<Column>(section)) {
-					case Column::DatasetName:
+				switch (static_cast<ImageCollection::Column>(section)) {
+					case ImageCollection::Column::DatasetName:
 						return tooltip("Dataset name", "The name of the high-dimensional dataset, click to edit");
 
-					case Column::ImageType:
+					case ImageCollection::Column::ImageType:
 						return tooltip("Type", "The type of images in the scanned image collection");
 
-					case Column::NoImages:
+					case ImageCollection::Column::NoImages:
 						return tooltip("#Images", "The number of images in the collection");
 
-					case Column::NoSelectedImages:
+					case ImageCollection::Column::NoSelectedImages:
 						return tooltip("#Selected images", "The number of selected images in the collection");
 
-					case Column::SourceSize:
+					case ImageCollection::Column::SourceSize:
 						return tooltip("Source size", "The size of the images on disk");
 
-					case Column::TargetSize:
+					case ImageCollection::Column::TargetSize:
 						return tooltip("Target size", "The size of the images when loaded as high-dimensional data");
 
-					case Column::TargetWidth:
+					case ImageCollection::Column::TargetWidth:
 						return tooltip("Width", "The width of the images when loaded as high-dimensional data");
 
-					case Column::TargetHeight:
+					case ImageCollection::Column::TargetHeight:
 						return tooltip("Height", "The height of the images when loaded as high-dimensional data");
 
-					case Column::Directory:
+					case ImageCollection::Column::Directory:
 						return tooltip("Directory", "The top-level directory where the images were found");
 
-					case Column::Type:
+					case ImageCollection::Column::Type:
 						return tooltip("Load as", "How to interpret the images as high-dimensional data");
 
-					case Column::SubsamplingEnabled:
+					case ImageCollection::Column::SubsamplingEnabled:
 						return tooltip("Subsampling enabled", "Whether images are sub-sampled when loaded as high-dimensional data");
 
-					case Column::SubsamplingRatio:
+					case ImageCollection::Column::SubsamplingRatio:
 						return tooltip("Subsampling ratio", "The amount of subsampling");
 
-					case Column::SubsamplingFilter:
+					case ImageCollection::Column::SubsamplingFilter:
 						return tooltip("Subsampling filter", "The subsampling filter to use");
 
-					case Column::ToGrayscale:
+					case ImageCollection::Column::ToGrayscale:
 						return tooltip("Convert to grayscale", "Whether all image channels are combined in to one (grayscale)");
 
 					default:
@@ -311,32 +384,62 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
 	//const auto type = static_cast<Type>(_type);
 
-	switch (static_cast<Column>(index.column())) {
-		case Column::DatasetName:
-		{
-			flags |= Qt::ItemIsEditable;
-			break;
-		}
-
-		case Column::ToGrayscale:
-		{
-			flags |= Qt::ItemIsUserCheckable;
-
-			if (index != QModelIndex())
+	if (index.parent() == QModelIndex()) {
+		switch (static_cast<ImageCollection::Column>(index.column())) {
+			case ImageCollection::Column::DatasetName:
+			{
 				flags |= Qt::ItemIsEditable;
+				break;
+			}
 
-			break;
+			case ImageCollection::Column::ToGrayscale:
+			{
+				flags |= Qt::ItemIsUserCheckable;
+
+				if (index != QModelIndex())
+					flags |= Qt::ItemIsEditable;
+
+				break;
+			}
+
+			case ImageCollection::Column::Directory:
+			case ImageCollection::Column::SourceSize:
+			case ImageCollection::Column::TargetSize:
+			case ImageCollection::Column::TargetWidth:
+			case ImageCollection::Column::TargetHeight:
+				break;
+
+			default:
+				break;
 		}
+	}
+	else {
+		switch (static_cast<ImageCollection::Image::Column>(index.column())) {
+			case ImageCollection::Image::Column::ShouldLoad:
+			{
+				flags |= Qt::ItemIsUserCheckable;
 
-		case Column::Directory:
-		case Column::SourceSize:
-		case Column::TargetSize:
-		case Column::TargetWidth:
-		case Column::TargetHeight:
-			break;
+				if (index != QModelIndex())
+					flags |= Qt::ItemIsEditable;
 
-		default:
-			break;
+				break;
+			}
+
+			case ImageCollection::Image::Column::FileName:
+				break;
+
+			case ImageCollection::Image::Column::DimensionName:
+			{
+				flags |= Qt::ItemIsEditable;
+				break;
+			}
+
+			case ImageCollection::Image::Column::FilePath:
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	return flags;
@@ -383,12 +486,12 @@ void ImageCollectionsModel::clear()
 	endResetModel();
 }
 
-void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection>& imageCollections)
+void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>& imageCollections)
 {
 	beginInsertRows(QModelIndex(), _root->childCount(), _root->childCount() + imageCollections.size());
 	{
 		for (auto& imageCollection : imageCollections)
-			_root->appendChild(new ImageCollection(imageCollection));
+			_root->appendChild(imageCollection);
 	}
 	endInsertRows();
 }

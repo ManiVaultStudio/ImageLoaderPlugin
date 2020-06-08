@@ -16,30 +16,6 @@
  */
 class ImageCollectionsModel : public QAbstractItemModel
 {
-public: // Enumerations
-
-	/** TODO: Write description */
-	enum class Column {
-		DatasetName,				/** The name of the dataset */
-		ImageType,					/** The type of image(s) */
-		NoImages,					/** Number of images in the collection */
-		NoSelectedImages,			/** Number of selected images in the collection */
-		SourceSize,					/** Size of the source image(s) */
-		TargetSize,					/** Size of the target image(s) */
-		TargetWidth,				/** Target width of the image(s) */
-		TargetHeight,				/** Target height of the image(s) */
-		Type,						/** Load as image sequence (0) or image stack (1) */
-		SubsamplingEnabled,			/** Whether subsampling is enabled */
-		SubsamplingRatio,			/** Subsampling ratio */
-		SubsamplingFilter,			/** Subsampling filter */
-		ToGrayscale,				/** Whether to convert the images to grayscale */
-		Directory,					/** Directory */
-		Images,						/** Images */
-
-		Start = DatasetName,		/** Column start */
-		End = Images				/** Column End */
-	};
-
 public: // Construction/destruction
 
 	/** Default constructor */
@@ -124,7 +100,7 @@ public: // Miscellaneous
 	 * @param row Row at which to insert the image collections
 	 * @param imageCollections Image collections to insert
 	 */
-	void insert(int row, const std::vector<ImageCollection>& imageCollections);
+	void insert(int row, const std::vector<ImageCollection*>& imageCollections);
 
 	/**
 	 * Returns an image collection by given row index

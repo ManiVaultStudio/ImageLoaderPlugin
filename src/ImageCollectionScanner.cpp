@@ -111,7 +111,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 
 void ImageCollectionScanner::scan()
 {
-	std::vector<ImageCollection> imageCollections;
+	std::vector<ImageCollection*> imageCollections;
 
 	QStringList nameFilters;
 
@@ -121,7 +121,7 @@ void ImageCollectionScanner::scan()
 	scanDir(_directory, nameFilters, imageCollections);
 
 	for (auto& imageCollection : imageCollections)
-		imageCollection.computeDatasetName();
+		imageCollection->computeDatasetName();
 
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
@@ -129,23 +129,23 @@ void ImageCollectionScanner::scan()
 	imageCollectionsModel.insert(0, imageCollections);
 }
 
-auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
+auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
 	return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
-		if (_separateByDirectory && imageCollection.directory(Qt::EditRole).toString() != directory)
+		if (_separateByDirectory && imageCollection->directory(Qt::EditRole).toString() != directory)
 			return false;
 
-		if (imageCollection.imageType(Qt::EditRole).toString() != imageType)
+		if (imageCollection->imageType(Qt::EditRole).toString() != imageType)
 			return false;
 
-		if (imageCollection.sourceSize(Qt::EditRole).toSize() != imageSize)
+		if (imageCollection->sourceSize(Qt::EditRole).toSize() != imageSize)
 			return false;
 
 		return true;
 	});
 }
 
-void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& imageCollections)
+void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections)
 {
 	auto subDirectories = QDir(directory);
 
@@ -181,7 +181,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageSize);
+			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageSize);
 
 			auto loadOne = true;
 
@@ -194,21 +194,20 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 					loadOne = false;
 
 					for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-						imageCollection.addImage(imageFilePath, pageIndex);
+						imageCollection->addImage(imageFilePath, pageIndex);
 						//imageCollection.images().back().setDimensionName(QString("Dim").arg(pageIndex));
 					}
 				}
 			}
 			
 			if (loadOne) {
-				imageCollection.addImage(imageFilePath);
+				imageCollection->addImage(imageFilePath);
 			}
 
 			imageCollections.push_back(imageCollection);
 		}
 		else {
-
-			(*it).addImage(imageFilePath);
+			(*it)->addImage(imageFilePath);
 		}
 	}
 }

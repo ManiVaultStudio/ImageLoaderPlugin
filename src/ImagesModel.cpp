@@ -31,6 +31,7 @@ QVariant ImagesModel::data(const QModelIndex& index, int role /* = Qt::DisplayRo
 	if (!index.isValid())
 		return QVariant();
 
+	/*
 	const auto image = _imageCollection->image(index.row());
 
 	switch (index.column()) {
@@ -46,12 +47,14 @@ QVariant ImagesModel::data(const QModelIndex& index, int role /* = Qt::DisplayRo
 		case ult(Column::FilePath):
 			return image->filePath(role);
 	}
+	*/
 
 	return QVariant();
 }
 
 bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
 {
+	/*
 	QModelIndexList affectedIndices;
 
 	affectedIndices << index;
@@ -112,6 +115,7 @@ bool ImagesModel::setData(const QModelIndex& index, const QVariant& value, int r
 
 	for (auto affectedIndex : affectedIndices)
 		emit dataChanged(affectedIndex, affectedIndex);
+	*/
 
 	return true;
 }

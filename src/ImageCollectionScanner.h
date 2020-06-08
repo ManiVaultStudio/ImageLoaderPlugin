@@ -64,7 +64,7 @@ public:
 	 * @param imageType Type of image
 	 * @param imageSize Image size
 	 */
-	auto findImageCollection(std::vector<ImageCollection>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize);
+	auto findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize);
 
 public:
 
@@ -79,7 +79,7 @@ private:
 	 * @param nameFilters Image file types to filter
 	 * @param sequences Loaded image sequences
 	 */
-	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection>& imageCollections);
+	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections);
 
 signals:
 	/** Signals that settings changed */

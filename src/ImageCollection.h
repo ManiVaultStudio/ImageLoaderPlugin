@@ -19,6 +19,30 @@
 */
 class ImageCollection : public TreeItem
 {
+public: // Enumerations
+
+/** TODO: Write description */
+	enum class Column {
+		DatasetName,				/** The name of the dataset */
+		ImageType,					/** The type of image(s) */
+		NoImages,					/** Number of images in the collection */
+		NoSelectedImages,			/** Number of selected images in the collection */
+		SourceSize,					/** Size of the source image(s) */
+		TargetSize,					/** Size of the target image(s) */
+		TargetWidth,				/** Target width of the image(s) */
+		TargetHeight,				/** Target height of the image(s) */
+		Type,						/** Load as image sequence (0) or image stack (1) */
+		SubsamplingEnabled,			/** Whether subsampling is enabled */
+		SubsamplingRatio,			/** Subsampling ratio */
+		SubsamplingFilter,			/** Subsampling filter */
+		ToGrayscale,				/** Whether to convert the images to grayscale */
+		Directory,					/** Directory */
+		Images,						/** Images */
+
+		Start = DatasetName,		/** Column start */
+		End = Images				/** Column End */
+	};
+
 public: // Nested image class
 
 	/**
@@ -30,13 +54,20 @@ public: // Nested image class
 	 */
 	class Image : public TreeItem
 	{
-	public: // Construction
+	public: // Enumerations
 
-		/**
-		 * Constructor
-		 * @param parent Parent tree item
-		 */
-		Image(TreeItem* parent);
+		/** TODO: Write description */
+		enum class Column {
+			ShouldLoad,				/** Whether to load the image or not */
+			FileName,				/** The filename of the dataset */
+			DimensionName,			/** Dimension name (in case of image stack) */
+			FilePath,				/** Number of images in the collection */
+
+			Start = ShouldLoad,		/** Column start */
+			End = FilePath			/** Column End */
+		};
+
+	public: // Construction
 
 		/**
 		 * Constructor
@@ -47,15 +78,6 @@ public: // Nested image class
 		Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex = -1);
 
 	public: // Getters/setters
-
-		/** Returns the parent image collection */
-		ImageCollection* imageCollection();
-
-		/**
-		 * Sets the parent image collection
-		 * @param imageCollection Parent image collection
-		 */
-		void setImageCollection(ImageCollection* imageCollection);
 
 		/**
 		 * Returns whether the image should be loaded or not
@@ -117,7 +139,6 @@ public: // Nested image class
 		void setPageIndex(const std::int32_t& pageIndex);
 
 	private:
-		ImageCollection*	_imageCollection;	/** Pointer to the image collection */
 		QString				_filePath;			/** The absolute image file path */
 		QString				_fileName;			/** The file name */
 		QString				_dimensionName;		/** Dimension name (in case of image stack) */
@@ -325,15 +346,6 @@ public: // Getters/setters
 	/** Get subsampling parameters */
 	SubSampling& subsampling();
 
-	/** Get images */
-	std::vector<Image>& images();
-
-	/**
-	 * Get image by index
-	 * @param  index Image index
-	 */
-	Image* image(const std::uint32_t& index);
-
 public:
 
 	/**
@@ -355,5 +367,4 @@ private:
 	bool					_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
 	ImageData::Type			_type;				/** How to load the collection (as image sequence or image stack) */
 	SubSampling				_subsampling;		/** Subsampling parameters */
-	std::vector<Image>		_images;			/** Images */
 };

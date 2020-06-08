@@ -10,20 +10,8 @@ namespace fi {
 	#include <FreeImage.h>
 }
 
-ImageCollection::Image::Image(TreeItem* parent) :
-	TreeItem(parent),
-	_imageCollection(nullptr),
-	_filePath(),
-	_fileName(),
-	_dimensionName(),
-	_shouldLoad(true),
-	_pageIndex(-1)
-{
-}
-
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
 	TreeItem(parent),
-	_imageCollection(nullptr),
 	_filePath(filePath),
 	_fileName(QFileInfo(filePath).completeBaseName()),
 	_dimensionName(),
@@ -31,16 +19,6 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
 	_pageIndex(pageIndex)
 {
 	_dimensionName = QFileInfo(filePath).completeBaseName();
-}
-
-ImageCollection* ImageCollection::Image::imageCollection()
-{
-	return _imageCollection;
-}
-
-void ImageCollection::Image::setImageCollection(ImageCollection* imageCollection)
-{
-	_imageCollection = imageCollection;
 }
 
 QVariant ImageCollection::Image::shouldLoad(const int& role) const
@@ -282,8 +260,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 	_datasetName(),
 	_toGrayscale(true),
 	_type(ImageData::Type::Sequence),
-	_subsampling(),
-	_images()
+	_subsampling()
 {
 }
 
@@ -525,7 +502,7 @@ void ImageCollection::setType(const ImageData::Type & type)
 
 QVariant ImageCollection::noImages(const int& role) const
 {
-	const auto noImagesString = QString::number(_images.size());
+	const auto noImagesString = QString::number(childCount());
 
 	switch (role)
 	{
@@ -533,7 +510,7 @@ QVariant ImageCollection::noImages(const int& role) const
 			return noImagesString;
 
 		case Qt::EditRole:
-			return _images.size();
+			return childCount();
 
 		case Qt::ToolTipRole:
 			return QString("Number of images: %1").arg(noImagesString);
@@ -550,8 +527,11 @@ QVariant ImageCollection::noImages(const int& role) const
 
 QVariant ImageCollection::noSelectedImages(const int& role) const
 {
-	const auto noSelectedImages			= std::count_if(_images.begin(), _images.end(), [](auto& image) { return image.shouldLoad(Qt::EditRole).toBool(); });
-	const auto noSelectedImagesString	= QString::number(_images.size());
+	const auto noSelectedImages = std::count_if(m_childItems.begin(), m_childItems.end(), [](auto& child) {
+		return static_cast<Image*>(child)->shouldLoad(Qt::EditRole).toBool();
+	});
+
+	const auto noSelectedImagesString	= QString::number(noSelectedImages);
 
 	switch (role)
 	{
@@ -559,7 +539,7 @@ QVariant ImageCollection::noSelectedImages(const int& role) const
 			return noSelectedImagesString;
 
 		case Qt::EditRole:
-			return _images.size();
+			return noSelectedImages;
 
 		case Qt::ToolTipRole:
 			return QString("Number of selected images: %1").arg(noSelectedImagesString);
@@ -579,23 +559,9 @@ ImageCollection::SubSampling& ImageCollection::subsampling()
 	return _subsampling;
 }
 
-std::vector<ImageCollection::Image>& ImageCollection::images()
-{
-	return _images;
-}
-
-ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
-{
-	return &_images[index];
-}
-
 void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
-	auto& image = Image(this, filePath, pageIndex);
-
-	image.setImageCollection(this);
-
-	_images.push_back(image);
+	appendChild(new Image(this, filePath, pageIndex));
 }
 
 void ImageCollection::computeDatasetName()
@@ -604,8 +570,8 @@ void ImageCollection::computeDatasetName()
 
 	QSet<QString> rootDirs;
 
-	for (const auto& image : _images) {
-		const auto path = QFileInfo(image.filePath(Qt::EditRole).toString()).absoluteDir().path();
+	for (const auto& child : m_childItems) {
+		const auto path = QFileInfo(static_cast<Image*>(child)->filePath(Qt::EditRole).toString()).absoluteDir().path();
 
 		if (rootDir == "")
 			rootDir = path;
