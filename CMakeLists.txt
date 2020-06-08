@@ -66,7 +66,7 @@ set(WIDGET_SOURCES
 	src/SubsampleSettingsWidget.cpp
 )
 
-file(GLOB MODEL_SOURCES src/*Model.* )
+file(GLOB MODEL_SOURCES src/*Model.*)
 
 set(AUX src/ImageLoaderPlugin.json)
 

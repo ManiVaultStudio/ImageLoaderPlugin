@@ -37,10 +37,9 @@ public: // Enumerations
 		SubsamplingFilter,			/** Subsampling filter */
 		ToGrayscale,				/** Whether to convert the images to grayscale */
 		Directory,					/** Directory */
-		Images,						/** Images */
 
 		Start = DatasetName,		/** Column start */
-		End = Images				/** Column End */
+		End = Directory				/** Column End */
 	};
 
 public: // Nested image class

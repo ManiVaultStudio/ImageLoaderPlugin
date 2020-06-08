@@ -28,23 +28,25 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->separateByDirectoryCheckBox->setChecked(_scanner.separateByDirectory());
 
 	auto& imageCollectionsModel	= _imageLoaderPlugin->imageCollectionsModel();
-	auto& imagesModel			= _imageLoaderPlugin->imagesModel();
 
 	_ui->imageCollectionsTreeView->setModel(&imageCollectionsModel);
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
 	// Column visibility
+	for (int column = ult(ImageCollection::Image::Column::Start); column < ult(ImageCollection::Image::Column::End); column++)
+		_ui->imageCollectionsTreeView->header()->hideSection(column);
+
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DatasetName));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoImages));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetWidth));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetHeight));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Type));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Type));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
+	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Grayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
 
@@ -53,25 +55,26 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imagesTreeView->header()->setHidden(true);
 	
 	// Column visibility
-	//for (int column = ult(ImageCollection::Column::Start); column < ult(ImageCollection::Column::End); column++)
-	//	_ui->imagesTreeView->header()->hideSection(column);
+	for (int column = ult(ImageCollection::Column::Start); column < ult(ImageCollection::Column::End); column++)
+		_ui->imagesTreeView->header()->hideSection(column);
+
 	//
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::DimensionName));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
 	
 	// Column resize mode
-	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
-	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
-	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::DimensionName), QHeaderView::Interactive);
-	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
+	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
 
 	// Column size
 	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 20);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FileName), 200);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::DimensionName), 200);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FilePath), 200);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
 
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
@@ -148,7 +151,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 	*/
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imagesModel](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty()) {
@@ -160,20 +163,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	/*
-	QObject::connect(&imagesModel, &ImagesModel::rowsInserted, [this]() {
-		_ui->imagesLabel->setEnabled(true);
-		_ui->imagesTreeView->setEnabled(true);
-		_ui->imagesTreeView->header()->setHidden(false);
-	});
-	*/
-
-	QObject::connect(&imagesModel, &ImageCollectionsModel::modelReset, [this]() {
-		_ui->imagesLabel->setEnabled(false);
-		_ui->imagesTreeView->setEnabled(false);
-		_ui->imagesTreeView->header()->setHidden(true);
-	});
-	
 	_scanner.loadSettings();
 	_scanner.scan();
 }

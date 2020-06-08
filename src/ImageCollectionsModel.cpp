@@ -262,8 +262,6 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-	qDebug() << section;
-
 	auto tooltip = [](const QString& title, const QString& description) {
 		return QString("<html><head/><body><p><span style='font-weight: 600;'>%1</span><br/>%2</p></body></html>").arg(title, description);
 	};
@@ -317,7 +315,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return "Grayscale";
 
 					default:
-						return QString();
+						break;
 				}
 
 				switch (static_cast<ImageCollection::Image::Column>(section)) {
@@ -334,7 +332,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return "File path";
 
 					default:
-						return QString();
+						break;
 				}
 
 				break;
@@ -386,7 +384,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return tooltip("Convert to grayscale", "Whether all image channels are combined in to one (grayscale)");
 
 					default:
-						return QString();
+						break;
 				}
 
 				switch (static_cast<ImageCollection::Image::Column>(section)) {
@@ -403,7 +401,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return tooltip("File path", "The absolute file path of the image");
 
 					default:
-						return QString();
+						break;
 				}
 
 				break;
