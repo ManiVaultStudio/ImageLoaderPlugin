@@ -36,15 +36,15 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	// Column visibility
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DatasetName));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoImages));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetWidth));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetHeight));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Type));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Type));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Grayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
 
@@ -53,16 +53,18 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imagesTreeView->header()->setHidden(true);
 	
 	// Column visibility
-	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
+	//for (int column = ult(ImageCollection::Column::Start); column < ult(ImageCollection::Column::End); column++)
+	//	_ui->imagesTreeView->header()->hideSection(column);
+	//
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::DimensionName));
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
 	
 	// Column resize mode
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::DimensionName), QHeaderView::Interactive);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::ShouldLoad), QHeaderView::Fixed);
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::DimensionName), QHeaderView::Interactive);
+	//_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImagesModel::Column::FileName), QHeaderView::Interactive);
 
 	// Column size
 	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
@@ -156,7 +158,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 			_ui->imagesTreeView->setRootIndex(selectedRows.first());
 		}
-			
 	});
 
 	/*

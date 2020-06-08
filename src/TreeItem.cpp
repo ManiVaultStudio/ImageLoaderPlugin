@@ -7,7 +7,7 @@ TreeItem::TreeItem(TreeItem *parent) :
 
 TreeItem::~TreeItem()
 {
-//	qDeleteAll(m_childItems);
+	qDeleteAll(m_childItems);
 }
 
 void TreeItem::appendChild(TreeItem *item)

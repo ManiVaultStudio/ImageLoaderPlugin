@@ -31,13 +31,12 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_imageLoaderPlugin = imageLoaderPlugin;
 
 	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
-	//_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
+	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
 
 	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
 
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
-	/*
 	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows	= imageCollectionsModel.selectionModel().selectedRows();
 		const auto hasSelection	= !selectedRows.isEmpty();
@@ -45,8 +44,8 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->loadPushButton->setEnabled(false);
 
 		if (hasSelection) {
-			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::DisplayRole).toString();
-			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollectionsModel::Column::NoSelectedImages)), Qt::EditRole).toInt();
+			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
+			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
 
 			_ui->loadPushButton->setEnabled(noSelectedImages > 0);
 			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
@@ -59,12 +58,11 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty() && selectedRows.first().row() == topLeft.row()) {
-			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::DisplayRole).toString();
-			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollectionsModel::Column::NoSelectedImages)), Qt::EditRole).toInt();
+			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
+			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
 
 			_ui->loadPushButton->setEnabled(noSelectedImages > 0);
 			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
 		}
 	});
-	*/
 }

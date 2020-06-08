@@ -58,13 +58,13 @@ public: // Nested image class
 
 		/** TODO: Write description */
 		enum class Column {
-			ShouldLoad,				/** Whether to load the image or not */
-			FileName,				/** The filename of the dataset */
-			DimensionName,			/** Dimension name (in case of image stack) */
-			FilePath,				/** Number of images in the collection */
+			ShouldLoad = ult(ImageCollection::Column::End) + 1,		/** Whether to load the image or not */
+			FileName,												/** The filename of the dataset */
+			DimensionName,											/** Dimension name (in case of image stack) */
+			FilePath,												/** Number of images in the collection */
 
-			Start = ShouldLoad,		/** Column start */
-			End = FilePath			/** Column End */
+			Start = ShouldLoad,										/** Column start */
+			End = FilePath											/** Column End */
 		};
 
 	public: // Construction

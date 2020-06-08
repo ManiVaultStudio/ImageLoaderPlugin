@@ -102,12 +102,6 @@ public: // Miscellaneous
 	 */
 	void insert(int row, const std::vector<ImageCollection*>& imageCollections);
 
-	/**
-	 * Returns an image collection by given row index
-	 * @param row Row index
-	 */
-	const ImageCollection* imageCollection(const int& row) const;
-
 	/** Get root tree item */
 	TreeItem* rootItem() { return _root; };
 

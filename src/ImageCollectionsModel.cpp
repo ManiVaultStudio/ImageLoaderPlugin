@@ -35,7 +35,7 @@ int ImageCollectionsModel::rowCount(const QModelIndex& parent /* = QModelIndex()
 
 int ImageCollectionsModel::columnCount(const QModelIndex& parent) const
 {
-	return ult(ImageCollection::Column::End) + 1;
+	return ult(ImageCollection::Image::Column::End) + 1;
 }
 
 QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt::DisplayRole */) const
@@ -262,6 +262,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
+	qDebug() << section;
+
 	auto tooltip = [](const QString& title, const QString& description) {
 		return QString("<html><head/><body><p><span style='font-weight: 600;'>%1</span><br/>%2</p></body></html>").arg(title, description);
 	};
@@ -318,6 +320,23 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return QString();
 				}
 
+				switch (static_cast<ImageCollection::Image::Column>(section)) {
+					case ImageCollection::Image::Column::ShouldLoad:
+						return "";
+
+					case ImageCollection::Image::Column::FileName:
+						return "Filename";
+
+					case ImageCollection::Image::Column::DimensionName:
+						return "Dimension name";
+
+					case ImageCollection::Image::Column::FilePath:
+						return "File path";
+
+					default:
+						return QString();
+				}
+
 				break;
 			}
 
@@ -365,6 +384,23 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					case ImageCollection::Column::ToGrayscale:
 						return tooltip("Convert to grayscale", "Whether all image channels are combined in to one (grayscale)");
+
+					default:
+						return QString();
+				}
+
+				switch (static_cast<ImageCollection::Image::Column>(section)) {
+					case ImageCollection::Image::Column::ShouldLoad:
+						return tooltip("Load", "Whether to load the image or not");
+
+					case ImageCollection::Image::Column::FileName:
+						return tooltip("Filename", "Name of the image file");
+
+					case ImageCollection::Image::Column::DimensionName:
+						return tooltip("Dimension name", "Name of the dimension in the high-dimensional dataset, click to edit");
+
+					case ImageCollection::Image::Column::FilePath:
+						return tooltip("File path", "The absolute file path of the image");
 
 					default:
 						return QString();
@@ -480,9 +516,6 @@ QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
 void ImageCollectionsModel::clear()
 {
 	beginResetModel();
-	{
-		//_imageCollections.clear();
-	}
 	endResetModel();
 }
 
@@ -494,18 +527,4 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 			_root->appendChild(imageCollection);
 	}
 	endInsertRows();
-}
-
-const ImageCollection* ImageCollectionsModel::imageCollection(const int& row) const
-{
-	return nullptr;
-
-	/*
-	const auto imageCollectionIndex = index(row, 0);
-
-	if (!imageCollectionIndex.isValid())
-		return nullptr;
-
-	return &_imageCollections.at(row);
-	*/
 }
