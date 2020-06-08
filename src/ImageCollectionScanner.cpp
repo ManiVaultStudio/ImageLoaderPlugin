@@ -118,8 +118,6 @@ void ImageCollectionScanner::scan()
 	for (const auto& supportedImageType : supportedImageTypes())
 		nameFilters << "*." + supportedImageType;
 
-	qDebug() << nameFilters;
-
 	scanDir(_directory, nameFilters, imageCollections);
 
 	for (auto& imageCollection : imageCollections)
@@ -178,9 +176,6 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		QImageReader imageReader(imageFilePath);
 
-		if (imageReader.imageCount() > 1)
-			qDebug() << "=====" << imageReader.imageCount();
-
 		const auto imageSize = imageReader.size();
 
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
@@ -191,20 +186,16 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 			auto loadOne = true;
 
 			if (imageType == "tiff") {
-				fi::FIMULTIBITMAP* multiBitmap = fi::FreeImage_OpenMultiBitmap(fi::FIF_TIFF, imageFilePath.toUtf8(), false, false);
+				imageReader.jumpToNextImage();
 
-				if (multiBitmap != nullptr) {
-					const auto pageCount = fi::FreeImage_GetPageCount(multiBitmap);
+				const auto pageCount = imageReader.imageCount();
 
-					if (pageCount > 1) {
-						for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-							imageCollection.addImage(imageFilePath, pageIndex);
-						}
+				if (pageCount > 1) {
+					loadOne = false;
 
-						loadOne = false;
+					for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+						imageCollection.addImage(imageFilePath, pageIndex);
 					}
-
-					fi::FreeImage_CloseMultiBitmap(multiBitmap);
 				}
 			}
 			

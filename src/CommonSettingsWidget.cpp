@@ -48,12 +48,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Grayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollectionsModel::Column::Directory));
 
-	//_ui->imageCollectionsTreeView->header()->setStretchLastSection(false);
-
 	_ui->imagesTreeView->setModel(&imagesModel);
 	_ui->imagesTreeView->setSelectionModel(&imagesModel.selectionModel());
-
-	//_ui->imagesTreeView->header()->setResizeContentsPrecision(1);
 
 	// Column visibility
 	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::ShouldLoad));
@@ -95,7 +91,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(&_scanner, &ImageCollectionScanner::separateByDirectoryChanged, [this](const bool& separateByDirectory) {
-		
+		_ui->separateByDirectoryCheckBox->blockSignals(true);
+		_ui->separateByDirectoryCheckBox->setChecked(separateByDirectory);
+		_ui->separateByDirectoryCheckBox->blockSignals(false);
 	});
 
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &imageCollectionsModel](int currentIndex) {
@@ -141,4 +139,5 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	_scanner.loadSettings();
+	_scanner.scan();
 }

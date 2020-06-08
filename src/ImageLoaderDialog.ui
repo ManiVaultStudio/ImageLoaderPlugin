@@ -86,6 +86,9 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Close after loading&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Close this dialog when loading is complete&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>Close after loading</string>
        </property>
@@ -101,6 +104,9 @@
          <width>90</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Load&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load the selected image collection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>Load</string>

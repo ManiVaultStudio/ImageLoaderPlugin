@@ -97,7 +97,7 @@
           <item>
            <widget class="QDoubleSpinBox" name="ratioSpinBox">
             <property name="toolTip">
-             <string>Subsampling ratio </string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Subsampling ratio&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Enter subsampling ratio&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="suffix">
              <string>%</string>
@@ -124,6 +124,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Subsampling ratio&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Move slider to decrease/increase the subsampling ratio&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -143,7 +146,7 @@
             <item>
              <widget class="QPushButton" name="ratio25PushButton">
               <property name="toolTip">
-               <string>Subsample 25%</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ratio 25%&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Set subsampling ratio to 25%&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>25%</string>
@@ -153,7 +156,7 @@
             <item>
              <widget class="QPushButton" name="ratio50PushButton">
               <property name="toolTip">
-               <string>Subsample 50%</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ratio 50%&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Set subsampling ratio to 50%&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>50%</string>
@@ -181,7 +184,7 @@
                </size>
               </property>
               <property name="toolTip">
-               <string>Subsample 75%</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ratio 75%&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Set subsampling ratio to 75%&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>75%</string>
@@ -191,7 +194,7 @@
             <item>
              <widget class="QPushButton" name="ratio100PushButton">
               <property name="toolTip">
-               <string>Subsample 100%</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ratio 100%&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Set subsampling ratio to 100%&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>100%</string>
@@ -237,10 +240,10 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Subsampling filter</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter&lt;/p&gt;&lt;p&gt;Subsampling filter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Resampling filter</string>
+           <string>Filter</string>
           </property>
          </widget>
         </item>
