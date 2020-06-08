@@ -344,9 +344,9 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection>& 
 
 const ImageCollection* ImageCollectionsModel::imageCollection(const int& row) const
 {
-	const auto colorMapIndex = index(row, 0);
+	const auto imageCollectionIndex = index(row, 0);
 
-	if (!colorMapIndex.isValid())
+	if (!imageCollectionIndex.isValid())
 		return nullptr;
 
 	return &_imageCollections.at(row);

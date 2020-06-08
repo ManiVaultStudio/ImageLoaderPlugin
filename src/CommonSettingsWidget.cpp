@@ -66,6 +66,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	// Column size
 	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
 	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::ShouldLoad), 20);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FileName), 200);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::DimensionName), 200);
+	_ui->imagesTreeView->header()->resizeSection(ult(ImagesModel::Column::FilePath), 200);
 
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
@@ -104,6 +107,22 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
+	auto selectImageCollection = [this, &imageCollectionsModel, &imagesModel](const QModelIndex& index) {
+		imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(index.row())));
+
+		/*
+		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
+		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FileName));
+		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::DimensionName));
+		_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FilePath));
+		*/
+
+		const auto imageCollectionType = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::EditRole).toInt();
+
+		_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
+		_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
+	};
+
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::DatasetName));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ImageType));
@@ -118,23 +137,19 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollectionsModel::Column::ToGrayscale));
 	});
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imagesModel](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imagesModel, selectImageCollection](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles /*= QVector<int>()*/) {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row() && topLeft.column() == ult(ImageCollectionsModel::Column::Type)) {
+			selectImageCollection(selectedRows.first());
+		}
+	});
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imagesModel, selectImageCollection](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty()) {
-			const auto firstRow = selectedRows.first();
-
-			imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(firstRow.row())));
-
-			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::ShouldLoad));
-			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FileName));
-			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::DimensionName));
-			//_ui->imagesTreeView->resizeColumnToContents(ult(ImagesModel::Column::FilePath));
-
-			const auto imageCollectionType = imageCollectionsModel.data(firstRow.siblingAtColumn(ult(ImageCollectionsModel::Column::Type)), Qt::EditRole).toInt();
-
-			_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
-			_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
+			selectImageCollection(selectedRows.first());
 		}
 	});
 

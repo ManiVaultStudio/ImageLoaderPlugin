@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>666</width>
-    <height>482</height>
+    <height>510</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,7 +41,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Image collections configuration&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Pick an image collection to load as a high-dimensional dataset&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="title">
       <string>Image collection(s)</string>
@@ -49,6 +49,65 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
        <layout class="QGridLayout" name="imagesGridLayout">
+        <item row="7" column="1">
+         <widget class="QTreeView" name="imagesTreeView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="rootIsDecorated">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="imagesLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Image(s)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="sequencesLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Collection(s)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QComboBox" name="loadAsComboBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Image sequence</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image stack</string>
+           </property>
+          </item>
+         </widget>
+        </item>
         <item row="2" column="1">
          <layout class="QHBoxLayout" name="directoryLayout">
           <property name="topMargin">
@@ -66,7 +125,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type to manually enter the scan directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;Type to manually enter the scan directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -91,7 +150,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Click to pick directory containing image sequence</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;Click to pick directory containing image sequence&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>...</string>
@@ -100,59 +159,27 @@
           </item>
          </layout>
         </item>
-        <item row="5" column="1">
-         <widget class="QTreeView" name="imagesTreeView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="6" column="0">
+         <widget class="QLabel" name="loadAsLabel">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image(s)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Lists image(s) that belong to an image collection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="rootIsDecorated">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="imagesLabel">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scanned image(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Image(s)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="sequencesLabel">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Scanned image collection(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Collection(s)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           <string>Interpret as</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="directoryLabel">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Scan directory</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="5" column="1">
          <widget class="QTreeView" name="imageCollectionsTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -167,49 +194,42 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Lists scanned image collections&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="loadAsLabel">
-          <property name="toolTip">
-           <string>Interpret images as high-dimensional image data</string>
-          </property>
-          <property name="text">
-           <string>Interpret as</string>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QComboBox" name="loadAsComboBox">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Load as&lt;br/&gt;&lt;/span&gt;Specifies how to interpret the images as high-dimensional image data.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Image sequence&lt;/span&gt;&lt;br/&gt;Each image is considered a high-dimensional data point, each pixel is a dimension&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Image stack&lt;/span&gt;&lt;br/&gt;Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <item row="4" column="1">
+         <layout class="QHBoxLayout" name="separateByDirectoryHorizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
           </property>
           <item>
-           <property name="text">
-            <string>Image sequence</string>
-           </property>
+           <widget class="QCheckBox" name="separateByDirectoryCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;/span&gt;Off: Images are grouped by [image type, resolution]&lt;br/&gt;On: Images are grouped by [image type, resolution, directory]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Separate by directory</string>
+            </property>
+           </widget>
           </item>
           <item>
-           <property name="text">
-            <string>Image stack</string>
-           </property>
+           <spacer name="separateByDirectoryHorizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QCheckBox" name="separateByDirectoryCheckBox">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Off&lt;/span&gt;&lt;br/&gt;Images are grouped by [image type, resolution]&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;On&lt;/span&gt;&lt;br/&gt;Images are grouped by [image type, resolution, directory]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Separate by directory</string>
-          </property>
-         </widget>
+         </layout>
         </item>
        </layout>
       </item>

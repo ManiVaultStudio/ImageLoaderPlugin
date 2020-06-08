@@ -195,6 +195,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 					for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
 						imageCollection.addImage(imageFilePath, pageIndex);
+						//imageCollection.images().back().setDimensionName(QString("Dim").arg(pageIndex));
 					}
 				}
 			}
