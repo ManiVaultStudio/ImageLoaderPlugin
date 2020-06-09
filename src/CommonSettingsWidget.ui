@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>666</width>
-    <height>510</height>
+    <height>789</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -47,28 +47,19 @@
       <string>Image collection(s)</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="1" column="0">
+      <item row="0" column="0">
        <layout class="QGridLayout" name="imagesGridLayout">
-        <item row="7" column="1">
-         <widget class="QTreeView" name="imagesTreeView">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="2" column="0">
+         <widget class="QLabel" name="directoryLabel">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-          <property name="rootIsDecorated">
-           <bool>false</bool>
+          <property name="text">
+           <string>Scan directory</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="0">
+        <item row="8" column="0">
          <widget class="QLabel" name="imagesLabel">
           <property name="enabled">
            <bool>false</bool>
@@ -84,7 +75,7 @@
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
+        <item row="6" column="0">
          <widget class="QLabel" name="sequencesLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -95,23 +86,6 @@
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
           </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QComboBox" name="loadAsComboBox">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Image sequence</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Image stack</string>
-           </property>
-          </item>
          </widget>
         </item>
         <item row="2" column="1">
@@ -165,7 +139,7 @@
           </item>
          </layout>
         </item>
-        <item row="6" column="0">
+        <item row="7" column="0">
          <widget class="QLabel" name="loadAsLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -175,17 +149,24 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="directoryLabel">
+        <item row="7" column="1">
+         <widget class="QComboBox" name="loadAsComboBox">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-          <property name="text">
-           <string>Scan directory</string>
-          </property>
+          <item>
+           <property name="text">
+            <string>Image sequence</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image stack</string>
+           </property>
+          </item>
          </widget>
         </item>
-        <item row="5" column="1">
+        <item row="6" column="1">
          <widget class="QTreeView" name="imageCollectionsTreeView">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -207,7 +188,114 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="8" column="1">
+         <widget class="QTreeView" name="imagesTreeView">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="rootIsDecorated">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <layout class="QHBoxLayout" name="selectionHorizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="selectAllPushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select all&lt;/span&gt;&lt;br/&gt;Select all images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Select All</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="selectNonePushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select none&lt;/span&gt;&lt;br/&gt;Select no images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Select None</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="selectInvertPushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Invert selection&lt;/span&gt;&lt;br/&gt;Invert the image selection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Invert</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="selectionHorizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="selectPercentageDoubleSpinBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select percentage&lt;/span&gt;&lt;br/&gt;Randomly select a percentage of images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string>%</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="selectPercentagePushButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select percentage&lt;/span&gt;&lt;br/&gt;Randomly select a percentage of images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Select %</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="5" column="1">
          <layout class="QHBoxLayout" name="separateByDirectoryHorizontalLayout">
           <property name="bottomMargin">
            <number>0</number>
@@ -215,7 +303,7 @@
           <item>
            <widget class="QCheckBox" name="separateByDirectoryCheckBox">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;/span&gt;Off: Images are grouped by [image type, resolution]&lt;br/&gt;On: Images are grouped by [image type, resolution, directory]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;/span&gt;Images are grouped by directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Separate by directory</string>
@@ -223,7 +311,7 @@
            </widget>
           </item>
           <item>
-           <spacer name="separateByDirectoryHorizontalSpacer">
+           <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -236,6 +324,16 @@
            </spacer>
           </item>
          </layout>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="filenameFilterLineEdit">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by filename&lt;br/&gt;&lt;/span&gt;Images are grouped by filename&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="placeholderText">
+           <string>Filter by filename (regex)</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

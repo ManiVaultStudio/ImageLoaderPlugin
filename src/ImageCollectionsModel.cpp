@@ -234,6 +234,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					case ImageCollection::Image::Column::ShouldLoad:
 					{
 						image->setShouldLoad(value.toBool());
+
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
 						break;
 					}
 

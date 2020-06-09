@@ -50,31 +50,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Grayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
 
-	_ui->imagesTreeView->setModel(&imageCollectionsModel);
+	
 	//_ui->imagesTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 	_ui->imagesTreeView->header()->setHidden(true);
-	
-	// Column visibility
-	for (int column = ult(ImageCollection::Column::Start); column < ult(ImageCollection::Column::End); column++)
-		_ui->imagesTreeView->header()->hideSection(column);
-
-	//
-	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::Name));
-	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::DimensionName));
-	//_ui->imagesTreeView->header()->hideSection(ult(ImagesModel::Column::FilePath));
-	
-	// Column resize mode
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
-	_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
-
-	// Column size
-	_ui->imagesTreeView->header()->setMinimumSectionSize(20);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
-	_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
 
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
 		_scanner.setDirectory(directory);
@@ -95,6 +73,18 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->directoryLineEdit->blockSignals(false);
 	});
 
+	QObject::connect(_ui->filenameFilterLineEdit, &QLineEdit::returnPressed, [this]() {
+		_scanner.setFilenameFilter(_ui->filenameFilterLineEdit->text());
+	});
+
+	/*
+	QObject::connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
+		_ui->filenameFilterLineEdit->blockSignals(true);
+		_ui->filenameFilterLineEdit->setText(filenameFilter);
+		_ui->filenameFilterLineEdit->blockSignals(false);
+	});
+	*/
+
 	QObject::connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
 		_scanner.setSeparateByDirectory(state == Qt::Checked);
 	});
@@ -113,17 +103,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	/*
-	auto selectImageCollection = [this, &imageCollectionsModel, &imagesModel](const QModelIndex& index) {
-		imagesModel.setImageCollection(const_cast<ImageCollection*>(imageCollectionsModel.imageCollection(index.row())));
-
-		const auto imageCollectionType = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt();
-
-		_ui->loadAsComboBox->setCurrentIndex(imageCollectionType);
-		_ui->imagesTreeView->setColumnHidden(ult(ImagesModel::Column::DimensionName), imageCollectionType != ImageData::Type::Stack);
-	};
-	*/
-
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageType));
@@ -137,29 +116,63 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
 	});
-	/*
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel, &imagesModel, selectImageCollection]() {
-		imagesModel.setImageCollection(nullptr);
-	});
+	
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this]() {
+		_ui->imagesTreeView->setModel(nullptr);
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imagesModel, selectImageCollection](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+		_ui->selectAllPushButton->setEnabled(false);
+		_ui->selectNonePushButton->setEnabled(false);
+		_ui->selectInvertPushButton->setEnabled(false);
+		_ui->selectPercentageDoubleSpinBox->setEnabled(false);
+		_ui->selectPercentagePushButton->setEnabled(false);
+	});
+	
+	auto updateSelectionButtons = [this, &imageCollectionsModel](const QModelIndex& index) {
+		const auto noImages			= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
+		const auto noSelectedImages = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
+
+		_ui->selectAllPushButton->setEnabled(noSelectedImages != noImages);
+		_ui->selectNonePushButton->setEnabled(noSelectedImages > 0);
+		_ui->selectInvertPushButton->setEnabled(true);
+		_ui->selectPercentageDoubleSpinBox->setEnabled(noImages > 1);
+		_ui->selectPercentagePushButton->setEnabled(noImages > 1);
+	};
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
-		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row() && topLeft.column() == ult(ImageCollection::Column::Type)) {
-			selectImageCollection(selectedRows.first());
+		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row() && topLeft.column() == ult(ImageCollection::Column::NoSelectedImages)) {
+			updateSelectionButtons(selectedRows.first());
 		}
 	});
-	*/
-
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
+	
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
 
 		if (!selectedRows.isEmpty()) {
 			_ui->imagesLabel->setEnabled(true);
 			_ui->imagesTreeView->setEnabled(true);
+			
+			_ui->imagesTreeView->setModel(&imageCollectionsModel);
+			_ui->imagesTreeView->setRootIndex(selectedRows.first());
+
 			_ui->imagesTreeView->header()->setHidden(false);
 
-			_ui->imagesTreeView->setRootIndex(selectedRows.first());
+			for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
+				_ui->imagesTreeView->header()->hideSection(column);
+
+			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
+			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
+			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
+			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
+
+			_ui->imagesTreeView->header()->setMinimumSectionSize(20);
+			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
+			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
+			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
+			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
+
+			updateSelectionButtons(selectedRows.first());
 		}
 	});
 
