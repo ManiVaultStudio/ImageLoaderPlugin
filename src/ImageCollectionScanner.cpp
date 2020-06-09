@@ -15,7 +15,6 @@ ImageCollectionScanner::ImageCollectionScanner() :
 	_separateByDirectory(false),
 	_previousDirectories(),
 	_supportedImageTypes(),
-	_filenameFilter(),
 	_initialized(false)
 {
 	auto supportedImageTypes = QStringList();
@@ -104,27 +103,6 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 
 	emit supportedImageTypesChanged(_supportedImageTypes);
 
-	emit settingsChanged();
-
-	if (_initialized)
-		scan();
-}
-
-QString ImageCollectionScanner::filenameFilter() const
-{
-	return _filenameFilter;
-}
-
-void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, const bool& notify /*= false*/)
-{
-	if (filenameFilter == _filenameFilter)
-		return;
-
-	_filenameFilter = filenameFilter;
-
-	setSetting("FilenameFilter", _filenameFilter);
-
-	emit filenameFilterChanged(_filenameFilter);
 	emit settingsChanged();
 
 	if (_initialized)

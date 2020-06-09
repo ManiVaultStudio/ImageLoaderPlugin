@@ -57,16 +57,6 @@ public:
 	 */
 	void setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify = false);
 
-	/** Returns the filename filter */
-	QString	filenameFilter() const;
-
-	/**
-	 * Sets the filename filter
-	 * @param filenameFilter Filename filter
-	 * @param notify Whether to notify others of this change
-	 */
-	void setFilenameFilter(const QString& filenameFilter, const bool& notify = false);
-
 	/**
 	 * Finds an image collection based on image type and size
 	 * @param imageCollections Image collections
@@ -117,12 +107,6 @@ signals:
 	void supportedImageTypesChanged(const QStringList& supportedImageTypes);
 
 	/**
-	 * Signals that the filename filter changed
-	 * @param filenameFilter Filename filter
-	 */
-	void filenameFilterChanged(const QString& filenameFilter);
-
-	/**
 	 * Broadcasts a message
 	 * @param message Message to broadcast
 	 */
@@ -134,6 +118,5 @@ protected:
 	bool					_separateByDirectory;		/** Separate image collections by directory */
 	QStringList				_previousDirectories;		/** List of previously visited directories */
 	QStringList				_supportedImageTypes;		/** List of supported image types e.g. .tiff, .jpg */
-	QString					_filenameFilter;			/** File name filter */
 	bool					_initialized;				/** Whether the scanner is initialized or not */
 };

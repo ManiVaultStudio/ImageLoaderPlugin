@@ -14,8 +14,12 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader"),
-	_imageCollectionsModel()
+	_imageCollectionsModel(),
+	_imageCollectionsFilterModel()
 {
+	_imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
+
+	_imageCollectionsModel.selectionModel().setModel(&_imageCollectionsFilterModel);
 	qRegisterMetaType<std::shared_ptr<QImage>>("std::shared_ptr<QImage>");
 	qRegisterMetaType<std::shared_ptr<Payload>>("std::shared_ptr<Payload>");
 }

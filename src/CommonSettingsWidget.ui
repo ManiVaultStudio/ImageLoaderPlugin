@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>666</width>
-    <height>789</height>
+    <height>899</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,23 +59,7 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="imagesLabel">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Image(s)</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
+        <item row="5" column="0">
          <widget class="QLabel" name="sequencesLabel">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -138,55 +122,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="loadAsLabel">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Interpret as</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QComboBox" name="loadAsComboBox">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Image sequence</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Image stack</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QTreeView" name="imageCollectionsTreeView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>10</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="rootIsDecorated">
-           <bool>false</bool>
-          </property>
-         </widget>
         </item>
         <item row="8" column="1">
          <widget class="QTreeView" name="imagesTreeView">
@@ -301,7 +236,72 @@
           </item>
          </layout>
         </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="imagesLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Image(s)</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="loadAsLabel">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Interpret as</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QComboBox" name="loadAsComboBox">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Image sequence</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image stack</string>
+           </property>
+          </item>
+         </widget>
+        </item>
         <item row="5" column="1">
+         <widget class="QTreeView" name="imageCollectionsTreeView">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>10</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="rootIsDecorated">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
          <layout class="QHBoxLayout" name="separateByDirectoryHorizontalLayout">
           <property name="bottomMargin">
            <number>0</number>
@@ -331,13 +331,10 @@
           </item>
          </layout>
         </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="filenameFilterLineEdit">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by filename&lt;br/&gt;&lt;/span&gt;Images are grouped by filename&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="searchFilterLineEdit">
           <property name="placeholderText">
-           <string>Filter by filename (regex)</string>
+           <string>Search...</string>
           </property>
          </widget>
         </item>

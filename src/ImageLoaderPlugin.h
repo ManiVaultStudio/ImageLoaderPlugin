@@ -40,8 +40,12 @@ public: // Models
 	/** Returns the image collections model */
 	ImageCollectionsModel& imageCollectionsModel() { return _imageCollectionsModel; }
 
+	/** Returns the image collections model */
+	ImageCollectionsModel::Filter& imageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+
 private:
-	ImageCollectionsModel	_imageCollectionsModel;		/** Image collections model */
+	ImageCollectionsModel			_imageCollectionsModel;				/** Image collections model */
+	ImageCollectionsModel::Filter	_imageCollectionsFilterModel;		/** Image collections filter model */
 };
 
 /**

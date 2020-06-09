@@ -29,11 +29,13 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	auto& imageCollectionsModel	= _imageLoaderPlugin->imageCollectionsModel();
 
-	_ui->imageCollectionsTreeView->setModel(&imageCollectionsModel);
-	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
+	auto& filterModel = _imageLoaderPlugin->imageCollectionsFilterModel();
+
+	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
+	//_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
 	// Column visibility
-	for (int column = ult(ImageCollection::Image::Column::Start); column < ult(ImageCollection::Image::Column::End); column++)
+	for (int column = ult(ImageCollection::Image::Column::Start); column <= ult(ImageCollection::Image::Column::End); column++)
 		_ui->imageCollectionsTreeView->header()->hideSection(column);
 
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DatasetName));
@@ -54,8 +56,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	//_ui->imagesTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 	_ui->imagesTreeView->header()->setHidden(true);
 
-	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString directory) {
-		_scanner.setDirectory(directory);
+	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString text) {
+		_scanner.setDirectory(text);
 	});
 
 	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
@@ -73,18 +75,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->directoryLineEdit->blockSignals(false);
 	});
 
-	QObject::connect(_ui->filenameFilterLineEdit, &QLineEdit::returnPressed, [this]() {
-		_scanner.setFilenameFilter(_ui->filenameFilterLineEdit->text());
-	});
-
-	/*
-	QObject::connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
-		_ui->filenameFilterLineEdit->blockSignals(true);
-		_ui->filenameFilterLineEdit->setText(filenameFilter);
-		_ui->filenameFilterLineEdit->blockSignals(false);
-	});
-	*/
-
 	QObject::connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
 		_scanner.setSeparateByDirectory(state == Qt::Checked);
 	});
@@ -95,8 +85,12 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->separateByDirectoryCheckBox->blockSignals(false);
 	});
 
+	QObject::connect(_ui->searchFilterLineEdit, &QLineEdit::textChanged, [this](QString text) {
+		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(text);
+	});
+
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &imageCollectionsModel](int currentIndex) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+		const auto selectedRows = _ui->imageCollectionsTreeView->selectionModel()->selectedRows();
 
 		if (!selectedRows.isEmpty()) {
 			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
@@ -118,11 +112,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 	
 	
-	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [this, &imageCollectionsModel, &filterModel]() {
+		const auto selectedRows = _ui->imageCollectionsTreeView->selectionModel()->selectedRows();
 
 		if (!selectedRows.isEmpty())
-			imageCollectionsModel.selectAll(selectedRows.first());
+			imageCollectionsModel.selectAll(filterModel.mapToSource(selectedRows.first()));
 	});
 
 	QObject::connect(_ui->selectNonePushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
@@ -156,9 +150,19 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->selectPercentagePushButton->setEnabled(false);
 	});
 	
-	auto updateSelectionButtons = [this, &imageCollectionsModel](const QModelIndex& index) {
-		const auto noImages			= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
-		const auto noSelectedImages = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
+	auto updateSelectionButtons = [this](const QModelIndex& index) {
+		auto& model = _imageLoaderPlugin->imageCollectionsModel();
+		auto& filterModel = _imageLoaderPlugin->imageCollectionsFilterModel();
+
+		//const auto noImages			= model.data(filterModel.mapToSource(index.siblingAtColumn(ult(ImageCollection::Column::NoImages))), Qt::EditRole).toInt();
+		//const auto noSelectedImages = model.data(filterModel.mapToSource(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages))), Qt::EditRole).toInt();
+
+		//qDebug() << noImages << noSelectedImages;
+
+		const auto noImages = model.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
+		const auto noSelectedImages = model.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
+
+		qDebug() << noImages << noSelectedImages;
 
 		_ui->selectAllPushButton->setEnabled(noSelectedImages != noImages);
 		_ui->selectNonePushButton->setEnabled(noSelectedImages > 0);
@@ -168,23 +172,29 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	};
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
-
+		const auto selectedRows = _ui->imageCollectionsTreeView->selectionModel()->selectedRows();
+		auto& filterModel = _imageLoaderPlugin->imageCollectionsFilterModel();
 		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row() && topLeft.column() == ult(ImageCollection::Column::NoSelectedImages)) {
-			updateSelectionButtons(selectedRows.first());
+			updateSelectionButtons(filterModel.mapToSource(selectedRows.first()));
 		}
 	});
 	
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto selectedRows = _ui->imageCollectionsTreeView->selectionModel()->selectedRows();
+
+		auto& filterModel = _imageLoaderPlugin->imageCollectionsFilterModel();
 
 		if (!selectedRows.isEmpty()) {
 			_ui->imagesLabel->setEnabled(true);
 			_ui->imagesTreeView->setEnabled(true);
 			
 			_ui->imagesTreeView->setModel(&imageCollectionsModel);
-			_ui->imagesTreeView->setRootIndex(selectedRows.first());
 
+			//_ui->imagesTreeView->setRootIndex(selectedRows.first());
+
+			// TODO
+			_ui->imagesTreeView->setRootIndex(filterModel.mapToSource(selectedRows.first()));
+			
 			_ui->imagesTreeView->header()->setHidden(false);
 
 			for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
@@ -200,8 +210,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
 			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
 			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
-
-			updateSelectionButtons(selectedRows.first());
+			
+			// TODO
+			updateSelectionButtons(filterModel.mapToSource(selectedRows.first()));
 		}
 	});
 

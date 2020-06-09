@@ -5,6 +5,7 @@
 #include "ImageData/Images.h"
 
 #include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
 
 /**
@@ -16,6 +17,61 @@
  */
 class ImageCollectionsModel : public QAbstractItemModel
 {
+public: // Filter model
+
+	/**
+	 * TODO
+	 *
+	 * @author Thomas Kroes
+	 */
+	class Filter : public QSortFilterProxyModel {
+	public:
+		/** Default constructor */
+		Filter() :
+			QSortFilterProxyModel(),
+			_filter()
+		{
+		}
+
+		/**
+		 * Returns whether a give row with give parent is filtered out (false) or in (true)
+		 * @param row Row index
+		 * @param parent Parent index
+		 */
+		bool filterAcceptsRow(int row, const QModelIndex& parent) const
+		{
+			if (parent == QModelIndex()) {
+				const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
+				const auto datasetName = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
+
+				return datasetName.contains(_filter);
+			}
+			
+			return true;
+		}
+
+		/** Returns the filter string */
+		QString filter() const {
+			return _filter;
+		}
+
+		/**
+		 * Sets the filter string
+		 * @param filter Filter string
+		 */
+		void setFilter(const QString& filter) {
+			if (filter == _filter)
+				return;
+
+			_filter = filter;
+
+			invalidateFilter();
+		}
+
+	private:
+		QString		_filter;		/** Filter string */
+	};
+
 public: // Construction/destruction
 
 	/** Default constructor */
