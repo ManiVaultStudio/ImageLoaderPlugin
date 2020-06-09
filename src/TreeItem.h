@@ -11,6 +11,7 @@ public:
 
 	void appendChild(TreeItem *child);
 
+
 	TreeItem *child(int row);
 	int childCount() const;
 	QVariant data(int column) const;
@@ -18,6 +19,8 @@ public:
 	TreeItem *parentItem();
 
 protected:
-	QVector<TreeItem*> m_childItems;
+	QVector<TreeItem*> _children;
 	TreeItem *m_parentItem;
+
+	friend class ImageCollectionsModel;
 };

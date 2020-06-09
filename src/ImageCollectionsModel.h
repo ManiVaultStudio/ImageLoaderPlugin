@@ -104,6 +104,33 @@ public: // Miscellaneous
 
 	/** Get root tree item */
 	TreeItem* rootItem() { return _root; };
+	
+public: // Image selection
+
+	/**
+	 * Selects all images in the image collection
+	 * @param index Image collection model index
+	 */
+	void selectAll(const QModelIndex& index);
+
+	/**
+	 * Deselects all images in the image collection
+	 * @param index Image collection model index
+	 */
+	void selectNone(const QModelIndex& index);
+
+	/**
+	 * Inverts the image selection in the image collection
+	 * @param index Image collection model index
+	 */
+	void invertSelection(const QModelIndex& index);
+
+	/**
+	 * Selects a percentage of images in the image collection
+	 * @param index Image collection model index
+	 * @param selectionProbability Probability that an image will be selected [0 - 1]
+	 */
+	void selectPercentage(const QModelIndex& index, const float& selectionProbability);
 
 private:
 	//std::vector<ImageCollection>	_imageCollections;		/** Images collections */

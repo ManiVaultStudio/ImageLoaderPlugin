@@ -239,7 +239,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="selectInvertPushButton">
+           <widget class="QPushButton" name="invertSelectionPushButton">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -276,7 +276,13 @@
              <string>%</string>
             </property>
             <property name="decimals">
-             <number>1</number>
+             <number>0</number>
+            </property>
+            <property name="singleStep">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>50.000000000000000</double>
             </property>
            </widget>
           </item>

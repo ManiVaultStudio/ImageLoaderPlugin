@@ -117,12 +117,41 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
 	});
 	
+	
+	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty())
+			imageCollectionsModel.selectAll(selectedRows.first());
+	});
+
+	QObject::connect(_ui->selectNonePushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty())
+			imageCollectionsModel.selectNone(selectedRows.first());
+	});
+
+	QObject::connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty())
+			imageCollectionsModel.invertSelection(selectedRows.first());
+	});
+
+	QObject::connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [this, &imageCollectionsModel]() {
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+
+		if (!selectedRows.isEmpty())
+			imageCollectionsModel.selectPercentage(selectedRows.first(), 0.01f * _ui->selectPercentageDoubleSpinBox->value());
+	});
+
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this]() {
 		_ui->imagesTreeView->setModel(nullptr);
 
 		_ui->selectAllPushButton->setEnabled(false);
 		_ui->selectNonePushButton->setEnabled(false);
-		_ui->selectInvertPushButton->setEnabled(false);
+		_ui->invertSelectionPushButton->setEnabled(false);
 		_ui->selectPercentageDoubleSpinBox->setEnabled(false);
 		_ui->selectPercentagePushButton->setEnabled(false);
 	});
@@ -133,7 +162,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 		_ui->selectAllPushButton->setEnabled(noSelectedImages != noImages);
 		_ui->selectNonePushButton->setEnabled(noSelectedImages > 0);
-		_ui->selectInvertPushButton->setEnabled(true);
+		_ui->invertSelectionPushButton->setEnabled(true);
 		_ui->selectPercentageDoubleSpinBox->setEnabled(noImages > 1);
 		_ui->selectPercentagePushButton->setEnabled(noImages > 1);
 	};

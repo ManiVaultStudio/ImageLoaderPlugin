@@ -527,7 +527,7 @@ QVariant ImageCollection::noImages(const int& role) const
 
 QVariant ImageCollection::noSelectedImages(const int& role) const
 {
-	const auto noSelectedImages = std::count_if(m_childItems.begin(), m_childItems.end(), [](auto& child) {
+	const auto noSelectedImages = std::count_if(_children.begin(), _children.end(), [](auto& child) {
 		return static_cast<Image*>(child)->shouldLoad(Qt::EditRole).toBool();
 	});
 
@@ -570,7 +570,7 @@ void ImageCollection::computeDatasetName()
 
 	QSet<QString> rootDirs;
 
-	for (const auto& child : m_childItems) {
+	for (const auto& child : _children) {
 		const auto path = QFileInfo(static_cast<Image*>(child)->filePath(Qt::EditRole).toString()).absoluteDir().path();
 
 		if (rootDir == "")

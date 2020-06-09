@@ -7,30 +7,30 @@ TreeItem::TreeItem(TreeItem *parent) :
 
 TreeItem::~TreeItem()
 {
-	qDeleteAll(m_childItems);
+	qDeleteAll(_children);
 }
 
 void TreeItem::appendChild(TreeItem *item)
 {
-	m_childItems.append(item);
+	_children.append(item);
 }
 
 TreeItem *TreeItem::child(int row)
 {
-	if (row < 0 || row >= m_childItems.size())
+	if (row < 0 || row >= _children.size())
 		return nullptr;
-	return m_childItems.at(row);
+	return _children.at(row);
 }
 
 int TreeItem::childCount() const
 {
-	return m_childItems.count();
+	return _children.count();
 }
 
 int TreeItem::row() const
 {
 	if (m_parentItem)
-		return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
+		return m_parentItem->_children.indexOf(const_cast<TreeItem*>(this));
 
 	return 0;
 }
