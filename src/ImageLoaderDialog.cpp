@@ -35,39 +35,38 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
 
-	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
+	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-		/*
-		const auto selectedRows	= imageCollectionsModel.selectionModel().selectedRows();
-		const auto hasSelection	= !selectedRows.isEmpty();
+	const auto selectedRow = [&]() {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+
+		if (selectedRows.isEmpty())
+			return QModelIndex();
+
+		return filterModel.mapToSource(selectedRows.first());
+	};
+
+	const auto updateLoadButton = [&, selectedRow]() {
+		const auto index = selectedRow();
 
 		_ui->loadPushButton->setEnabled(false);
 
-		if (hasSelection) {
-			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
-			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
+		if (index != QModelIndex()) {
+			const auto imageCollectionType	= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
+			const auto noSelectedImages		= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
 
 			_ui->loadPushButton->setEnabled(noSelectedImages > 0);
 			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
 		}
-		*/
+	};
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedRow, updateLoadButton](const QItemSelection& selected, const QItemSelection& deselected) {
+		updateLoadButton();
 	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-		/*
-		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
-
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
-
-		if (!selectedRows.isEmpty() && selectedRows.first().row() == topLeft.row()) {
-			const auto imageCollectionType	= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
-			const auto noSelectedImages		= imageCollectionsModel.data(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
-
-			qDebug() << noSelectedImages;
-			_ui->loadPushButton->setEnabled(noSelectedImages > 0);
-			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
-		}
-		*/
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateLoadButton](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+		updateLoadButton();
 	});
 }

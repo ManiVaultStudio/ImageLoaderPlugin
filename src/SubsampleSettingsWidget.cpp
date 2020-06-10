@@ -98,7 +98,7 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		updateData(QModelIndex(), QModelIndex());
 	});
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, this, selectedRow, updateData](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedRow, updateData](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto index = selectedRow();
 
 		if (index == QModelIndex())
@@ -115,7 +115,7 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _ui->enabledCheckbox->isChecked());
 	});
 
-	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&, this, selectedRow](double ratio) {
+	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&, selectedRow](double ratio) {
 		const auto index = selectedRow();
 
 		if (index != QModelIndex())

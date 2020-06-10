@@ -34,7 +34,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
-	auto selectedRow = [&]() {
+	const auto selectedRow = [&]() {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (selectedRows.isEmpty())
@@ -98,7 +98,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(text);
 	});
 
-	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, this, selectedRow](int currentIndex) {
+	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedRow](int currentIndex) {
 		const auto index = selectedRow();
 
 		if (index != QModelIndex())
