@@ -172,15 +172,47 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->selectPercentagePushButton->setEnabled(noImages > 1);
 	};
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+	const auto updateImagesHeader = [&, selectedRow]() {
+		for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
+			_ui->imagesTreeView->header()->hideSection(column);
+
+		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
+		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
+		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
+		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
+
+		_ui->imagesTreeView->header()->setMinimumSectionSize(20);
+		_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
+		_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
+		_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
+		_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
+
+		const auto index = selectedRow();
+
+		if (index != QModelIndex()) {
+			const auto type = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt();
+			_ui->imagesTreeView->header()->setSectionHidden(ult(ImageCollection::Image::Column::DimensionName), type == ult(ImageData::Type::Sequence));
+		}
+	};
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		const auto index = selectedRow();
 
 		if (index != QModelIndex() && topLeft.row() == index.row()) {
 			switch (static_cast<ImageCollection::Column>(topLeft.column()))
 			{
+				case ImageCollection::Column::Type:
+				{
+					const auto type = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt();
+					_ui->imagesTreeView->header()->setSectionHidden(ult(ImageCollection::Image::Column::DimensionName), type == ult(ImageData::Type::Sequence));
+					break;
+				}
+
 				case ImageCollection::Column::NoSelectedImages:
+				{
 					updateSelectionButtons(index);
 					break;
+				}
 
 				default:
 					break;
@@ -188,7 +220,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 	
-	QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imageCollectionsSelectionModel, &filterModel, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, updateImagesHeader, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (!selectedRows.isEmpty()) {
@@ -200,20 +232,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imagesTreeView->setRootIndex(index);
 			_ui->imagesTreeView->header()->setHidden(false);
 
-			for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
-				_ui->imagesTreeView->header()->hideSection(column);
-
-			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
-			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
-			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
-			_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
-
-			_ui->imagesTreeView->header()->setMinimumSectionSize(20);
-			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
-			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FileName), 200);
-			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
-			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
-			
+			updateImagesHeader();
 			updateSelectionButtons(index);
 		}
 	});
