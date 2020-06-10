@@ -19,7 +19,18 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 
-	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
+	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+
+	auto selectedRow = [&]() {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+		
+		if (selectedRows.isEmpty())
+			return QModelIndex();
+
+		return filterModel.mapToSource(selectedRows.first());
+	};
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, this, &SubsampleSettingsWidget::updateData);
 
@@ -42,11 +53,11 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	QObject::connect(_ui->enabledCheckbox, &QCheckBox::stateChanged, [&imageCollectionsModel](int state) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	QObject::connect(_ui->enabledCheckbox, &QCheckBox::stateChanged, [&, this, selectedRow](int state) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty()) {
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), state == Qt::Checked);
+		if (index != QModelIndex()) {
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _ui->enabledCheckbox->isChecked());
 		}
 	});
 
@@ -105,6 +116,7 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 void SubsampleSettingsWidget::updateData(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles /*= QVector<int>()*/)
 {
+	return;
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
 	const auto selectedRows			= imageCollectionsModel.selectionModel().selectedRows();

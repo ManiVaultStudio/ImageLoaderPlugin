@@ -27,14 +27,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->separateByDirectoryCheckBox->setChecked(_scanner.separateByDirectory());
 
-	auto& imageCollectionsModel	= _imageLoaderPlugin->imageCollectionsModel();
-
-	auto& filterModel = _imageLoaderPlugin->imageCollectionsFilterModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
+	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
 
 	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
-	auto& imageCollectionsSelectionModel = imageCollectionsModel.selectionModel();
+	
 
 
 	// Column visibility
@@ -96,7 +96,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (!selectedRows.isEmpty()) {
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
+			imageCollectionsModel.setData(filterModel.mapToSource(selectedRows.first()).siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
 		}
 	});
 
