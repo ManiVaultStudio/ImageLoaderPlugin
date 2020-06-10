@@ -42,73 +42,70 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		updateData(QModelIndex(), QModelIndex());
 	});
 
-	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel](const QItemSelection& selected, const QItemSelection& deselected) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, this, selectedRow](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto index = selectedRow();
 
-		if (selectedRows.isEmpty())
+		if (index == QModelIndex())
 			updateData(QModelIndex(), QModelIndex());
 		else {
-			const auto first = selected.indexes().first();
-			updateData(first.siblingAtColumn(ult(ImageCollection::Column::Start)), first.siblingAtColumn(ult(ImageCollection::Column::End)));
+			updateData(index.siblingAtColumn(ult(ImageCollection::Column::Start)), index.siblingAtColumn(ult(ImageCollection::Column::End)));
 		}
 	});
 
 	QObject::connect(_ui->enabledCheckbox, &QCheckBox::stateChanged, [&, this, selectedRow](int state) {
 		const auto index = selectedRow();
 
-		if (index != QModelIndex()) {
+		if (index != QModelIndex())
 			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _ui->enabledCheckbox->isChecked());
-		}
 	});
 
-	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&imageCollectionsModel](double ratio) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&, this, selectedRow](double ratio) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
 	});
 
-	connect(_ui->ratioSlider, &QSlider::valueChanged, [&imageCollectionsModel](int ratio) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratioSlider, &QSlider::valueChanged, [&, this, selectedRow](int ratio) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
 	});
 
-	connect(_ui->ratio25PushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratio25PushButton, &QPushButton::clicked, [&, this, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.25f);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.25f);
 	});
 
-	connect(_ui->ratio50PushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratio50PushButton, &QPushButton::clicked, [&, this, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.5f);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.5f);
 	});
 
-	connect(_ui->ratio75PushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratio75PushButton, &QPushButton::clicked, [&, this, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.75f);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.75f);
 	});
 
-	connect(_ui->ratio100PushButton, &QPushButton::clicked, [&imageCollectionsModel]() {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	connect(_ui->ratio100PushButton, &QPushButton::clicked, [&, this, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 1.0f);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 1.0f);
 	});
 
-	QObject::connect(_ui->filterComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&imageCollectionsModel](int currentIndex) {
-		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+	QObject::connect(_ui->filterComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, this, selectedRow](int currentIndex) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty()) {
-			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), currentIndex);
-		}
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), currentIndex);
 	});
 
 	updateData(QModelIndex(), QModelIndex());
@@ -116,7 +113,6 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 void SubsampleSettingsWidget::updateData(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int>& roles /*= QVector<int>()*/)
 {
-	return;
 	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
 	const auto selectedRows			= imageCollectionsModel.selectionModel().selectedRows();

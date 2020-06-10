@@ -100,21 +100,35 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this]() {
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageType));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoImages));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoSelectedImages));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::SourceSize));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetSize));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetWidth));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetHeight));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
-		_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [&, this]() {
+
+		if (imageCollectionsModel.rowCount(QModelIndex()) > 0) {
+			_ui->imageCollectionsTreeView->header()->show();
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageType));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoImages));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoSelectedImages));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::SourceSize));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetSize));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetWidth));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetHeight));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
+		}
 	});
 	
-	
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel]() {
+		_ui->imageCollectionsTreeView->header()->hide();
+		_ui->imagesTreeView->setModel(nullptr);
+
+		_ui->selectAllPushButton->setEnabled(false);
+		_ui->selectNonePushButton->setEnabled(false);
+		_ui->invertSelectionPushButton->setEnabled(false);
+		_ui->selectPercentageDoubleSpinBox->setEnabled(false);
+		_ui->selectPercentagePushButton->setEnabled(false);
+	});
+
 	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&]() {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
@@ -143,16 +157,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			imageCollectionsModel.selectPercentage(filterModel.mapToSource(selectedRows.first()), 0.01f * _ui->selectPercentageDoubleSpinBox->value());
 	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel]() {
-		_ui->imagesTreeView->setModel(nullptr);
-
-		_ui->selectAllPushButton->setEnabled(false);
-		_ui->selectNonePushButton->setEnabled(false);
-		_ui->invertSelectionPushButton->setEnabled(false);
-		_ui->selectPercentageDoubleSpinBox->setEnabled(false);
-		_ui->selectPercentagePushButton->setEnabled(false);
-	});
-	
 	auto updateSelectionButtons = [&](const QModelIndex& index) {
 		const auto noImages			= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
 		const auto noSelectedImages	= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
