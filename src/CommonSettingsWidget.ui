@@ -60,7 +60,10 @@
          </widget>
         </item>
         <item row="5" column="0">
-         <widget class="QLabel" name="sequencesLabel">
+         <widget class="QLabel" name="imageCollectionsLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -254,6 +257,9 @@
         </item>
         <item row="7" column="0">
          <widget class="QLabel" name="loadAsLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -264,6 +270,9 @@
         </item>
         <item row="7" column="1">
          <widget class="QComboBox" name="loadAsComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -281,6 +290,9 @@
         </item>
         <item row="5" column="1">
          <widget class="QTreeView" name="imageCollectionsTreeView">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -333,6 +345,9 @@
         </item>
         <item row="6" column="1">
          <widget class="QLineEdit" name="searchFilterLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="placeholderText">
            <string>Search...</string>
           </property>
