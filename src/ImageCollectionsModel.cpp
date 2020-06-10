@@ -523,6 +523,9 @@ QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
 void ImageCollectionsModel::clear()
 {
 	beginResetModel();
+	{
+		_root->removeAllChildren();
+	}
 	endResetModel();
 }
 

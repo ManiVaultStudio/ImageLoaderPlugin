@@ -18,6 +18,8 @@ public:
 	int row() const;
 	TreeItem *parentItem();
 
+	void removeAllChildren();
+
 protected:
 	QVector<TreeItem*> _children;
 	TreeItem *m_parentItem;

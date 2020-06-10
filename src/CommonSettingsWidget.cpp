@@ -92,8 +92,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(text);
 	});
 
-	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, &imageCollectionsModel](int currentIndex) {
-		const auto selectedRows = _ui->imageCollectionsTreeView->selectionModel()->selectedRows();
+	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&](int currentIndex) {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (!selectedRows.isEmpty()) {
 			imageCollectionsModel.setData(selectedRows.first().siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
@@ -143,7 +143,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			imageCollectionsModel.selectPercentage(filterModel.mapToSource(selectedRows.first()), 0.01f * _ui->selectPercentageDoubleSpinBox->value());
 	});
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this]() {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel]() {
 		_ui->imagesTreeView->setModel(nullptr);
 
 		_ui->selectAllPushButton->setEnabled(false);
@@ -153,27 +153,25 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->selectPercentagePushButton->setEnabled(false);
 	});
 	
-	auto updateSelectionButtons = [&, this](ImageCollectionsModel& imageCollectionsModel, const QModelIndex& index) {
+	auto updateSelectionButtons = [&](const QModelIndex& index) {
 		const auto noImages			= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
 		const auto noSelectedImages	= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
 
-		/*
 		_ui->selectAllPushButton->setEnabled(noSelectedImages != noImages);
 		_ui->selectNonePushButton->setEnabled(noSelectedImages > 0);
 		_ui->invertSelectionPushButton->setEnabled(true);
 		_ui->selectPercentageDoubleSpinBox->setEnabled(noImages > 1);
 		_ui->selectPercentagePushButton->setEnabled(noImages > 1);
-		*/
 	};
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imageCollectionsSelectionModel, &filterModel, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row()) {
 			switch (static_cast<ImageCollection::Column>(topLeft.column()))
 			{
 				case ImageCollection::Column::NoSelectedImages:
-					updateSelectionButtons(imageCollectionsModel, filterModel.mapToSource(selectedRows.first()));
+					updateSelectionButtons(filterModel.mapToSource(selectedRows.first()));
 					break;
 
 				default:
@@ -182,7 +180,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 	
-	QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, this](const QItemSelection& selected, const QItemSelection& deselected) {
+	QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [this, &imageCollectionsModel, &imageCollectionsSelectionModel, &filterModel, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
 		if (!selectedRows.isEmpty()) {
@@ -208,7 +206,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::DimensionName), 200);
 			_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::FilePath), 200);
 			
-			updateSelectionButtons(imageCollectionsModel, index);
+			updateSelectionButtons(index);
 		}
 	});
 

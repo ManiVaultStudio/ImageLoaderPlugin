@@ -7,7 +7,7 @@ TreeItem::TreeItem(TreeItem *parent) :
 
 TreeItem::~TreeItem()
 {
-	qDeleteAll(_children);
+	removeAllChildren();
 }
 
 void TreeItem::appendChild(TreeItem *item)
@@ -38,4 +38,10 @@ int TreeItem::row() const
 TreeItem *TreeItem::parentItem()
 {
 	return m_parentItem;
+}
+
+void TreeItem::removeAllChildren()
+{
+	qDeleteAll(_children);
+	_children.clear();
 }
