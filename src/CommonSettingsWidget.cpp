@@ -34,8 +34,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
-	
+	auto selectedRow = [&]() {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
+		if (selectedRows.isEmpty())
+			return QModelIndex();
+
+		return filterModel.mapToSource(selectedRows.first());
+	};
 
 	// Column visibility
 	for (int column = ult(ImageCollection::Image::Column::Start); column <= ult(ImageCollection::Image::Column::End); column++)
@@ -92,16 +98,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(text);
 	});
 
-	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&](int currentIndex) {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, this, selectedRow](int currentIndex) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty()) {
-			imageCollectionsModel.setData(filterModel.mapToSource(selectedRows.first()).siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
-		}
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
 	});
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [&, this]() {
-
 		if (imageCollectionsModel.rowCount(QModelIndex()) > 0) {
 			_ui->imageCollectionsTreeView->header()->show();
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
@@ -118,7 +122,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 	});
 	
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, &imageCollectionsModel]() {
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [&, this]() {
 		_ui->imageCollectionsTreeView->header()->hide();
 		_ui->imagesTreeView->setModel(nullptr);
 
@@ -129,32 +133,32 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->selectPercentagePushButton->setEnabled(false);
 	});
 
-	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&]() {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.selectAll(filterModel.mapToSource(selectedRows.first()));
+		if (index != QModelIndex())
+			imageCollectionsModel.selectAll(index);
 	});
 
-	QObject::connect(_ui->selectNonePushButton, &QPushButton::clicked, [&]() {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(_ui->selectNonePushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.selectNone(filterModel.mapToSource(selectedRows.first()));
+		if (index != QModelIndex())
+			imageCollectionsModel.selectNone(index);
 	});
 
-	QObject::connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&]() {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.invertSelection(filterModel.mapToSource(selectedRows.first()));
+		if (index != QModelIndex())
+			imageCollectionsModel.invertSelection(index);
 	});
 
-	QObject::connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&]() {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty())
-			imageCollectionsModel.selectPercentage(filterModel.mapToSource(selectedRows.first()), 0.01f * _ui->selectPercentageDoubleSpinBox->value());
+		if (index != QModelIndex())
+			imageCollectionsModel.selectPercentage(index, 0.01f * _ui->selectPercentageDoubleSpinBox->value());
 	});
 
 	auto updateSelectionButtons = [&](const QModelIndex& index) {
@@ -168,14 +172,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->selectPercentagePushButton->setEnabled(noImages > 1);
 	};
 
-	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [this, &imageCollectionsModel, &imageCollectionsSelectionModel, &filterModel, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+		const auto index = selectedRow();
 
-		if (!selectedRows.isEmpty() && topLeft.row() == selectedRows.first().row()) {
+		if (index != QModelIndex() && topLeft.row() == index.row()) {
 			switch (static_cast<ImageCollection::Column>(topLeft.column()))
 			{
 				case ImageCollection::Column::NoSelectedImages:
-					updateSelectionButtons(filterModel.mapToSource(selectedRows.first()));
+					updateSelectionButtons(index);
 					break;
 
 				default:
