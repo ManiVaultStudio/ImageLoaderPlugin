@@ -187,8 +187,6 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 				imageType = "TIFF (multipage)";
 		}
 
-		qDebug() << imageType;
-
 		const auto imageSize = imageReader.size();
 
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);

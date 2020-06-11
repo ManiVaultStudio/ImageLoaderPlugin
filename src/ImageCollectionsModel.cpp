@@ -105,6 +105,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 			case ImageCollection::Image::Column::ShouldLoad:
 				return image->shouldLoad(role);
 
+			case ImageCollection::Image::Column::Index:
+				return image->index(role);
+
 			case ImageCollection::Image::Column::FileName:
 				return image->fileName(role);
 
@@ -361,6 +364,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 					case ImageCollection::Image::Column::ShouldLoad:
 						return "";
 
+					case ImageCollection::Image::Column::Index:
+						return "Index";
+
 					case ImageCollection::Image::Column::FileName:
 						return "Filename";
 
@@ -438,6 +444,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 				switch (static_cast<ImageCollection::Image::Column>(section)) {
 					case ImageCollection::Image::Column::ShouldLoad:
 						return tooltip("Load", "Whether to load the image or not");
+
+					case ImageCollection::Image::Column::Index:
+						return tooltip("Index", "Index of the image");
 
 					case ImageCollection::Image::Column::FileName:
 						return tooltip("Filename", "Name of the image file");

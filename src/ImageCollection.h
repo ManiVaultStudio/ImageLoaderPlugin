@@ -65,6 +65,7 @@ public: // Nested image class
 		/** TODO: Write description */
 		enum class Column {
 			ShouldLoad = ult(ImageCollection::Column::End) + 1,		/** Whether to load the image or not */
+			Index,													/** Image index */
 			FileName,												/** The filename of the dataset */
 			DimensionName,											/** Dimension name (in case of image stack) */
 			FilePath,												/** Number of images in the collection */
@@ -97,6 +98,19 @@ public: // Nested image class
 		 * @param shouldLoad Whether the image should be loaded
 		 */
 		void setShouldLoad(const bool& shouldLoad);
+
+		/**
+		 * Returns the image index
+		 * @param role Data role
+		 * @return Image index
+		 */
+		QVariant index(const int& role) const;
+
+		/**
+		 * Sets the image index
+		 * @param imageIndex Image index
+		 */
+		void setIndex(const std::int32_t& index);
 
 		/**
 		 * Returns the image filename
@@ -157,14 +171,15 @@ public: // Nested image class
 		 * Loads the image bitmap into a high-dimensional data vector
 		 * @param bitmap Handle to FreeImage bitmap
 		 */
-		void loadBitmap(fi::FIBITMAP* bitmap);
+		void loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data);
 
 	private:
-		QString				_filePath;			/** The absolute image file path */
-		QString				_fileName;			/** The file name */
-		QString				_dimensionName;		/** Dimension name (in case of image stack) */
-		bool				_shouldLoad;		/** Whether the image should be loaded */
-		std::int32_t		_pageIndex;			/** Page index (in case of multi-page TIFF) */
+		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
+		QString			_filePath;			/** The absolute image file path */
+		QString			_fileName;			/** The file name */
+		QString			_dimensionName;		/** Dimension name (in case of image stack) */
+		bool			_shouldLoad;		/** Whether the image should be loaded */
+		std::int32_t	_pageIndex;			/** Page index (in case of multi-page TIFF) */
 	};
 
 	/**
@@ -267,9 +282,9 @@ public: // Nested image class
 
 
 	private:
-		bool					_enabled;				/** Whether subsampling is enabled */
-		float					_ratio;		/** Subsampling ratio */
-		ImageResamplingFilter	_filter;				/** Subsampling filter e.g. box, bilinear */
+		bool					_enabled;		/** Whether subsampling is enabled */
+		float					_ratio;			/** Subsampling ratio */
+		ImageResamplingFilter	_filter;		/** Subsampling filter e.g. box, bilinear */
 	};
 
 public: // Construction
