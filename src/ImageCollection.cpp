@@ -1,4 +1,5 @@
 #include "ImageCollection.h"
+#include "ImageLoaderPlugin.h"
 
 #include <QDebug>
 #include <QDir>
@@ -161,6 +162,11 @@ QVariant ImageCollection::Image::pageIndex(const int& role) const
 void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 {
 	_pageIndex = pageIndex;
+}
+
+void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data)
+{
+	qDebug() << QString("Loading image: %1").arg(_fileName);
 }
 
 ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
@@ -596,4 +602,17 @@ void ImageCollection::computeDatasetName()
 	}
 	
 	setDatasetName(QString("%1").arg(QDir(rootDir).dirName()));
+}
+
+void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
+{
+	qDebug() << QString("Loading %1: %2").arg(ImageData::typeName(_type), _datasetName);
+
+	std::vector<float> data;
+
+	for (auto& childItem : _children) {
+		auto image = static_cast<ImageCollection::Image*>(childItem);
+
+		image->load(imageLoaderPlugin, data);
+	}
 }

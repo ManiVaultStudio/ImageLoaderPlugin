@@ -539,69 +539,83 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 	endInsertRows();
 }
 
+void ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
+{
+	if (index.parent() != QModelIndex())
+		return;
+
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+
+	imageCollection->load(imageLoaderPlugin);
+}
+
 void ImageCollectionsModel::selectAll(const QModelIndex& index)
 {
-	if (index.parent() == QModelIndex()) {
-		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+	if (index.parent() != QModelIndex())
+		return;
 
-		const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		for (auto& childItem : imageCollection->_children) {
-			const auto row				= imageCollection->_children.indexOf(childItem);
-			const auto shouldLoadIndex	= this->index(row, shouldLoadColumn, index);
+	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
-			setData(shouldLoadIndex, true);
-		}
+	for (auto& childItem : imageCollection->_children) {
+		const auto row = imageCollection->_children.indexOf(childItem);
+		const auto shouldLoadIndex = this->index(row, shouldLoadColumn, index);
+
+		setData(shouldLoadIndex, true);
 	}
 }
 
 void ImageCollectionsModel::selectNone(const QModelIndex& index)
 {
-	if (index.parent() == QModelIndex()) {
-		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+	if (index.parent() != QModelIndex())
+		return;
 
-		const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		for (auto& childItem : imageCollection->_children) {
-			const auto row				= imageCollection->_children.indexOf(childItem);
-			const auto shouldLoadIndex	= this->index(row, shouldLoadColumn, index);
+	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
-			setData(shouldLoadIndex, false);
-		}
+	for (auto& childItem : imageCollection->_children) {
+		const auto row = imageCollection->_children.indexOf(childItem);
+		const auto shouldLoadIndex = this->index(row, shouldLoadColumn, index);
+
+		setData(shouldLoadIndex, false);
 	}
 }
 
 void ImageCollectionsModel::invertSelection(const QModelIndex& index)
 {
-	if (index.parent() == QModelIndex()) {
-		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+	if (index.parent() != QModelIndex())
+		return;
 
-		const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		for (auto& childItem : imageCollection->_children) {
-			const auto row				= imageCollection->_children.indexOf(childItem);
-			const auto shouldLoadIndex	= this->index(row, shouldLoadColumn, index);
-			const auto shouldLoad		= data(shouldLoadIndex, Qt::EditRole).toBool();
+	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
-			setData(shouldLoadIndex, !shouldLoad);
-		}
+	for (auto& childItem : imageCollection->_children) {
+		const auto row = imageCollection->_children.indexOf(childItem);
+		const auto shouldLoadIndex = this->index(row, shouldLoadColumn, index);
+		const auto shouldLoad = data(shouldLoadIndex, Qt::EditRole).toBool();
+
+		setData(shouldLoadIndex, !shouldLoad);
 	}
 }
 
 void ImageCollectionsModel::selectPercentage(const QModelIndex& index, const float& selectionProbability)
 {
-	if (index.parent() == QModelIndex()) {
-		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+	if (index.parent() != QModelIndex())
+		return;
 
-		const auto probability		= std::clamp(selectionProbability, 0.0f, 1.0f);
-		const auto shouldLoadColumn	= ult(ImageCollection::Image::Column::ShouldLoad);
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-		for (auto& childItem : imageCollection->_children) {
-			const auto row				= imageCollection->_children.indexOf(childItem);
-			const auto shouldLoadIndex	= this->index(row, shouldLoadColumn, index);
-			const auto r				= static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+	const auto probability = std::clamp(selectionProbability, 0.0f, 1.0f);
+	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
-			setData(shouldLoadIndex, r < selectionProbability);
-		}
+	for (auto& childItem : imageCollection->_children) {
+		const auto row = imageCollection->_children.indexOf(childItem);
+		const auto shouldLoadIndex = this->index(row, shouldLoadColumn, index);
+		const auto r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+
+		setData(shouldLoadIndex, r < selectionProbability);
 	}
 }

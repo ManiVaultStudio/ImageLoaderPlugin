@@ -69,4 +69,11 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateLoadButton](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
 		updateLoadButton();
 	});
+
+	QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
+	});
 }

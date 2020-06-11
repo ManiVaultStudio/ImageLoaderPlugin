@@ -8,6 +8,8 @@
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
 
+class ImageLoaderPlugin;
+
 /**
  * Image collections model class
  *
@@ -161,6 +163,13 @@ public: // Miscellaneous
 	/** Get root tree item */
 	TreeItem* rootItem() { return _root; };
 	
+	/**
+	 * Loads an image collection
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 * @param index Image collection model index
+	 */
+	void loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index);
+
 public: // Image selection
 
 	/**

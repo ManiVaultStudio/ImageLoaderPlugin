@@ -10,6 +10,8 @@
 #include <QSize>
 #include <QVector>
 
+class ImageLoaderPlugin;
+
 /**
  * Image collection class
  *
@@ -136,6 +138,15 @@ public: // Nested image class
 		 * @param pageIndex Page index
 		 */
 		void setPageIndex(const std::int32_t& pageIndex);
+
+	public:
+
+		/**
+		 * Loads the image into a high-dimensional data vector
+		 * @param imageLoaderPlugin Pointer to image loader plugin
+		 * @param data High-dimensional data vector
+		 */
+		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data);
 
 	private:
 		QString				_filePath;			/** The absolute image file path */
@@ -356,6 +367,12 @@ public:
 
 	/** Computes the dataset name based on the loaded images and their respective file paths */
 	void computeDatasetName();
+
+	/**
+	 * Loads the image collection into a high-dimensional data vector
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 */
+	void load(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
 	QString					_directory;			/** Root directory of the images */
