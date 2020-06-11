@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "TreeItem.h"
 
+#include "FreeImage.h"
+
 #include "ImageData/Images.h"
 
 #include <QObject>
@@ -150,6 +152,12 @@ public: // Nested image class
 		 * @param data High-dimensional data vector
 		 */
 		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data);
+
+		/**
+		 * Loads the image bitmap into a high-dimensional data vector
+		 * @param bitmap Handle to FreeImage bitmap
+		 */
+		void loadBitmap(fi::FIBITMAP* bitmap);
 
 	private:
 		QString				_filePath;			/** The absolute image file path */

@@ -171,10 +171,23 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 	{
 		const auto fileName			= fileList.at(i);
 		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
-		const auto imageType		= QFileInfo(fileName).suffix();
 		const auto rootDir			= QFileInfo(imageFilePath).absoluteDir().path();
 
 		QImageReader imageReader(imageFilePath);
+
+		auto imageType = QFileInfo(fileName).suffix().toUpper();
+		auto pageCount = 0;
+
+		if (imageType == "TIFF") {
+			imageReader.jumpToNextImage();
+
+			pageCount = imageReader.imageCount();
+
+			if (pageCount > 1)
+				imageType = "TIFF (multipage)";
+		}
+
+		qDebug() << imageType;
 
 		const auto imageSize = imageReader.size();
 
@@ -183,24 +196,13 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		if (it == imageCollections.end()) {
 			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageSize);
 
-			auto loadOne = true;
-
-			if (imageType == "tiff") {
-				imageReader.jumpToNextImage();
-
-				const auto pageCount = imageReader.imageCount();
-
-				if (pageCount > 1) {
-					loadOne = false;
-
-					for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-						imageCollection->addImage(imageFilePath, pageIndex);
-						//imageCollection.images().back().setDimensionName(QString("Dim").arg(pageIndex));
-					}
+			if (imageType == "TIFF (multipage)") {
+				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+					imageCollection->addImage(imageFilePath, pageIndex);
+					//imageCollection.images().back().setDimensionName(QString("Dim").arg(pageIndex));
 				}
 			}
-			
-			if (loadOne) {
+			else {
 				imageCollection->addImage(imageFilePath);
 			}
 

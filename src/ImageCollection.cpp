@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
+#include <QMessageBox>
 
 #include <algorithm>
 
@@ -173,6 +174,216 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 		return;
 
 	qDebug() << QString("Loading image: %1").arg(_fileName);
+
+	if (_pageIndex >= 0)
+	{
+		auto* multiBitmap = FreeImage::freeImageOpenMultiBitmap(_filePath);
+
+		if (multiBitmap != nullptr) {
+			const auto noPages = FreeImage_GetPageCount(multiBitmap);
+
+			for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
+				auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
+
+				if (pageBitmap != nullptr) {
+					loadBitmap(nullptr);
+
+					FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
+				}
+			}
+
+			FreeImage_CloseMultiBitmap(multiBitmap);
+		}
+	}
+	else {
+		auto* bitmap = FreeImage::freeImageLoad(_filePath);
+
+		if (bitmap != nullptr) {
+			loadBitmap(nullptr);
+			//loadBitmap(bitmap, payload.get(), imageFilePath, QFileInfo(imageFilePath).fileName());
+			fi::FreeImage_Unload(bitmap);
+		}
+	}
+}
+
+void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap)
+{
+	if (bitmap == nullptr)
+		throw std::runtime_error("FreeImage bitmap handle is NULL");
+
+	const auto imageCollection	= static_cast<ImageCollection*>(parentItem());
+	const auto width			= fi::FreeImage_GetWidth(bitmap);
+	const auto height			= fi::FreeImage_GetHeight(bitmap);
+	const auto targetSize		= imageCollection->targetSize(Qt::EditRole).toSize();
+	const auto rescale			= QSize(width, height) != targetSize;
+	const auto filter			= static_cast<fi::FREE_IMAGE_FILTER>(imageCollection->subsampling().filter(Qt::EditRole).toInt());
+
+	auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, targetSize.width(), targetSize.height(), filter) : bitmap;
+
+	if (scaledBitmap == nullptr)
+		throw std::runtime_error("Unable to rescale bitmap");
+
+	const auto imageType = fi::FreeImage_GetImageType(scaledBitmap);
+
+	auto noComponents = 1;
+
+	switch (imageType)
+	{
+		case fi::FIT_BITMAP:
+			noComponents = 3;
+			break;
+
+		case fi::FIT_UINT16:
+		case fi::FIT_INT16:
+		case fi::FIT_UINT32:
+		case fi::FIT_INT32:
+		case fi::FIT_FLOAT:
+		case fi::FIT_DOUBLE:
+		case fi::FIT_COMPLEX:
+			noComponents = 1;
+			break;
+
+		case fi::FIT_RGB16:
+		case fi::FIT_RGBF:
+			noComponents = 3;
+			break;
+
+		case fi::FIT_RGBA16:
+		case fi::FIT_RGBAF:
+			noComponents = 4;
+			break;
+
+		default:
+			break;
+	}
+
+	fi::FreeImage_Unload(scaledBitmap);
+
+	/*
+		if (_colorSettings.convertToGrayscale())
+			noComponents = 1;
+
+		auto pixel = std::vector<std::uint16_t>();
+
+		auto& image = payload->add(noComponents, imageFilePath);
+
+		image.setDimensionName(dimensionName);
+
+		pixel.resize(image.noComponents());
+
+		if (scaledBitmap) {
+			const auto bpp = fi::FreeImage_GetBPP(scaledBitmap);
+			const auto width = imageSize.width();
+			const auto height = imageSize.height();
+
+			switch (imageType) {
+				case fi::FIT_BITMAP:
+				{
+					for (std::int32_t y = 0; y < height; y++)
+					{
+						fi::BYTE* scanLine = (fi::BYTE*)fi::FreeImage_GetScanLine(scaledBitmap, y);
+
+						for (std::int32_t x = 0; x < width; x++)
+						{
+							switch (bpp)
+							{
+								case 8:
+								{
+									switch (image.noComponents())
+									{
+										case 1:
+										{
+											pixel[0] = scanLine[x];
+											break;
+										}
+
+										case 3:
+										{
+											pixel[0] = scanLine[x];
+											pixel[1] = scanLine[x];
+											pixel[2] = scanLine[x];
+											break;
+										}
+
+										default:
+											break;
+									}
+
+									break;
+								}
+
+								case 24:
+								{
+									switch (image.noComponents())
+									{
+										case 1:
+										{
+											pixel[0] = scanLine[x * 3 + FI_RGBA_RED];
+											break;
+										}
+
+										case 3:
+										{
+											pixel[0] = scanLine[x * image.noComponents() + FI_RGBA_RED];
+											pixel[1] = scanLine[x * image.noComponents() + FI_RGBA_GREEN];
+											pixel[2] = scanLine[x * image.noComponents() + FI_RGBA_BLUE];
+											break;
+										}
+
+										default:
+											break;
+									}
+
+									break;
+								}
+
+								default:
+									break;
+							}
+
+							image.setPixel(x, y, pixel.data());
+						}
+					}
+
+					break;
+				}
+
+				case fi::FIT_UINT16:
+				{
+					for (std::int32_t y = 0; y < height; y++) {
+						std::uint16_t* scanLine = (std::uint16_t*)fi::FreeImage_GetScanLine(scaledBitmap, y);
+
+						for (std::int32_t x = 0; x < width; x++) {
+							pixel[0] = scanLine[x];
+							image.setPixel(x, y, pixel.data());
+						}
+					}
+
+					break;
+				}
+
+				case fi::FIT_UNKNOWN:
+				case fi::FIT_INT16:
+				case fi::FIT_UINT32:
+				case fi::FIT_INT32:
+				case fi::FIT_FLOAT:
+				case fi::FIT_DOUBLE:
+				case fi::FIT_COMPLEX:
+				case fi::FIT_RGB16:
+				case fi::FIT_RGBA16:
+				case fi::FIT_RGBF:
+				case fi::FIT_RGBAF:
+				{
+					break;
+				}
+			}
+
+			if (rescale)
+				fi::FreeImage_Unload(scaledBitmap);
+		}
+	}
+	*/
+
 }
 
 ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
@@ -744,38 +955,49 @@ void ImageCollection::computeDatasetName()
 
 void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
-	const auto typeName = ImageData::typeName(_type);
+	try
+	{
+		const auto typeName = ImageData::typeName(_type);
 
-	qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
+		qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
-	std::vector<float> data;
+		std::vector<float> data;
 
-	const auto noPoints		= this->noPoints(Qt::EditRole).toInt();
-	const auto noDimensions	= this->noDimensions(Qt::EditRole).toInt();
+		const auto noPoints = this->noPoints(Qt::EditRole).toInt();
+		const auto noDimensions = this->noDimensions(Qt::EditRole).toInt();
 
-	data.resize(noPoints * noDimensions);
+		data.resize(noPoints * noDimensions);
 
-	auto imageFilePaths = QStringList();
-	auto dimensionNames = QStringList();
+		auto imageFilePaths = QStringList();
+		auto dimensionNames = QStringList();
 
-	for (auto& childItem : _children) {
-		auto image = static_cast<ImageCollection::Image*>(childItem);
+		for (auto& childItem : _children) {
+			auto image = static_cast<ImageCollection::Image*>(childItem);
 
-		image->load(imageLoaderPlugin, data);
+			image->load(imageLoaderPlugin, data);
 
-		imageFilePaths << image->filePath(Qt::EditRole).toString();
-		dimensionNames << image->dimensionName(Qt::EditRole).toString();
+			imageFilePaths << image->filePath(Qt::EditRole).toString();
+			dimensionNames << image->dimensionName(Qt::EditRole).toString();
+		}
+
+		const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
+
+		auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
+
+		points.setData(data.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
+
+		points.setProperty("Type", typeName);
+		points.setProperty("NoImages", noSelectedImages(Qt::EditRole).toInt());
+		points.setProperty("ImageSize", targetSize(Qt::EditRole).toSize());
+		points.setProperty("ImageFilePaths", imageFilePaths);
+		points.setProperty("DimensionNames", dimensionNames);
 	}
-
-	const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
-
-	auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
-
-	points.setData(data.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
-
-	points.setProperty("Type", typeName);
-	points.setProperty("NoImages", noSelectedImages(Qt::EditRole).toInt());
-	points.setProperty("ImageSize", targetSize(Qt::EditRole).toSize());
-	points.setProperty("ImageFilePaths", imageFilePaths);
-	points.setProperty("DimensionNames", dimensionNames);
+	catch (const std::runtime_error& e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+	}
+	catch (std::exception e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+	}
 }
