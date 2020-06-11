@@ -214,22 +214,24 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		const auto index = selectedImageCollection();
 
 		if (index != QModelIndex() && topLeft.row() == index.row()) {
-			switch (static_cast<ImageCollection::Column>(topLeft.column()))
-			{
-				case ImageCollection::Column::Type:
+			for (int column = topLeft.column(); column <= bottomRight.column(); column++) {
+				switch (static_cast<ImageCollection::Column>(column))
 				{
-					updateImagesHeader();
-					break;
-				}
+					case ImageCollection::Column::Type:
+					{
+						updateImagesHeader();
+						break;
+					}
 
-				case ImageCollection::Column::NoSelectedImages:
-				{
-					updateSelectionButtons(index);
-					break;
-				}
+					case ImageCollection::Column::NoSelectedImages:
+					{
+						updateSelectionButtons(index);
+						break;
+					}
 
-				default:
-					break;
+					default:
+						break;
+				}
 			}
 		}
 	});

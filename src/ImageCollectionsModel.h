@@ -176,26 +176,26 @@ public: // Image selection
 	 * Selects all images in the image collection
 	 * @param index Image collection model index
 	 */
-	void selectAll(const QModelIndex& index);
+	void selectAll(const QModelIndex& parent);
 
 	/**
 	 * Deselects all images in the image collection
 	 * @param index Image collection model index
 	 */
-	void selectNone(const QModelIndex& index);
+	void selectNone(const QModelIndex& parent);
 
 	/**
 	 * Inverts the image selection in the image collection
 	 * @param index Image collection model index
 	 */
-	void invertSelection(const QModelIndex& index);
+	void invertSelection(const QModelIndex& parent);
 
 	/**
 	 * Selects a percentage of images in the image collection
 	 * @param index Image collection model index
 	 * @param selectionProbability Probability that an image will be selected [0 - 1]
 	 */
-	void selectPercentage(const QModelIndex& index, const float& selectionProbability);
+	void selectPercentage(const QModelIndex& parent, const float& selectionProbability);
 
 private:
 	//std::vector<ImageCollection>	_imageCollections;		/** Images collections */
