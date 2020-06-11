@@ -222,6 +222,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						image->setShouldLoad(value.toBool());
 
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						break;
 					}
 
@@ -252,6 +254,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						image->setShouldLoad(value.toBool());
 
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						break;
 					}
 

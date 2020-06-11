@@ -46,6 +46,8 @@ public: // Models
 private:
 	ImageCollectionsModel			_imageCollectionsModel;				/** Image collections model */
 	ImageCollectionsModel::Filter	_imageCollectionsFilterModel;		/** Image collections filter model */
+
+	friend class ImageCollection;
 };
 
 /**

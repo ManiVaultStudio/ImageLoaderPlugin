@@ -2,6 +2,8 @@
 #include "ImageLoaderPlugin.h"
 #include "Common.h"
 
+#include "PointData.h"
+
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
@@ -167,6 +169,9 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 
 void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data)
 {
+	if (!_shouldLoad)
+		return;
+
 	qDebug() << QString("Loading image: %1").arg(_fileName);
 }
 
@@ -572,7 +577,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 		
 		case ImageData::Sequence:
 		{
-			noPoints = childCount();
+			noPoints = noSelectedImages(Qt::EditRole).toInt();
 			break;
 		}
 
@@ -629,7 +634,7 @@ QVariant ImageCollection::noDimensions(const int& role) const
 
 		case ImageData::Stack:
 		{
-			noDimensions = childCount() * (_toGrayscale ? 1 : 3);
+			noDimensions = noSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
 			break;
 		}
 
@@ -713,9 +718,51 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 	std::vector<float> data;
 
+	const auto noDataPoints = noPoints(Qt::EditRole).toInt() * noDimensions(Qt::EditRole).toInt();
+
+	data.resize(noDataPoints);
+
 	for (auto& childItem : _children) {
 		auto image = static_cast<ImageCollection::Image*>(childItem);
 
 		image->load(imageLoaderPlugin, data);
 	}
+
+	const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
+
+	auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
+
+	/*
+	_imageData->setType(ImageData::Type::Sequence);
+	_imageData->setNoImages(static_cast<std::uint32_t>(images.size()));
+	_imageData->setImageSize(size);
+	_imageData->setNoComponents(images.front().noComponents());
+
+	auto imageFilePaths = std::vector<QString>();
+	auto dimensionNames = std::vector<QString>();
+
+	imageFilePaths.reserve(images.size());
+	dimensionNames.reserve(images.size());
+
+	const auto noDimensions = _imageData->imageSize().width() * _imageData->imageSize().height() * _imageData->noComponents();
+	const auto noPoints = images.size();
+
+	std::vector<float> pointsData;
+
+	for (const Image& image : images)
+	{
+		std::vector<float> imagePixels;
+
+		image.toFloatVector(imagePixels);
+		pointsData.insert(pointsData.end(), imagePixels.begin(), imagePixels.end());
+
+		imageFilePaths.push_back(image.imageFilePath());
+		dimensionNames.push_back(image.dimensionName());
+	}
+
+	_imageData->setImageFilePaths(imageFilePaths);
+	_imageData->setDimensionNames(dimensionNames);
+
+	_points->setData(pointsData.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
+	*/
 }
