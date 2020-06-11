@@ -271,7 +271,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 	_targetSize(sourceSize),
 	_datasetName(),
 	_toGrayscale(true),
-	_type(ImageData::Type::Sequence),
+	_type(ImageData::Type::Stack),
 	_subsampling()
 {
 }
@@ -594,7 +594,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 			break;
 	}
 
-	const auto noPointsString = formatIntegerCount(noPoints);
+	const auto noPointsString = integerCountHumanReadable(noPoints);
 	
 	switch (role)
 	{
@@ -645,7 +645,7 @@ QVariant ImageCollection::noDimensions(const int& role) const
 			break;
 	}
 
-	const auto noDimensionsString = formatIntegerCount(noDimensions);
+	const auto noDimensionsString = integerCountHumanReadable(noDimensions);
 
 	switch (role)
 	{
@@ -657,6 +657,36 @@ QVariant ImageCollection::noDimensions(const int& role) const
 
 		case Qt::ToolTipRole:
 			return QString("Number of high-dimensional data dimensions: %1").arg(noDimensionsString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::memory(const int& role) const
+{
+	const auto noPoints		= this->noPoints(Qt::EditRole).toInt();
+	const auto noDimensions	= this->noDimensions(Qt::EditRole).toInt();
+	const auto noElements	= noPoints * noDimensions;
+	const auto noBytes		= noElements * sizeof(float);
+
+	const auto memoryString = noBytesHumanReadable(noBytes);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return memoryString;
+
+		case Qt::EditRole:
+			return noBytes;
+
+		case Qt::ToolTipRole:
+			return QString("Estimated memory consumption of the high-dimensional dataset: %1").arg(memoryString);
 
 		case Qt::TextAlignmentRole:
 			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
@@ -714,55 +744,38 @@ void ImageCollection::computeDatasetName()
 
 void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
-	qDebug() << QString("Loading %1: %2").arg(ImageData::typeName(_type), _datasetName);
+	const auto typeName = ImageData::typeName(_type);
+
+	qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
 	std::vector<float> data;
 
-	const auto noDataPoints = noPoints(Qt::EditRole).toInt() * noDimensions(Qt::EditRole).toInt();
+	const auto noPoints		= this->noPoints(Qt::EditRole).toInt();
+	const auto noDimensions	= this->noDimensions(Qt::EditRole).toInt();
 
-	data.resize(noDataPoints);
+	data.resize(noPoints * noDimensions);
+
+	auto imageFilePaths = QStringList();
+	auto dimensionNames = QStringList();
 
 	for (auto& childItem : _children) {
 		auto image = static_cast<ImageCollection::Image*>(childItem);
 
 		image->load(imageLoaderPlugin, data);
+
+		imageFilePaths << image->filePath(Qt::EditRole).toString();
+		dimensionNames << image->dimensionName(Qt::EditRole).toString();
 	}
 
 	const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
 
 	auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
 
-	/*
-	_imageData->setType(ImageData::Type::Sequence);
-	_imageData->setNoImages(static_cast<std::uint32_t>(images.size()));
-	_imageData->setImageSize(size);
-	_imageData->setNoComponents(images.front().noComponents());
+	points.setData(data.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
 
-	auto imageFilePaths = std::vector<QString>();
-	auto dimensionNames = std::vector<QString>();
-
-	imageFilePaths.reserve(images.size());
-	dimensionNames.reserve(images.size());
-
-	const auto noDimensions = _imageData->imageSize().width() * _imageData->imageSize().height() * _imageData->noComponents();
-	const auto noPoints = images.size();
-
-	std::vector<float> pointsData;
-
-	for (const Image& image : images)
-	{
-		std::vector<float> imagePixels;
-
-		image.toFloatVector(imagePixels);
-		pointsData.insert(pointsData.end(), imagePixels.begin(), imagePixels.end());
-
-		imageFilePaths.push_back(image.imageFilePath());
-		dimensionNames.push_back(image.dimensionName());
-	}
-
-	_imageData->setImageFilePaths(imageFilePaths);
-	_imageData->setDimensionNames(dimensionNames);
-
-	_points->setData(pointsData.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
-	*/
+	points.setProperty("Type", typeName);
+	points.setProperty("NoImages", noSelectedImages(Qt::EditRole).toInt());
+	points.setProperty("ImageSize", targetSize(Qt::EditRole).toSize());
+	points.setProperty("ImageFilePaths", imageFilePaths);
+	points.setProperty("DimensionNames", dimensionNames);
 }

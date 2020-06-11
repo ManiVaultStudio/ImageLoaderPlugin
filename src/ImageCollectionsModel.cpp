@@ -8,7 +8,6 @@
 
 ImageCollectionsModel::ImageCollectionsModel() :
 	QAbstractItemModel(),
-	//_imageCollections(),
 	_root(new TreeItem(nullptr)),
 	_selectionModel(this)
 {
@@ -80,6 +79,12 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 			case ImageCollection::Column::NoDimensions:
 				return imageCollection->noDimensions(role);
 
+			case ImageCollection::Column::Memory:
+				return imageCollection->memory(role);
+
+			case ImageCollection::Column::Directory:
+				return imageCollection->directory(role);
+
 			case ImageCollection::Column::Type:
 				return imageCollection->type(role);
 
@@ -137,6 +142,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetHeight));
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::Memory));
 		};
 
 		switch (role)
@@ -224,6 +230,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 						break;
 					}
 
@@ -256,6 +263,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
+						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 						break;
 					}
 
@@ -318,6 +326,15 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 					case ImageCollection::Column::TargetHeight:
 						return "Height";
 
+					case ImageCollection::Column::NoPoints:
+						return "#Points";
+
+					case ImageCollection::Column::NoDimensions:
+						return "#Dimensions";
+
+					case ImageCollection::Column::Memory:
+						return "Memory";
+
 					case ImageCollection::Column::Directory:
 						return "Directory";
 
@@ -332,12 +349,6 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					case ImageCollection::Column::SubsamplingFilter:
 						return "Subsampling filter";
-
-					case ImageCollection::Column::NoPoints:
-						return "#Points";
-
-					case ImageCollection::Column::NoDimensions:
-						return "#Dimensions";
 
 					case ImageCollection::Column::ToGrayscale:
 						return "Grayscale";
@@ -392,6 +403,15 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					case ImageCollection::Column::TargetHeight:
 						return tooltip("Height", "The height of the images when loaded as high-dimensional data");
+
+					case ImageCollection::Column::NoPoints:
+						return tooltip("Number of points", "The number of points in the high-dimensional data");
+
+					case ImageCollection::Column::NoDimensions:
+						return tooltip("Number of dimensions", "The number of dimensions in the high-dimensional data");
+
+					case ImageCollection::Column::Memory:
+						return tooltip("Memory", "Memory consumption of the high-dimensional data");
 
 					case ImageCollection::Column::Directory:
 						return tooltip("Directory", "The top-level directory where the images were found");

@@ -118,6 +118,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetSize));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetWidth));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetHeight));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoPoints));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoDimensions));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Memory));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));

@@ -40,6 +40,7 @@ public: // Enumerations
 		ToGrayscale,				/** Whether to convert the images to grayscale */
 		NoPoints,					/** Number of high-dimensional data points */
 		NoDimensions,				/** Number of high-dimensional data dimensions */
+		Memory,						/** Estimated memory consumption by the high-dimensional data */
 		Directory,					/** Directory */
 
 		Start = DatasetName,		/** Column start */
@@ -366,6 +367,12 @@ public: // Getters/setters
 	 * @param role Data role
 	 */
 	QVariant noDimensions(const int& role) const;
+
+	/**
+	 * Returns the estimated memory consumption by the image collection
+	 * @param role Data role
+	 */
+	QVariant memory(const int& role) const;
 
 	/** Get subsampling parameters */
 	SubSampling& subsampling();
