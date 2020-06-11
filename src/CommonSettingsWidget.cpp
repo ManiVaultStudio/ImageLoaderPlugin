@@ -240,6 +240,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imagesTreeView->setRootIndex(index);
 			_ui->imagesTreeView->header()->setHidden(false);
 			
+			_ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
+			
 			updateImagesHeader();
 			updateSelectionButtons(index);
 		}

@@ -74,8 +74,11 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 			case ImageCollection::Column::TargetHeight:
 				return imageCollection->targetheight(role);
 
-			case ImageCollection::Column::Directory:
-				return imageCollection->directory(role);
+			case ImageCollection::Column::NoPoints:
+				return imageCollection->noPoints(role);
+
+			case ImageCollection::Column::NoDimensions:
+				return imageCollection->noDimensions(role);
 
 			case ImageCollection::Column::Type:
 				return imageCollection->type(role);
@@ -132,6 +135,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetSize));
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetWidth));
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetHeight));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
+			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 		};
 
 		switch (role)
@@ -148,6 +153,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					case ImageCollection::Column::Type:
 					{
 						imageCollection->setType(static_cast<ImageData::Type>(value.toInt()));
+
+						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
+						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						break;
 					}
 
@@ -184,6 +192,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					case ImageCollection::Column::ToGrayscale:
 					{
 						imageCollection->setToGrayscale(value.toBool());
+						updateTargetSize();
 						break;
 					}
 
@@ -319,6 +328,12 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					case ImageCollection::Column::SubsamplingFilter:
 						return "Subsampling filter";
+
+					case ImageCollection::Column::NoPoints:
+						return "#Points";
+
+					case ImageCollection::Column::NoDimensions:
+						return "#Dimensions";
 
 					case ImageCollection::Column::ToGrayscale:
 						return "Grayscale";

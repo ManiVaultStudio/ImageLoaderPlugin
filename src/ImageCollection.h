@@ -38,6 +38,8 @@ public: // Enumerations
 		SubsamplingRatio,			/** Subsampling ratio */
 		SubsamplingFilter,			/** Subsampling filter */
 		ToGrayscale,				/** Whether to convert the images to grayscale */
+		NoPoints,					/** Number of high-dimensional data points */
+		NoDimensions,				/** Number of high-dimensional data dimensions */
 		Directory,					/** Directory */
 
 		Start = DatasetName,		/** Column start */
@@ -352,6 +354,18 @@ public: // Getters/setters
 
 	/** Returns the number of selected images */
 	QVariant noSelectedImages(const int& role) const;
+
+	/**
+	 * Returns the number of high-dimensional data points
+	 * @param role Data role
+	 */
+	QVariant noPoints(const int& role) const;
+
+	/**
+	 * Returns the number of high-dimensional data dimensions
+	 * @param role Data role
+	 */
+	QVariant noDimensions(const int& role) const;
 
 	/** Get subsampling parameters */
 	SubSampling& subsampling();

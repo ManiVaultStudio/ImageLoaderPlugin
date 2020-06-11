@@ -1,5 +1,6 @@
 #include "ImageCollection.h"
 #include "ImageLoaderPlugin.h"
+#include "Common.h"
 
 #include <QDebug>
 #include <QDir>
@@ -552,6 +553,108 @@ QVariant ImageCollection::noSelectedImages(const int& role) const
 
 		case Qt::TextAlignmentRole:
 			return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::noPoints(const int& role) const
+{
+	auto noPoints = 0;
+
+	switch (_type)
+	{
+		case ImageData::Undefined:
+			break;
+		
+		case ImageData::Sequence:
+		{
+			noPoints = childCount();
+			break;
+		}
+
+		case ImageData::Stack:
+		{
+			noPoints = _targetSize.width() * _targetSize.height();
+			break;
+		}
+
+		case ImageData::MultiPartSequence:
+			break;
+		
+		default:
+			break;
+	}
+
+	const auto noPointsString = formatIntegerCount(noPoints);
+	
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return noPointsString;
+
+		case Qt::EditRole:
+			return noPoints;
+
+		case Qt::ToolTipRole:
+			return QString("Number of high-dimensional data points: %1").arg(noPointsString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+QVariant ImageCollection::noDimensions(const int& role) const
+{
+	auto noDimensions = 0;
+
+	switch (_type)
+	{
+		case ImageData::Undefined:
+			break;
+
+		case ImageData::Sequence:
+		{
+			noDimensions = _targetSize.width() * _targetSize.height(); 
+			break;
+		}
+
+		case ImageData::Stack:
+		{
+			noDimensions = childCount() * (_toGrayscale ? 1 : 3);
+			break;
+		}
+
+		case ImageData::MultiPartSequence:
+			break;
+
+		default:
+			break;
+	}
+
+	const auto noDimensionsString = formatIntegerCount(noDimensions);
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return noDimensionsString;
+
+		case Qt::EditRole:
+			return noDimensions;
+
+		case Qt::ToolTipRole:
+			return QString("Number of high-dimensional data dimensions: %1").arg(noDimensionsString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
 
 		default:
 			break;
