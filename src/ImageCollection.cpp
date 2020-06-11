@@ -57,33 +57,6 @@ void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
 	_shouldLoad = shouldLoad;
 }
 
-QVariant ImageCollection::Image::index(const int& role) const
-{
-	const auto indexString = QString::number(_index);
-
-	switch (role)
-	{
-		case Qt::DisplayRole:
-			return indexString;
-
-		case Qt::EditRole:
-			return _index;
-
-		case Qt::ToolTipRole:
-			return QString("Index: %1").arg(indexString);
-
-		default:
-			break;
-	}
-
-	return QVariant();
-}
-
-void ImageCollection::Image::setIndex(const std::int32_t& index)
-{
-	_index = index;
-}
-
 QVariant ImageCollection::Image::fileName(const int& role) const
 {
 	switch (role)
@@ -196,11 +169,8 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 	_pageIndex = pageIndex;
 }
 
-void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data)
+void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index)
 {
-	if (!_shouldLoad)
-		return;
-
 	qDebug() << QString("Loading image: %1").arg(_fileName);
 
 	if (_pageIndex >= 0)
@@ -214,7 +184,7 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 				auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
 
 				if (pageBitmap != nullptr) {
-					loadBitmap(pageBitmap, data);
+					loadBitmap(pageBitmap, data, index);
 					FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
 				}
 			}
@@ -228,31 +198,28 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 		if (bitmap == nullptr)
 			throw std::runtime_error("Unable to load image");
 
-		loadBitmap(bitmap, data);
+		loadBitmap(bitmap, data, index);
 
 		fi::FreeImage_Unload(bitmap);
 	}
 }
 
-void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data)
+void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& index)
 {
 	if (bitmap == nullptr)
 		throw std::runtime_error("FreeImage bitmap handle is NULL");
 
-	const auto imageCollection			= static_cast<ImageCollection*>(parentItem());
-	const auto imageCollectionType		= static_cast<ImageData::Type>(imageCollection->type(Qt::EditRole).toInt());
-	const auto sourceWidth				= fi::FreeImage_GetWidth(bitmap);
-	const auto sourceHeight				= fi::FreeImage_GetHeight(bitmap);
-	const auto targetSize				= imageCollection->targetSize(Qt::EditRole).toSize();
-	const auto targetWidth				= targetSize.width();
-	const auto targetHeight				= targetSize.height();
-	const auto noPixels					= sourceWidth * sourceHeight;
-	const auto noDimensions				= imageCollection->noDimensions(Qt::EditRole).toInt();
-	const auto imageIndex				= index(Qt::EditRole).toInt();
-	const auto rescale					= QSize(sourceWidth, sourceHeight) != targetSize;
-	const auto filter					= static_cast<fi::FREE_IMAGE_FILTER>(imageCollection->subsampling().filter(Qt::EditRole).toInt());
-
-	
+	const auto imageCollection		= static_cast<ImageCollection*>(parentItem());
+	const auto imageCollectionType	= static_cast<ImageData::Type>(imageCollection->type(Qt::EditRole).toInt());
+	const auto sourceWidth			= fi::FreeImage_GetWidth(bitmap);
+	const auto sourceHeight			= fi::FreeImage_GetHeight(bitmap);
+	const auto targetSize			= imageCollection->targetSize(Qt::EditRole).toSize();
+	const auto targetWidth			= targetSize.width();
+	const auto targetHeight			= targetSize.height();
+	const auto noPixels				= sourceWidth * sourceHeight;
+	const auto noDimensions			= imageCollection->noDimensions(Qt::EditRole).toInt();
+	const auto rescale				= QSize(sourceWidth, sourceHeight) != targetSize;
+	const auto filter				= static_cast<fi::FREE_IMAGE_FILTER>(imageCollection->subsampling().filter(Qt::EditRole).toInt());
 
 	auto* scaledBitmap = rescale ? fi::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
 
@@ -261,112 +228,63 @@ void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>
 
 	const auto imageType = fi::FreeImage_GetImageType(scaledBitmap);
 
-	auto noComponents = 1;
+	fi::FIBITMAP* convertedBitmap = nullptr;
 
 	switch (imageType)
 	{
-		case fi::FIT_BITMAP:
-		{
-			noComponents = 3;
-			qDebug() << "Image format: FIT_BITMAP";
-			break;
-		}
-
 		case fi::FIT_UINT16:
-		{
-			qDebug() << "Image format: FIT_UINT16";
-			break;
-		}
-
 		case fi::FIT_INT16:
-		{
-			qDebug() << "Image format: FIT_INT16";
-			break;
-		}
-
 		case fi::FIT_UINT32:
-		{
-			qDebug() << "Image format: FIT_UINT32";
-			break;
-		}
-
 		case fi::FIT_INT32:
-		{
-			qDebug() << "Image format: FIT_INT32";
-			break;
-		}
-
 		case fi::FIT_FLOAT:
-		{
-			for (std::int32_t y = 0; y < sourceHeight; y++) {
-				float* scanLine = reinterpret_cast<float*>(fi::FreeImage_GetScanLine(scaledBitmap, y));
-
-				for (std::int32_t x = 0; x < sourceWidth; x++) {
-					const auto pixelIndex = y * targetWidth + x;
-
-					switch (imageCollectionType)
-					{
-						case ImageData::Type::Sequence:
-						{
-							data[imageIndex * noPixels + pixelIndex] = scanLine[x];
-							break;
-						}
-
-						case ImageData::Type::Stack:
-						{
-							data[pixelIndex * noDimensions + imageIndex] = scanLine[x];
-							break;
-						}
-
-						default:
-							break;
-					}
-				}
-			}
-
-			qDebug() << "Image format: FIT_FLOAT";
-			break;
-		}
-
 		case fi::FIT_DOUBLE:
 		{
-			noComponents = 1;
-			qDebug() << "Image format: FIT_DOUBLE";
+			convertedBitmap = fi::FreeImage_ConvertToFloat(scaledBitmap);
+
 			break;
 		}
 
 		case fi::FIT_COMPLEX:
-		{
-			noComponents = 1;
-			qDebug() << "Image format: FIT_COMPLEX";
 			break;
-		}
 
+		case fi::FIT_BITMAP:
 		case fi::FIT_RGB16:
-		{
-			noComponents = 1;
-			qDebug() << "Image format: FIT_RGB16";
-			break;
-		}
-
 		case fi::FIT_RGBF:
 		{
-			noComponents = 3;
-			qDebug() << "Image format: FIT_RGBF";
+			if (imageCollection->toGrayscale(Qt::EditRole).toBool()) {
+				auto* grayscaleBitmap = fi::FreeImage_ConvertToGreyscale(scaledBitmap);
+
+				if (grayscaleBitmap == nullptr)
+					throw std::runtime_error("Unable to convert to grayscale");
+
+				convertedBitmap = fi::FreeImage_ConvertToFloat(grayscaleBitmap);
+
+				fi::FreeImage_Unload(grayscaleBitmap);
+			}
+			else {
+				convertedBitmap = fi::FreeImage_ConvertToRGBF(scaledBitmap);
+			}
+
 			break;
 		}
 
 		case fi::FIT_RGBA16:
-		{
-			noComponents = 3;
-			qDebug() << "Image format: FIT_RGBA16";
-			break;
-		}
-
 		case fi::FIT_RGBAF:
 		{
-			noComponents = 4;
-			qDebug() << "Image format: FIT_RGBAF";
+			if (imageCollection->toGrayscale(Qt::EditRole).toBool()) {
+				auto* grayscaleBitmap = fi::FreeImage_ConvertToGreyscale(scaledBitmap);
+
+				if (grayscaleBitmap == nullptr)
+					throw std::runtime_error("Unable to convert to grayscale");
+
+				convertedBitmap = fi::FreeImage_ConvertToFloat(grayscaleBitmap);
+
+				fi::FreeImage_Unload(grayscaleBitmap);
+			}
+			else {
+				convertedBitmap = fi::FreeImage_ConvertToRGBF(scaledBitmap);
+			}
+
 			break;
 		}
 
@@ -374,133 +292,41 @@ void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>
 			break;
 	}
 
-	if (rescale)
-		fi::FreeImage_Unload(scaledBitmap);
+	if (convertedBitmap == nullptr)
+		throw std::runtime_error("Unable to convert bitmap");
 
 	/*
-		if (_colorSettings.convertToGrayscale())
-			noComponents = 1;
+	for (std::int32_t y = 0; y < targetHeight; y++) {
+		float* scanLine = reinterpret_cast<float*>(fi::FreeImage_GetScanLine(convertedBitmap, y));
 
-		auto pixel = std::vector<std::uint16_t>();
+		for (std::int32_t x = 0; x < targetWidth; x++) {
+			const auto pixelIndex = y * targetWidth + x;
 
-		auto& image = payload->add(noComponents, imageFilePath);
-
-		image.setDimensionName(dimensionName);
-
-		pixel.resize(image.noComponents());
-
-		if (scaledBitmap) {
-			const auto bpp = fi::FreeImage_GetBPP(scaledBitmap);
-			const auto width = imageSize.width();
-			const auto height = imageSize.height();
-
-			switch (imageType) {
-				case fi::FIT_BITMAP:
+			switch (imageCollectionType)
+			{
+				case ImageData::Type::Sequence:
 				{
-					for (std::int32_t y = 0; y < height; y++)
-					{
-						fi::BYTE* scanLine = (fi::BYTE*)fi::FreeImage_GetScanLine(scaledBitmap, y);
-
-						for (std::int32_t x = 0; x < width; x++)
-						{
-							switch (bpp)
-							{
-								case 8:
-								{
-									switch (image.noComponents())
-									{
-										case 1:
-										{
-											pixel[0] = scanLine[x];
-											break;
-										}
-
-										case 3:
-										{
-											pixel[0] = scanLine[x];
-											pixel[1] = scanLine[x];
-											pixel[2] = scanLine[x];
-											break;
-										}
-
-										default:
-											break;
-									}
-
-									break;
-								}
-
-								case 24:
-								{
-									switch (image.noComponents())
-									{
-										case 1:
-										{
-											pixel[0] = scanLine[x * 3 + FI_RGBA_RED];
-											break;
-										}
-
-										case 3:
-										{
-											pixel[0] = scanLine[x * image.noComponents() + FI_RGBA_RED];
-											pixel[1] = scanLine[x * image.noComponents() + FI_RGBA_GREEN];
-											pixel[2] = scanLine[x * image.noComponents() + FI_RGBA_BLUE];
-											break;
-										}
-
-										default:
-											break;
-									}
-
-									break;
-								}
-
-								default:
-									break;
-							}
-
-							image.setPixel(x, y, pixel.data());
-						}
-					}
-
+					data[index * noPixels + pixelIndex] = scanLine[x];
 					break;
 				}
 
-				case fi::FIT_UINT16:
+				case ImageData::Type::Stack:
 				{
-					for (std::int32_t y = 0; y < height; y++) {
-						std::uint16_t* scanLine = (std::uint16_t*)fi::FreeImage_GetScanLine(scaledBitmap, y);
-
-						for (std::int32_t x = 0; x < width; x++) {
-							pixel[0] = scanLine[x];
-							image.setPixel(x, y, pixel.data());
-						}
-					}
-
+					data[pixelIndex * noDimensions + index] = scanLine[x];
 					break;
 				}
 
-				case fi::FIT_UNKNOWN:
-				case fi::FIT_INT16:
-				case fi::FIT_UINT32:
-				case fi::FIT_INT32:
-				case fi::FIT_FLOAT:
-				case fi::FIT_DOUBLE:
-				case fi::FIT_COMPLEX:
-				case fi::FIT_RGB16:
-				case fi::FIT_RGBA16:
-				case fi::FIT_RGBF:
-				case fi::FIT_RGBAF:
-				{
+				default:
 					break;
-				}
 			}
-
-			if (rescale)
-				fi::FreeImage_Unload(scaledBitmap);
 		}
 	}
 	*/
+
+	fi::FreeImage_Unload(convertedBitmap);
+	fi::FreeImage_Unload(scaledBitmap);
+
+	//qDebug() << data;
 }
 
 ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
@@ -1088,10 +914,17 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		auto imageFilePaths = QStringList();
 		auto dimensionNames = QStringList();
 
+		auto imageIndex = 0;
+
 		for (auto& childItem : _children) {
 			auto image = static_cast<ImageCollection::Image*>(childItem);
 
-			image->load(imageLoaderPlugin, data);
+			if (!image->shouldLoad(Qt::EditRole).toBool())
+				continue;
+
+			image->load(imageLoaderPlugin, data, imageIndex);
+
+			imageIndex++;
 
 			imageFilePaths << image->filePath(Qt::EditRole).toString();
 			dimensionNames << image->dimensionName(Qt::EditRole).toString();

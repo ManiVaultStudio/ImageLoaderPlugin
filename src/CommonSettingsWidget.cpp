@@ -189,11 +189,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
 			_ui->imagesTreeView->header()->hideSection(column);
 
-		_ui->imagesTreeView->header()->hideSection(ult(ImageCollection::Image::Column::Index));
-
 		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
 		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::ResizeToContents);
-		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::Index), QHeaderView::ResizeToContents);
 		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
 		_ui->imagesTreeView->header()->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
 
