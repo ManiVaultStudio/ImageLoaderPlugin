@@ -169,27 +169,41 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
 	_pageIndex = pageIndex;
 }
 
-void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index)
+void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index, fi::FIMULTIBITMAP* multiBitmap /*= nullptr*/)
 {
 	qDebug() << QString("Loading image: %1").arg(_fileName);
 
 	if (_pageIndex >= 0)
 	{
-		auto* multiBitmap = FreeImage::freeImageOpenMultiBitmap(_filePath);
+		fi::FIBITMAP* pageBitmap = nullptr;
 
-		if (multiBitmap != nullptr) {
-			const auto noPages = FreeImage_GetPageCount(multiBitmap);
+		const auto handleException = [&](const QString& message) {
+			fi::FreeImage_Unload(pageBitmap);
 
-			for (int pageIndex = 0; pageIndex < noPages; pageIndex++) {
-				auto* pageBitmap = FreeImage_LockPage(multiBitmap, pageIndex);
+			throw std::runtime_error(QString("Error loading %1: %2").arg(_fileName, message).toLatin1());
+		};
+		
+		try
+		{
+			if (multiBitmap == nullptr)
+				throw std::runtime_error("Multi-bitmap handle is not valid");
 
-				if (pageBitmap != nullptr) {
-					loadBitmap(pageBitmap, data, index);
-					FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
-				}
-			}
+			pageBitmap = fi::FreeImage_LockPage(multiBitmap, _pageIndex);
 
-			FreeImage_CloseMultiBitmap(multiBitmap);
+			if (pageBitmap == nullptr)
+				throw std::runtime_error("Unable to open multi-bitmap page");
+
+			loadBitmap(pageBitmap, data, index);
+			
+			fi::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
+		}
+		catch (const std::runtime_error& e)
+		{
+			handleException(e.what());
+		}
+		catch (std::exception e)
+		{
+			handleException(e.what());
 		}
 	}
 	else {
@@ -299,7 +313,6 @@ void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>
 		const auto noDimensions			= imageCollection->noDimensions(Qt::EditRole).toInt();
 		const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
 		const auto filter				= static_cast<fi::FREE_IMAGE_FILTER>(imageCollection->subsampling().filter(Qt::EditRole).toInt());
-		const auto grayScale			= imageCollection->toGrayscale(Qt::EditRole).toBool();
 
 		subsampledBitmap = subsample ? fi::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
 
@@ -381,11 +394,39 @@ void ImageCollection::Image::loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>
 
 			case fi::FIT_BITMAP:
 			{
-				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<fi::BYTE>(subsampledBitmap, targetSize, data, imageIndex, 3);
+				const auto bpp = fi::FreeImage_GetBPP(subsampledBitmap);
 
-				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<fi::BYTE>(subsampledBitmap, targetSize, data, imageIndex, noDimensions, 3);
+				auto noComponents = 0;
+
+				switch (bpp)
+				{
+					case 8:
+						noComponents = 1;
+						break;
+					
+					case 16:
+						noComponents = 2;
+						break;
+
+					case 24:
+						noComponents = 3;
+						break;
+
+					case 32:
+						noComponents = 4;
+						break;
+
+					default:
+						break;
+				}
+
+				if (noComponents > 0) {
+					if (imageCollectionType == ImageData::Type::Sequence)
+						readSequence<fi::BYTE>(subsampledBitmap, targetSize, data, imageIndex, noComponents);
+
+					if (imageCollectionType == ImageData::Type::Stack)
+						readStack<fi::BYTE>(subsampledBitmap, targetSize, data, imageIndex, noDimensions, noComponents);
+				}
 
 				break;
 			}
@@ -1141,19 +1182,29 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 		auto imageIndex = 0;
 
+		const auto firstChild		= static_cast<ImageCollection::Image*>(_children.first());
+		const auto multiPageTiff	= firstChild->pageIndex(Qt::EditRole).toInt() >= 0;
+		
+		fi::FIMULTIBITMAP* multiBitmap = nullptr;
+
+		if (multiPageTiff)
+			multiBitmap = FreeImage::freeImageOpenMultiBitmap(firstChild->filePath(Qt::EditRole).toString());
+
 		for (auto& childItem : _children) {
 			auto image = static_cast<ImageCollection::Image*>(childItem);
 
 			if (!image->shouldLoad(Qt::EditRole).toBool())
 				continue;
 
-			image->load(imageLoaderPlugin, data, imageIndex);
+			image->load(imageLoaderPlugin, data, imageIndex, multiBitmap);
 
 			imageIndex++;
 
 			imageFilePaths << image->filePath(Qt::EditRole).toString();
 			dimensionNames << image->dimensionName(Qt::EditRole).toString();
 		}
+
+		fi::FreeImage_CloseMultiBitmap(multiBitmap);
 
 		const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
 

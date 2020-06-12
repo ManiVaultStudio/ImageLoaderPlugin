@@ -152,7 +152,7 @@ public: // Nested image class
 		 * @param imageLoaderPlugin Pointer to image loader plugin
 		 * @param data High-dimensional data vector
 		 */
-		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index);
+		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index, fi::FIMULTIBITMAP* multiBitmap = nullptr);
 
 		/**
 		 * Loads the image bitmap into a high-dimensional data vector
