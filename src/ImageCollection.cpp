@@ -525,10 +525,11 @@ void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter
 	_filter = filter;
 }
 
-ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QSize& sourceSize) :
+ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize) :
 	TreeItem(parent),
 	_directory(directory),
-	_imageType(imageType),
+	_imageFileType(imageType),
+	_imageFormat(imageFormat),
 	_sourceSize(sourceSize),
 	_targetSize(sourceSize),
 	_datasetName(),
@@ -568,13 +569,13 @@ QVariant ImageCollection::imageType(const int& role) const
 	switch (role)
 	{
 		case Qt::DisplayRole:
-			return _imageType;
+			return _imageFileType;
 
 		case Qt::EditRole:
-			return _imageType;
+			return _imageFileType;
 
 		case Qt::ToolTipRole:
-			return QString("Image type: %1").arg(_imageType);
+			return QString("Image type: %1").arg(_imageFileType);
 
 		default:
 			break;
@@ -585,7 +586,123 @@ QVariant ImageCollection::imageType(const int& role) const
 
 void ImageCollection::setImageType(const QString& imageType)
 {
-	_imageType = imageType;
+	_imageFileType = imageType;
+}
+
+QVariant ImageCollection::imageFormat(const int& role) const
+{
+	auto formatString = "";
+
+	switch (_imageFormat)
+	{
+		case QImage::Format_Invalid:
+		case QImage::Format_Mono:
+		case QImage::Format_MonoLSB:
+		case QImage::Format_Indexed8:
+			break;
+
+		case QImage::Format_RGB32:
+			formatString = "RGB32";
+			break;
+
+		case QImage::Format_ARGB32:
+			formatString = "ARGB32";
+			break;
+
+		case QImage::Format_ARGB32_Premultiplied:
+			formatString = "ARGB32_Premultiplied";
+			break;
+
+		case QImage::Format_RGB16:
+			formatString = "RGB16";
+			break;
+
+		case QImage::Format_ARGB8565_Premultiplied:
+		case QImage::Format_RGB666:
+		case QImage::Format_ARGB6666_Premultiplied:
+		case QImage::Format_RGB555:
+		case QImage::Format_ARGB8555_Premultiplied:
+			break;
+
+		case QImage::Format_RGB888:
+			formatString = "RGB888";
+			break;
+
+		case QImage::Format_RGB444:
+		case QImage::Format_ARGB4444_Premultiplied:
+		case QImage::Format_RGBX8888:
+			break;
+
+		case QImage::Format_RGBA8888:
+			formatString = "RGBA8888";
+			break;
+
+		case QImage::Format_RGBA8888_Premultiplied:
+			formatString = "RGBA8888_Premultiplied";
+			break;
+
+		case QImage::Format_BGR30:
+		case QImage::Format_A2BGR30_Premultiplied:
+		case QImage::Format_RGB30:
+		case QImage::Format_A2RGB30_Premultiplied:
+		case QImage::Format_Alpha8:
+			break;
+
+		case QImage::Format_Grayscale8:
+			formatString = "Grayscale8";
+			break;
+
+		case QImage::Format_RGBX64:
+			formatString = "RGBX64";
+			break;
+
+		case QImage::Format_RGBA64:
+			formatString = "RGBA64";
+			break;
+
+		case QImage::Format_RGBA64_Premultiplied:
+			formatString = "Grayscale8";
+			break;
+
+		case QImage::Format_Grayscale16:
+			formatString = "Grayscale16";
+			break;
+
+		case QImage::Format_BGR888:
+			formatString = "BGR888";
+			break;
+
+		case QImage::NImageFormats:
+			break;
+
+		default:
+			break;
+	}
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return formatString;
+
+		case Qt::EditRole:
+			return _imageFormat;
+
+		case Qt::ToolTipRole:
+			return QString("Image format: %1").arg(formatString);
+
+		case Qt::TextAlignmentRole:
+			return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::setImageFormat(const QImage::Format& imageFormat)
+{
+	_imageFormat = imageFormat;
 }
 
 QVariant ImageCollection::sourceSize(const int& role) const
@@ -1043,7 +1160,7 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
 
 		points.setData(data.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
-		points.setDimensionNames(dimensionNames.toVector().toStdVector());
+		points.setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.begin()));
 
 		points.setProperty("Type", typeName);
 		points.setProperty("NoImages", noSelectedImages(Qt::EditRole).toInt());

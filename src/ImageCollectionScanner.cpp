@@ -175,8 +175,19 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		QImageReader imageReader(imageFilePath);
 
-		auto imageType = QFileInfo(fileName).suffix().toUpper();
-		auto pageCount = 0;
+		auto imageType	= QFileInfo(fileName).suffix().toUpper();
+		auto pageCount	= 0;
+
+		/*
+		auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
+
+		if (bitmap == nullptr)
+			throw std::runtime_error("Unable to load image");
+
+		auto imageFormat = fi::FreeImage_GetImageType(bitmap);
+
+		fi::FreeImage_Unload(bitmap);
+		*/
 
 		if (imageType == "TIFF") {
 			imageReader.jumpToNextImage();
@@ -192,7 +203,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageSize);
+			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
 
 			if (imageType == "TIFF (multipage)") {
 				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {

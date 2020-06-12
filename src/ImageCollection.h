@@ -29,6 +29,7 @@ public: // Enumerations
 	enum class Column {
 		DatasetName,				/** The name of the dataset */
 		ImageType,					/** The type of image(s) */
+		ImageFormat,				/** Image format */
 		NoImages,					/** Number of images in the collection */
 		NoSelectedImages,			/** Number of selected images in the collection */
 		SourceSize,					/** Size of the source image(s) */
@@ -282,7 +283,7 @@ public: // Construction
 	 * @param imageType Image type
 	 * @param sourceSize Source image size
 	 */
-	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QSize& sourceSize);
+	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize);
 
 public: // Getters/setters
 
@@ -303,6 +304,19 @@ public: // Getters/setters
 	 * @param imageType Image type
 	 */
 	void setImageType(const QString& imageType);
+
+	/**
+	 * Returns the image format
+	 * @param role Data role
+	 * @return Image format in variant form
+	 */
+	QVariant imageFormat(const int& role) const;
+
+	/**
+	 * Sets the image format
+	 * @param type Image format
+	 */
+	void setImageFormat(const QImage::Format& imageFormat);
 
 	/** Returns the source image size */
 	QVariant sourceSize(const int& role) const;
@@ -406,7 +420,8 @@ public:
 
 private:
 	QString					_directory;			/** Root directory of the images */
-	QString					_imageType;			/** Type of image */
+	QString					_imageFileType;		/** Image file type */
+	QImage::Format			_imageFormat;		/** Image format */
 	QSize					_sourceSize;		/** Size of the source image */
 	QSize					_targetSize;		/** Size of the target image */
 	QString					_datasetName;		/** The name of the dataset */

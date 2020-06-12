@@ -52,6 +52,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 			case ImageCollection::Column::ImageType:
 				return imageCollection->imageType(role);
 
+			case ImageCollection::Column::ImageFormat:
+				return imageCollection->imageFormat(role);
+
 			case ImageCollection::Column::NoImages:
 				return imageCollection->noImages(role);
 
@@ -135,7 +138,14 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 			const auto subsamplingRatio		= imageCollection->subsampling().ratio(Qt::EditRole).toFloat();
 			const auto sourceSize			= imageCollection->sourceSize(Qt::EditRole).toSize();
 
-			imageCollection->setTargetSize(subsamplingEnabled ? subsamplingRatio * sourceSize : sourceSize);
+			auto targetSize = sourceSize;
+
+			if (subsamplingEnabled) {
+				targetSize.setWidth(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.width()), 1));
+				targetSize.setHeight(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.height()), 1));
+			}
+			
+			imageCollection->setTargetSize(targetSize);
 
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetSize));
 			affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::TargetWidth));
@@ -306,7 +316,10 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 						return "Dataset name";
 
 					case ImageCollection::Column::ImageType:
-						return "Type";
+						return "Image type";
+
+					case ImageCollection::Column::ImageFormat:
+						return "Image format";
 
 					case ImageCollection::Column::NoImages:
 						return "#Images";
