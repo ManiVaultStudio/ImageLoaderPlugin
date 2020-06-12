@@ -21,10 +21,7 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 	_ui->setupUi(this);
 }
 
-ImageLoaderDialog::~ImageLoaderDialog()
-{
-	_settings.setValue("CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
-}
+ImageLoaderDialog::~ImageLoaderDialog() = default;
 
 void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
@@ -70,10 +67,18 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		updateLoadButton();
 	});
 
+	QObject::connect(_ui->closeAfterLoadedCheckBox, &QPushButton::clicked, [&]() {
+		_settings.setValue("CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
+	});
+
 	QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
 		const auto index = selectedRow();
 
-		if (index != QModelIndex())
+		if (index != QModelIndex()) {
 			imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
+
+			if (_settings.value("CloseAfterLoaded", true).toBool())
+				this->close();
+		}
 	});
 }

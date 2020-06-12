@@ -157,7 +157,7 @@ public: // Nested image class
 		 * Loads the image bitmap into a high-dimensional data vector
 		 * @param bitmap Handle to FreeImage bitmap
 		 */
-		void loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& index);
+		void loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex);
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
