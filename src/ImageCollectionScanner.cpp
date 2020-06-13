@@ -15,6 +15,7 @@ ImageCollectionScanner::ImageCollectionScanner() :
 	_separateByDirectory(false),
 	_previousDirectories(),
 	_supportedImageTypes(),
+	_filenameFilter(),
 	_initialized(false)
 {
 	auto supportedImageTypes = QStringList();
@@ -31,6 +32,7 @@ void ImageCollectionScanner::loadSettings()
 	setDirectory(QDir(directory).exists() ? directory : "", true);
 	setSeparateByDirectory(setting("SeparateByDirectory", true).toBool());
 	setSupportedImageTypes(setting("ImageTypes", QStringList()).toStringList(), true);
+	setFilenameFilter(setting("FilenameFilter", QString()).toString(), true);
 
 	_initialized = true;
 }
@@ -109,6 +111,32 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 		scan();
 }
 
+QString ImageCollectionScanner::filenameFilter() const
+{
+	return _filenameFilter;
+}
+
+void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, const bool& notify /*= false*/)
+{
+	if (!notify && filenameFilter == _filenameFilter)
+		return;
+
+	_filenameFilter = filenameFilter;
+
+	setSetting("FilenameFilter", _filenameFilter);
+
+	qDebug() << "Set filename filter" << _filenameFilter;
+
+	emit filenameFilterChanged(_filenameFilter);
+
+	/*
+	emit settingsChanged();
+
+	if (_initialized)
+		scan();
+	*/
+}
+
 void ImageCollectionScanner::scan()
 {
 	std::vector<ImageCollection*> imageCollections;
@@ -177,17 +205,6 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		auto imageType	= QFileInfo(fileName).suffix().toUpper();
 		auto pageCount	= 0;
-
-		/*
-		auto* bitmap = FreeImage::freeImageLoad(imageFilePath);
-
-		if (bitmap == nullptr)
-			throw std::runtime_error("Unable to load image");
-
-		auto imageFormat = fi::FreeImage_GetImageType(bitmap);
-
-		fi::FreeImage_Unload(bitmap);
-		*/
 
 		if (imageType == "TIFF") {
 			imageReader.jumpToNextImage();

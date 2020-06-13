@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "Payload.h"
 
 #include "ImageCollectionsModel.h"
 
@@ -28,12 +27,6 @@ public:
 
 	/** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
-
-	/**
-	 * Add images to HDPS
-	 * @param payload High dimensional image data payload
-	 */
-	QString addImages(std::shared_ptr<Payload> payload);
 
 public: // Models
 

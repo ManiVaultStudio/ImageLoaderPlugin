@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ImageCollectionLoader.h"
-
 #include <QDialog>
 #include <QSettings>
 #include <QStackedWidget>

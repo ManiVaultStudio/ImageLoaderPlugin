@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ImageCollectionLoader.h"
 #include "ImageCollectionScanner.h"
 
 #include <memory>
@@ -48,12 +47,8 @@ public: // Miscellaneous
 	/** Returns the image collection scanner */
 	ImageCollectionScanner& scanner() { return _scanner; }
 
-	/** Returns the image collection loader */
-	ImageCollectionLoader& loader() { return _loader; };
-
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
-	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;						/** Externally loaded UI */
-	ImageCollectionScanner						_scanner;					/** Image collection scanner */
-	ImageCollectionLoader						_loader;					/** Image collection loader */
+	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
+	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;					/** Externally loaded UI */
+	ImageCollectionScanner						_scanner;				/** Image collection scanner */
 };

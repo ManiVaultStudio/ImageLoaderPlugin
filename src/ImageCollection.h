@@ -3,14 +3,17 @@
 #include "Common.h"
 #include "TreeItem.h"
 
-#include "FreeImage.h"
-
 #include "ImageData/Images.h"
 
 #include <QObject>
 #include <QString>
 #include <QSize>
 #include <QVector>
+#include <QImage>
+
+namespace FI {
+	#include <FreeImage.h>
+}
 
 class ImageLoaderPlugin;
 
@@ -152,13 +155,13 @@ public: // Nested image class
 		 * @param imageLoaderPlugin Pointer to image loader plugin
 		 * @param data High-dimensional data vector
 		 */
-		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index, fi::FIMULTIBITMAP* multiBitmap = nullptr);
+		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index, FI::FIMULTIBITMAP* multiBitmap = nullptr);
 
 		/**
 		 * Loads the image bitmap into a high-dimensional data vector
 		 * @param bitmap Handle to FreeImage bitmap
 		 */
-		void loadBitmap(fi::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex);
+		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex);
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
@@ -419,13 +422,13 @@ public:
 	void load(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	QString					_directory;			/** Root directory of the images */
-	QString					_imageFileType;		/** Image file type */
-	QImage::Format			_imageFormat;		/** Image format */
-	QSize					_sourceSize;		/** Size of the source image */
-	QSize					_targetSize;		/** Size of the target image */
-	QString					_datasetName;		/** The name of the dataset */
-	bool					_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
-	ImageData::Type			_type;				/** How to load the collection (as image sequence or image stack) */
-	SubSampling				_subsampling;		/** Subsampling parameters */
+	QString				_directory;			/** Root directory of the images */
+	QString				_imageFileType;		/** Image file type */
+	QImage::Format		_imageFormat;		/** Image format */
+	QSize				_sourceSize;		/** Size of the source image */
+	QSize				_targetSize;		/** Size of the target image */
+	QString				_datasetName;		/** The name of the dataset */
+	bool				_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
+	ImageData::Type		_type;				/** How to load the collection (as image sequence or image stack) */
+	SubSampling			_subsampling;		/** Subsampling parameters */
 };

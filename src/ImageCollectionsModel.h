@@ -2,8 +2,6 @@
 
 #include "ImageCollection.h"
 
-#include "ImageData/Images.h"
-
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
 #include <QItemSelectionModel>
@@ -46,7 +44,7 @@ public: // Filter model
 				const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
 				const auto datasetName = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
 
-				return datasetName.contains(_filter);
+				return datasetName.contains(_filter, Qt::CaseInsensitive);
 			}
 			
 			return true;

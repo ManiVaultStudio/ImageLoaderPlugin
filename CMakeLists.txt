@@ -32,29 +32,17 @@ endif()
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
-	src/FreeImage.h
-    src/FreeImage.cpp
-	src/Payload.h 
-	src/Payload.cpp
 	src/Settings.h
 	src/Settings.cpp
 	src/TreeItem.h
 	src/TreeItem.cpp
-	src/Common.h
-)
-
-set(LOADER_SOURCES
-	src/ImageCollection.h
-	src/ImageCollection.cpp
-	src/Scanned.h
-	src/Scanned.cpp
-	src/ImageCollectionLoader.h
-	src/ImageCollectionLoader.cpp
-)
-
-set(SCANNER_SOURCES
 	src/ImageCollectionScanner.h
 	src/ImageCollectionScanner.cpp
+	src/ImageCollection.h
+	src/ImageCollection.cpp
+	src/ImageCollectionsModel.h
+	src/ImageCollectionsModel.cpp
+	src/Common.h
 )
 
 set(WIDGET_SOURCES
@@ -66,7 +54,9 @@ set(WIDGET_SOURCES
 	src/SubsampleSettingsWidget.cpp
 )
 
-file(GLOB MODEL_SOURCES src/*Model.*)
+set(AUX src/ImageLoaderPlugin.json)
+
+file(GLOB UIS src/*.ui)
 
 set(AUX src/ImageLoaderPlugin.json)
 
@@ -78,14 +68,9 @@ set(SOURCES
 	${MODEL_SOURCES}
 )
 
-file(GLOB UIS src/*.ui)
-
-set(AUX src/ImageLoaderPlugin.json)
-
-source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
+source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
 source_group(Widgets FILES ${WIDGET_SOURCES})
 source_group(UI FILES ${UIS})
-source_group(Model FILES ${MODEL_SOURCES})
 source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")

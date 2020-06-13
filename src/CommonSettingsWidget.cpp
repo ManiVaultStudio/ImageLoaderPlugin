@@ -11,8 +11,7 @@ CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
 	QWidget(parent),
 	_imageLoaderPlugin(nullptr),
 	_ui{ std::make_unique<Ui::CommonSettingsWidget>() },
-	_scanner(),
-	_loader(nullptr, ImageData::Type::Sequence)
+	_scanner()
 {
 	_ui->setupUi(this);
 }
@@ -95,7 +94,16 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(_ui->searchFilterLineEdit, &QLineEdit::textChanged, [this](QString text) {
-		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(text);
+		_scanner.setFilenameFilter(text);
+	});
+
+	QObject::connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
+		//_ui->searchFilterLineEdit->setFocus();
+		_ui->searchFilterLineEdit->blockSignals(true);
+		_ui->searchFilterLineEdit->setText(filenameFilter);
+		_ui->searchFilterLineEdit->blockSignals(false);
+
+		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(filenameFilter);
 	});
 
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {
