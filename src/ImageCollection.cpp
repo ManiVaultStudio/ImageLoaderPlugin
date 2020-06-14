@@ -8,6 +8,9 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QProgressDialog>
+#include <QCoreApplication>
+#include <QPushButton>
 
 #include <algorithm>
 
@@ -1253,10 +1256,18 @@ void ImageCollection::guessDimensionNames()
 	}
 }
 
-void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
+bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	try
 	{
+		QProgressDialog progress("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
+
+		progress.setWindowTitle(QString("Loading %1").arg(_datasetName));
+		progress.setWindowModality(Qt::WindowModal);
+		progress.setMinimumDuration(1000);
+		progress.setFixedWidth(600);
+		progress.show();
+
 		const auto typeName = ImageData::typeName(_type);
 
 		qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
@@ -1289,7 +1300,15 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 
 		for (auto& childItem : _children) {
+			if (progress.wasCanceled()) {
+				throw std::runtime_error("Loading was aborted");
+			}
+
 			auto image = static_cast<ImageCollection::Image*>(childItem);
+
+			progress.setLabelText(QString("Loading %1").arg(image->dimensionName(Qt::EditRole).toString()));
+
+			QCoreApplication::processEvents();
 
 			if (!image->shouldLoad(Qt::EditRole).toBool())
 				continue;
@@ -1297,6 +1316,8 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 			image->load(imageLoaderPlugin, data, imageIndex, multiBitmap);
 
 			imageIndex++;
+
+			progress.setValue(imageIndex);
 
 			imageFilePaths << image->filePath(Qt::EditRole).toString();
 			dimensionNames << image->dimensionName(Qt::EditRole).toString();
@@ -1322,6 +1343,8 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		properties.insert("DimensionNames", dimensionNames);
 
 		points.setProperties(properties);
+
+		return true;
 	}
 	catch (const std::runtime_error& e)
 	{
@@ -1331,4 +1354,6 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 	{
 		QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
 	}
+
+	return false;
 }

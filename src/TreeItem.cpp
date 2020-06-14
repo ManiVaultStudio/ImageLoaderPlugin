@@ -1,6 +1,8 @@
 #include "TreeItem.h"
 
 TreeItem::TreeItem(TreeItem *parent) :
+	_flags(0),
+	_children(),
 	m_parentItem(parent)
 {
 }

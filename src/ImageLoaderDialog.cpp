@@ -15,7 +15,7 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_imageLoaderPlugin(nullptr)
 {
-	setMinimumWidth(480);
+	setMinimumWidth(800);
 	setMinimumHeight(600);
 
 	_ui->setupUi(this);
@@ -75,9 +75,9 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		const auto index = selectedRow();
 
 		if (index != QModelIndex()) {
-			imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
+			const auto loaded = imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
 
-			if (_settings.value("CloseAfterLoaded", true).toBool())
+			if (loaded && _settings.value("CloseAfterLoaded", true).toBool())
 				this->close();
 		}
 	});

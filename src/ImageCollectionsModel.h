@@ -172,7 +172,7 @@ public: // Miscellaneous
 	 * @param imageLoaderPlugin Pointer to image loader plugin
 	 * @param index Image collection model index
 	 */
-	void loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index);
+	bool loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index);
 
 public: // Image selection
 

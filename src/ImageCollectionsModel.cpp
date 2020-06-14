@@ -601,14 +601,14 @@ void ImageCollectionsModel::guessDimensionNames(const QModelIndex& index)
 	imageCollection->guessDimensionNames();
 }
 
-void ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
+bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
 {
 	if (index.parent() != QModelIndex())
-		return;
+		return false;
 
 	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
-	imageCollection->load(imageLoaderPlugin);
+	return imageCollection->load(imageLoaderPlugin);
 }
 
 void ImageCollectionsModel::selectAll(const QModelIndex& parent)

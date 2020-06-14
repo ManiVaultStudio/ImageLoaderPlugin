@@ -430,7 +430,7 @@ public:
 	 * Loads the image collection into a high-dimensional data vector
 	 * @param imageLoaderPlugin Pointer to image loader plugin
 	 */
-	void load(ImageLoaderPlugin* imageLoaderPlugin);
+	bool load(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
 	QString				_directory;			/** Root directory of the images */
