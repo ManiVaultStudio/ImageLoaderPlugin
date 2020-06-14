@@ -255,6 +255,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			
 			_ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
 			
+			imageCollectionsModel.guessDimensionNames(index);
+
 			updateImagesHeader();
 			updateSelectionButtons(index);
 		}

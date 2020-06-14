@@ -591,6 +591,16 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 	endInsertRows();
 }
 
+void ImageCollectionsModel::guessDimensionNames(const QModelIndex& index)
+{
+	if (index.parent() != QModelIndex())
+		return;
+
+	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+
+	imageCollection->guessDimensionNames();
+}
+
 void ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
 {
 	if (index.parent() != QModelIndex())
@@ -611,8 +621,8 @@ void ImageCollectionsModel::selectAll(const QModelIndex& parent)
 	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
 	for (auto& childItem : imageCollection->_children) {
-		const auto row				= imageCollection->_children.indexOf(childItem);
-		const auto image			= static_cast<ImageCollection::Image*>(imageCollection->child(row));
+		const auto row		= imageCollection->_children.indexOf(childItem);
+		const auto image	= static_cast<ImageCollection::Image*>(imageCollection->child(row));
 		
 		image->setShouldLoad(true);
 	}

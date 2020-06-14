@@ -45,3 +45,26 @@ void TreeItem::removeAllChildren()
 	qDeleteAll(_children);
 	_children.clear();
 }
+
+bool TreeItem::isFlagSet(const std::int32_t& flag) const
+{
+	return _flags & static_cast<int>(flag);
+}
+
+void TreeItem::setFlag(const std::int32_t& flag, const bool& enabled /*= true*/)
+{
+	if (enabled)
+		_flags |= static_cast<int>(flag);
+	else
+		_flags = _flags & ~static_cast<int>(flag);
+}
+
+std::int32_t TreeItem::flags(const int& role) const
+{
+	return _flags;
+}
+
+void TreeItem::setFlags(const int& flags)
+{
+	_flags = flags;
+}

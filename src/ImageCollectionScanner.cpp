@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
+#include <QMessageBox>
 
 namespace fi {
 	#include <FreeImage.h>
@@ -128,33 +129,37 @@ void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, co
 	qDebug() << "Set filename filter" << _filenameFilter;
 
 	emit filenameFilterChanged(_filenameFilter);
-
-	/*
-	emit settingsChanged();
-
-	if (_initialized)
-		scan();
-	*/
 }
 
 void ImageCollectionScanner::scan()
 {
-	std::vector<ImageCollection*> imageCollections;
+	try
+	{
+		std::vector<ImageCollection*> imageCollections;
 
-	QStringList nameFilters;
+		QStringList nameFilters;
 
-	for (const auto& supportedImageType : supportedImageTypes())
-		nameFilters << "*." + supportedImageType;
+		for (const auto& supportedImageType : supportedImageTypes())
+			nameFilters << "*." + supportedImageType;
 
-	scanDir(_directory, nameFilters, imageCollections);
+		scanDir(_directory, nameFilters, imageCollections);
 
-	for (auto& imageCollection : imageCollections)
-		imageCollection->computeDatasetName();
+		for (auto& imageCollection : imageCollections)
+			imageCollection->computeDatasetName();
 
-	auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
-	imageCollectionsModel.clear();
-	imageCollectionsModel.insert(0, imageCollections);
+		imageCollectionsModel.clear();
+		imageCollectionsModel.insert(0, imageCollections);
+	}
+	catch (const std::runtime_error& e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
+	}
+	catch (std::exception e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
+	}
 }
 
 auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
@@ -211,8 +216,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 			pageCount = imageReader.imageCount();
 
-			if (pageCount > 1)
+			if (pageCount > 1) {
 				imageType = "TIFF (multipage)";
+			}
 		}
 
 		const auto imageSize = imageReader.size();
@@ -225,7 +231,6 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 			if (imageType == "TIFF (multipage)") {
 				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
 					imageCollection->addImage(imageFilePath, pageIndex);
-					//imageCollection.images().back().setDimensionName(QString("Dim").arg(pageIndex));
 				}
 			}
 			else {

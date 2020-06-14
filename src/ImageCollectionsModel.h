@@ -162,6 +162,12 @@ public: // Miscellaneous
 	TreeItem* rootItem() { return _root; };
 	
 	/**
+	 * Guesses the image dimension names 
+	 * @param index Image collection model index
+	 */
+	void guessDimensionNames(const QModelIndex& index);
+
+	/**
 	 * Loads an image collection
 	 * @param imageLoaderPlugin Pointer to image loader plugin
 	 * @param index Image collection model index

@@ -28,7 +28,7 @@ class ImageCollection : public TreeItem
 {
 public: // Enumerations
 
-/** TODO: Write description */
+	/** TODO: Write description */
 	enum class Column {
 		DatasetName,				/** The name of the dataset */
 		ImageType,					/** The type of image(s) */
@@ -51,6 +51,11 @@ public: // Enumerations
 
 		Start = DatasetName,		/** Column start */
 		End = Directory				/** Column End */
+	};
+
+	/**  */
+	enum class Flag {
+		DimensionNamesGuessed = 0x01,		/** Whether the node is enabled */
 	};
 
 public: // Nested image class
@@ -162,6 +167,9 @@ public: // Nested image class
 		 * @param bitmap Handle to FreeImage bitmap
 		 */
 		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex);
+
+		/** Guesses dimension name */
+		void guessDimensionName();
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
@@ -414,6 +422,9 @@ public:
 
 	/** Computes the dataset name based on the loaded images and their respective file paths */
 	void computeDatasetName();
+
+	/** Guesses dimension names */
+	void guessDimensionNames();
 
 	/**
 	 * Loads the image collection into a high-dimensional data vector

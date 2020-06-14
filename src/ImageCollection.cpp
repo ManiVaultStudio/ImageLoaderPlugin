@@ -489,6 +489,65 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 	}
 }
 
+void ImageCollection::Image::guessDimensionName()
+{
+	if (isFlagSet(ult(Flag::DimensionNamesGuessed)))
+		return;
+
+	try
+	{
+		if (_pageIndex >= 0) {
+			FI::FIMULTIBITMAP* multiBitmap = nullptr;
+
+			const auto fileNameUtf8	= _filePath.toUtf8();
+			const auto format		= FI::FreeImage_GetFileType(fileNameUtf8);
+
+			multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
+
+			if (multiBitmap == nullptr)
+				throw std::runtime_error("Unable to open multi- bitmap");
+
+			auto pageBitmap = FI::FreeImage_LockPage(multiBitmap, _pageIndex);
+
+			if (pageBitmap == nullptr)
+				throw std::runtime_error("Unable to open multi-bitmap page");
+
+			FI::FITAG* tagPageName = nullptr;
+
+			FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "PageName", &tagPageName);
+
+			if (tagPageName != nullptr) {
+				_dimensionName = (char*)FI::FreeImage_GetTagValue(tagPageName);
+			}
+
+			FI::FITAG* tagImageDescription = nullptr;
+
+			FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tagImageDescription);
+
+			if (tagImageDescription != nullptr) {
+				_dimensionName = (char*)FI::FreeImage_GetTagValue(tagImageDescription);
+			}
+
+			if (_dimensionName.isEmpty())
+				_dimensionName = QString("Dim %1").arg(_pageIndex);
+
+			FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
+			FI::FreeImage_CloseMultiBitmap(multiBitmap);
+		}
+		else {
+			_dimensionName = _fileName;
+		}
+	}
+	catch (const std::runtime_error& e)
+	{
+		throw e;
+	}
+	catch (std::exception e)
+	{
+		throw e;
+	}
+}
+
 ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
 	_enabled(enabled),
 	_ratio(ratio),
@@ -1173,6 +1232,27 @@ void ImageCollection::computeDatasetName()
 	setDatasetName(QString("%1").arg(QDir(rootDir).dirName()));
 }
 
+void ImageCollection::guessDimensionNames()
+{
+	if (_children.isEmpty())
+		return;
+
+	try
+	{
+		for (auto child : _children) {
+			static_cast<Image*>(child)->guessDimensionName();
+		}
+	}
+	catch (const std::runtime_error& e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+	}
+	catch (std::exception e)
+	{
+		QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+	}
+}
+
 void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	try
@@ -1203,6 +1283,9 @@ void ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 			const auto format		= FI::FreeImage_GetFileType(fileNameUtf8);
 
 			multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
+
+			if (multiBitmap == nullptr)
+				throw std::runtime_error("Unable to open multi- bitmap");
 		}
 
 		for (auto& childItem : _children) {
