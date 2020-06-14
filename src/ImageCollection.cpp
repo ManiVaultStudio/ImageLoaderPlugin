@@ -1260,15 +1260,15 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	try
 	{
+		const auto typeName = ImageData::typeName(_type);
+
 		QProgressDialog progress("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
 
-		progress.setWindowTitle(QString("Loading %1").arg(_datasetName));
+		progress.setWindowTitle(QString("Loading image %1 dataset: %2").arg(typeName.toLower(), _datasetName));
 		progress.setWindowModality(Qt::WindowModal);
-		progress.setMinimumDuration(1000);
+		progress.setMinimumDuration(100);
 		progress.setFixedWidth(600);
 		progress.show();
-
-		const auto typeName = ImageData::typeName(_type);
 
 		qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
@@ -1335,7 +1335,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		QMap<QString, QVariant> properties;
 
 		properties.insert("Type", "Images");
-		properties.insert("CollectionType", typeName);
+		properties.insert("CollectionType", _type);
 		properties.insert("ImageSize", _targetSize);
 		properties.insert("NoImages", noSelectedImages(Qt::EditRole).toInt());
 		properties.insert("ImageSize", targetSize(Qt::EditRole).toSize());

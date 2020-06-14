@@ -15,9 +15,6 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_imageLoaderPlugin(nullptr)
 {
-	setMinimumWidth(800);
-	setMinimumHeight(600);
-
 	_ui->setupUi(this);
 }
 
