@@ -1264,7 +1264,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 		QProgressDialog progress("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
 
-		progress.setWindowTitle(QString("Loading image %1 dataset: %2").arg(typeName.toLower(), _datasetName));
+		progress.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
 		progress.setWindowModality(Qt::WindowModal);
 		progress.setMinimumDuration(100);
 		progress.setFixedWidth(600);
@@ -1323,7 +1323,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 			dimensionNames << image->dimensionName(Qt::EditRole).toString();
 		}
 
-		FI::FreeImage_CloseMultiBitmap(multiBitmap);
+		if (multiBitmap != nullptr)
+			FI::FreeImage_CloseMultiBitmap(multiBitmap);
 
 		const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
 
