@@ -50,5 +50,6 @@ public: // Miscellaneous
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
 	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;					/** Externally loaded UI */
+	QSettings									_settings;				/** Settings */
 	ImageCollectionScanner						_scanner;				/** Image collection scanner */
 };
