@@ -1345,6 +1345,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 		points.setProperties(properties);
 
+		imageLoaderPlugin->_core->notifyDataAdded(datasetName);
+
 		return true;
 	}
 	catch (const std::runtime_error& e)
