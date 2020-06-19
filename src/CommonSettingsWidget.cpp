@@ -58,7 +58,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
-	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
 	
 	_ui->imagesTreeView->header()->setHidden(true);

@@ -159,17 +159,25 @@ public: // Nested image class
 		 * Loads the image into a high-dimensional data vector
 		 * @param imageLoaderPlugin Pointer to image loader plugin
 		 * @param data High-dimensional data vector
+		 * @param imageIndex Image index
+		 * @param dimensionNames Dimension names
+		 * @param multiBitmap Multi-bitmap in case of multi-page TIFF
 		 */
-		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& index, FI::FIMULTIBITMAP* multiBitmap = nullptr);
+		void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames, FI::FIMULTIBITMAP* multiBitmap = nullptr);
 
 		/**
 		 * Loads the image bitmap into a high-dimensional data vector
 		 * @param bitmap Handle to FreeImage bitmap
+		 * @param data High-dimensional data vector
+		 * @param imageIndex Image index
 		 */
-		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex);
+		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames);
 
 		/** Guesses dimension name */
 		void guessDimensionName();
+
+		/** Get parent image collection */
+		ImageCollection* imageCollection();
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
@@ -383,6 +391,13 @@ public: // Getters/setters
 	 * @param type Image collection type
 	 */
 	void setType(const ImageData::Type	& type);
+
+	/**
+	 * Get image by index
+	 * @param index Image index
+	 * @return Pointer to image
+	 */
+	Image* image(const std::uint32_t& index);
 
 	/** Returns the number of images */
 	QVariant noImages(const int& role) const;

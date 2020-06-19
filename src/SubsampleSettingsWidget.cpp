@@ -10,6 +10,7 @@
 
 SubsampleSettingsWidget::SubsampleSettingsWidget(QWidget* parent) :
 	_ui{ std::make_unique<Ui::SubsampleSettingsWidget>() },
+	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_imageLoaderPlugin(nullptr)
 {
 	_ui->setupUi(this);

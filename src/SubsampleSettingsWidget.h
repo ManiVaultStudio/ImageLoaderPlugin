@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <QWidget>
+#include <QSettings>
 
 namespace Ui {
 	class SubsampleSettingsWidget;
@@ -31,6 +32,7 @@ public:
 	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	ImageLoaderPlugin*								_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
 	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/** Externally loaded UI */
+	QSettings										_settings;				/** Settings */
+	ImageLoaderPlugin*								_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
 };
