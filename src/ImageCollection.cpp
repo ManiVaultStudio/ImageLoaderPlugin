@@ -1261,12 +1261,10 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 
 void ImageCollection::computeDatasetName()
 {
-	/*
-	if (noImages(Qt::EditRole).toInt() == 1) {
+	if (noImages(Qt::EditRole).toInt() == 1 || image(0)->pageIndex(Qt::EditRole).toInt() >= 0) {
 		setDatasetName(image(0)->fileName(Qt::EditRole).toString());
 		return;
 	}
-	*/
 
 	QString rootDir = "";
 
