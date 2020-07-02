@@ -77,6 +77,8 @@ include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 include_directories(src)
 
+QT5_WRAP_UI(UI_HEADERS ${UIS})
+
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
