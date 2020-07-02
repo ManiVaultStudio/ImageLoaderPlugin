@@ -20,8 +20,6 @@ ImageCollectionsModel::~ImageCollectionsModel()
 
 int ImageCollectionsModel::rowCount(const QModelIndex& parent /* = QModelIndex() */) const
 {
-	TreeItem* parentItem;
-
 	if (parent.column() > 0)
 		return 0;
 
