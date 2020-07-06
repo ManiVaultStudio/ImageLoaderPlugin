@@ -9,8 +9,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(FREEIMAGE_ROOT_DIR ${CMAKE_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP")
@@ -22,6 +23,10 @@ endif(MSVC)
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 find_package(FreeImage REQUIRED)
+
+if (NOT ${FREEIMAGE_FOUND})
+    return()
+endif()
 
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
