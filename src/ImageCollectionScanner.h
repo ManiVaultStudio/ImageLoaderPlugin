@@ -90,8 +90,9 @@ private:
 	 * @param directory Search directory
 	 * @param nameFilters Image file types to filter
 	 * @param sequences Loaded image sequences
+	 * @param showProgressDialog Whether to show a progress dialog
 	 */
-	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections);
+	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog = false);
 
 signals:
 	/** Signals that settings changed */
