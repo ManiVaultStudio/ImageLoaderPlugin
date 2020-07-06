@@ -1325,13 +1325,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 	{
 		const auto typeName = ImageData::typeName(_type);
 
-		QProgressDialog progress("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
+		QProgressDialog progressDialog("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
 
-		progress.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
-		progress.setWindowModality(Qt::WindowModal);
-		progress.setMinimumDuration(100);
-		progress.setFixedWidth(600);
-		progress.show();
+		progressDialog.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
+		progressDialog.setWindowModality(Qt::WindowModal);
+		progressDialog.setMinimumDuration(100);
+		progressDialog.setFixedWidth(600);
+		progressDialog.show();
 
 		qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
@@ -1363,13 +1363,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		}
 
 		for (auto& childItem : _children) {
-			if (progress.wasCanceled()) {
+			if (progressDialog.wasCanceled()) {
 				throw std::runtime_error("Loading was aborted");
 			}
 
 			auto image = static_cast<ImageCollection::Image*>(childItem);
 
-			progress.setLabelText(QString("Loading %1").arg(image->dimensionName(Qt::EditRole).toString()));
+			progressDialog.setLabelText(QString("Loading %1").arg(image->dimensionName(Qt::EditRole).toString()));
 
 			QCoreApplication::processEvents();
 
@@ -1380,7 +1380,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 			imageIndex++;
 
-			progress.setValue(imageIndex);
+			progressDialog.setValue(imageIndex);
 
 			imageFilePaths << image->filePath(Qt::EditRole).toString();
 		}
