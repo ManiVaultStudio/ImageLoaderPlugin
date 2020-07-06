@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QProgressDialog>
 
 namespace fi {
 	#include <FreeImage.h>
@@ -142,7 +143,7 @@ void ImageCollectionScanner::scan()
 		for (const auto& supportedImageType : supportedImageTypes())
 			nameFilters << "*." + supportedImageType;
 
-		scanDir(_directory, nameFilters, imageCollections);
+		scanDir(_directory, nameFilters, imageCollections, true);
 
 		for (auto& imageCollection : imageCollections)
 			imageCollection->computeDatasetName();
@@ -178,7 +179,7 @@ auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& 
 	});
 }
 
-void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections)
+void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog /*= false*/)
 {
 	auto subDirectories = QDir(directory);
 
@@ -186,11 +187,32 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 	const auto dirList = subDirectories.entryList();
 
-	for (int i = 0; i < dirList.size(); ++i)
+	QProgressDialog* progressDialog = nullptr;
+
+	if (showProgressDialog) {
+		progressDialog = new QProgressDialog("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
+
+		//progressDialog->setWindowTitle(QString("Scanning directory %1: %2").arg(typeName.toLower(), _datasetName));
+		progressDialog->setWindowModality(Qt::WindowModal);
+		progressDialog->setMinimumDuration(100);
+		progressDialog->setFixedWidth(600);
+		progressDialog->show();
+	}
+	
+	for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
 	{
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(i));
+		if (showProgressDialog && progressDialog->wasCanceled())
+			break;
+
+		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
+
+		if (showProgressDialog)
+			progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
 
 		scanDir(path, nameFilters, imageCollections);
+
+		if (showProgressDialog)
+			progressDialog->setValue(dirIndex);
 	}
 
 	auto imageFiles = QDir(directory);
@@ -243,4 +265,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 			(*it)->addImage(imageFilePath);
 		}
 	}
+
+	if (progressDialog != nullptr)
+		delete progressDialog;
 }
