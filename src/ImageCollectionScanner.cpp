@@ -189,29 +189,33 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 	QProgressDialog* progressDialog = nullptr;
 
-	if (showProgressDialog) {
+	if (showProgressDialog && !dirList.isEmpty()) {
 		progressDialog = new QProgressDialog("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
 
-		//progressDialog->setWindowTitle(QString("Scanning directory %1: %2").arg(typeName.toLower(), _datasetName));
+		progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
 		progressDialog->setWindowModality(Qt::WindowModal);
-		progressDialog->setMinimumDuration(100);
+		progressDialog->setMinimumDuration(500);
+		progressDialog->setValue(0);
 		progressDialog->setFixedWidth(600);
-		progressDialog->show();
 	}
 	
 	for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
 	{
-		if (showProgressDialog && progressDialog->wasCanceled())
+		if (progressDialog && progressDialog->wasCanceled())
 			break;
 
 		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
-		if (showProgressDialog)
+		if (progressDialog) {
 			progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
+			
+		}
 
 		scanDir(path, nameFilters, imageCollections);
 
-		if (showProgressDialog)
+		QCoreApplication::processEvents();
+
+		if (progressDialog)
 			progressDialog->setValue(dirIndex);
 	}
 
