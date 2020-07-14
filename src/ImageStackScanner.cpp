@@ -5,24 +5,26 @@
 #include <QImageReader>
 
 ImageStackScanner::ImageStackScanner() :
-	ImageScanner(ImageCollectionType::Stack)
+	ImageScanner(ImageData::Type::Stack)
 {
 	auto imageTypes = QStringList();
 
 	imageTypes << "jpg" << "png" << "bmp" << "tiff" << "tif";
 
 	setSupportedImageTypes(imageTypes);
+
+	for(const auto imageType : supportedImageTypes())
+		_filter << "*." + imageType;
 }
 
 void ImageStackScanner::scan()
 {
-	emit beginScan();
+	//emit beginScan();
 
-	start();
-
-	emit endScan(_scanned);
+	//start();
 }
 
+/*
 void ImageStackScanner::run()
 {
 	if (!_initialized)
@@ -31,6 +33,8 @@ void ImageStackScanner::run()
 	_scanned->reset();
 
 	scanDir(_directory);
+
+	emit endScan(_scanned);
 
 	const auto noStacks		= _scanned->map().size();
 	const auto hasStacks	= noStacks > 0;
@@ -64,35 +68,29 @@ void ImageStackScanner::scanDir(const QString& directory)
 
 	imageFiles.setFilter(QDir::Files);
 
-	auto nameFilters = QStringList();
-
-	foreach(QString imageType, supportedImageTypes())
-	{
-		nameFilters << "*." + imageType;
-	}
-
-	imageFiles.setNameFilters(nameFilters);
+	imageFiles.setNameFilters(_filter);
 
 	const auto fileList = imageFiles.entryList();
 
 	for (int i = 0; i < fileList.size(); ++i)
 	{
 		const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileList.at(i));
-
+		
 		QImageReader imageReader(imageFilePath);
 
 		const auto size = imageReader.size();
 
 		if (size.width() > 0 && size.height() > 0) {
-			const auto sizeString = QString("%1x%2").arg(QString::number(size.width()), QString::number(imageReader.size().height()));
+			const auto stackName = QString("%1:%2x%3").arg(QString(directory).replace(_directory, ""), QString::number(size.width()), QString::number(imageReader.size().height()));
 
-			if (!_scanned->map().contains(sizeString)) {
-				_scanned->map()[sizeString] = ImageCollection(size);
+			if (!_scanned->map().contains(stackName)) {
+				_scanned->map()[stackName] = ImageCollection(size);
 			}
 			
-			_scanned->map()[sizeString].add(imageFilePath);
+			_scanned->map()[stackName].add(imageFilePath);
 		}
-
+		
 		scanDir(imageFilePath);
 	}
 }
+*/

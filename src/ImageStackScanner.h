@@ -16,16 +16,16 @@ public:
 	/** Default constructor */
 	ImageStackScanner();
 
-	/** Scan for image stacks */
-	void scan() override;
-
-	/** Start scan thread */
-	void run() override;
+	/** Scan for images */
+	virtual void scan() override;
 
 private:
 	/**
 	 * Scan directory
 	 * @param directory Search directory
 	 */
-	void scanDir(const QString& directory);
+	 //void scanDir(const QString& directory);
+
+private:
+	QStringList		_filter;
 };

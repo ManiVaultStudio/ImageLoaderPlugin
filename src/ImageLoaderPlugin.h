@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Common.h"
-#include "Payload.h"
+
+#include "ImageCollectionsModel.h"
 
 #include <LoaderPlugin.h>
 
@@ -27,11 +28,19 @@ public:
 	/** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-	/**
-	 * Add images to HDPS
-	 * @param payload High dimensional image data payload
-	 */
-	void addImages(std::shared_ptr<Payload> payload);
+public: // Models
+
+	/** Returns the image collections model */
+	ImageCollectionsModel& imageCollectionsModel() { return _imageCollectionsModel; }
+
+	/** Returns the image collections model */
+	ImageCollectionsModel::Filter& imageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+
+private:
+	ImageCollectionsModel			_imageCollectionsModel;				/** Image collections model */
+	ImageCollectionsModel::Filter	_imageCollectionsFilterModel;		/** Image collections filter model */
+
+	friend class ImageCollection;
 };
 
 /**

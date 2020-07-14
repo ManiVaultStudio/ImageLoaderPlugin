@@ -4,78 +4,78 @@
 #include <QVBoxLayout>
 #include <QComboBox>
 #include <QStatusBar>
+#include <QProgressBar>
 
 #include "ImageLoaderPlugin.h"
-#include "ImageSequenceWidget.h"
-#include "ImageStackWidget.h"
-#include "MultiPartImageSequenceWidget.h"
 
-ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin* imageLoaderPlugin) :
-	_imageLoaderPlugin(imageLoaderPlugin),
+#include "ui_ImageLoaderDialog.h"
+
+ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
+	_ui{ std::make_unique<Ui::ImageLoaderDialog>() },
 	_settings("HDPS", "Plugins/ImageLoader/General"),
-	_mainLayout(new QVBoxLayout()),
-	_settingsLayout(new QVBoxLayout()),
-	_typesComboBox(new QComboBox()),
-	_pagesStackedWidget(new StackedWidget()),
-	_imageSequenceWidget(new ImageSequenceWidget(imageLoaderPlugin)),
-	_imageStackWidget(new ImageStackWidget(imageLoaderPlugin)),
-	_multiPartImageSequenceWidget(new MultiPartImageSequenceWidget(imageLoaderPlugin)),
-	_statusBar(new QStatusBar())
+	_imageLoaderPlugin(nullptr)
 {
-	_mainLayout->setMargin(0);
-
-	setLayout(_mainLayout);
-
-	_settingsLayout->setMargin(11);
-	_settingsLayout->addWidget(_typesComboBox);
-	_settingsLayout->addWidget(_pagesStackedWidget);
-	_settingsLayout->addStretch(1);
-
-	_mainLayout->addLayout(_settingsLayout);
-	_mainLayout->addWidget(_statusBar);
-
-	_pagesStackedWidget->addWidget(_imageSequenceWidget);
-	_pagesStackedWidget->addWidget(_imageStackWidget);
-	_pagesStackedWidget->addWidget(_multiPartImageSequenceWidget);
-
-	_typesComboBox->blockSignals(true);
-
-	_typesComboBox->addItem("Sequence");
-	_typesComboBox->addItem("Stack");
-	_typesComboBox->addItem("Multipart");
-
-	_typesComboBox->setItemData(0, "Load in a sequence where each image represents a data point, and the number of dimensions is defined by the number of pixels", Qt::ToolTipRole);
-	_typesComboBox->setItemData(1, "Load in a stack of images where each pixel represents a data point, and each layer represents a dimension", Qt::ToolTipRole);
-	_typesComboBox->setItemData(1, "Load in one or more multipart TIFF images", Qt::ToolTipRole);
-
-	_typesComboBox->blockSignals(false);
-
-	connect(_typesComboBox, QOverload<int>::of(&QComboBox::activated), _pagesStackedWidget, &QStackedWidget::setCurrentIndex);
-
-	_imageSequenceWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-	_imageStackWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-	setMinimumWidth(480);
-	setMinimumHeight(480);
-
-	connect(_imageSequenceWidget, &ImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
-	connect(_imageStackWidget, &ImageStackWidget::message, this, &ImageLoaderDialog::onMessage);
-	connect(_multiPartImageSequenceWidget, &MultiPartImageSequenceWidget::message, this, &ImageLoaderDialog::onMessage);
-	
-	const auto CurrentPage = _settings.value("CurrentPage", 0).toInt();
-
-	_typesComboBox->setCurrentIndex(CurrentPage);
-	_pagesStackedWidget->setCurrentIndex(CurrentPage);
-
-	_statusBar->showMessage("Ready");
+	_ui->setupUi(this);
 }
 
-ImageLoaderDialog::~ImageLoaderDialog()
-{
-	_settings.setValue("CurrentPage", _pagesStackedWidget->currentIndex());
-}
+ImageLoaderDialog::~ImageLoaderDialog() = default;
 
-void ImageLoaderDialog::onMessage(const QString& message)
+void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
-	_statusBar->showMessage(message);
+	_imageLoaderPlugin = imageLoaderPlugin;
+
+	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
+	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
+
+	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
+
+	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
+	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+
+	const auto selectedRow = [&]() {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+
+		if (selectedRows.isEmpty())
+			return QModelIndex();
+
+		return filterModel.mapToSource(selectedRows.first());
+	};
+
+	const auto updateLoadButton = [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		_ui->loadPushButton->setEnabled(false);
+
+		if (index != QModelIndex()) {
+			const auto imageCollectionType	= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
+			const auto noSelectedImages		= imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
+
+			_ui->loadPushButton->setEnabled(noSelectedImages > 0);
+			_ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
+		}
+	};
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedRow, updateLoadButton](const QItemSelection& selected, const QItemSelection& deselected) {
+		updateLoadButton();
+	});
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateLoadButton](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+		updateLoadButton();
+	});
+
+	QObject::connect(_ui->closeAfterLoadedCheckBox, &QPushButton::clicked, [&]() {
+		_settings.setValue("CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
+	});
+
+	QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex()) {
+			const auto loaded = imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
+
+			if (loaded && _settings.value("CloseAfterLoaded", true).toBool())
+				this->close();
+		}
+	});
 }

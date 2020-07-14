@@ -22,7 +22,13 @@ endif(MSVC)
 
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-find_package(FreeImage REQUIRED)
+SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
+find_package(FreeImage QUIET)
+
+if (NOT FREEIMAGE_FOUND)
+    message(WARNING "Failed to find FreeImage, not building ImageLoaderPlugin")
+    return()
+endif()
 
 if (NOT ${FREEIMAGE_FOUND})
     return()
@@ -31,65 +37,31 @@ endif()
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
-	src/ImageLoaderDialog.h
-    src/ImageLoaderDialog.cpp
-	src/FreeImage.h
-    src/FreeImage.cpp
-	src/Payload.h
-	src/Payload.cpp
 	src/Settings.h
 	src/Settings.cpp
-    src/Common.h
-)
-
-set(LOADER_SOURCES
+	src/TreeItem.h
+	src/TreeItem.cpp
+	src/ImageCollectionScanner.h
+	src/ImageCollectionScanner.cpp
 	src/ImageCollection.h
 	src/ImageCollection.cpp
-	src/Scanned.h
-	src/Scanned.cpp
-	src/ImageLoader.h
-	src/ImageLoader.cpp
+	src/ImageCollectionsModel.h
+	src/ImageCollectionsModel.cpp
+	src/Common.h
 )
 
-set(SCANNER_SOURCES
-	src/ImageScanner.h
-	src/ImageScanner.cpp
-)
-
-set(IMAGE_SEQUENCE_SOURCES
-	src/ImageSequenceScanner.h
-	src/ImageSequenceScanner.cpp
-	src/ImageSequenceWidget.h
-    src/ImageSequenceWidget.cpp
-)
-
-set(IMAGE_STACK_SOURCES
-	src/ImageStackScanner.h
-    src/ImageStackScanner.cpp
-	src/ImageStackWidget.h
-    src/ImageStackWidget.cpp
-)
-
-set(MULTI_PART_IMAGE_SEQUENCE_SOURCES
-	src/MultiPartImageSequenceScanner.h
-	src/MultiPartImageSequenceScanner.cpp
-	src/MultiPartImageSequenceWidget.h
-	src/MultiPartImageSequenceWidget.cpp
-)
-
-set(SUBSAMPLE_SETTINGS_SOURCES
-	src/SubsampleSettings.h
-	src/SubsampleSettings.cpp
+set(WIDGET_SOURCES
+	src/CommonSettingsWidget.h
+    src/CommonSettingsWidget.cpp
+	src/ImageLoaderDialog.h
+    src/ImageLoaderDialog.cpp
 	src/SubsampleSettingsWidget.h
 	src/SubsampleSettingsWidget.cpp
 )
 
-set(COLOR_SETTINGS_SOURCES
-	src/ColorSettings.h
-	src/ColorSettings.cpp
-	src/ColorSettingsWidget.h
-	src/ColorSettingsWidget.cpp
-)
+set(AUX src/ImageLoaderPlugin.json)
+
+file(GLOB UIS src/*.ui)
 
 set(AUX src/ImageLoaderPlugin.json)
 
@@ -97,33 +69,24 @@ set(SOURCES
 	${PLUGIN_SOURCES}
 	${LOADER_SOURCES}
 	${SCANNER_SOURCES}
-	${IMAGE_SEQUENCE_SOURCES}
-	${IMAGE_STACK_SOURCES}
-	${MULTI_PART_IMAGE_SEQUENCE_SOURCES}
-	${SUBSAMPLE_SETTINGS_SOURCES}
-	${COLOR_SETTINGS_SOURCES}
+	${WIDGET_SOURCES}
+	${MODEL_SOURCES}
 )
 
-file(GLOB UIS src/*.ui)
-
-set(AUX src/ImageLoaderPlugin.json)
-
-source_group(Plugin FILES ${PLUGIN_SOURCES} ${LOADER_SOURCES} ${SCANNER_SOURCES} ${AUX})
-source_group(ImageSequence FILES ${IMAGE_SEQUENCE_SOURCES})
-source_group(ImageStack FILES ${IMAGE_STACK_SOURCES})
-source_group(MultiPartImageSequence FILES ${MULTI_PART_IMAGE_SEQUENCE_SOURCES})
+source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
+source_group(Widgets FILES ${WIDGET_SOURCES})
 source_group(UI FILES ${UIS})
-source_group(SubsampleSettings FILES ${SUBSAMPLE_SETTINGS_SOURCES})
-source_group(ColorSettings FILES ${COLOR_SETTINGS_SOURCES})
 source_group(Aux FILES ${AUX})
 
 include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 include_directories(src)
 
+QT5_WRAP_UI(UI_HEADERS ${UIS})
+
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
-target_compile_features(${PROJECT} PRIVATE cxx_std_14)
+target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  

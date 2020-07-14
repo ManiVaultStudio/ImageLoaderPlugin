@@ -1,14 +1,15 @@
 #pragma once
 
-#include "SubsampleSettings.h"
-
 #include <memory>
 
 #include <QWidget>
+#include <QSettings>
 
 namespace Ui {
 	class SubsampleSettingsWidget;
 }
+
+class ImageLoaderPlugin;
 
 /**
  * Subsample settings widget
@@ -26,11 +27,12 @@ public:
 
 	/**
 	 * Initializes the widget
-	 * @param subsampleSettings Pointer to subsample settings
+	 * @param imageLoaderPlugin Pointer to image loader plugin
 	 */
-	void initialize(SubsampleSettings* subsampleSettings);
+	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
 	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/** Externally loaded UI */
-	SubsampleSettings*								_subsampleSettings;		/** Subsample settings */
+	QSettings										_settings;				/** Settings */
+	ImageLoaderPlugin*								_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
 };

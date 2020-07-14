@@ -1,4 +1,5 @@
 #include "SubsampleSettingsWidget.h"
+#include "ImageLoaderPlugin.h"
 
 #include "ui_SubsampleSettingsWidget.h"
 
@@ -9,69 +10,160 @@
 
 SubsampleSettingsWidget::SubsampleSettingsWidget(QWidget* parent) :
 	_ui{ std::make_unique<Ui::SubsampleSettingsWidget>() },
-	_subsampleSettings(nullptr)
+	_settings("HDPS", "Plugins/ImageLoader/General"),
+	_imageLoaderPlugin(nullptr)
 {
 	_ui->setupUi(this);
 }
 
-void SubsampleSettingsWidget::initialize(SubsampleSettings* subsampleSettings)
+void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
-	_subsampleSettings = subsampleSettings;
+	_imageLoaderPlugin = imageLoaderPlugin;
 
-	_ui->filterComboBox->addItems(_subsampleSettings->filterNames());
+	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
+	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
 
-	connect(_subsampleSettings, &SubsampleSettings::enabledChanged, [&](bool enabled) {
-		_ui->enableSubsamplingCheckbox->blockSignals(true);
-		_ui->enableSubsamplingCheckbox->setChecked(enabled);
-		_ui->enableSubsamplingCheckbox->blockSignals(false);
+	auto selectedRow = [&]() {
+		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+		
+		if (selectedRows.isEmpty())
+			return QModelIndex();
 
-		_ui->ratioLabel->setEnabled(enabled);
-		_ui->ratioSpinBox->setEnabled(enabled);
-		_ui->ratioSlider->setEnabled(enabled);
-		_ui->filterLabel->setEnabled(enabled);
-		_ui->filterComboBox->setEnabled(enabled);
-	});
+		return filterModel.mapToSource(selectedRows.first());
+	};
 
-	connect(_ui->enableSubsamplingCheckbox, &QCheckBox::stateChanged, [&](int state) {
-		_subsampleSettings->setEnabled(static_cast<bool>(state));
-	});
+	auto updateData = [&](const QModelIndex& topLeft, const QModelIndex& bottomRight)
+	{
+		const auto selectedRows = imageCollectionsModel.selectionModel().selectedRows();
+		const auto validSelection = selectedRows.size() == 1 && filterModel.mapToSource(selectedRows.first()).row() == topLeft.row();
+		const auto subsamplingEnabled = imageCollectionsModel.data(topLeft.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), Qt::EditRole).toBool();
+		const auto mightEdit = validSelection && subsamplingEnabled;
 
-	connect(_subsampleSettings, &SubsampleSettings::ratioChanged, [&](const double& ratio) {
-		if (ratio != _ui->ratioSpinBox->value()) {
-			_ui->ratioSpinBox->blockSignals(true);
-			_ui->ratioSpinBox->setValue(100.0 * ratio);
-			_ui->ratioSpinBox->blockSignals(false);
+		auto columnStart = topLeft.column();
+		auto columnEnd = bottomRight.column();
+
+		if (topLeft == QModelIndex() && bottomRight == QModelIndex()) {
+			columnStart = ult(ImageCollection::Column::SubsamplingEnabled);
+			columnEnd = ult(ImageCollection::Column::SubsamplingFilter);
 		}
 
-		if (ratio != _ui->ratioSlider->value()) {
-			_ui->ratioSlider->blockSignals(true);
-			_ui->ratioSlider->setValue(100.0 * ratio);
-			_ui->ratioSlider->blockSignals(false);
+		for (int column = columnStart; column <= columnEnd; column++) {
+			if (column == ult(ImageCollection::Column::SubsamplingEnabled)) {
+
+				_ui->enabledCheckbox->blockSignals(true);
+				_ui->enabledCheckbox->setChecked(subsamplingEnabled);
+				_ui->enabledCheckbox->blockSignals(false);
+
+				_ui->enabledCheckbox->setEnabled(validSelection);
+				_ui->ratioLabel->setEnabled(mightEdit);
+				_ui->ratioSpinBox->setEnabled(mightEdit);
+				_ui->ratioSlider->setEnabled(mightEdit);
+				_ui->ratio25PushButton->setEnabled(mightEdit);
+				_ui->ratio50PushButton->setEnabled(mightEdit);
+				_ui->ratio75PushButton->setEnabled(mightEdit);
+				_ui->ratio100PushButton->setEnabled(mightEdit);
+				_ui->filterLabel->setEnabled(mightEdit);
+				_ui->filterComboBox->setEnabled(mightEdit);
+			}
+
+			if (column == ult(ImageCollection::Column::SubsamplingRatio)) {
+				const auto subsamplingRatio = imageCollectionsModel.data(topLeft.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), Qt::EditRole).toFloat();
+
+				_ui->ratioSpinBox->blockSignals(true);
+				_ui->ratioSpinBox->setValue(validSelection ? subsamplingRatio * 100.0f : 50.0f);
+				_ui->ratioSpinBox->blockSignals(false);
+
+				_ui->ratioSlider->blockSignals(true);
+				_ui->ratioSlider->setValue(validSelection ? subsamplingRatio * 100.0f : 50.0f);
+				_ui->ratioSlider->blockSignals(false);
+			}
+
+			if (column == ult(ImageCollection::Column::SubsamplingFilter)) {
+				const auto subsamplingFilter = imageCollectionsModel.data(topLeft.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), Qt::EditRole).toInt();
+
+				_ui->filterComboBox->blockSignals(true);
+				_ui->filterComboBox->setCurrentIndex(validSelection ? subsamplingFilter : 0);
+				_ui->filterComboBox->blockSignals(false);
+			}
+		}
+	};
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, this, updateData);
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [this, updateData]() {
+		updateData(QModelIndex(), QModelIndex());
+	});
+
+	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [this, updateData]() {
+		updateData(QModelIndex(), QModelIndex());
+	});
+
+	QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedRow, updateData](const QItemSelection& selected, const QItemSelection& deselected) {
+		const auto index = selectedRow();
+
+		if (index == QModelIndex())
+			updateData(QModelIndex(), QModelIndex());
+		else {
+			updateData(index.siblingAtColumn(ult(ImageCollection::Column::Start)), index.siblingAtColumn(ult(ImageCollection::Column::End)));
 		}
 	});
 
-	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&](double ratio) {
-		_subsampleSettings->setRatio(0.01 * ratio);
+	QObject::connect(_ui->enabledCheckbox, &QCheckBox::stateChanged, [&, selectedRow](int state) {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _ui->enabledCheckbox->isChecked());
 	});
 
-	connect(_ui->ratioSlider, &QSlider::valueChanged, [&](int ratio) {
-		_subsampleSettings->setRatio(static_cast<double>(0.01 * ratio));
+	connect(_ui->ratioSpinBox, QOverload<double>::of(&QDoubleSpinBox::valueChanged), [&, selectedRow](double ratio) {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
 	});
 
-	connect(_ui->filterComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [&](int filter) {
-		_subsampleSettings->setFilter(static_cast<ImageResamplingFilter>(filter));
+	connect(_ui->ratioSlider, &QSlider::valueChanged, [&, selectedRow](int ratio) {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * ratio);
 	});
 
-	connect(_subsampleSettings, &SubsampleSettings::filterChanged, [&](const ImageResamplingFilter& imageResamplingFilter) {
-		const int filterIndex = static_cast<int>(imageResamplingFilter);
+	connect(_ui->ratio25PushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
 
-		if (filterIndex == _ui->filterComboBox->currentIndex())
-			return;
-
-		_ui->filterComboBox->blockSignals(true);
-		_ui->filterComboBox->setCurrentIndex(filterIndex);
-		_ui->filterComboBox->blockSignals(false);
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.25f);
 	});
 
-	_subsampleSettings->loadSettings();
+	connect(_ui->ratio50PushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.5f);
+	});
+
+	connect(_ui->ratio75PushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.75f);
+	});
+
+	connect(_ui->ratio100PushButton, &QPushButton::clicked, [&, selectedRow]() {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 1.0f);
+	});
+
+	QObject::connect(_ui->filterComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedRow](int currentIndex) {
+		const auto index = selectedRow();
+
+		if (index != QModelIndex())
+			imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), currentIndex);
+	});
+
+	updateData(QModelIndex(), QModelIndex());
 }
