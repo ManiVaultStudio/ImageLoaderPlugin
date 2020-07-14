@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 
+#include <stdexcept> // For runtime_error.
+
 namespace fi {
 	#include <FreeImage.h>
 }
