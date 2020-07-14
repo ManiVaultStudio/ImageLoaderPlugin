@@ -13,6 +13,7 @@
 #include <QPushButton>
 
 #include <algorithm>
+#include <stdexcept> // For runtime_error.
 
 namespace fi {
 	#include <FreeImage.h>
