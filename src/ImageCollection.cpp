@@ -1393,7 +1393,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 		auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
 
-		points.setData(data.data(), static_cast<std::uint32_t>(noPoints), noDimensions);
+		points.setData(std::move(data.data()), static_cast<std::uint32_t>(noPoints), noDimensions);
 		points.setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
 		points.setProperty("Type", "Images");
