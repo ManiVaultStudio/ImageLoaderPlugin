@@ -350,6 +350,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 		{
 			case FI::FIT_UINT16:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -361,6 +363,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 			case FI::FIT_INT16:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<std::int16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -372,6 +376,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 			case FI::FIT_UINT32:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<std::uint32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -383,6 +389,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 			case FI::FIT_INT32:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<std::int32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -394,6 +402,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 			case FI::FIT_FLOAT:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -405,6 +415,8 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 			
 			case FI::FIT_DOUBLE:
 			{
+				noComponents = 1;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<double>(imageCollection(), subsampledBitmap, data, imageIndex);
 
@@ -455,10 +467,15 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 			}
 
 			case FI::FIT_RGB16:
+			{
+				noComponents = 3;
 				break;
+			}
 
 			case FI::FIT_RGBF:
 			{
+				noComponents = 3;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, 3);
 
@@ -469,10 +486,15 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 			}
 
 			case FI::FIT_RGBA16:
+			{
+				noComponents = 4;
 				break;
+			}
 
 			case FI::FIT_RGBAF:
 			{
+				noComponents = 4;
+
 				if (imageCollectionType == ImageData::Type::Sequence)
 					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, 4);
 
