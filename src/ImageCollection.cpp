@@ -292,18 +292,18 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
 			if (noComponents == 1)
 				data[pixelIndex * noDimensions + imageIndex] = static_cast<float>(scanLine[x]);
 
-			if (noComponents == 3 && grayscale) {
-				auto sum = 0.0f;
+			if (noComponents == 3 || noComponents == 4) {
+				if (grayscale) {
+					auto sum = 0.0f;
 
-				for (std::int32_t c = 0; c < 3; c++)
-					sum += static_cast<float>(scanLine[x * noComponents + c]);
+					for (std::int32_t c = 0; c < 3; c++)
+						sum += static_cast<float>(scanLine[x * noComponents + c]);
 
-				data[pixelIndex * noDimensions + imageIndex] = sum / 3.0f;
-			}
-
-			if (noComponents == 3 && !grayscale) {
-				for (std::int32_t c = 0; c < 3; c++)
-					data[pixelIndex * noDimensions + (imageIndex + c)] = static_cast<float>(scanLine[x * noComponents + c]);
+					data[pixelIndex * noDimensions + imageIndex] = sum / 3.0f;
+				} else {
+					for (std::int32_t c = 0; c < 3; c++)
+						data[pixelIndex * noDimensions + (imageIndex + c)] = static_cast<float>(scanLine[x * noComponents + c]);
+				}
 			}
 		}
 	}
@@ -467,10 +467,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 			}
 
 			case FI::FIT_RGB16:
-			{
-				noComponents = 3;
 				break;
-			}
 
 			case FI::FIT_RGBF:
 			{
@@ -488,6 +485,13 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 			case FI::FIT_RGBA16:
 			{
 				noComponents = 4;
+
+				if (imageCollectionType == ImageData::Type::Sequence)
+					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+
+				if (imageCollectionType == ImageData::Type::Stack)
+					readStack<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+
 				break;
 			}
 
@@ -496,10 +500,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 4;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, 4);
+					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, 4);
+					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 
 				break;
 			}
@@ -521,16 +525,6 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				}
 
 				case 3:
-				{
-					const auto dimensionNameBase = dimensionName(Qt::EditRole).toString();
-
-					dimensionNames << QString("%1_red").arg(dimensionNameBase);
-					dimensionNames << QString("%1_green").arg(dimensionNameBase);
-					dimensionNames << QString("%1_blue").arg(dimensionNameBase);
-
-					break;
-				}
-
 				case 4:
 				{
 					const auto dimensionNameBase = dimensionName(Qt::EditRole).toString();
@@ -538,7 +532,6 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 					dimensionNames << QString("%1_red").arg(dimensionNameBase);
 					dimensionNames << QString("%1_green").arg(dimensionNameBase);
 					dimensionNames << QString("%1_blue").arg(dimensionNameBase);
-					dimensionNames << QString("%1_alpha").arg(dimensionNameBase);
 
 					break;
 				}
