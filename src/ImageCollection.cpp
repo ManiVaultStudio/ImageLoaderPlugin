@@ -290,7 +290,7 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
 			const auto pixelIndex = y * targetWidth + x;
 
 			if (noComponents == 1)
-				data[pixelIndex * noDimensions + imageIndex] = scanLine[x];
+				data[pixelIndex * noDimensions + imageIndex] = static_cast<float>(scanLine[x]);
 
 			if (noComponents == 3 && grayscale) {
 				auto sum = 0.0f;
