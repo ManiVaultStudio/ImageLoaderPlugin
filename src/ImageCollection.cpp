@@ -833,11 +833,9 @@ QVariant ImageCollection::imageFormat(const int& role) const
 		case QImage::Format_Alpha8:
 			break;
 
-#if QT_VERSION > QT_VERSION_CHECK(5, 14, 0)
 		case QImage::Format_Grayscale8:
 			formatString = "Grayscale8";
 			break;
-#endif
 
 		case QImage::Format_RGBX64:
 			formatString = "RGBX64";
@@ -851,9 +849,11 @@ QVariant ImageCollection::imageFormat(const int& role) const
 			formatString = "Grayscale8";
 			break;
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
 		case QImage::Format_Grayscale16:
 			formatString = "Grayscale16";
 			break;
+#endif
 
 #if QT_VERSION > QT_VERSION_CHECK(5, 14, 0)
 		case QImage::Format_BGR888:
