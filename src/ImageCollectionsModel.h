@@ -137,14 +137,14 @@ public: // Inherited MVC
 	 * @param parent Parent model index
 	 * @return Model index
 	 */
-	QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
+	QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
 	
 	/**
 	 * Returns the parent model index of the given model index
 	 * @param index Model index
 	 * @return Parent model index
 	 */
-	QModelIndex parent(const QModelIndex& index) const;
+	QModelIndex parent(const QModelIndex& index) const override;
 
 public: // Miscellaneous
 
