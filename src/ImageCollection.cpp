@@ -1119,7 +1119,7 @@ QVariant ImageCollection::noSelectedImages(const int& role) const
 			return noSelectedImagesString;
 
 		case Qt::EditRole:
-			return noSelectedImages;
+			return QVariant::fromValue(noSelectedImages);
 
 		case Qt::ToolTipRole:
 			return QString("Number of selected images: %1").arg(noSelectedImagesString);
@@ -1251,7 +1251,7 @@ QVariant ImageCollection::memory(const int& role) const
 			return memoryString;
 
 		case Qt::EditRole:
-			return noBytes;
+			return QVariant::fromValue(noBytes);
 
 		case Qt::ToolTipRole:
 			return QString("Estimated memory consumption of the high-dimensional dataset: %1").arg(memoryString);
