@@ -473,7 +473,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 {
-	int flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+	auto flags = static_cast<Qt::ItemFlags>(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 
 	//const auto type = static_cast<Type>(_type);
 
