@@ -11,6 +11,7 @@
 #include <QProgressDialog>
 #include <QCoreApplication>
 #include <QPushButton>
+#include <QtGlobal>
 
 #include <algorithm>
 #include <stdexcept> // For runtime_error.
@@ -832,9 +833,11 @@ QVariant ImageCollection::imageFormat(const int& role) const
 		case QImage::Format_Alpha8:
 			break;
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 14, 0)
 		case QImage::Format_Grayscale8:
 			formatString = "Grayscale8";
 			break;
+#endif
 
 		case QImage::Format_RGBX64:
 			formatString = "RGBX64";
@@ -852,9 +855,11 @@ QVariant ImageCollection::imageFormat(const int& role) const
 			formatString = "Grayscale16";
 			break;
 
+#if QT_VERSION > QT_VERSION_CHECK(5, 14, 0)
 		case QImage::Format_BGR888:
 			formatString = "BGR888";
 			break;
+#endif
 
 		case QImage::NImageFormats:
 			break;
