@@ -222,7 +222,7 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 		const auto utf8		= _filePath.toUtf8();
 		const auto format	= FI::FreeImage_GetFileType(utf8);
 
-		return FI::FreeImage_Load(format, utf8);
+		auto bitmap = FI::FreeImage_Load(format, utf8);
 #endif
 
 		if (bitmap == nullptr)
