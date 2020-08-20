@@ -211,6 +211,7 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 		}
 	}
 	else {
+
 #ifdef _WIN32
 		const void* const voidPtr	= _filePath.utf16();
 		const auto wcharPtr			= static_cast<const wchar_t*>(voidPtr);
@@ -218,8 +219,8 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 
 		auto bitmap = FI::FreeImage_LoadU(format, wcharPtr);
 #else
-		const auto utf8 = imageFilePath.toUtf8();
-		const auto format = FI::FreeImage_GetFileType(utf8);
+		const auto utf8		= _filePath.toUtf8();
+		const auto format	= FI::FreeImage_GetFileType(utf8);
 
 		return FI::FreeImage_Load(format, utf8);
 #endif
