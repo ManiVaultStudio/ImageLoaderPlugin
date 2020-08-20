@@ -5,6 +5,8 @@
 #include <QStackedWidget>
 #include <QLabel>
 
+#include <memory>
+
 class QVBoxLayout;
 class QComboBox;
 class QStackedWidget;
