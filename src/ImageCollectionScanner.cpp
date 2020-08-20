@@ -147,6 +147,8 @@ void ImageCollectionScanner::scan()
 
 		scanDir(_directory, nameFilters, imageCollections, true);
 
+		qDebug() << "Found " << imageCollections.size() << "image collections";
+
 		for (auto& imageCollection : imageCollections)
 			imageCollection->computeDatasetName();
 

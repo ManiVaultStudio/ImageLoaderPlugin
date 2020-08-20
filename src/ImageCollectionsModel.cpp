@@ -581,7 +581,7 @@ void ImageCollectionsModel::clear()
 
 void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>& imageCollections)
 {
-	beginInsertRows(QModelIndex(), _root->childCount(), _root->childCount() + imageCollections.size());
+	beginInsertRows(QModelIndex(), _root->childCount(), _root->childCount() + imageCollections.size() - 1);
 	{
 		for (auto& imageCollection : imageCollections)
 			_root->appendChild(imageCollection);

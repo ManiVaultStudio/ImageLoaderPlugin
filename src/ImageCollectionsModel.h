@@ -40,9 +40,12 @@ public: // Filter model
 		 */
 		bool filterAcceptsRow(int row, const QModelIndex& parent) const
 		{
+			if (_filter.isEmpty())
+				return true;
+
 			if (parent == QModelIndex()) {
-				const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
-				const auto datasetName = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
+				const auto datasetNameIndex	= sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
+				const auto datasetName		= sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
 
 				return datasetName.contains(_filter, Qt::CaseInsensitive);
 			}
