@@ -33,6 +33,7 @@ public: // Enumerations
 		DatasetName,				/** The name of the dataset */
 		ImageType,					/** The type of image(s) */
 		ImageFormat,				/** Image format */
+		ToGrayscale,				/** Whether to convert the images to grayscale */
 		NoImages,					/** Number of images in the collection */
 		NoSelectedImages,			/** Number of selected images in the collection */
 		SourceSize,					/** Size of the source image(s) */
@@ -43,7 +44,6 @@ public: // Enumerations
 		SubsamplingEnabled,			/** Whether subsampling is enabled */
 		SubsamplingRatio,			/** Subsampling ratio */
 		SubsamplingFilter,			/** Subsampling filter */
-		ToGrayscale,				/** Whether to convert the images to grayscale */
 		NoPoints,					/** Number of high-dimensional data points */
 		NoDimensions,				/** Number of high-dimensional data dimensions */
 		Memory,						/** Estimated memory consumption by the high-dimensional data */
@@ -337,6 +337,15 @@ public: // Getters/setters
 	 */
 	void setImageFormat(const QImage::Format& imageFormat);
 
+	/** Returns whether to convert the images in the collection to grayscale */
+	QVariant toGrayscale(const int& role) const;
+
+	/**
+	 * Sets whether to convert the images in the collection to grayscale
+	 * @param grayscale Whether to convert the images in the collection to grayscale
+	 */
+	void setToGrayscale(const bool& grayscale);
+
 	/** Returns the source image size */
 	QVariant sourceSize(const int& role) const;
 
@@ -369,15 +378,6 @@ public: // Getters/setters
 	 * @param datasetName Dataset name
 	 */
 	void setDatasetName(const QString& datasetName);
-
-	/** Returns whether to convert the images in the collection to grayscale */
-	QVariant toGrayscale(const int& role) const;
-
-	/**
-	 * Sets whether to convert the images in the collection to grayscale
-	 * @param grayscale Whether to convert the images in the collection to grayscale
-	 */
-	void setToGrayscale(const bool& grayscale);
 
 	/**
 	 * Returns the image collection type (image sequence or image stack)

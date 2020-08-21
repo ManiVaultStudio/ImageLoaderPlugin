@@ -54,14 +54,14 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 			case ImageCollection::Column::ImageFormat:
 				return imageCollection->imageFormat(role);
 
+			case ImageCollection::Column::ToGrayscale:
+				return imageCollection->toGrayscale(role);
+
 			case ImageCollection::Column::NoImages:
 				return imageCollection->noImages(role);
 
 			case ImageCollection::Column::NoSelectedImages:
 				return imageCollection->noSelectedImages(role);
-
-			case ImageCollection::Column::ToGrayscale:
-				return imageCollection->toGrayscale(role);
 
 			case ImageCollection::Column::SourceSize:
 				return imageCollection->sourceSize(role);
@@ -357,6 +357,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 					case ImageCollection::Column::ImageFormat:
 						return "Image format";
 
+					case ImageCollection::Column::ToGrayscale:
+						return "Grayscale";
+
 					case ImageCollection::Column::NoImages:
 						return "#Images";
 
@@ -398,9 +401,6 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					case ImageCollection::Column::SubsamplingFilter:
 						return "Subsampling filter";
-
-					case ImageCollection::Column::ToGrayscale:
-						return "Grayscale";
 
 					default:
 						break;
