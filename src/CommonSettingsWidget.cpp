@@ -219,6 +219,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			const auto type = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt();
 			_ui->imagesTreeView->header()->setSectionHidden(ult(ImageCollection::Image::Column::DimensionName), type == ult(ImageData::Type::Sequence));
 		}
+
+		_ui->imagesTreeView->header()->hideSection(ult(ImageCollection::Image::Column::FileName));
 	};
 
 	QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
