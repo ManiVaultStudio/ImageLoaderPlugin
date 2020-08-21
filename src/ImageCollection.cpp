@@ -894,6 +894,36 @@ void ImageCollection::setImageFormat(const QImage::Format& imageFormat)
 	_imageFormat = imageFormat;
 }
 
+QVariant ImageCollection::toGrayscale(const int& role) const
+{
+	const auto toGrayscaleString = _toGrayscale ? "true" : "false";
+
+	switch (role)
+	{
+		case Qt::DisplayRole:
+			return "";
+
+		case Qt::EditRole:
+			return _toGrayscale;
+
+		case Qt::ToolTipRole:
+			return QString("Convert images to grayscale: %1").arg(toGrayscaleString);
+
+		case Qt::CheckStateRole:
+			return _toGrayscale ? Qt::Checked : Qt::Unchecked;
+
+		default:
+			break;
+	}
+
+	return QVariant();
+}
+
+void ImageCollection::setToGrayscale(const bool& toGrayscale)
+{
+	_toGrayscale = toGrayscale;
+}
+
 QVariant ImageCollection::sourceSize(const int& role) const
 {
 	const auto sourceSizeString = QString("%1x%2").arg(QString::number(_sourceSize.width()), QString::number(_sourceSize.height()));
@@ -1021,36 +1051,6 @@ QVariant ImageCollection::datasetName(const int& role) const
 void ImageCollection::setDatasetName(const QString& datasetName)
 {
 	_datasetName = datasetName;
-}
-
-QVariant ImageCollection::toGrayscale(const int& role) const
-{
-	const auto toGrayscaleString = _toGrayscale ? "true" : "false";
-
-	switch (role)
-	{
-		case Qt::DisplayRole:
-			return "";
-
-		case Qt::EditRole:
-			return _toGrayscale;
-
-		case Qt::ToolTipRole:
-			return QString("Convert images to grayscale: %1").arg(toGrayscaleString);
-
-		case Qt::CheckStateRole:
-			return _toGrayscale ? Qt::Checked : Qt::Unchecked;
-
-		default:
-			break;
-	}
-
-	return QVariant();
-}
-
-void ImageCollection::setToGrayscale(const bool& toGrayscale)
-{
-	_toGrayscale = toGrayscale;
 }
 
 QVariant ImageCollection::type(const int& role) const

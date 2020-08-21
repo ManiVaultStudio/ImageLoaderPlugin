@@ -48,6 +48,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imageCollectionsTreeView->header()->hideSection(column);
 
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DatasetName));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ImageType));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ImageFormat));
+	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoImages));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
@@ -58,7 +61,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
 	_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
-	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
 	//_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
 	
 	_ui->imagesTreeView->header()->setHidden(true);
@@ -118,9 +120,13 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		if (imageCollectionsModel.rowCount(QModelIndex()) > 0) {
 			_ui->imageCollectionsTreeView->setEnabled(true);
 			_ui->imageCollectionsLabel->setEnabled(true);
+			
 			_ui->imageCollectionsTreeView->header()->show();
+
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageType));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageFormat));
+			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoImages));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoSelectedImages));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::SourceSize));
@@ -132,7 +138,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Memory));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
 			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
-			_ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
 
 			_ui->searchFilterLineEdit->setEnabled(true);
 		}
