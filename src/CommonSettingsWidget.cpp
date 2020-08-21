@@ -211,6 +211,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->imagesTreeView->header()->resizeSection(ult(ImageCollection::Image::Column::ShouldLoad), 20);
 		
 		_ui->imagesTreeView->resizeColumnToContents(ult(ImageCollection::Image::Column::FileName));
+		_ui->imagesTreeView->resizeColumnToContents(ult(ImageCollection::Image::Column::DimensionName));
 
 		const auto index = selectedImageCollection();
 

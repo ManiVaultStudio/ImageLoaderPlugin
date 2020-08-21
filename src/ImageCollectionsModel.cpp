@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <QPainter>
+#include <QIcon>
 
 ImageCollectionsModel::ImageCollectionsModel() :
 	QAbstractItemModel(),
@@ -307,6 +308,43 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 	if (orientation == Qt::Horizontal) {
 		switch (role)
 		{
+			case Qt::DecorationRole:
+			{
+				const auto editIcon = []() {
+					const auto iconSize = QSize(12, 12);
+
+					QPixmap pixmap(iconSize);
+					
+					pixmap.fill(Qt::transparent);
+
+					QPainter painter(&pixmap);
+					
+					painter.setPen(QColor(0, 0, 0, 255));
+					painter.setFont(QFont("Font Awesome 5 Free Solid", 8));
+					painter.drawText(QRect(0, 0, iconSize.width(), iconSize.height()), Qt::AlignCenter, u8"\uf044");
+					
+					return QIcon(pixmap);
+				};
+
+				switch (static_cast<ImageCollection::Column>(section)) {
+					case ImageCollection::Column::DatasetName:
+						return editIcon();
+
+					default:
+						break;
+				}
+
+				switch (static_cast<ImageCollection::Image::Column>(section)) {
+					case ImageCollection::Image::Column::DimensionName:
+						return editIcon();
+
+					default:
+						break;
+				}
+				
+				return QVariant();
+			}
+
 			case Qt::DisplayRole:
 			{
 				switch (static_cast<ImageCollection::Column>(section)) {
