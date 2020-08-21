@@ -319,9 +319,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 					QPainter painter(&pixmap);
 					
-					painter.setPen(QColor(0, 0, 0, 255));
-					painter.setFont(QFont("Font Awesome 5 Free Solid", 8));
-					painter.drawText(QRect(0, 0, iconSize.width(), iconSize.height()), Qt::AlignCenter, u8"\uf044");
+					painter.setPen(QColor(0, 0, 0, 128));
+					painter.setFont(QFont("Font Awesome 5 Free Solid", 7));
+					painter.drawText(QRect(0, 0, iconSize.width(), iconSize.height()), Qt::AlignCenter, u8"\uf304");
 					
 					return QIcon(pixmap);
 				};
