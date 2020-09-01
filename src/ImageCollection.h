@@ -10,6 +10,7 @@
 #include <QSize>
 #include <QVector>
 #include <QImage>
+#include <QSettings>
 
 namespace FI {
 	#include <FreeImage.h>
@@ -239,11 +240,12 @@ public: // Nested image class
 
 		/**
 		 * Constructor
+		 * @param imageCollection Image collection
 		 * @param enabled Whether subsampling is enabled
 		 * @param ratio The subsampling ratio
 		 * @param filter The subsampling filter
 		 */
-		SubSampling(const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
+		SubSampling(ImageCollection* imageCollection, const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
 
 	public: // Getters/setters
 		
@@ -286,11 +288,11 @@ public: // Nested image class
 		 */
 		void setFilter(const ImageResamplingFilter& filter);
 
-
 	private:
-		bool					_enabled;		/** Whether subsampling is enabled */
-		float					_ratio;			/** Subsampling ratio */
-		ImageResamplingFilter	_filter;		/** Subsampling filter e.g. box, bilinear */
+		ImageCollection*		_imageCollection;	/** Parent image collection */
+		bool					_enabled;			/** Whether subsampling is enabled */
+		float					_ratio;				/** Subsampling ratio */
+		ImageResamplingFilter	_filter;			/** Subsampling filter e.g. box, bilinear */
 	};
 
 public: // Construction
@@ -303,6 +305,9 @@ public: // Construction
 	 * @param sourceSize Source image size
 	 */
 	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize);
+
+	/** Destructor */
+	~ImageCollection();
 
 public: // Getters/setters
 
@@ -447,7 +452,9 @@ public:
 	 */
 	bool load(ImageLoaderPlugin* imageLoaderPlugin);
 
-private:
+protected:
+	const QString		_settingsPrefix;	/** Prefix path for settings */
+	QSettings			_settings;			/** Settings */
 	QString				_directory;			/** Root directory of the images */
 	QString				_imageFileType;		/** Image file type */
 	QImage::Format		_imageFormat;		/** Image format */
@@ -457,4 +464,6 @@ private:
 	bool				_toGrayscale;		/** Whether to convert the images in the collection to grayscale */
 	ImageData::Type		_type;				/** How to load the collection (as image sequence or image stack) */
 	SubSampling			_subsampling;		/** Subsampling parameters */
+
+	friend class SubSampling;
 };

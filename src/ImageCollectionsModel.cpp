@@ -310,6 +310,29 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 		{
 			case Qt::DecorationRole:
 			{
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				const auto editIcon = []() {
 					const auto iconSize = QSize(12, 12);
 

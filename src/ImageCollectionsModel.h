@@ -205,7 +205,6 @@ public: // Image selection
 	void selectPercentage(const QModelIndex& parent, const float& selectionProbability);
 
 private:
-	//std::vector<ImageCollection>	_imageCollections;		/** Images collections */
-	TreeItem*						_root;					/** Root tree item */
-	QItemSelectionModel				_selectionModel;		/** Selection model */
+	TreeItem*				_root;					/** Root tree item */
+	QItemSelectionModel		_selectionModel;		/** Selection model */
 };
