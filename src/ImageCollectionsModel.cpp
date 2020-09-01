@@ -2,6 +2,8 @@
 
 #include "Common.h"
 
+#include "Application.h"
+
 #include <QDebug>
 #include <QDirIterator>
 #include <QPainter>
@@ -310,25 +312,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 		{
 			case Qt::DecorationRole:
 			{
-				const auto editIcon = []() {
-					const auto iconSize = QSize(12, 12);
-
-					QPixmap pixmap(iconSize);
-					
-					pixmap.fill(Qt::transparent);
-
-					QPainter painter(&pixmap);
-					
-					painter.setPen(QColor(0, 0, 0, 128));
-					painter.setFont(QFont("Font Awesome 5 Free Solid", 7));
-					painter.drawText(QRect(0, 0, iconSize.width(), iconSize.height()), Qt::AlignCenter, u8"\uf304");
-					
-					return QIcon(pixmap);
-				};
-
 				switch (static_cast<ImageCollection::Column>(section)) {
 					case ImageCollection::Column::DatasetName:
-						return editIcon();
+						return hdps::Application::getIconFont("FontAwesome").getIcon("pen", QSize(13, 13), Qt::darkGray);
 
 					default:
 						break;
@@ -336,7 +322,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
 				switch (static_cast<ImageCollection::Image::Column>(section)) {
 					case ImageCollection::Image::Column::DimensionName:
-						return editIcon();
+						return hdps::Application::getIconFont("FontAwesome").getIcon("pen", QSize(13, 13), Qt::darkGray);
 
 					default:
 						break;
