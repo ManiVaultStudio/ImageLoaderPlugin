@@ -177,6 +177,13 @@ public: // Miscellaneous
 	 */
 	bool loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index);
 
+	/**
+	 * Returns the image collection settings prefix given an arbitrary model index
+	 * @param index Model index of the image collection
+	 * @return Settings prefix for the image collection
+	 */
+	QString getSettingsPrefix(const QModelIndex& index) const;
+
 public: // Image selection
 
 	/**
@@ -205,7 +212,7 @@ public: // Image selection
 	void selectPercentage(const QModelIndex& parent, const float& selectionProbability);
 
 private:
-	//std::vector<ImageCollection>	_imageCollections;		/** Images collections */
-	TreeItem*						_root;					/** Root tree item */
-	QItemSelectionModel				_selectionModel;		/** Selection model */
+	QSettings				_settings;				/** Settings */
+	TreeItem*				_root;					/** Root tree item */
+	QItemSelectionModel		_selectionModel;		/** Selection model */
 };

@@ -11,6 +11,7 @@
 
 ImageCollectionsModel::ImageCollectionsModel() :
 	QAbstractItemModel(),
+	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_root(new TreeItem(nullptr)),
 	_selectionModel(this)
 {
@@ -129,6 +130,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 	affectedIndices << index;
 
+	const auto settingsPrefix = getSettingsPrefix(index);
+
 	if (index.parent() == QModelIndex()) {
 		auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
@@ -164,6 +167,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					case ImageCollection::Column::DatasetName:
 					{
 						imageCollection->setDatasetName(value.toString());
+						_settings.setValue(settingsPrefix + "/DatasetName", value.toString());
 						break;
 					}
 
@@ -173,12 +177,15 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
+
+						_settings.setValue(settingsPrefix + "/Type", value.toInt());
 						break;
 					}
 
 					case ImageCollection::Column::SubsamplingEnabled:
 					{
 						imageCollection->subsampling().setEnabled(value.toBool());
+						_settings.setValue(settingsPrefix + "/Subsampling/Enabled", value.toBool());
 						updateTargetSize();
 						break;
 					}
@@ -187,12 +194,14 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					{
 						imageCollection->subsampling().setRatio(value.toFloat());
 						updateTargetSize();
+						_settings.setValue(settingsPrefix + "/Subsampling/Ratio", value.toFloat());
 						break;
 					}
 
 					case ImageCollection::Column::SubsamplingFilter:
 					{
 						imageCollection->subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
+						_settings.setValue(settingsPrefix + "/Subsampling/Filter", value.toInt());
 						break;
 					}
 
@@ -210,6 +219,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					{
 						imageCollection->setToGrayscale(value.toBool());
 						updateTargetSize();
+						_settings.setValue(settingsPrefix + "/ToGrayscale", value.toBool());
 						break;
 					}
 
@@ -242,6 +252,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
+
+						_settings.setValue(settingsPrefix + "/Images/" + image->dimensionName(Qt::EditRole).toString(), value.toBool());
 						break;
 					}
 
@@ -275,6 +287,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
+
+						_settings.setValue(settingsPrefix + "/Images/" + image->dimensionName(Qt::EditRole).toString(), value.toBool());
 						break;
 					}
 
@@ -614,6 +628,29 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 			_root->appendChild(imageCollection);
 	}
 	endInsertRows();
+
+	for (int rowIndex = 0; rowIndex < rowCount(QModelIndex()); rowIndex++) {
+		const auto imageCollectionIndex		= index(rowIndex, 0);
+		const auto datasetName				= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+		const auto noImages					= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
+		const auto settingsPrefix			= getSettingsPrefix(imageCollectionIndex);
+
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _settings.value(settingsPrefix + "/DatasetName", datasetName).toString());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _settings.value(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _settings.value(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _settings.value(settingsPrefix + "/Subsampling/Enabled", false).toBool());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _settings.value(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _settings.value(settingsPrefix + "/Subsampling/Filter", 0).toInt());
+
+		for (int imageIndex = 0; imageIndex < noImages; imageIndex++) {
+			const auto dimensionName	= index(imageIndex, ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex).data(Qt::EditRole).toString();
+			const auto shouldLoad		= _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool();
+
+			//qDebug() << dimensionName << shouldLoad;
+			
+			setData(imageCollectionIndex.child(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad)), _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool());
+		}
+	}
 }
 
 void ImageCollectionsModel::guessDimensionNames(const QModelIndex& index)
@@ -636,24 +673,24 @@ bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPl
 	return imageCollection->load(imageLoaderPlugin);
 }
 
+QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const
+{
+	const auto imageCollectionIndex		= index.parent().isValid() ? index.parent() : index;
+	const auto directory				= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
+	const auto imageType				= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ImageType)), Qt::EditRole).toString();
+	const auto datasetName				= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+	
+	return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + imageType);
+}
+
 void ImageCollectionsModel::selectAll(const QModelIndex& parent)
 {
 	if (parent.parent() != QModelIndex())
 		return;
 
-	auto imageCollection = static_cast<ImageCollection*>((void*)parent.internalPointer());
-
-	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
-
-	for (auto& childItem : imageCollection->_children) {
-		const auto row		= imageCollection->_children.indexOf(childItem);
-		const auto image	= static_cast<ImageCollection::Image*>(imageCollection->child(row));
-		
-		image->setShouldLoad(true);
+	for (std::int32_t imageIndex = 0; imageIndex < rowCount(parent); imageIndex++) {
+		setData(index(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad), parent), true);
 	}
-
-	emit dataChanged(this->index(0, shouldLoadColumn, parent), this->index(imageCollection->childCount() - 1, shouldLoadColumn, parent));
-	emit dataChanged(parent.siblingAtColumn(ult(ImageCollection::Column::Start)), parent.siblingAtColumn(ult(ImageCollection::Column::End)));
 }
 
 void ImageCollectionsModel::selectNone(const QModelIndex& parent)
@@ -661,19 +698,9 @@ void ImageCollectionsModel::selectNone(const QModelIndex& parent)
 	if (parent.parent() != QModelIndex())
 		return;
 
-	auto imageCollection = static_cast<ImageCollection*>((void*)parent.internalPointer());
-
-	const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
-
-	for (auto& childItem : imageCollection->_children) {
-		const auto row = imageCollection->_children.indexOf(childItem);
-		const auto image = static_cast<ImageCollection::Image*>(imageCollection->child(row));
-
-		image->setShouldLoad(false);
+	for (std::int32_t imageIndex = 0; imageIndex < rowCount(parent); imageIndex++) {
+		setData(index(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad), parent), false);
 	}
-
-	emit dataChanged(this->index(0, shouldLoadColumn, parent), this->index(imageCollection->childCount() - 1, shouldLoadColumn, parent));
-	emit dataChanged(parent.siblingAtColumn(ult(ImageCollection::Column::Start)), parent.siblingAtColumn(ult(ImageCollection::Column::End)));
 }
 
 void ImageCollectionsModel::invertSelection(const QModelIndex& parent)

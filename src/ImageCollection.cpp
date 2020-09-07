@@ -12,6 +12,7 @@
 #include <QCoreApplication>
 #include <QPushButton>
 #include <QtGlobal>
+#include <QDir>
 
 #include <algorithm>
 #include <stdexcept> // For runtime_error.
@@ -622,7 +623,8 @@ ImageCollection* ImageCollection::Image::imageCollection()
 	return static_cast<ImageCollection*>(parentItem());
 }
 
-ImageCollection::SubSampling::SubSampling(const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+	_imageCollection(imageCollection),
 	_enabled(enabled),
 	_ratio(ratio),
 	_filter(filter)
@@ -720,7 +722,11 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 	_datasetName(),
 	_toGrayscale(true),
 	_type(ImageData::Type::Stack),
-	_subsampling()
+	_subsampling(this)
+{
+}
+
+ImageCollection::~ImageCollection()
 {
 }
 
@@ -1284,7 +1290,7 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 void ImageCollection::computeDatasetName()
 {
 	if (noImages(Qt::EditRole).toInt() == 1 || image(0)->pageIndex(Qt::EditRole).toInt() >= 0) {
-		setDatasetName(image(0)->fileName(Qt::EditRole).toString());
+		setDatasetName(image(0)->fileName(Qt::EditRole).toString() + "_" + _imageFileType.toLower());
 		return;
 	}
 
