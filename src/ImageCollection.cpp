@@ -629,9 +629,6 @@ ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, cons
 	_ratio(ratio),
 	_filter(filter)
 {
-	setEnabled(_imageCollection->_settings.value(_imageCollection->_settingsPrefix + "/Subsampling/Enabled", false).toBool());
-	setRatio(_imageCollection->_settings.value(_imageCollection->_settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
-	setFilter(static_cast<ImageResamplingFilter>(_imageCollection->_settings.value(_imageCollection->_settingsPrefix + "/Subsampling/Filter", false).toInt()));
 }
 
 QVariant ImageCollection::SubSampling::enabled(const int& role) const
@@ -659,8 +656,6 @@ QVariant ImageCollection::SubSampling::enabled(const int& role) const
 void ImageCollection::SubSampling::setEnabled(const bool& enabled)
 {
 	_enabled = enabled;
-
-	_imageCollection->_settings.setValue(_imageCollection->_settingsPrefix + "/Subsampling/Enabled", _enabled);
 }
 
 QVariant ImageCollection::SubSampling::ratio(const int& role) const
@@ -688,8 +683,6 @@ QVariant ImageCollection::SubSampling::ratio(const int& role) const
 void ImageCollection::SubSampling::setRatio(const float& ratio)
 {
 	_ratio = std::clamp(ratio, 0.0f, 1.0f);
-
-	_imageCollection->_settings.setValue(_imageCollection->_settingsPrefix + "/Subsampling/Ratio", _ratio);
 }
 
 QVariant ImageCollection::SubSampling::filter(const int& role) const
@@ -717,14 +710,10 @@ QVariant ImageCollection::SubSampling::filter(const int& role) const
 void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter)
 {
 	_filter = filter;
-
-	_imageCollection->_settings.setValue(_imageCollection->_settingsPrefix + "/Subsampling/Filter", static_cast<std::int32_t>(_filter));
 }
 
 ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize) :
 	TreeItem(parent),
-	_settingsPrefix("Cache/" + QDir::fromNativeSeparators(directory) + "/" + imageType),
-	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_directory(directory),
 	_imageFileType(imageType),
 	_imageFormat(imageFormat),
@@ -735,9 +724,6 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 	_type(ImageData::Type::Stack),
 	_subsampling(this)
 {
-	//setDatasetName(_settings.value(_settingsPrefix + "/DatasetName", computeDatasetName()).toString());
-	//setToGrayscale(_settings.value(_settingsPrefix + "/ToGrayscale", true).toBool());
-	//setType(static_cast<ImageData::Type>(_settings.value(_settingsPrefix + "/Type", ImageData::Type::Stack).toInt()));
 }
 
 ImageCollection::~ImageCollection()
@@ -942,8 +928,6 @@ QVariant ImageCollection::toGrayscale(const int& role) const
 void ImageCollection::setToGrayscale(const bool& toGrayscale)
 {
 	_toGrayscale = toGrayscale;
-
-	_settings.setValue(_settingsPrefix + "/ToGrayscale", _toGrayscale);
 }
 
 QVariant ImageCollection::sourceSize(const int& role) const
@@ -1073,8 +1057,6 @@ QVariant ImageCollection::datasetName(const int& role) const
 void ImageCollection::setDatasetName(const QString& datasetName)
 {
 	_datasetName = datasetName;
-
-	_settings.setValue(_settingsPrefix + "/DatasetName", _datasetName);
 }
 
 QVariant ImageCollection::type(const int& role) const
@@ -1102,8 +1084,6 @@ QVariant ImageCollection::type(const int& role) const
 void ImageCollection::setType(const ImageData::Type & type)
 {
 	_type = type;
-
-	_settings.setValue(_settingsPrefix + "/Type", ult(_type));
 }
 
 ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
@@ -1310,7 +1290,7 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 void ImageCollection::computeDatasetName()
 {
 	if (noImages(Qt::EditRole).toInt() == 1 || image(0)->pageIndex(Qt::EditRole).toInt() >= 0) {
-		setDatasetName(image(0)->fileName(Qt::EditRole).toString());
+		setDatasetName(image(0)->fileName(Qt::EditRole).toString() + "_" + _imageFileType.toLower());
 		return;
 	}
 

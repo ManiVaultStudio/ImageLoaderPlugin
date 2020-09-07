@@ -149,8 +149,9 @@ void ImageCollectionScanner::scan()
 
 		qDebug() << "Found " << imageCollections.size() << "image collections";
 
-		for (auto& imageCollection : imageCollections)
+		for (auto& imageCollection : imageCollections) {
 			imageCollection->computeDatasetName();
+		}
 
 		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
 
