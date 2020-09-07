@@ -453,8 +453,6 @@ public:
 	bool load(ImageLoaderPlugin* imageLoaderPlugin);
 
 protected:
-	const QString		_settingsPrefix;	/** Prefix path for settings */
-	QSettings			_settings;			/** Settings */
 	QString				_directory;			/** Root directory of the images */
 	QString				_imageFileType;		/** Image file type */
 	QImage::Format		_imageFormat;		/** Image format */

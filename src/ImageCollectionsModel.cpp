@@ -9,6 +9,7 @@
 
 ImageCollectionsModel::ImageCollectionsModel() :
 	QAbstractItemModel(),
+	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_root(new TreeItem(nullptr)),
 	_selectionModel(this)
 {
@@ -162,6 +163,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					case ImageCollection::Column::DatasetName:
 					{
 						imageCollection->setDatasetName(value.toString());
+						_settings.setValue(getSettingsPrefix(index) + "/DatasetName", value.toString());
 						break;
 					}
 
@@ -171,12 +173,15 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
+
+						_settings.setValue(getSettingsPrefix(index) + "/Type", value.toInt());
 						break;
 					}
 
 					case ImageCollection::Column::SubsamplingEnabled:
 					{
 						imageCollection->subsampling().setEnabled(value.toBool());
+						_settings.setValue(getSettingsPrefix(index) + "/Subsampling/Enabled", value.toBool());
 						updateTargetSize();
 						break;
 					}
@@ -185,12 +190,14 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					{
 						imageCollection->subsampling().setRatio(value.toFloat());
 						updateTargetSize();
+						_settings.setValue(getSettingsPrefix(index) + "/Subsampling/Ratio", value.toFloat());
 						break;
 					}
 
 					case ImageCollection::Column::SubsamplingFilter:
 					{
 						imageCollection->subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
+						_settings.setValue(getSettingsPrefix(index) + "/Subsampling/Filter", value.toInt());
 						break;
 					}
 
@@ -208,6 +215,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 					{
 						imageCollection->setToGrayscale(value.toBool());
 						updateTargetSize();
+						_settings.setValue(getSettingsPrefix(index) + "/ToGrayscale", value.toBool());
 						break;
 					}
 
@@ -651,6 +659,19 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 			_root->appendChild(imageCollection);
 	}
 	endInsertRows();
+
+	for (int rowIndex = 0; rowIndex < rowCount(QModelIndex()); rowIndex++) {
+		const auto imageCollectionIndex		= index(rowIndex, 0);
+		const auto datasetName				= data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+		const auto settingsPrefix			= getSettingsPrefix(imageCollectionIndex);
+
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _settings.value(settingsPrefix + "/DatasetName", datasetName).toString());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _settings.value(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _settings.value(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _settings.value(settingsPrefix + "/Subsampling/Enabled", false).toBool());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _settings.value(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
+		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _settings.value(settingsPrefix + "/Subsampling/Filter", 0).toInt());
+	}
 }
 
 void ImageCollectionsModel::guessDimensionNames(const QModelIndex& index)
@@ -671,6 +692,15 @@ bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPl
 	auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
 	return imageCollection->load(imageLoaderPlugin);
+}
+
+QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const
+{
+	const auto directory		= data(index.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
+	const auto imageType		= data(index.siblingAtColumn(ult(ImageCollection::Column::ImageType)), Qt::EditRole).toString();
+	const auto datasetName		= data(index.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+	
+	return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + imageType);
 }
 
 void ImageCollectionsModel::selectAll(const QModelIndex& parent)
