@@ -6,8 +6,6 @@
 
 #include <LoaderPlugin.h>
 
-#include <QSettings>
-
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
 

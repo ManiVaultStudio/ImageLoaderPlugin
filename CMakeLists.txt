@@ -37,8 +37,6 @@ endif()
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
-	src/Settings.h
-	src/Settings.cpp
 	src/TreeItem.h
 	src/TreeItem.cpp
 	src/ImageCollectionScanner.h

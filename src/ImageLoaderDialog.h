@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDialog>
-#include <QSettings>
 #include <QStackedWidget>
 #include <QLabel>
 
@@ -51,6 +50,5 @@ public:
 
 private:
 	std::unique_ptr<Ui::ImageLoaderDialog>		_ui;						/** Externally loaded UI */
-	QSettings									_settings;					/** Settings */
 	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Image loader plugin */
 };

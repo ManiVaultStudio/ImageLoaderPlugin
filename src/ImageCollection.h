@@ -10,7 +10,6 @@
 #include <QSize>
 #include <QVector>
 #include <QImage>
-#include <QSettings>
 
 namespace FI {
 	#include <FreeImage.h>

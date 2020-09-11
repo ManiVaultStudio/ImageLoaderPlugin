@@ -12,7 +12,6 @@
 
 ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
 	_ui{ std::make_unique<Ui::ImageLoaderDialog>() },
-	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_imageLoaderPlugin(nullptr)
 {
 	_ui->setupUi(this);
@@ -27,7 +26,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	_ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
 	_ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
 
-	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
+	_ui->closeAfterLoadedCheckBox->setChecked(_imageLoaderPlugin->getSetting("GUI/CloseAfterLoaded", true).toBool());
 
 	auto& imageCollectionsModel				= _imageLoaderPlugin->getImageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
@@ -65,7 +64,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(_ui->closeAfterLoadedCheckBox, &QPushButton::clicked, [&]() {
-		_settings.setValue("CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
+		_imageLoaderPlugin->setSetting("GUI/CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
 	});
 
 	QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
@@ -74,7 +73,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		if (index != QModelIndex()) {
 			const auto loaded = imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
 
-			if (loaded && _settings.value("CloseAfterLoaded", true).toBool())
+			if (loaded && _imageLoaderPlugin->getSetting("GUI/CloseAfterLoaded", true).toBool())
 				this->close();
 		}
 	});

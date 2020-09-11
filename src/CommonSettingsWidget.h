@@ -48,8 +48,7 @@ public: // Miscellaneous
 	ImageCollectionScanner& getScanner() { return _scanner; }
 
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
+	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Image loader plugin instance */
 	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;					/** Externally loaded UI */
-	QSettings									_settings;				/** Settings */
 	ImageCollectionScanner						_scanner;				/** Image collection scanner */
 };

@@ -79,8 +79,11 @@ public: // Filter model
 
 public: // Construction/destruction
 
-	/** Default constructor */
-	ImageCollectionsModel();
+	/**
+	 * Constructor
+	 * @param imageLoaderPlugin Pointer to image loader plugin
+	 */
+	ImageCollectionsModel(ImageLoaderPlugin* imageLoaderPlugin);
 
 	/** Default destructor */
 	~ImageCollectionsModel();
@@ -186,6 +189,18 @@ public: // Miscellaneous
 	 */
 	QString getSettingsPrefix(const QModelIndex& index) const;
 
+	/**
+	 * Returns whether an update to data is saved to settings
+	 * @param persistData Whether to persist data updates
+	 */
+	bool getPersistData() const;
+
+	/**
+	 * Sets whether an update to data is saved to settings
+	 * @param persistData Whether to persist data updates
+	 */
+	void setPersistData(const bool& persistData);
+
 public: // Image selection
 
 	/**
@@ -214,7 +229,8 @@ public: // Image selection
 	void selectPercentage(const QModelIndex& parent, const float& selectionProbability);
 
 private:
-	QSettings				_settings;				/** Settings */
+	ImageLoaderPlugin*		_imageLoaderPlugin;		/** Image loader plugin instance */
 	TreeItem*				_root;					/** Root tree item */
 	QItemSelectionModel		_selectionModel;		/** Selection model */
+	bool					_persistData;			/** Whether updates to the model data are persisted */
 };
