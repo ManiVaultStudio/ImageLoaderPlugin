@@ -108,7 +108,7 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
 		switch (static_cast<ImageCollection::Image::Column>(index.column())) {
 			case ImageCollection::Image::Column::ShouldLoad:
-				return image->shouldLoad(role);
+				return image->getShouldLoad(role);
 
 			case ImageCollection::Image::Column::FileName:
 				return image->fileName(role);
@@ -645,10 +645,9 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 		for (int imageIndex = 0; imageIndex < noImages; imageIndex++) {
 			const auto dimensionName	= index(imageIndex, ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex).data(Qt::EditRole).toString();
 			const auto shouldLoad		= _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool();
+			const auto childIndex		= index(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad), imageCollectionIndex);
 
-			//qDebug() << dimensionName << shouldLoad;
-			
-			setData(imageCollectionIndex.child(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad)), _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool());
+			setData(childIndex, _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool());
 		}
 	}
 }

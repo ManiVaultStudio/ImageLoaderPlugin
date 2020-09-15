@@ -2,13 +2,23 @@
 
 #include <QStringList>
 
+/**
+ * Convert enum class type to underlying type
+ * @param e Enum
+ * @return Underlying type (usually int)
+ */
 template <typename E>
 constexpr auto ult(E e) noexcept
 {
 	return static_cast<std::underlying_type_t<E>>(e);
 }
 
-static QString integerCountHumanReadable(const int& count)
+/**
+ * Returns a human readable string of an integer counter
+ * @param count Integer count
+ * @return Human readable string of an integer counter
+ */
+static QString getIntegerCountHumanReadable(const int& count)
 {
 	if (count >= 0 && count < 1000)
 		return QString::number(count);
@@ -22,7 +32,12 @@ static QString integerCountHumanReadable(const int& count)
 	return "";
 }
 
-static QString noBytesHumanReadable(std::uint32_t noBytes)
+/**
+ * Returns a human readable string of a byte counter
+ * @param noBytes Number of bytes
+ * @return Human readable string of a byte counter
+ */
+static QString getNoBytesHumanReadable(std::uint32_t noBytes)
 {
 	QStringList list{ "KB", "MB", "GB", "TB" };
 

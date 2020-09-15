@@ -100,7 +100,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return Whether the image should be loaded or not in variant form
 		 */
-		QVariant shouldLoad(const int& role) const;
+		QVariant getShouldLoad(const int& role) const;
 
 		/**
 		 * Sets whether the image should be loaded or not

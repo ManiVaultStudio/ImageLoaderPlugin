@@ -33,7 +33,7 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
 	_dimensionName = QFileInfo(filePath).completeBaseName();
 }
 
-QVariant ImageCollection::Image::shouldLoad(const int& role) const
+QVariant ImageCollection::Image::getShouldLoad(const int& role) const
 {
 	const auto shouldLoadString = _shouldLoad ? "true" : "false";
 
@@ -1119,7 +1119,7 @@ QVariant ImageCollection::noImages(const int& role) const
 QVariant ImageCollection::noSelectedImages(const int& role) const
 {
 	const auto noSelectedImages = std::count_if(_children.begin(), _children.end(), [](auto& child) {
-		return static_cast<Image*>(child)->shouldLoad(Qt::EditRole).toBool();
+		return static_cast<Image*>(child)->getShouldLoad(Qt::EditRole).toBool();
 	});
 
 	const auto noSelectedImagesString	= QString::number(noSelectedImages);
@@ -1173,7 +1173,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 			break;
 	}
 
-	const auto noPointsString = integerCountHumanReadable(noPoints);
+	const auto noPointsString = getIntegerCountHumanReadable(noPoints);
 	
 	switch (role)
 	{
@@ -1224,7 +1224,7 @@ QVariant ImageCollection::noDimensions(const int& role) const
 			break;
 	}
 
-	const auto noDimensionsString = integerCountHumanReadable(noDimensions);
+	const auto noDimensionsString = getIntegerCountHumanReadable(noDimensions);
 
 	switch (role)
 	{
@@ -1254,7 +1254,7 @@ QVariant ImageCollection::memory(const int& role) const
 	const auto noElements	= noPoints * noDimensions;
 	const auto noBytes		= noElements * sizeof(float);
 
-	const auto memoryString = noBytesHumanReadable(static_cast<std::int32_t>(noBytes));
+	const auto memoryString = getNoBytesHumanReadable(static_cast<std::int32_t>(noBytes));
 
 	switch (role)
 	{
@@ -1401,7 +1401,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 			QCoreApplication::processEvents();
 
-			if (!image->shouldLoad(Qt::EditRole).toBool())
+			if (!image->getShouldLoad(Qt::EditRole).toBool())
 				continue;
 
 			image->load(imageLoaderPlugin, data, imageIndex, dimensionNames, multiBitmap);
