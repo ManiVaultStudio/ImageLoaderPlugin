@@ -330,15 +330,15 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 		if (bitmap == nullptr)
 			throw std::runtime_error("FI::FreeImage bitmap handle is NULL");
 
-		const auto imageCollectionType	= static_cast<ImageData::Type>(imageCollection()->getType(Qt::EditRole).toInt());
+		const auto imageCollectionType	= static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
 		const auto sourceWidth			= FI::FreeImage_GetWidth(bitmap);
 		const auto sourceHeight			= FI::FreeImage_GetHeight(bitmap);
-		const auto targetSize			= imageCollection()->getTargetSize(Qt::EditRole).toSize();
+		const auto targetSize			= getImageCollection()->getTargetSize(Qt::EditRole).toSize();
 		const auto targetWidth			= targetSize.width();
 		const auto targetHeight			= targetSize.height();
-		const auto noDimensions			= imageCollection()->getNoDimensions(Qt::EditRole).toInt();
+		const auto noDimensions			= getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
 		const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
-		const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(imageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
+		const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
 
 		subsampledBitmap = subsample ? FI::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
 
@@ -356,10 +356,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -369,10 +369,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::int16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::int16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -382,10 +382,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint32_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -395,10 +395,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::int32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::int32_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -408,10 +408,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -421,10 +421,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<double>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<double>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<double>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<double>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -460,10 +460,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 				if (noComponents > 0) {
 					if (imageCollectionType == ImageData::Type::Sequence)
-						readSequence<FI::BYTE>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+						readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 					if (imageCollectionType == ImageData::Type::Stack)
-						readStack<FI::BYTE>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+						readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 				}
 
 				break;
@@ -477,10 +477,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 3;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, 3);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, 3);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, 3);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, 3);
 
 				break;
 			}
@@ -490,10 +490,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 4;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+					readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+					readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 
 				break;
 			}
@@ -503,10 +503,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 4;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 
 				break;
 			}
@@ -515,7 +515,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				break;
 		}
 		
-		if (imageCollection()->getToGrayscale(Qt::EditRole).toBool()) {
+		if (getImageCollection()->getToGrayscale(Qt::EditRole).toBool()) {
 			dimensionNames << getDimensionName(Qt::EditRole).toString();
 		}
 		else {
@@ -618,7 +618,7 @@ void ImageCollection::Image::guessDimensionName()
 	}
 }
 
-ImageCollection* ImageCollection::Image::imageCollection()
+ImageCollection* ImageCollection::Image::getImageCollection()
 {
 	return static_cast<ImageCollection*>(parentItem());
 }

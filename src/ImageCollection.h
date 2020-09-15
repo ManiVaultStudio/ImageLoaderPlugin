@@ -54,9 +54,9 @@ public: // Enumerations
 		End = Directory				/** Column End */
 	};
 
-	/**  */
+	/** Image collection bit flags */
 	enum class Flag {
-		DimensionNamesGuessed = 0x01,		/** Whether the node is enabled */
+		DimensionNamesGuessed = 0x01,		/** Whether the dimension names have already been guessed */
 	};
 
 public: // Nested image class
@@ -64,7 +64,7 @@ public: // Nested image class
 	/**
 	 * Image class
 	 *
-	 * TODO: Write description
+	 * This image tree item is part of an image collection and is responsible for loading pixels into a high-dimensional data vector
 	 *
 	 * @author Thomas Kroes
 	 */
@@ -72,7 +72,7 @@ public: // Nested image class
 	{
 	public: // Enumerations
 
-		/** TODO: Write description */
+		/** Image model columns */
 		enum class Column {
 			ShouldLoad = ult(ImageCollection::Column::End) + 1,		/** Whether to load the image or not */
 			FileName,												/** The filename of the dataset */
@@ -171,14 +171,15 @@ public: // Nested image class
 		 * @param bitmap Handle to FreeImage bitmap
 		 * @param data High-dimensional data vector
 		 * @param imageIndex Image index
+		 * @param dimensionNames Dimension names
 		 */
 		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames);
 
-		/** Guesses dimension name */
+		/** Guesses dimension name of the image */
 		void guessDimensionName();
 
 		/** Get parent image collection */
-		ImageCollection* imageCollection();
+		ImageCollection* getImageCollection();
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
@@ -190,7 +191,11 @@ public: // Nested image class
 	};
 
 	/**
+	 * Subsampling class
+	 *
+	 * Class for storing image subsampling parameters
 	 * 
+	 * @author Thomas Kroes
 	 */
 	class SubSampling
 	{
@@ -301,7 +306,7 @@ public: // Construction
 	 * Constructor
 	 * @param parent Parent tree item
 	 * @param directory Search directory
-	 * @param imageType Image type
+	 * @param imageFormat Format of the image
 	 * @param sourceSize Source image size
 	 */
 	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize);
