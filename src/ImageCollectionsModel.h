@@ -20,7 +20,9 @@ class ImageCollectionsModel : public QAbstractItemModel
 public: // Filter model
 
 	/**
-	 * TODO
+	 * Filter model for image collections model
+	 * 
+	 * Allows end-user to filter based on dataset name (case-insensitive)
 	 *
 	 * @author Thomas Kroes
 	 */

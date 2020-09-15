@@ -25,7 +25,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
 
-	_ui->separateByDirectoryCheckBox->setChecked(_scanner.separateByDirectory());
+	_ui->separateByDirectoryCheckBox->setChecked(_scanner.getSeparateByDirectory());
 
 	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
@@ -72,7 +72,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
-		const auto initialDirectory = _scanner.directory();
+		const auto initialDirectory = _scanner.getDirectory();
 		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
 		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {

@@ -46,7 +46,7 @@ void ImageCollectionScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoader
 	_imageLoaderPlugin = imageLoaderPlugin;
 }
 
-QString ImageCollectionScanner::directory() const
+QString ImageCollectionScanner::getDirectory() const
 {
 	return _directory;
 }
@@ -70,7 +70,7 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 		scan();
 }
 
-bool ImageCollectionScanner::separateByDirectory() const
+bool ImageCollectionScanner::getSeparateByDirectory() const
 {
 	return _separateByDirectory;
 }
@@ -91,7 +91,7 @@ void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirect
 		scan();
 }
 
-QStringList ImageCollectionScanner::supportedImageTypes() const
+QStringList ImageCollectionScanner::getSupportedImageTypes() const
 {
 	return _supportedImageTypes;
 }
@@ -115,7 +115,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 		scan();
 }
 
-QString ImageCollectionScanner::filenameFilter() const
+QString ImageCollectionScanner::getFilenameFilter() const
 {
 	return _filenameFilter;
 }
@@ -142,7 +142,7 @@ void ImageCollectionScanner::scan()
 
 		QStringList nameFilters;
 
-		for (const auto& supportedImageType : supportedImageTypes())
+		for (const auto& supportedImageType : getSupportedImageTypes())
 			nameFilters << "*." + supportedImageType;
 
 		scanDir(_directory, nameFilters, imageCollections, true);
