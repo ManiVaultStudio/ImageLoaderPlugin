@@ -171,13 +171,13 @@ void ImageCollectionScanner::scan()
 auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
 	return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
-		if (_separateByDirectory && imageCollection->directory(Qt::EditRole).toString() != directory)
+		if (_separateByDirectory && imageCollection->getDirectory(Qt::EditRole).toString() != directory)
 			return false;
 
-		if (imageCollection->imageType(Qt::EditRole).toString() != imageType)
+		if (imageCollection->getImageType(Qt::EditRole).toString() != imageType)
 			return false;
 
-		if (imageCollection->sourceSize(Qt::EditRole).toSize() != imageSize)
+		if (imageCollection->getSourceSize(Qt::EditRole).toSize() != imageSize)
 			return false;
 
 		return true;
