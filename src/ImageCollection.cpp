@@ -620,7 +620,7 @@ void ImageCollection::Image::guessDimensionName()
 
 ImageCollection* ImageCollection::Image::getImageCollection()
 {
-	return static_cast<ImageCollection*>(parentItem());
+	return static_cast<ImageCollection*>(getParentItem());
 }
 
 ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :

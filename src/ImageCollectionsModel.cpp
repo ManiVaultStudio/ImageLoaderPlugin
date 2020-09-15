@@ -600,7 +600,7 @@ QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
 		return QModelIndex();
 
 	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-	TreeItem *parentItem = childItem->parentItem();
+	TreeItem *parentItem = childItem->getParentItem();
 
 	if (parentItem == _root)
 		return QModelIndex();

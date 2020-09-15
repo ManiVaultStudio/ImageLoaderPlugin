@@ -153,7 +153,7 @@ void ImageCollectionScanner::scan()
 			imageCollection->computeDatasetName();
 		}
 
-		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+		auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
 
 		imageCollectionsModel.clear();
 		imageCollectionsModel.insert(0, imageCollections);
@@ -257,7 +257,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
+			auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
 
 			if (imageType == "TIFF (multipage)") {
 				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {

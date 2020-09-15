@@ -3,7 +3,7 @@
 TreeItem::TreeItem(TreeItem *parent) :
 	_flags(0),
 	_children(),
-	m_parentItem(parent)
+	_parentItem(parent)
 {
 }
 
@@ -12,12 +12,12 @@ TreeItem::~TreeItem()
 	removeAllChildren();
 }
 
-void TreeItem::appendChild(TreeItem *item)
+void TreeItem::appendChild(TreeItem* child)
 {
-	_children.append(item);
+	_children.append(child);
 }
 
-TreeItem *TreeItem::child(int row)
+TreeItem* TreeItem::child(int row)
 {
 	if (row < 0 || row >= _children.size())
 		return nullptr;
@@ -31,15 +31,15 @@ int TreeItem::childCount() const
 
 int TreeItem::row() const
 {
-	if (m_parentItem)
-		return m_parentItem->_children.indexOf(const_cast<TreeItem*>(this));
+	if (_parentItem)
+		return _parentItem->_children.indexOf(const_cast<TreeItem*>(this));
 
 	return 0;
 }
 
-TreeItem *TreeItem::parentItem()
+TreeItem* TreeItem::getParentItem()
 {
-	return m_parentItem;
+	return _parentItem;
 }
 
 void TreeItem::removeAllChildren()

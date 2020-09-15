@@ -3,21 +3,54 @@
 #include <QVector>
 #include <QVariant>
 
+/**
+ * Tree item class
+ *
+ * Generic tree item class
+ *
+ * @author Thomas Kroes
+ */
 class TreeItem
 {
 public:
+	/**
+	 * Constructor
+	 * @param parentItem Pointer to parent tree item
+	 */
 	explicit TreeItem(TreeItem *parentItem = nullptr);
+
+	/** Destructor */
 	~TreeItem();
 
-	void appendChild(TreeItem *child);
+	/**
+	 * Append a child
+	 * @param child Child to append
+	 */
+	void appendChild(TreeItem* child);
 
+	/**
+	 * Get child tree item by \p row index
+	 * @param row Row index
+	 * @return Child tree item
+	 */
+	TreeItem* child(int row);
 
-	TreeItem *child(int row);
+	/** Returns the number of children */
 	int childCount() const;
-	QVariant data(int column) const;
-	int row() const;
-	TreeItem *parentItem();
 
+	/**
+	 * Get data belonging to \p column
+	 * @return Data in variant form
+	 */
+	QVariant data(int column) const;
+
+	/** Returns the row index (relative to parent) */
+	int row() const;
+
+	/** Returns the parent item */
+	TreeItem* getParentItem();
+
+	/** Removes all children */
 	void removeAllChildren();
 
 	/**
@@ -49,8 +82,8 @@ public:
 
 protected:
 	std::int32_t			_flags;				/** Configuration flags */
-	QVector<TreeItem*>		_children;
-	TreeItem*				m_parentItem;
+	QVector<TreeItem*>		_children;			/** Vector of pointer to child tree items */
+	TreeItem*				_parentItem;		/** Pointer to parent item (nullptr if root) */
 
 	friend class ImageCollectionsModel;
 };

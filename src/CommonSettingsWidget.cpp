@@ -27,11 +27,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->separateByDirectoryCheckBox->setChecked(_scanner.getSeparateByDirectory());
 
-	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->getImageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
-	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+	auto& filterModel						= _imageLoaderPlugin->getImageCollectionsFilterModel();
 
-	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
+	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->getImageCollectionsFilterModel());
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
 	const auto selectedImageCollection = [&]() {
@@ -106,7 +106,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->searchFilterLineEdit->setText(filenameFilter);
 		_ui->searchFilterLineEdit->blockSignals(false);
 
-		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(filenameFilter);
+		_imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
 	});
 
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {

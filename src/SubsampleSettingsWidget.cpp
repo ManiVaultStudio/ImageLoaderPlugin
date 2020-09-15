@@ -20,9 +20,9 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
 	_imageLoaderPlugin = imageLoaderPlugin;
 
-	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->getImageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
-	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+	auto& filterModel						= _imageLoaderPlugin->getImageCollectionsFilterModel();
 
 	auto selectedRow = [&]() {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
