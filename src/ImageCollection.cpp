@@ -33,7 +33,7 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
 	_dimensionName = QFileInfo(filePath).completeBaseName();
 }
 
-QVariant ImageCollection::Image::shouldLoad(const int& role) const
+QVariant ImageCollection::Image::getShouldLoad(const int& role) const
 {
 	const auto shouldLoadString = _shouldLoad ? "true" : "false";
 
@@ -63,7 +63,7 @@ void ImageCollection::Image::setShouldLoad(const bool& shouldLoad)
 	_shouldLoad = shouldLoad;
 }
 
-QVariant ImageCollection::Image::fileName(const int& role) const
+QVariant ImageCollection::Image::getFileName(const int& role) const
 {
 	switch (role)
 	{
@@ -83,7 +83,7 @@ QVariant ImageCollection::Image::fileName(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::Image::dimensionName(const int& role) const
+QVariant ImageCollection::Image::getDimensionName(const int& role) const
 {
 	/*
 	auto* pageBitmap = FI::FreeImage_LockPage(multiBitmap, pageIndex);
@@ -123,7 +123,7 @@ void ImageCollection::Image::setDimensionName(const QString& dimensionName)
 	_dimensionName = dimensionName;
 }
 
-QVariant ImageCollection::Image::filePath(const int& role) const
+QVariant ImageCollection::Image::getFilePath(const int& role) const
 {
 	switch (role)
 	{
@@ -148,7 +148,7 @@ void ImageCollection::Image::setFilePath(const QString& filePath)
 	_filePath = filePath;
 }
 
-QVariant ImageCollection::Image::pageIndex(const int& role) const
+QVariant ImageCollection::Image::getPageIndex(const int& role) const
 {
 	const auto pageIndexString = QString::number(_pageIndex);
 
@@ -241,11 +241,11 @@ template<class T> static void readSequence(ImageCollection* imageCollection, FI:
 	if (bitmap == nullptr)
 		throw std::runtime_error("Bitmap handle is NULL");
 
-	const auto targetSize	= imageCollection->targetSize(Qt::EditRole).toSize();
+	const auto targetSize	= imageCollection->getTargetSize(Qt::EditRole).toSize();
 	const auto targetWidth	= targetSize.width();
 	const auto targetHeight	= targetSize.height();
 	const auto noPixels		= targetWidth * targetHeight;
-	const auto grayscale	= imageCollection->toGrayscale(Qt::EditRole).toBool();
+	const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
 
 	for (std::int32_t y = 0; y < targetHeight; y++) {
 		auto scanLine = reinterpret_cast<T*>(FI::FreeImage_GetScanLine(bitmap, y));
@@ -277,11 +277,11 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
 	if (bitmap == nullptr)
 		throw std::runtime_error("Bitmap handle is NULL");
 
-	const auto targetSize	= imageCollection->targetSize(Qt::EditRole).toSize();
+	const auto targetSize	= imageCollection->getTargetSize(Qt::EditRole).toSize();
 	const auto targetWidth	= targetSize.width();
 	const auto targetHeight	= targetSize.height();
 	const auto noPixels		= targetWidth * targetHeight;
-	const auto grayscale	= imageCollection->toGrayscale(Qt::EditRole).toBool();
+	const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
 
 	for (std::int32_t y = 0; y < targetHeight; y++) {
 		auto scanLine = reinterpret_cast<T*>(FI::FreeImage_GetScanLine(bitmap, y));
@@ -330,15 +330,15 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 		if (bitmap == nullptr)
 			throw std::runtime_error("FI::FreeImage bitmap handle is NULL");
 
-		const auto imageCollectionType	= static_cast<ImageData::Type>(imageCollection()->type(Qt::EditRole).toInt());
+		const auto imageCollectionType	= static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
 		const auto sourceWidth			= FI::FreeImage_GetWidth(bitmap);
 		const auto sourceHeight			= FI::FreeImage_GetHeight(bitmap);
-		const auto targetSize			= imageCollection()->targetSize(Qt::EditRole).toSize();
+		const auto targetSize			= getImageCollection()->getTargetSize(Qt::EditRole).toSize();
 		const auto targetWidth			= targetSize.width();
 		const auto targetHeight			= targetSize.height();
-		const auto noDimensions			= imageCollection()->noDimensions(Qt::EditRole).toInt();
+		const auto noDimensions			= getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
 		const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
-		const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(imageCollection()->subsampling().filter(Qt::EditRole).toInt());
+		const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
 
 		subsampledBitmap = subsample ? FI::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
 
@@ -356,10 +356,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -369,10 +369,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::int16_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::int16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -382,10 +382,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint32_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -395,10 +395,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::int32_t>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::int32_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -408,10 +408,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -421,10 +421,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 1;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<double>(imageCollection(), subsampledBitmap, data, imageIndex);
+					readSequence<double>(getImageCollection(), subsampledBitmap, data, imageIndex);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<double>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
+					readStack<double>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions);
 
 				break;
 			}
@@ -460,10 +460,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 				if (noComponents > 0) {
 					if (imageCollectionType == ImageData::Type::Sequence)
-						readSequence<FI::BYTE>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+						readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 					if (imageCollectionType == ImageData::Type::Stack)
-						readStack<FI::BYTE>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+						readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 				}
 
 				break;
@@ -477,10 +477,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 3;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, 3);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, 3);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, 3);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, 3);
 
 				break;
 			}
@@ -490,10 +490,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 4;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+					readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<std::uint16_t>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+					readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 
 				break;
 			}
@@ -503,10 +503,10 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				noComponents = 4;
 
 				if (imageCollectionType == ImageData::Type::Sequence)
-					readSequence<float>(imageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+					readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
 
 				if (imageCollectionType == ImageData::Type::Stack)
-					readStack<float>(imageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+					readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
 
 				break;
 			}
@@ -515,22 +515,22 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 				break;
 		}
 		
-		if (imageCollection()->toGrayscale(Qt::EditRole).toBool()) {
-			dimensionNames << dimensionName(Qt::EditRole).toString();
+		if (getImageCollection()->getToGrayscale(Qt::EditRole).toBool()) {
+			dimensionNames << getDimensionName(Qt::EditRole).toString();
 		}
 		else {
 			switch (noComponents)
 			{
 				case 1:
 				{
-					dimensionNames << dimensionName(Qt::EditRole).toString();
+					dimensionNames << getDimensionName(Qt::EditRole).toString();
 					break;
 				}
 
 				case 3:
 				case 4:
 				{
-					const auto dimensionNameBase = dimensionName(Qt::EditRole).toString();
+					const auto dimensionNameBase = getDimensionName(Qt::EditRole).toString();
 
 					dimensionNames << QString("%1_red").arg(dimensionNameBase);
 					dimensionNames << QString("%1_green").arg(dimensionNameBase);
@@ -618,9 +618,9 @@ void ImageCollection::Image::guessDimensionName()
 	}
 }
 
-ImageCollection* ImageCollection::Image::imageCollection()
+ImageCollection* ImageCollection::Image::getImageCollection()
 {
-	return static_cast<ImageCollection*>(parentItem());
+	return static_cast<ImageCollection*>(getParentItem());
 }
 
 ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
@@ -631,7 +631,7 @@ ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, cons
 {
 }
 
-QVariant ImageCollection::SubSampling::enabled(const int& role) const
+QVariant ImageCollection::SubSampling::getEnabled(const int& role) const
 {
 	const auto enabledString = _enabled ? "true" : "false";
 
@@ -658,7 +658,7 @@ void ImageCollection::SubSampling::setEnabled(const bool& enabled)
 	_enabled = enabled;
 }
 
-QVariant ImageCollection::SubSampling::ratio(const int& role) const
+QVariant ImageCollection::SubSampling::getRatio(const int& role) const
 {
 	const auto ratioString = QString("%1%").arg(QString::number(100.0f * _ratio, 'f', 1));
 
@@ -685,7 +685,7 @@ void ImageCollection::SubSampling::setRatio(const float& ratio)
 	_ratio = std::clamp(ratio, 0.0f, 1.0f);
 }
 
-QVariant ImageCollection::SubSampling::filter(const int& role) const
+QVariant ImageCollection::SubSampling::getFilter(const int& role) const
 {
 	const auto filterString = imageResamplingFilterName(_filter);
 
@@ -730,7 +730,7 @@ ImageCollection::~ImageCollection()
 {
 }
 
-QVariant ImageCollection::directory(const int& role) const
+QVariant ImageCollection::getDirectory(const int& role) const
 {
 	switch (role)
 	{
@@ -755,7 +755,7 @@ void ImageCollection::setDirectory(const QString& directory)
 	_directory = directory;
 }
 
-QVariant ImageCollection::imageType(const int& role) const
+QVariant ImageCollection::getImageType(const int& role) const
 {
 	switch (role)
 	{
@@ -780,7 +780,7 @@ void ImageCollection::setImageType(const QString& imageType)
 	_imageFileType = imageType;
 }
 
-QVariant ImageCollection::imageFormat(const int& role) const
+QVariant ImageCollection::getImageFormat(const int& role) const
 {
 	auto formatString = "";
 
@@ -900,7 +900,7 @@ void ImageCollection::setImageFormat(const QImage::Format& imageFormat)
 	_imageFormat = imageFormat;
 }
 
-QVariant ImageCollection::toGrayscale(const int& role) const
+QVariant ImageCollection::getToGrayscale(const int& role) const
 {
 	const auto toGrayscaleString = _toGrayscale ? "true" : "false";
 
@@ -930,7 +930,7 @@ void ImageCollection::setToGrayscale(const bool& toGrayscale)
 	_toGrayscale = toGrayscale;
 }
 
-QVariant ImageCollection::sourceSize(const int& role) const
+QVariant ImageCollection::getSourceSize(const int& role) const
 {
 	const auto sourceSizeString = QString("%1x%2").arg(QString::number(_sourceSize.width()), QString::number(_sourceSize.height()));
 
@@ -957,7 +957,7 @@ void ImageCollection::setSourceSize(const QSize& sourceSize)
 	_sourceSize = sourceSize;
 }
 
-QVariant ImageCollection::targetSize(const int& role) const
+QVariant ImageCollection::getTargetSize(const int& role) const
 {
 	const auto targetSizeString = QString("%1x%2").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height()));
 
@@ -979,7 +979,7 @@ QVariant ImageCollection::targetSize(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::targetWidth(const int& role) const
+QVariant ImageCollection::getTargetWidth(const int& role) const
 {
 	const auto targetWidthString = QString::number(_targetSize.width());
 
@@ -1004,7 +1004,7 @@ QVariant ImageCollection::targetWidth(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::targetheight(const int& role) const
+QVariant ImageCollection::getTargetheight(const int& role) const
 {
 	const auto targetHeightString = QString::number(_targetSize.height());
 
@@ -1034,7 +1034,7 @@ void ImageCollection::setTargetSize(const QSize& targetSize)
 	_targetSize = targetSize;
 }
 
-QVariant ImageCollection::datasetName(const int& role) const
+QVariant ImageCollection::getDatasetName(const int& role) const
 {
 	switch (role)
 	{
@@ -1059,7 +1059,7 @@ void ImageCollection::setDatasetName(const QString& datasetName)
 	_datasetName = datasetName;
 }
 
-QVariant ImageCollection::type(const int& role) const
+QVariant ImageCollection::getType(const int& role) const
 {
 	const auto typeString = ImageData::typeName(_type);
 
@@ -1086,12 +1086,12 @@ void ImageCollection::setType(const ImageData::Type & type)
 	_type = type;
 }
 
-ImageCollection::Image* ImageCollection::image(const std::uint32_t& index)
+ImageCollection::Image* ImageCollection::getImage(const std::uint32_t& index)
 {
 	return static_cast<Image*>(_children[index]);
 }
 
-QVariant ImageCollection::noImages(const int& role) const
+QVariant ImageCollection::getNoImages(const int& role) const
 {
 	const auto noImagesString = QString::number(childCount());
 
@@ -1116,10 +1116,10 @@ QVariant ImageCollection::noImages(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::noSelectedImages(const int& role) const
+QVariant ImageCollection::getNoSelectedImages(const int& role) const
 {
 	const auto noSelectedImages = std::count_if(_children.begin(), _children.end(), [](auto& child) {
-		return static_cast<Image*>(child)->shouldLoad(Qt::EditRole).toBool();
+		return static_cast<Image*>(child)->getShouldLoad(Qt::EditRole).toBool();
 	});
 
 	const auto noSelectedImagesString	= QString::number(noSelectedImages);
@@ -1145,7 +1145,7 @@ QVariant ImageCollection::noSelectedImages(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::noPoints(const int& role) const
+QVariant ImageCollection::getNoPoints(const int& role) const
 {
 	auto noPoints = 0;
 
@@ -1156,7 +1156,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 		
 		case ImageData::Sequence:
 		{
-			noPoints = noSelectedImages(Qt::EditRole).toInt();
+			noPoints = getNoSelectedImages(Qt::EditRole).toInt();
 			break;
 		}
 
@@ -1173,7 +1173,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 			break;
 	}
 
-	const auto noPointsString = integerCountHumanReadable(noPoints);
+	const auto noPointsString = getIntegerCountHumanReadable(noPoints);
 	
 	switch (role)
 	{
@@ -1196,7 +1196,7 @@ QVariant ImageCollection::noPoints(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::noDimensions(const int& role) const
+QVariant ImageCollection::getNoDimensions(const int& role) const
 {
 	auto noDimensions = 0;
 
@@ -1213,7 +1213,7 @@ QVariant ImageCollection::noDimensions(const int& role) const
 
 		case ImageData::Stack:
 		{
-			noDimensions = noSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
+			noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
 			break;
 		}
 
@@ -1224,7 +1224,7 @@ QVariant ImageCollection::noDimensions(const int& role) const
 			break;
 	}
 
-	const auto noDimensionsString = integerCountHumanReadable(noDimensions);
+	const auto noDimensionsString = getIntegerCountHumanReadable(noDimensions);
 
 	switch (role)
 	{
@@ -1247,14 +1247,14 @@ QVariant ImageCollection::noDimensions(const int& role) const
 	return QVariant();
 }
 
-QVariant ImageCollection::memory(const int& role) const
+QVariant ImageCollection::getMemoryConsumption(const int& role) const
 {
-	const auto noPoints		= this->noPoints(Qt::EditRole).toInt();
-	const auto noDimensions	= this->noDimensions(Qt::EditRole).toInt();
+	const auto noPoints		= this->getNoPoints(Qt::EditRole).toInt();
+	const auto noDimensions	= this->getNoDimensions(Qt::EditRole).toInt();
 	const auto noElements	= noPoints * noDimensions;
 	const auto noBytes		= noElements * sizeof(float);
 
-	const auto memoryString = noBytesHumanReadable(static_cast<std::int32_t>(noBytes));
+	const auto memoryString = getNoBytesHumanReadable(static_cast<std::int32_t>(noBytes));
 
 	switch (role)
 	{
@@ -1277,7 +1277,7 @@ QVariant ImageCollection::memory(const int& role) const
 	return QVariant();
 }
 
-ImageCollection::SubSampling& ImageCollection::subsampling()
+ImageCollection::SubSampling& ImageCollection::getSubsampling()
 {
 	return _subsampling;
 }
@@ -1289,8 +1289,8 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 
 void ImageCollection::computeDatasetName()
 {
-	if (noImages(Qt::EditRole).toInt() == 1 || image(0)->pageIndex(Qt::EditRole).toInt() >= 0) {
-		setDatasetName(image(0)->fileName(Qt::EditRole).toString() + "_" + _imageFileType.toLower());
+	if (getNoImages(Qt::EditRole).toInt() == 1 || getImage(0)->getPageIndex(Qt::EditRole).toInt() >= 0) {
+		setDatasetName(getImage(0)->getFileName(Qt::EditRole).toString() + "_" + _imageFileType.toLower());
 		return;
 	}
 
@@ -1299,7 +1299,7 @@ void ImageCollection::computeDatasetName()
 	QSet<QString> rootDirs;
 
 	for (const auto& child : _children) {
-		const auto path = QFileInfo(static_cast<Image*>(child)->filePath(Qt::EditRole).toString()).absoluteDir().path();
+		const auto path = QFileInfo(static_cast<Image*>(child)->getFilePath(Qt::EditRole).toString()).absoluteDir().path();
 
 		if (rootDir == "")
 			rootDir = path;
@@ -1353,7 +1353,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 	{
 		const auto typeName = ImageData::typeName(_type);
 
-		QProgressDialog progressDialog("Loading", "Abort loading", 0, noSelectedImages(Qt::EditRole).toInt(), nullptr);
+		QProgressDialog progressDialog("Loading", "Abort loading", 0, getNoSelectedImages(Qt::EditRole).toInt(), nullptr);
 
 		progressDialog.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
 		progressDialog.setWindowModality(Qt::WindowModal);
@@ -1365,8 +1365,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 		std::vector<float> data;
 
-		const auto noPoints = this->noPoints(Qt::EditRole).toInt();
-		const auto noDimensions = this->noDimensions(Qt::EditRole).toInt();
+		const auto noPoints = this->getNoPoints(Qt::EditRole).toInt();
+		const auto noDimensions = this->getNoDimensions(Qt::EditRole).toInt();
 
 		data.resize(noPoints * noDimensions);
 
@@ -1376,12 +1376,12 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		auto imageIndex = 0;
 
 		const auto firstChild		= static_cast<ImageCollection::Image*>(_children.first());
-		const auto multiPageTiff	= firstChild->pageIndex(Qt::EditRole).toInt() >= 0;
+		const auto multiPageTiff	= firstChild->getPageIndex(Qt::EditRole).toInt() >= 0;
 		
 		FI::FIMULTIBITMAP* multiBitmap = nullptr;
 
 		if (multiPageTiff) {
-			const auto fileNameUtf8	= firstChild->filePath(Qt::EditRole).toString().toUtf8();
+			const auto fileNameUtf8	= firstChild->getFilePath(Qt::EditRole).toString().toUtf8();
 			const auto format		= FI::FreeImage_GetFileType(fileNameUtf8);
 
 			multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
@@ -1397,11 +1397,11 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 			auto image = static_cast<ImageCollection::Image*>(childItem);
 
-			progressDialog.setLabelText(QString("Loading %1").arg(image->dimensionName(Qt::EditRole).toString()));
+			progressDialog.setLabelText(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
 			QCoreApplication::processEvents();
 
-			if (!image->shouldLoad(Qt::EditRole).toBool())
+			if (!image->getShouldLoad(Qt::EditRole).toBool())
 				continue;
 
 			image->load(imageLoaderPlugin, data, imageIndex, dimensionNames, multiBitmap);
@@ -1410,7 +1410,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
 			progressDialog.setValue(imageIndex);
 
-			imageFilePaths << image->filePath(Qt::EditRole).toString();
+			imageFilePaths << image->getFilePath(Qt::EditRole).toString();
 		}
 
 		if (multiBitmap != nullptr)
@@ -1426,8 +1426,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 		points.setProperty("Type", "Images");
 		points.setProperty("CollectionType", _type);
 		points.setProperty("ImageSize", _targetSize);
-		points.setProperty("NoImages", noSelectedImages(Qt::EditRole).toInt());
-		points.setProperty("ImageSize", targetSize(Qt::EditRole).toSize());
+		points.setProperty("NoImages", getNoSelectedImages(Qt::EditRole).toInt());
+		points.setProperty("ImageSize", getTargetSize(Qt::EditRole).toSize());
 		points.setProperty("ImageFilePaths", imageFilePaths);
 		points.setProperty("DimensionNames", dimensionNames);
 

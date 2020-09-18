@@ -54,9 +54,9 @@ public: // Enumerations
 		End = Directory				/** Column End */
 	};
 
-	/**  */
+	/** Image collection bit flags */
 	enum class Flag {
-		DimensionNamesGuessed = 0x01,		/** Whether the node is enabled */
+		DimensionNamesGuessed = 0x01,		/** Whether the dimension names have already been guessed */
 	};
 
 public: // Nested image class
@@ -64,7 +64,7 @@ public: // Nested image class
 	/**
 	 * Image class
 	 *
-	 * TODO: Write description
+	 * This image tree item is part of an image collection and is responsible for loading pixels into a high-dimensional data vector
 	 *
 	 * @author Thomas Kroes
 	 */
@@ -72,7 +72,7 @@ public: // Nested image class
 	{
 	public: // Enumerations
 
-		/** TODO: Write description */
+		/** Image model columns */
 		enum class Column {
 			ShouldLoad = ult(ImageCollection::Column::End) + 1,		/** Whether to load the image or not */
 			FileName,												/** The filename of the dataset */
@@ -100,7 +100,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return Whether the image should be loaded or not in variant form
 		 */
-		QVariant shouldLoad(const int& role) const;
+		QVariant getShouldLoad(const int& role) const;
 
 		/**
 		 * Sets whether the image should be loaded or not
@@ -113,14 +113,14 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return Image filename in variant form
 		 */
-		QVariant fileName(const int& role) const;
+		QVariant getFileName(const int& role) const;
 
 		/**
 		 * Returns the dimension name (in case of image stack)
 		 * @param role Data role
 		 * @return The dimension name in variant form
 		 */
-		QVariant dimensionName(const int& role) const;
+		QVariant getDimensionName(const int& role) const;
 
 		/**
 		 * Sets the dimension name (in case of image stack)
@@ -133,7 +133,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return The absolute image file path in variant form
 		 */
-		QVariant filePath(const int& role) const;
+		QVariant getFilePath(const int& role) const;
 
 		/**
 		 * Sets the absolute image file path
@@ -146,7 +146,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return The page index in variant form
 		 */
-		QVariant pageIndex(const int& role) const;
+		QVariant getPageIndex(const int& role) const;
 
 		/**
 		 * Sets the page index
@@ -171,14 +171,15 @@ public: // Nested image class
 		 * @param bitmap Handle to FreeImage bitmap
 		 * @param data High-dimensional data vector
 		 * @param imageIndex Image index
+		 * @param dimensionNames Dimension names
 		 */
 		void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames);
 
-		/** Guesses dimension name */
+		/** Guesses dimension name of the image */
 		void guessDimensionName();
 
 		/** Get parent image collection */
-		ImageCollection* imageCollection();
+		ImageCollection* getImageCollection();
 
 	private:
 		std::int32_t	_index;				/** Image index (index < 0: image not loaded)*/
@@ -190,7 +191,11 @@ public: // Nested image class
 	};
 
 	/**
+	 * Subsampling class
+	 *
+	 * Class for storing image subsampling parameters
 	 * 
+	 * @author Thomas Kroes
 	 */
 	class SubSampling
 	{
@@ -254,7 +259,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return Whether subsampling is enabled in variant form
 		 */
-		QVariant enabled(const int& role) const;
+		QVariant getEnabled(const int& role) const;
 
 		/**
 		 * Sets whether subsampling is enabled
@@ -267,7 +272,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return The subsampling ratio in variant form
 		 */
-		QVariant ratio(const int& role) const;
+		QVariant getRatio(const int& role) const;
 
 		/**
 		 * Sets the subsampling ratio
@@ -280,7 +285,7 @@ public: // Nested image class
 		 * @param role Data role
 		 * @return The subsampling filter in variant form
 		 */
-		QVariant filter(const int& role) const;
+		QVariant getFilter(const int& role) const;
 
 		/**
 		 * Sets the subsampling filter
@@ -301,7 +306,7 @@ public: // Construction
 	 * Constructor
 	 * @param parent Parent tree item
 	 * @param directory Search directory
-	 * @param imageType Image type
+	 * @param imageFormat Format of the image
 	 * @param sourceSize Source image size
 	 */
 	ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize);
@@ -312,7 +317,7 @@ public: // Construction
 public: // Getters/setters
 
 	/** Returns the root directory */
-	QVariant directory(const int& role) const;
+	QVariant getDirectory(const int& role) const;
 
 	/**
 	 * Sets the root directory
@@ -321,7 +326,7 @@ public: // Getters/setters
 	void setDirectory(const QString& directory);
 
 	/** Returns the image type */
-	QVariant imageType(const int& role) const;
+	QVariant getImageType(const int& role) const;
 
 	/**
 	 * Sets the image type
@@ -334,7 +339,7 @@ public: // Getters/setters
 	 * @param role Data role
 	 * @return Image format in variant form
 	 */
-	QVariant imageFormat(const int& role) const;
+	QVariant getImageFormat(const int& role) const;
 
 	/**
 	 * Sets the image format
@@ -343,7 +348,7 @@ public: // Getters/setters
 	void setImageFormat(const QImage::Format& imageFormat);
 
 	/** Returns whether to convert the images in the collection to grayscale */
-	QVariant toGrayscale(const int& role) const;
+	QVariant getToGrayscale(const int& role) const;
 
 	/**
 	 * Sets whether to convert the images in the collection to grayscale
@@ -352,7 +357,7 @@ public: // Getters/setters
 	void setToGrayscale(const bool& grayscale);
 
 	/** Returns the source image size */
-	QVariant sourceSize(const int& role) const;
+	QVariant getSourceSize(const int& role) const;
 
 	/**
 	 * Sets the source image size
@@ -361,13 +366,13 @@ public: // Getters/setters
 	void setSourceSize(const QSize& sourceSize);
 
 	/** Returns the target image size */
-	QVariant targetSize(const int& role) const;
+	QVariant getTargetSize(const int& role) const;
 
 	/** Returns the target image width */
-	QVariant targetWidth(const int& role) const;
+	QVariant getTargetWidth(const int& role) const;
 
 	/** Returns the target image height */
-	QVariant targetheight(const int& role) const;
+	QVariant getTargetheight(const int& role) const;
 
 	/**
 	 * Sets the target image size
@@ -376,7 +381,7 @@ public: // Getters/setters
 	void setTargetSize(const QSize& targetSize);
 
 	/** Returns the dataset name */
-	QVariant datasetName(const int& role) const;
+	QVariant getDatasetName(const int& role) const;
 
 	/**
 	 * Sets the dataset name
@@ -389,7 +394,7 @@ public: // Getters/setters
 	 * @param role Data role
 	 * @return Image collection type in variant form
 	 */
-	QVariant type(const int& role) const;
+	QVariant getType(const int& role) const;
 
 	/**
 	 * Sets the image collection type (image sequence or stack)
@@ -402,34 +407,34 @@ public: // Getters/setters
 	 * @param index Image index
 	 * @return Pointer to image
 	 */
-	Image* image(const std::uint32_t& index);
+	Image* getImage(const std::uint32_t& index);
 
 	/** Returns the number of images */
-	QVariant noImages(const int& role) const;
+	QVariant getNoImages(const int& role) const;
 
 	/** Returns the number of selected images */
-	QVariant noSelectedImages(const int& role) const;
+	QVariant getNoSelectedImages(const int& role) const;
 
 	/**
 	 * Returns the number of high-dimensional data points
 	 * @param role Data role
 	 */
-	QVariant noPoints(const int& role) const;
+	QVariant getNoPoints(const int& role) const;
 
 	/**
 	 * Returns the number of high-dimensional data dimensions
 	 * @param role Data role
 	 */
-	QVariant noDimensions(const int& role) const;
+	QVariant getNoDimensions(const int& role) const;
 
 	/**
 	 * Returns the estimated memory consumption by the image collection
 	 * @param role Data role
 	 */
-	QVariant memory(const int& role) const;
+	QVariant getMemoryConsumption(const int& role) const;
 
 	/** Get subsampling parameters */
-	SubSampling& subsampling();
+	SubSampling& getSubsampling();
 
 public:
 

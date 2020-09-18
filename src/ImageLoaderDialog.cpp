@@ -29,9 +29,9 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_ui->closeAfterLoadedCheckBox->setChecked(_settings.value("CloseAfterLoaded", true).toBool());
 
-	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->getImageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
-	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+	auto& filterModel						= _imageLoaderPlugin->getImageCollectionsFilterModel();
 
 	const auto selectedRow = [&]() {
 		const auto selectedRows = imageCollectionsSelectionModel.selectedRows();

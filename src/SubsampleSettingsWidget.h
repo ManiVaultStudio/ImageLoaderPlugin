@@ -12,8 +12,10 @@ namespace Ui {
 class ImageLoaderPlugin;
 
 /**
- * Subsample settings widget
- * User interface widget for image subsampling settings
+ * Subsample settings widget class
+ *
+ * Widget class for image subsampling settings
+ *
  * @author Thomas Kroes
  */
 class SubsampleSettingsWidget : public QWidget

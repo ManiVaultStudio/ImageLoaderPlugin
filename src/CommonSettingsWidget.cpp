@@ -25,13 +25,13 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
 	_scanner.setImageLoaderPlugin(imageLoaderPlugin);
 
-	_ui->separateByDirectoryCheckBox->setChecked(_scanner.separateByDirectory());
+	_ui->separateByDirectoryCheckBox->setChecked(_scanner.getSeparateByDirectory());
 
-	auto& imageCollectionsModel				= _imageLoaderPlugin->imageCollectionsModel();
+	auto& imageCollectionsModel				= _imageLoaderPlugin->getImageCollectionsModel();
 	auto& imageCollectionsSelectionModel	= imageCollectionsModel.selectionModel();
-	auto& filterModel						= _imageLoaderPlugin->imageCollectionsFilterModel();
+	auto& filterModel						= _imageLoaderPlugin->getImageCollectionsFilterModel();
 
-	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->imageCollectionsFilterModel());
+	_ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->getImageCollectionsFilterModel());
 	_ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
 	const auto selectedImageCollection = [&]() {
@@ -72,7 +72,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
-		const auto initialDirectory = _scanner.directory();
+		const auto initialDirectory = _scanner.getDirectory();
 		const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
 		if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
@@ -106,7 +106,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 		_ui->searchFilterLineEdit->setText(filenameFilter);
 		_ui->searchFilterLineEdit->blockSignals(false);
 
-		_imageLoaderPlugin->imageCollectionsFilterModel().setFilter(filenameFilter);
+		_imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
 	});
 
 	QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {

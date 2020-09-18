@@ -49,58 +49,58 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
 		switch (static_cast<ImageCollection::Column>(index.column())) {
 			case ImageCollection::Column::DatasetName:
-				return imageCollection->datasetName(role);
+				return imageCollection->getDatasetName(role);
 
 			case ImageCollection::Column::ImageType:
-				return imageCollection->imageType(role);
+				return imageCollection->getImageType(role);
 
 			case ImageCollection::Column::ImageFormat:
-				return imageCollection->imageFormat(role);
+				return imageCollection->getImageFormat(role);
 
 			case ImageCollection::Column::ToGrayscale:
-				return imageCollection->toGrayscale(role);
+				return imageCollection->getToGrayscale(role);
 
 			case ImageCollection::Column::NoImages:
-				return imageCollection->noImages(role);
+				return imageCollection->getNoImages(role);
 
 			case ImageCollection::Column::NoSelectedImages:
-				return imageCollection->noSelectedImages(role);
+				return imageCollection->getNoSelectedImages(role);
 
 			case ImageCollection::Column::SourceSize:
-				return imageCollection->sourceSize(role);
+				return imageCollection->getSourceSize(role);
 
 			case ImageCollection::Column::TargetSize:
-				return imageCollection->targetSize(role);
+				return imageCollection->getTargetSize(role);
 
 			case ImageCollection::Column::TargetWidth:
-				return imageCollection->targetWidth(role);
+				return imageCollection->getTargetWidth(role);
 
 			case ImageCollection::Column::TargetHeight:
-				return imageCollection->targetheight(role);
+				return imageCollection->getTargetheight(role);
 
 			case ImageCollection::Column::NoPoints:
-				return imageCollection->noPoints(role);
+				return imageCollection->getNoPoints(role);
 
 			case ImageCollection::Column::NoDimensions:
-				return imageCollection->noDimensions(role);
+				return imageCollection->getNoDimensions(role);
 
 			case ImageCollection::Column::Memory:
-				return imageCollection->memory(role);
+				return imageCollection->getMemoryConsumption(role);
 
 			case ImageCollection::Column::Directory:
-				return imageCollection->directory(role);
+				return imageCollection->getDirectory(role);
 
 			case ImageCollection::Column::Type:
-				return imageCollection->type(role);
+				return imageCollection->getType(role);
 
 			case ImageCollection::Column::SubsamplingEnabled:
-				return imageCollection->subsampling().enabled(role);
+				return imageCollection->getSubsampling().getEnabled(role);
 
 			case ImageCollection::Column::SubsamplingRatio:
-				return imageCollection->subsampling().ratio(role);
+				return imageCollection->getSubsampling().getRatio(role);
 
 			case ImageCollection::Column::SubsamplingFilter:
-				return imageCollection->subsampling().filter(role);
+				return imageCollection->getSubsampling().getFilter(role);
 		}
 	}
 	else {
@@ -108,16 +108,16 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
 		switch (static_cast<ImageCollection::Image::Column>(index.column())) {
 			case ImageCollection::Image::Column::ShouldLoad:
-				return image->shouldLoad(role);
+				return image->getShouldLoad(role);
 
 			case ImageCollection::Image::Column::FileName:
-				return image->fileName(role);
+				return image->getFileName(role);
 
 			case ImageCollection::Image::Column::DimensionName:
-				return image->dimensionName(role);
+				return image->getDimensionName(role);
 
 			case ImageCollection::Image::Column::FilePath:
-				return image->filePath(role);
+				return image->getFilePath(role);
 		}
 	}
 
@@ -138,9 +138,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 		const auto column = static_cast<ImageCollection::Column>(index.column());
 
 		auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
-			const auto subsamplingEnabled	= imageCollection->subsampling().enabled(Qt::EditRole).toBool();
-			const auto subsamplingRatio		= imageCollection->subsampling().ratio(Qt::EditRole).toFloat();
-			const auto sourceSize			= imageCollection->sourceSize(Qt::EditRole).toSize();
+			const auto subsamplingEnabled	= imageCollection->getSubsampling().getEnabled(Qt::EditRole).toBool();
+			const auto subsamplingRatio		= imageCollection->getSubsampling().getRatio(Qt::EditRole).toFloat();
+			const auto sourceSize			= imageCollection->getSourceSize(Qt::EditRole).toSize();
 
 			auto targetSize = sourceSize;
 
@@ -184,7 +184,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 					case ImageCollection::Column::SubsamplingEnabled:
 					{
-						imageCollection->subsampling().setEnabled(value.toBool());
+						imageCollection->getSubsampling().setEnabled(value.toBool());
 						_settings.setValue(settingsPrefix + "/Subsampling/Enabled", value.toBool());
 						updateTargetSize();
 						break;
@@ -192,7 +192,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 					case ImageCollection::Column::SubsamplingRatio:
 					{
-						imageCollection->subsampling().setRatio(value.toFloat());
+						imageCollection->getSubsampling().setRatio(value.toFloat());
 						updateTargetSize();
 						_settings.setValue(settingsPrefix + "/Subsampling/Ratio", value.toFloat());
 						break;
@@ -200,7 +200,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 					case ImageCollection::Column::SubsamplingFilter:
 					{
-						imageCollection->subsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
+						imageCollection->getSubsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
 						_settings.setValue(settingsPrefix + "/Subsampling/Filter", value.toInt());
 						break;
 					}
@@ -253,7 +253,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 
-						_settings.setValue(settingsPrefix + "/Images/" + image->dimensionName(Qt::EditRole).toString(), value.toBool());
+						_settings.setValue(settingsPrefix + "/Images/" + image->getDimensionName(Qt::EditRole).toString(), value.toBool());
 						break;
 					}
 
@@ -288,7 +288,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 
-						_settings.setValue(settingsPrefix + "/Images/" + image->dimensionName(Qt::EditRole).toString(), value.toBool());
+						_settings.setValue(settingsPrefix + "/Images/" + image->getDimensionName(Qt::EditRole).toString(), value.toBool());
 						break;
 					}
 
@@ -600,7 +600,7 @@ QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
 		return QModelIndex();
 
 	TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-	TreeItem *parentItem = childItem->parentItem();
+	TreeItem *parentItem = childItem->getParentItem();
 
 	if (parentItem == _root)
 		return QModelIndex();
@@ -645,10 +645,9 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 		for (int imageIndex = 0; imageIndex < noImages; imageIndex++) {
 			const auto dimensionName	= index(imageIndex, ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex).data(Qt::EditRole).toString();
 			const auto shouldLoad		= _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool();
+			const auto childIndex		= index(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad), imageCollectionIndex);
 
-			//qDebug() << dimensionName << shouldLoad;
-			
-			setData(imageCollectionIndex.child(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad)), _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool());
+			setData(childIndex, _settings.value(settingsPrefix + "/Images/" + dimensionName, true).toBool());
 		}
 	}
 }

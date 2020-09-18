@@ -25,11 +25,15 @@ namespace Ui {
 
 /**
  * Image loader dialog class
- * This class provides a user interface for loading high-dimensional image data
+ * 
+ * Dialog class for loader
+ *
+  * @author Thomas Kroes
  */
 class ImageLoaderDialog : public QDialog
 {
 public:
+
 	/**
 	 * Constructor
 	 * @param parent Parent object

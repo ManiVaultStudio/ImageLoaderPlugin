@@ -15,7 +15,7 @@ class ImageLoaderPlugin;
 /**
  * Common settings widget
  *
- * TODO
+ * Widget class for common settings
  *
  * @author Thomas Kroes
  */
@@ -45,7 +45,7 @@ public: // Initialization
 public: // Miscellaneous
 
 	/** Returns the image collection scanner */
-	ImageCollectionScanner& scanner() { return _scanner; }
+	ImageCollectionScanner& getScanner() { return _scanner; }
 
 private:
 	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */

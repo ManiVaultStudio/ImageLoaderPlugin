@@ -10,14 +10,14 @@ class ImageCollection;
  *
  * Provides functionality for (recursively) scanning a directory
  * for candidate image collections e.g. sequence and stack
+ *
  * @author Thomas Kroes
  */
 class ImageCollectionScanner : public QObject, public Settings {
 	Q_OBJECT
 
 public:
-	/**
-	 * Default constructor */
+	/** Default constructor */
 	ImageCollectionScanner();
 
 	/** Load image scanner settings */
@@ -30,7 +30,7 @@ public:
 	void setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin);
 
 	/** Returns the search directory */
-	QString	directory() const;
+	QString	getDirectory() const;
 
 	/**
 	 * Sets the search directory
@@ -40,7 +40,7 @@ public:
 	void setDirectory(const QString& directory, const bool& notify = false);
 
 	/** Returns the separate by directory option */
-	bool separateByDirectory() const;
+	bool getSeparateByDirectory() const;
 
 	/**
 	 * Sets the separate by directory option
@@ -50,7 +50,7 @@ public:
 	void setSeparateByDirectory(const bool& separateByDirectory, const bool& notify = false);
 
 	/** Returns the support image types */
-	QStringList	supportedImageTypes() const;
+	QStringList	getSupportedImageTypes() const;
 
 	/**
 	 * Sets the supported image types
@@ -60,7 +60,7 @@ public:
 	void setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify = false);
 
 	/** Returns the filename filter */
-	QString	filenameFilter() const;
+	QString	getFilenameFilter() const;
 
 	/**
 	 * Sets the filename filter
@@ -80,7 +80,7 @@ public:
 
 public:
 
-	/** Scan for images */
+	/** Scan for image collections */
 	void scan();
 
 private:
@@ -89,16 +89,17 @@ private:
 	 * Scan directory recursively
 	 * @param directory Search directory
 	 * @param nameFilters Image file types to filter
-	 * @param sequences Loaded image sequences
-	 * @param showProgressDialog Whether to show a progress dialog
+	 * @param imageCollections Scanned image collections
+	 * @param showProgressDialog Whether to show a progress dialog during scanning
 	 */
 	void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog = false);
 
 signals:
+
 	/** Signals that settings changed */
 	void settingsChanged();
 
-	/** Signals that scanning begun */
+	/** Signals that scanning began */
 	void beginScan();
 
 	/**

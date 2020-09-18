@@ -46,7 +46,7 @@ void ImageCollectionScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoader
 	_imageLoaderPlugin = imageLoaderPlugin;
 }
 
-QString ImageCollectionScanner::directory() const
+QString ImageCollectionScanner::getDirectory() const
 {
 	return _directory;
 }
@@ -70,7 +70,7 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 		scan();
 }
 
-bool ImageCollectionScanner::separateByDirectory() const
+bool ImageCollectionScanner::getSeparateByDirectory() const
 {
 	return _separateByDirectory;
 }
@@ -91,7 +91,7 @@ void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirect
 		scan();
 }
 
-QStringList ImageCollectionScanner::supportedImageTypes() const
+QStringList ImageCollectionScanner::getSupportedImageTypes() const
 {
 	return _supportedImageTypes;
 }
@@ -115,7 +115,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 		scan();
 }
 
-QString ImageCollectionScanner::filenameFilter() const
+QString ImageCollectionScanner::getFilenameFilter() const
 {
 	return _filenameFilter;
 }
@@ -142,7 +142,7 @@ void ImageCollectionScanner::scan()
 
 		QStringList nameFilters;
 
-		for (const auto& supportedImageType : supportedImageTypes())
+		for (const auto& supportedImageType : getSupportedImageTypes())
 			nameFilters << "*." + supportedImageType;
 
 		scanDir(_directory, nameFilters, imageCollections, true);
@@ -153,7 +153,7 @@ void ImageCollectionScanner::scan()
 			imageCollection->computeDatasetName();
 		}
 
-		auto& imageCollectionsModel = _imageLoaderPlugin->imageCollectionsModel();
+		auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
 
 		imageCollectionsModel.clear();
 		imageCollectionsModel.insert(0, imageCollections);
@@ -171,13 +171,13 @@ void ImageCollectionScanner::scan()
 auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
 	return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
-		if (_separateByDirectory && imageCollection->directory(Qt::EditRole).toString() != directory)
+		if (_separateByDirectory && imageCollection->getDirectory(Qt::EditRole).toString() != directory)
 			return false;
 
-		if (imageCollection->imageType(Qt::EditRole).toString() != imageType)
+		if (imageCollection->getImageType(Qt::EditRole).toString() != imageType)
 			return false;
 
-		if (imageCollection->sourceSize(Qt::EditRole).toSize() != imageSize)
+		if (imageCollection->getSourceSize(Qt::EditRole).toSize() != imageSize)
 			return false;
 
 		return true;
@@ -257,7 +257,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = new ImageCollection(_imageLoaderPlugin->imageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
+			auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
 
 			if (imageType == "TIFF (multipage)") {
 				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
