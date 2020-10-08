@@ -3,7 +3,6 @@
 #include <memory>
 
 #include <QWidget>
-#include <QSettings>
 
 namespace Ui {
 	class SubsampleSettingsWidget;
@@ -35,6 +34,5 @@ public:
 
 private:
 	std::unique_ptr<Ui::SubsampleSettingsWidget>	_ui;					/** Externally loaded UI */
-	QSettings										_settings;				/** Settings */
 	ImageLoaderPlugin*								_imageLoaderPlugin;		/** Pointer to image loader plugin (for interfacing with data models) */
 };

@@ -569,8 +569,8 @@ void ImageCollection::Image::guessDimensionName()
 		if (_pageIndex >= 0) {
 			FI::FIMULTIBITMAP* multiBitmap = nullptr;
 
-			const auto fileNameUtf8	= _filePath.toUtf8();
-			const auto format		= FI::FreeImage_GetFileType(fileNameUtf8);
+			const auto fileNameUtf8 = _filePath.toUtf8();
+			const auto format = FI::FreeImage_GetFileType(fileNameUtf8);
 
 			multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
 
@@ -586,16 +586,16 @@ void ImageCollection::Image::guessDimensionName()
 
 			FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "PageName", &tagPageName);
 
-			if (tagPageName != nullptr) {
+			if (tagPageName != nullptr)
 				_dimensionName = (char*)FI::FreeImage_GetTagValue(tagPageName);
-			}
 
-			FI::FITAG* tagImageDescription = nullptr;
+			if (_dimensionName.isEmpty()) {
+				FI::FITAG* tagImageDescription = nullptr;
 
-			FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tagImageDescription);
+				FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tagImageDescription);
 
-			if (tagImageDescription != nullptr) {
-				_dimensionName = (char*)FI::FreeImage_GetTagValue(tagImageDescription);
+				if (tagImageDescription != nullptr)
+					_dimensionName = (char*)FI::FreeImage_GetTagValue(tagImageDescription);
 			}
 
 			if (_dimensionName.isEmpty())

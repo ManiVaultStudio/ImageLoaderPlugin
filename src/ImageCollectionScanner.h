@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Settings.h"
+#include <QObject>
 
 class ImageLoaderPlugin;
 class ImageCollection;
@@ -13,7 +13,7 @@ class ImageCollection;
  *
  * @author Thomas Kroes
  */
-class ImageCollectionScanner : public QObject, public Settings {
+class ImageCollectionScanner : public QObject {
 	Q_OBJECT
 
 public:
@@ -133,7 +133,7 @@ signals:
 	void message(const QString& message);
 
 protected:
-	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Pointer to image loader plugin (for interfacing with data models) */
+	ImageLoaderPlugin*		_imageLoaderPlugin;			/** Image loader plugin instance */
 	QString					_directory;					/** Top directory to search in (recursively) */
 	bool					_separateByDirectory;		/** Separate image collections by directory */
 	QStringList				_previousDirectories;		/** List of previously visited directories */

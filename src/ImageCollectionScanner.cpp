@@ -14,7 +14,6 @@ namespace fi {
 }
 
 ImageCollectionScanner::ImageCollectionScanner() :
-	Settings("LKEB/CGV", "HDPS", "Plugins/ImageLoader/%1/Scanner"),
 	_directory(),
 	_separateByDirectory(false),
 	_previousDirectories(),
@@ -22,21 +21,23 @@ ImageCollectionScanner::ImageCollectionScanner() :
 	_filenameFilter(),
 	_initialized(false)
 {
+}
+
+void ImageCollectionScanner::loadSettings()
+{
+	const auto directory = _imageLoaderPlugin->getSetting("Scanner/Directory", "").toString();
+
+	setDirectory(QDir(directory).exists() ? directory : "", true);
+	setSeparateByDirectory(_imageLoaderPlugin->getSetting("Scanner/SeparateByDirectory", true).toBool());
+
 	auto supportedImageTypes = QStringList();
 
 	supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
 	setSupportedImageTypes(supportedImageTypes);
-}
 
-void ImageCollectionScanner::loadSettings()
-{
-	const auto directory = setting("Directory", "").toString();
-
-	setDirectory(QDir(directory).exists() ? directory : "", true);
-	setSeparateByDirectory(setting("SeparateByDirectory", true).toBool());
-	setSupportedImageTypes(setting("ImageTypes", QStringList()).toStringList(), true);
-	setFilenameFilter(setting("FilenameFilter", QString()).toString(), true);
+	setSupportedImageTypes(_imageLoaderPlugin->getSetting("Scanner/ImageTypes", supportedImageTypes).toStringList(), true);
+	setFilenameFilter(_imageLoaderPlugin->getSetting("Scanner/FilenameFilter", QString()).toString(), true);
 
 	_initialized = true;
 }
@@ -58,7 +59,7 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 	
 	_directory = directory;
 
-	setSetting("Directory", _directory);
+	_imageLoaderPlugin->setSetting("Scanner/Directory", _directory);
 
 	qDebug() << "Set directory" << _directory;
 
@@ -82,7 +83,7 @@ void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirect
 
 	_separateByDirectory = separateByDirectory;
 
-	setSetting("SeparateByDirectory", _separateByDirectory);
+	_imageLoaderPlugin->setSetting("Scanner/SeparateByDirectory", _separateByDirectory);
 
 	emit separateByDirectoryChanged(_separateByDirectory);
 	emit settingsChanged();
@@ -103,7 +104,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 
 	_supportedImageTypes = supportedImageTypes;
 
-	setSetting("ImageTypes", _supportedImageTypes);
+	_imageLoaderPlugin->setSetting("Scanner/ImageTypes", _supportedImageTypes);
 
 	qDebug() << "Set image types" << _supportedImageTypes;
 
@@ -127,7 +128,7 @@ void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, co
 
 	_filenameFilter = filenameFilter;
 
-	setSetting("FilenameFilter", _filenameFilter);
+	_imageLoaderPlugin->setSetting("Scanner/FilenameFilter", _filenameFilter);
 
 	qDebug() << "Set filename filter" << _filenameFilter;
 
@@ -156,7 +157,12 @@ void ImageCollectionScanner::scan()
 		auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
 
 		imageCollectionsModel.clear();
-		imageCollectionsModel.insert(0, imageCollections);
+
+		imageCollectionsModel.setPersistData(false);
+		{
+			imageCollectionsModel.insert(0, imageCollections);
+		}
+		imageCollectionsModel.setPersistData(true);
 	}
 	catch (const std::runtime_error& e)
 	{

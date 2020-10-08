@@ -11,7 +11,6 @@ CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
 	QWidget(parent),
 	_imageLoaderPlugin(nullptr),
 	_ui{ std::make_unique<Ui::CommonSettingsWidget>() },
-	_settings("HDPS", "Plugins/ImageLoader/General"),
 	_scanner()
 {
 	_ui->setupUi(this);
@@ -65,7 +64,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	
 	_ui->imagesTreeView->header()->setHidden(true);
 
-	_ui->selectPercentageDoubleSpinBox->setValue(_settings.value("SelectPercentage", 50.0).toDouble());
+	_ui->selectPercentageDoubleSpinBox->setValue(_imageLoaderPlugin->getSetting("Miscellaneous/SelectPercentage", 50.0).toDouble());
 
 	QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString text) {
 		_scanner.setDirectory(text);
@@ -182,7 +181,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 	});
 
 	QObject::connect(_ui->selectPercentageDoubleSpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
-		_settings.setValue("SelectPercentage", value);
+		_imageLoaderPlugin->setSetting("Miscellaneous/SelectPercentage", value);
 	});
 
 	QObject::connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {

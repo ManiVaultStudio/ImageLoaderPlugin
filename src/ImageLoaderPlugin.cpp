@@ -12,7 +12,7 @@ Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin() :
 	LoaderPlugin("Image Loader"),
-	_imageCollectionsModel(),
+	_imageCollectionsModel(this),
 	_imageCollectionsFilterModel()
 {
 	_imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
