@@ -271,9 +271,11 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 						affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
-
+						
+						/*
 						if (_persistData)
 							_imageLoaderPlugin->setSetting(settingsPrefix + "/Images/" + image->getDimensionName(Qt::EditRole).toString(), value.toBool());
+						*/
 
 						break;
 					}
@@ -665,6 +667,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
 		setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Filter", 0).toInt());
 
+		/*
 		blockSignals(true);
 		{
 			for (int imageIndex = 0; imageIndex < noImages; imageIndex++) {
@@ -675,6 +678,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 			}
 		}
 		blockSignals(false);
+		*/
 	}
 }
 
