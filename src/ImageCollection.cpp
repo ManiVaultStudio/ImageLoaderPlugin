@@ -1333,8 +1333,25 @@ void ImageCollection::guessDimensionNames()
 
 	try
 	{
+		QProgressDialog progressDialog("Establishing dimension names", "", 0, _children.size(), nullptr);
+
+		progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_datasetName));
+		progressDialog.setWindowModality(Qt::WindowModal);
+		progressDialog.setMinimumDuration(250);
+		progressDialog.setFixedWidth(600);
+		//progressDialog.show();
+		progressDialog.setValue(0);
+
 		for (auto child : _children) {
+			const auto dimensionIndex = _children.indexOf(child);
+
+			progressDialog.setLabelText(QString("Extracting dimension name %1").arg(dimensionIndex));
+
 			static_cast<Image*>(child)->guessDimensionName();
+			
+			progressDialog.setValue(dimensionIndex);
+
+			QCoreApplication::processEvents();
 		}
 	}
 	catch (const std::runtime_error& e)
