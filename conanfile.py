@@ -4,14 +4,14 @@ import shutil
 import json
 import pathlib
 
-class ImageViewerPluginConan(ConanFile):
+class ImageLoaderPluginConan(ConanFile):
     #TODO wrap with Conan build tools to extract version from source
-    name = "ImageViewerPlugin"
-    version = "latest"
+    name = "ImageLoaderPlugin"
+    version = "lLoader
     license = "MIT"
     author = "B. van Lew b.van_lew@lumc.nl"
     # The url for the conan recipe
-    url = "https://github.com/bldrvnlw/conan-ImageViewerPlugin"
+    url = "https://github.com/bldrvnlw/conan-ImageLoaderPlugin"
     description = "A plugin for viewing image data in the high-dimensional plugin system (HDPS)."
     topics = ("hdps", "plugin", "image data", "loading")
     settings = "os", "compiler", "build_type", "arch"
@@ -32,7 +32,7 @@ class ImageViewerPluginConan(ConanFile):
 
     scm = {
         "type": "git",
-        "subfolder": "hdps/ImageViewerPlugin",
+        "subfolder": "hdps/ImageLoaderPlugin",
         "url": "auto",
         "revision": "auto"
     }
@@ -47,7 +47,7 @@ class ImageViewerPluginConan(ConanFile):
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
-        cmake.configure(source_folder="hdps/ImageViewerPlugin")  # needed for scm
+        cmake.configure(source_folder="hdps/ImageLoaderPlugin")  # needed for scm
         cmake.verbose = True
         return cmake
 
@@ -59,7 +59,7 @@ class ImageViewerPluginConan(ConanFile):
         print('HDPS_INSTALL_DIR: ', os.environ['HDPS_INSTALL_DIR'])
         self.install_dir = os.environ['HDPS_INSTALL_DIR']
 
-        # The ImageViewerPlugin build expects the HDPS package to be in this install dir
+        # The ImageLoaderPlugin build expects the HDPS package to be in this install dir
         hdps_pkg_root= self.deps_cpp_info["hdps-core"].rootpath
         print("Install dir type: ", os.path.join(self.install_dir, self.settings.get_safe("build_type")))
         shutil.copytree(hdps_pkg_root, os.path.join(self.install_dir, self.settings.get_safe("build_type")))
