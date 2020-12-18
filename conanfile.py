@@ -2,6 +2,7 @@ from conans import ConanFile, CMake, tools
 import os
 import shutil
 import json
+import pathlib
 
 class ImageViewerPluginConan(ConanFile):
     #TODO wrap with Conan build tools to extract version from source
