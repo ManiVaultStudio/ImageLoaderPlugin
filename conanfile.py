@@ -7,7 +7,7 @@ import pathlib
 class ImageLoaderPluginConan(ConanFile):
     #TODO wrap with Conan build tools to extract version from source
     name = "ImageLoaderPlugin"
-    version = "lLoader
+    version = "latest"
     license = "MIT"
     author = "B. van Lew b.van_lew@lumc.nl"
     # The url for the conan recipe
