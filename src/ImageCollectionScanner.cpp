@@ -198,37 +198,40 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 	const auto dirList = subDirectories.entryList();
 
-	QProgressDialog* progressDialog = nullptr;
+	QSharedPointer<QProgressDialog> progressDialog;
 
 	if (showProgressDialog && !dirList.isEmpty()) {
-		progressDialog = new QProgressDialog("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
+		progressDialog = QSharedPointer<QProgressDialog>::create("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
 
 		progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
 		progressDialog->setWindowModality(Qt::WindowModal);
-		progressDialog->setMinimumDuration(500);
+		progressDialog->setMinimumDuration(50000);
 		progressDialog->setValue(0);
 		progressDialog->setFixedWidth(600);
 	}
 	
+    const auto hasProgressDialog = !progressDialog.isNull();
+
 	for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
 	{
-		if (progressDialog && progressDialog->wasCanceled())
+		if (hasProgressDialog && progressDialog->wasCanceled())
 			break;
 
 		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
-		if (progressDialog) {
+		if (hasProgressDialog)
 			progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
-			
-		}
 
 		scanDir(path, nameFilters, imageCollections);
 
 		QCoreApplication::processEvents();
 
-		if (progressDialog)
+		if (hasProgressDialog)
 			progressDialog->setValue(dirIndex);
 	}
+
+    if (hasProgressDialog)
+        progressDialog->reset();
 
 	auto imageFiles = QDir(directory);
 
@@ -245,27 +248,27 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		QImageReader imageReader(imageFilePath);
 
-		auto imageType	= QFileInfo(fileName).suffix().toUpper();
-		auto pageCount	= 0;
+		auto imageExtension = QFileInfo(fileName).suffix().toUpper();
+		auto pageCount	    = 0;
 
-		if (imageType == "TIFF") {
+        if (imageExtension == "TIFF" || imageExtension == "TIF") {
 			imageReader.jumpToNextImage();
 
 			pageCount = imageReader.imageCount();
 
 			if (pageCount > 1) {
-				imageType = "TIFF (multipage)";
+				imageExtension = "TIFF (multipage)";
 			}
 		}
 
 		const auto imageSize = imageReader.size();
 
-		auto it = findImageCollection(imageCollections, rootDir, imageType, imageSize);
+		auto it = findImageCollection(imageCollections, rootDir, imageExtension, imageSize);
 
 		if (it == imageCollections.end()) {
-			auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageType, imageReader.imageFormat(), imageSize);
+			auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
 
-			if (imageType == "TIFF (multipage)") {
+			if (imageExtension == "TIFF (multipage)") {
 				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
 					imageCollection->addImage(imageFilePath, pageIndex);
 				}
@@ -280,7 +283,4 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 			(*it)->addImage(imageFilePath);
 		}
 	}
-
-	if (progressDialog != nullptr)
-		delete progressDialog;
 }
