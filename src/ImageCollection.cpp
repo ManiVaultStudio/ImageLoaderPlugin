@@ -1337,9 +1337,10 @@ void ImageCollection::guessDimensionNames()
 
 		progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_datasetName));
 		progressDialog.setWindowModality(Qt::WindowModal);
-		progressDialog.setMinimumDuration(250);
+		progressDialog.setMinimumDuration(1000);
 		progressDialog.setFixedWidth(600);
-		//progressDialog.show();
+		progressDialog.setMinimum(0);
+		progressDialog.setMaximum(_children.size());
 		progressDialog.setValue(0);
 
 		for (auto child : _children) {

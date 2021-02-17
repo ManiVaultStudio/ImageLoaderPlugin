@@ -205,7 +205,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
 		progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
 		progressDialog->setWindowModality(Qt::WindowModal);
-		progressDialog->setMinimumDuration(50000);
+		progressDialog->setMinimumDuration(500);
+		progressDialog->setMinimum(0);
+		progressDialog->setMaximum(dirList.size());
 		progressDialog->setValue(0);
 		progressDialog->setFixedWidth(600);
 	}
@@ -229,9 +231,6 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 		if (hasProgressDialog)
 			progressDialog->setValue(dirIndex);
 	}
-
-    if (hasProgressDialog)
-        progressDialog->reset();
 
 	auto imageFiles = QDir(directory);
 
