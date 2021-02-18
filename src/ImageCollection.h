@@ -461,9 +461,6 @@ private:
     /** Performs a sanity check on the loaded data (checks for NaN's) */
     bool containsNans(std::vector<float>& data);
 
-    /** Sanitizes the data (replaces NaN's with zero's) */
-    void replaceNans(std::vector<float>& data, const float& replacementValue = 0.0f);
-
 protected:
 	QString				_directory;			/** Root directory of the images */
 	QString				_imageFileType;		/** Image file type */

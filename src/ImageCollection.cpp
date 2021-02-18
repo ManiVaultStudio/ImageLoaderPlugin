@@ -1,5 +1,6 @@
 #include "ImageCollection.h"
 #include "ImageLoaderPlugin.h"
+#include "SanitizeDataDialog.h"
 #include "Common.h"
 
 #include "PointData.h"
@@ -1436,21 +1437,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 			FI::FreeImage_CloseMultiBitmap(multiBitmap);
 
         if (containsNans(data)) {
-            auto inputDialog = QInputDialog();
-
-            inputDialog.setInputMode(QInputDialog::InputMode::DoubleInput);
-            inputDialog.setWindowTitle("Found NaN values");
-            inputDialog.setLabelText("Replace NaN with:");
-            inputDialog.setOkButtonText("Replace");
-            inputDialog.setCancelButtonText("Don't replace");
-            inputDialog.setFixedWidth(400);
-            inputDialog.setDoubleRange(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
-
-            QObject::connect(&inputDialog, &QInputDialog::accepted, [this, &inputDialog, &data]() {
-                replaceNans(data, static_cast<float>(inputDialog.doubleValue()));
-            });
-
-            inputDialog.exec();
+            auto sanitizeDataDialog = SanitizeDataDialog(this, data);
+            sanitizeDataDialog.exec();
         }
 
 		const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
@@ -1493,13 +1481,4 @@ bool ImageCollection::containsNans(std::vector<float>& data)
             return true;
 
     return false;
-}
-
-void ImageCollection::replaceNans(std::vector<float>& data, const float& replacementValue /*= 0.0f*/)
-{
-    qDebug() << QString("Replacing NaN values with: %1").arg(QString::number(replacementValue, 'f', 2));
-
-    for (auto& element : data)
-        if (isnan(element))
-            element = static_cast<float>(replacementValue);
 }

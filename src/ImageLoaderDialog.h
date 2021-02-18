@@ -1,30 +1,16 @@
 #pragma once
 
 #include <QDialog>
-#include <QStackedWidget>
-#include <QLabel>
-
-#include <memory>
-
-class QVBoxLayout;
-class QComboBox;
-class QStackedWidget;
-class QStatusBar;
-class QProgressBar;
 
 class ImageLoaderPlugin;
-class CommonSettingsWidget;
-class StackSettingsWidget;
-class MultiPartImageSequenceWidget;
-class ResampleImageSettingsWidget;
 
 namespace Ui {
-	class ImageLoaderDialog;
+    class ImageLoaderDialog;
 }
 
 /**
  * Image loader dialog class
- * 
+ *
  * Dialog class for loader
  *
   * @author Thomas Kroes
@@ -33,22 +19,22 @@ class ImageLoaderDialog : public QDialog
 {
 public:
 
-	/**
-	 * Constructor
-	 * @param parent Parent object
-	 */
-	ImageLoaderDialog(QObject* parent = nullptr);
+    /**
+     * Constructor
+     * @param parent Parent object
+     */
+    ImageLoaderDialog(QObject* parent = nullptr);
 
-	/** Destructor */
-	~ImageLoaderDialog() override;
+    /** Destructor */
+    ~ImageLoaderDialog() override;
 
-	/**
-	 * Initializes the dialog
-	 * @param imageLoaderPlugin Pointer to image loader plugin
-	 */
-	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
+    /**
+     * Initializes the dialog
+     * @param imageLoaderPlugin Pointer to image loader plugin
+     */
+    void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 private:
-	std::unique_ptr<Ui::ImageLoaderDialog>		_ui;						/** Externally loaded UI */
-	ImageLoaderPlugin*							_imageLoaderPlugin;			/** Image loader plugin */
+    QSharedPointer<Ui::ImageLoaderDialog>   _ui;                    /** Externally loaded UI */
+    ImageLoaderPlugin*                      _imageLoaderPlugin;     /** Image loader plugin */
 };

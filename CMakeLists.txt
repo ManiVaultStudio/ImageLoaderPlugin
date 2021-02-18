@@ -55,6 +55,8 @@ set(WIDGET_SOURCES
     src/ImageLoaderDialog.cpp
 	src/SubsampleSettingsWidget.h
 	src/SubsampleSettingsWidget.cpp
+    src/SanitizeDataDialog.h
+	src/SanitizeDataDialog.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)
