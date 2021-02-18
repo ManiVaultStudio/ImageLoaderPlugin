@@ -7,7 +7,7 @@
 #include <QWidget>
 
 namespace Ui {
-	class CommonSettingsWidget;
+    class CommonSettingsWidget;
 }
 
 class ImageLoaderPlugin;
@@ -21,34 +21,32 @@ class ImageLoaderPlugin;
  */
 class CommonSettingsWidget : public QWidget
 {
-	Q_OBJECT
-
 public: // Construction/destruction
 
-	/**
-	 * Constructor 
-	 * @param parent Parent widget
-	 */
-	CommonSettingsWidget(QWidget* parent);
+    /**
+     * Constructor
+     * @param parent Parent widget
+     */
+    CommonSettingsWidget(QWidget* parent);
 
-	/** Destructor */
-	~CommonSettingsWidget();
+    /** Destructor */
+    ~CommonSettingsWidget();
 
 public: // Initialization
 
-	/**
-	 * Initializes the widget
-	 * @param imageLoaderPlugin Pointer to image loader plugin
-	 */
-	void initialize(ImageLoaderPlugin* imageLoaderPlugin);
+    /**
+     * Initializes the widget
+     * @param imageLoaderPlugin Pointer to image loader plugin
+     */
+    void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
 public: // Miscellaneous
 
-	/** Returns the image collection scanner */
-	ImageCollectionScanner& getScanner() { return _scanner; }
+    /** Returns the image collection scanner */
+    ImageCollectionScanner& getScanner() { return _scanner; }
 
 private:
-	ImageLoaderPlugin*							_imageLoaderPlugin;		/** Image loader plugin instance */
-	std::unique_ptr<Ui::CommonSettingsWidget>	_ui;					/** Externally loaded UI */
-	ImageCollectionScanner						_scanner;				/** Image collection scanner */
+    ImageLoaderPlugin*                          _imageLoaderPlugin;     /** Image loader plugin instance */
+    QSharedPointer<Ui::CommonSettingsWidget>    _ui;                    /** Externally loaded UI */
+    ImageCollectionScanner                      _scanner;               /** Image collection scanner */
 };

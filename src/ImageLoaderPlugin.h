@@ -20,35 +20,35 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-	/** Default constructor */
-	ImageLoaderPlugin();
-    
+    /** Default constructor */
+    ImageLoaderPlugin();
+
 public: // Inherited from LoaderPlugin
 
-	/** Returns the icon of this plugin */
-	QIcon getIcon() const override {
-		return hdps::Application::getIconFont("FontAwesome").getIcon("images");
-	}
+    /** Returns the icon of this plugin */
+    QIcon getIcon() const override {
+        return hdps::Application::getIconFont("FontAwesome").getIcon("images");
+    }
 
-	/** Initializes the plugin */
+    /** Initializes the plugin */
     void init() override;
 
-	/** Load high dimensional image data */
+    /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
 public: // Models
 
-	/** Returns the image collections model */
-	ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
+    /** Returns the image collections model */
+    ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
 
-	/** Returns the image collections model */
-	ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+    /** Returns the image collections model */
+    ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
 
 private:
-	ImageCollectionsModel			_imageCollectionsModel;				/** Image collections model */
-	ImageCollectionsModel::Filter	_imageCollectionsFilterModel;		/** Image collections filter model */
+    ImageCollectionsModel           _imageCollectionsModel;         /** Image collections model */
+    ImageCollectionsModel::Filter   _imageCollectionsFilterModel;   /** Image collections filter model */
 
-	friend class ImageCollection;
+    friend class ImageCollection;
 };
 
 /**
@@ -57,17 +57,17 @@ private:
  */
 class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
-	Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
-		Q_OBJECT
-		Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
+    Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
+        Q_OBJECT
+        Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
 
 public:
-	/** Default constructor */
-	ImageLoaderPluginFactory(void) {}
+    /** Default constructor */
+    ImageLoaderPluginFactory(void) {}
 
-	/** Destructor */
-	~ImageLoaderPluginFactory(void) override {}
+    /** Destructor */
+    ~ImageLoaderPluginFactory(void) override {}
 
-	/** Creates an image loader plugin instance */
-	LoaderPlugin* produce() override;
+    /** Creates an image loader plugin instance */
+    LoaderPlugin* produce() override;
 };

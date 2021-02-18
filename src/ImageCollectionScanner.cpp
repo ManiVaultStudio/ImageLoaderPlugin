@@ -7,279 +7,279 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 
-#include <stdexcept> // For runtime_error.
+#include <stdexcept>
 
 namespace fi {
-	#include <FreeImage.h>
+#include <FreeImage.h>
 }
 
 ImageCollectionScanner::ImageCollectionScanner() :
-	_directory(),
-	_separateByDirectory(false),
-	_previousDirectories(),
-	_supportedImageTypes(),
-	_filenameFilter(),
-	_initialized(false)
+    _directory(),
+    _separateByDirectory(false),
+    _previousDirectories(),
+    _supportedImageTypes(),
+    _filenameFilter(),
+    _initialized(false)
 {
 }
 
 void ImageCollectionScanner::loadSettings()
 {
-	const auto directory = _imageLoaderPlugin->getSetting("Scanner/Directory", "").toString();
+    const auto directory = _imageLoaderPlugin->getSetting("Scanner/Directory", "").toString();
 
-	setDirectory(QDir(directory).exists() ? directory : "", true);
-	setSeparateByDirectory(_imageLoaderPlugin->getSetting("Scanner/SeparateByDirectory", true).toBool());
+    setDirectory(QDir(directory).exists() ? directory : "", true);
+    setSeparateByDirectory(_imageLoaderPlugin->getSetting("Scanner/SeparateByDirectory", true).toBool());
 
-	auto supportedImageTypes = QStringList();
+    auto supportedImageTypes = QStringList();
 
-	supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
+    supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
-	setSupportedImageTypes(supportedImageTypes);
+    setSupportedImageTypes(supportedImageTypes);
 
-	setSupportedImageTypes(_imageLoaderPlugin->getSetting("Scanner/ImageTypes", supportedImageTypes).toStringList(), true);
-	setFilenameFilter(_imageLoaderPlugin->getSetting("Scanner/FilenameFilter", QString()).toString(), true);
+    setSupportedImageTypes(_imageLoaderPlugin->getSetting("Scanner/ImageTypes", supportedImageTypes).toStringList(), true);
+    setFilenameFilter(_imageLoaderPlugin->getSetting("Scanner/FilenameFilter", QString()).toString(), true);
 
-	_initialized = true;
+    _initialized = true;
 }
 
 void ImageCollectionScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin)
 {
-	_imageLoaderPlugin = imageLoaderPlugin;
+    _imageLoaderPlugin = imageLoaderPlugin;
 }
 
 QString ImageCollectionScanner::getDirectory() const
 {
-	return _directory;
+    return _directory;
 }
 
 void ImageCollectionScanner::setDirectory(const QString& directory, const bool& notify /*= false*/)
 {
-	if (!notify && directory == _directory)
-		return;
-	
-	_directory = directory;
+    if (!notify && directory == _directory)
+        return;
 
-	_imageLoaderPlugin->setSetting("Scanner/Directory", _directory);
+    _directory = directory;
 
-	qDebug() << "Set directory" << _directory;
+    _imageLoaderPlugin->setSetting("Scanner/Directory", _directory);
 
-	emit directoryChanged(_directory);
-	
-	emit settingsChanged();
+    qDebug() << "Set directory" << _directory;
 
-	if (_initialized)
-		scan();
+    emit directoryChanged(_directory);
+
+    emit settingsChanged();
+
+    if (_initialized)
+        scan();
 }
 
 bool ImageCollectionScanner::getSeparateByDirectory() const
 {
-	return _separateByDirectory;
+    return _separateByDirectory;
 }
 
 void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirectory, const bool& notify /*= false*/)
 {
-	if (separateByDirectory == _separateByDirectory)
-		return;
+    if (separateByDirectory == _separateByDirectory)
+        return;
 
-	_separateByDirectory = separateByDirectory;
+    _separateByDirectory = separateByDirectory;
 
-	_imageLoaderPlugin->setSetting("Scanner/SeparateByDirectory", _separateByDirectory);
+    _imageLoaderPlugin->setSetting("Scanner/SeparateByDirectory", _separateByDirectory);
 
-	emit separateByDirectoryChanged(_separateByDirectory);
-	emit settingsChanged();
+    emit separateByDirectoryChanged(_separateByDirectory);
+    emit settingsChanged();
 
-	if (_initialized)
-		scan();
+    if (_initialized)
+        scan();
 }
 
 QStringList ImageCollectionScanner::getSupportedImageTypes() const
 {
-	return _supportedImageTypes;
+    return _supportedImageTypes;
 }
 
 void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supportedImageTypes, const bool& notify /*= false*/)
 {
-	if (!notify && supportedImageTypes == _supportedImageTypes)
-		return;
+    if (!notify && supportedImageTypes == _supportedImageTypes)
+        return;
 
-	_supportedImageTypes = supportedImageTypes;
+    _supportedImageTypes = supportedImageTypes;
 
-	_imageLoaderPlugin->setSetting("Scanner/ImageTypes", _supportedImageTypes);
+    _imageLoaderPlugin->setSetting("Scanner/ImageTypes", _supportedImageTypes);
 
-	qDebug() << "Set image types" << _supportedImageTypes;
+    qDebug() << "Set image types" << _supportedImageTypes;
 
-	emit supportedImageTypesChanged(_supportedImageTypes);
+    emit supportedImageTypesChanged(_supportedImageTypes);
 
-	emit settingsChanged();
+    emit settingsChanged();
 
-	if (_initialized)
-		scan();
+    if (_initialized)
+        scan();
 }
 
 QString ImageCollectionScanner::getFilenameFilter() const
 {
-	return _filenameFilter;
+    return _filenameFilter;
 }
 
 void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, const bool& notify /*= false*/)
 {
-	if (!notify && filenameFilter == _filenameFilter)
-		return;
+    if (!notify && filenameFilter == _filenameFilter)
+        return;
 
-	_filenameFilter = filenameFilter;
+    _filenameFilter = filenameFilter;
 
-	_imageLoaderPlugin->setSetting("Scanner/FilenameFilter", _filenameFilter);
+    _imageLoaderPlugin->setSetting("Scanner/FilenameFilter", _filenameFilter);
 
-	qDebug() << "Set filename filter" << _filenameFilter;
+    qDebug() << "Set filename filter" << _filenameFilter;
 
-	emit filenameFilterChanged(_filenameFilter);
+    emit filenameFilterChanged(_filenameFilter);
 }
 
 void ImageCollectionScanner::scan()
 {
-	try
-	{
-		std::vector<ImageCollection*> imageCollections;
+    try
+    {
+        std::vector<ImageCollection*> imageCollections;
 
-		QStringList nameFilters;
+        QStringList nameFilters;
 
-		for (const auto& supportedImageType : getSupportedImageTypes())
-			nameFilters << "*." + supportedImageType;
+        for (const auto& supportedImageType : getSupportedImageTypes())
+            nameFilters << "*." + supportedImageType;
 
-		scanDir(_directory, nameFilters, imageCollections, true);
+        scanDir(_directory, nameFilters, imageCollections, true);
 
-		qDebug() << "Found " << imageCollections.size() << "image collections";
+        qDebug() << "Found " << imageCollections.size() << "image collections";
 
-		for (auto& imageCollection : imageCollections) {
-			imageCollection->computeDatasetName();
-		}
+        for (auto& imageCollection : imageCollections) {
+            imageCollection->computeDatasetName();
+        }
 
-		auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
+        auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
 
-		imageCollectionsModel.clear();
+        imageCollectionsModel.clear();
 
-		imageCollectionsModel.setPersistData(false);
-		{
-			imageCollectionsModel.insert(0, imageCollections);
-		}
-		imageCollectionsModel.setPersistData(true);
-	}
-	catch (const std::runtime_error& e)
-	{
-		QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
-	}
-	catch (std::exception e)
-	{
-		QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
-	}
+        imageCollectionsModel.setPersistData(false);
+        {
+            imageCollectionsModel.insert(0, imageCollections);
+        }
+        imageCollectionsModel.setPersistData(true);
+    }
+    catch (const std::runtime_error& e)
+    {
+        QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
+    }
+    catch (std::exception e)
+    {
+        QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
+    }
 }
 
 auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
-	return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
-		if (_separateByDirectory && imageCollection->getDirectory(Qt::EditRole).toString() != directory)
-			return false;
+    return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
+        if (_separateByDirectory && imageCollection->getDirectory(Qt::EditRole).toString() != directory)
+            return false;
 
-		if (imageCollection->getImageType(Qt::EditRole).toString() != imageType)
-			return false;
+        if (imageCollection->getImageType(Qt::EditRole).toString() != imageType)
+            return false;
 
-		if (imageCollection->getSourceSize(Qt::EditRole).toSize() != imageSize)
-			return false;
+        if (imageCollection->getSourceSize(Qt::EditRole).toSize() != imageSize)
+            return false;
 
-		return true;
-	});
+        return true;
+    });
 }
 
 void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog /*= false*/)
 {
-	auto subDirectories = QDir(directory);
+    auto subDirectories = QDir(directory);
 
-	subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
+    subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
-	const auto dirList = subDirectories.entryList();
+    const auto dirList = subDirectories.entryList();
 
-	QSharedPointer<QProgressDialog> progressDialog;
+    QSharedPointer<QProgressDialog> progressDialog;
 
-	if (showProgressDialog && !dirList.isEmpty()) {
-		progressDialog = QSharedPointer<QProgressDialog>::create("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
+    if (showProgressDialog && !dirList.isEmpty()) {
+        progressDialog = QSharedPointer<QProgressDialog>::create("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
 
-		progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
-		progressDialog->setWindowModality(Qt::WindowModal);
-		progressDialog->setMinimumDuration(500);
-		progressDialog->setMinimum(0);
-		progressDialog->setMaximum(dirList.size());
-		progressDialog->setValue(0);
-		progressDialog->setFixedWidth(600);
-	}
-	
+        progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
+        progressDialog->setWindowModality(Qt::WindowModal);
+        progressDialog->setMinimumDuration(500);
+        progressDialog->setMinimum(0);
+        progressDialog->setMaximum(dirList.size());
+        progressDialog->setValue(0);
+        progressDialog->setFixedWidth(600);
+    }
+
     const auto hasProgressDialog = !progressDialog.isNull();
 
-	for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
-	{
-		if (hasProgressDialog && progressDialog->wasCanceled())
-			break;
+    for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
+    {
+        if (hasProgressDialog && progressDialog->wasCanceled())
+            break;
 
-		const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
+        const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
-		if (hasProgressDialog)
-			progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
+        if (hasProgressDialog)
+            progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
 
-		scanDir(path, nameFilters, imageCollections);
+        scanDir(path, nameFilters, imageCollections);
 
-		QCoreApplication::processEvents();
+        QCoreApplication::processEvents();
 
-		if (hasProgressDialog)
-			progressDialog->setValue(dirIndex);
-	}
+        if (hasProgressDialog)
+            progressDialog->setValue(dirIndex);
+    }
 
-	auto imageFiles = QDir(directory);
+    auto imageFiles = QDir(directory);
 
-	imageFiles.setFilter(QDir::Files);
-	imageFiles.setNameFilters(nameFilters);
+    imageFiles.setFilter(QDir::Files);
+    imageFiles.setNameFilters(nameFilters);
 
-	const auto fileList = imageFiles.entryList();
+    const auto fileList = imageFiles.entryList();
 
-	for (int i = 0; i < fileList.size(); ++i)
-	{
-		const auto fileName			= fileList.at(i);
-		const auto imageFilePath	= QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
-		const auto rootDir			= QFileInfo(imageFilePath).absoluteDir().path();
+    for (int i = 0; i < fileList.size(); ++i)
+    {
+        const auto fileName = fileList.at(i);
+        const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+        const auto rootDir = QFileInfo(imageFilePath).absoluteDir().path();
 
-		QImageReader imageReader(imageFilePath);
+        QImageReader imageReader(imageFilePath);
 
-		auto imageExtension = QFileInfo(fileName).suffix().toUpper();
-		auto pageCount	    = 0;
+        auto imageExtension = QFileInfo(fileName).suffix().toUpper();
+        auto pageCount = 0;
 
         if (imageExtension == "TIFF" || imageExtension == "TIF") {
-			imageReader.jumpToNextImage();
+            imageReader.jumpToNextImage();
 
-			pageCount = imageReader.imageCount();
+            pageCount = imageReader.imageCount();
 
-			if (pageCount > 1) {
-				imageExtension = "TIFF (multipage)";
-			}
-		}
+            if (pageCount > 1) {
+                imageExtension = "TIFF (multipage)";
+            }
+        }
 
-		const auto imageSize = imageReader.size();
+        const auto imageSize = imageReader.size();
 
-		auto it = findImageCollection(imageCollections, rootDir, imageExtension, imageSize);
+        auto it = findImageCollection(imageCollections, rootDir, imageExtension, imageSize);
 
-		if (it == imageCollections.end()) {
-			auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
+        if (it == imageCollections.end()) {
+            auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
 
-			if (imageExtension == "TIFF (multipage)") {
-				for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-					imageCollection->addImage(imageFilePath, pageIndex);
-				}
-			}
-			else {
-				imageCollection->addImage(imageFilePath);
-			}
+            if (imageExtension == "TIFF (multipage)") {
+                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                    imageCollection->addImage(imageFilePath, pageIndex);
+                }
+            }
+            else {
+                imageCollection->addImage(imageFilePath);
+            }
 
-			imageCollections.push_back(imageCollection);
-		}
-		else {
-			(*it)->addImage(imageFilePath);
-		}
-	}
+            imageCollections.push_back(imageCollection);
+        }
+        else {
+            (*it)->addImage(imageFilePath);
+        }
+    }
 }
