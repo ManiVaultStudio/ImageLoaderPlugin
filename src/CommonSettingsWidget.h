@@ -2,8 +2,6 @@
 
 #include "ImageCollectionScanner.h"
 
-#include <memory>
-
 #include <QWidget>
 
 namespace Ui {
