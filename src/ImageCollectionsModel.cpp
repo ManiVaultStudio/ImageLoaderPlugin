@@ -672,7 +672,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
         const auto noImages             = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
         const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
 
-        //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());
@@ -717,11 +717,10 @@ bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPl
 QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const
 {
     const auto imageCollectionIndex = index.parent().isValid() ? index.parent() : index;
-    const auto directory = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
-    const auto imageType = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ImageType)), Qt::EditRole).toString();
-    const auto datasetName = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+    const auto directory            = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
+    const auto fileNames            = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::FileNames)), Qt::EditRole).toStringList();
 
-    return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + imageType);
+    return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + fileNames.first());
 }
 
 bool ImageCollectionsModel::getPersistData() const
