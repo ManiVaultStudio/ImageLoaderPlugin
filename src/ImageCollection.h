@@ -35,6 +35,7 @@ public: // Enumerations
         ToGrayscale,                /** Whether to convert the images to grayscale */
         NoImages,                   /** Number of images in the collection */
         NoSelectedImages,           /** Number of selected images in the collection */
+        DimensionTag,               /** Dimension TIFF tag */
         SourceSize,                 /** Size of the source image(s) */
         TargetSize,                 /** Size of the target image(s) */
         TargetWidth,                /** Target width of the image(s) */
@@ -416,6 +417,15 @@ public: // Getters/setters
     /** Returns the number of selected images */
     QVariant getNoSelectedImages(const int& role) const;
 
+    /** Returns the dimension tag */
+    QVariant getDimensionTag(const int& role) const;
+
+    /**
+     * Sets the dimension tag
+     * @param dimensionTag Dimension tag
+     */
+    void setDimensionTag(const QString& dimensionTag);
+
     /**
      * Returns the number of high-dimensional data points
      * @param role Data role
@@ -470,6 +480,7 @@ protected:
     QSize               _sourceSize;        /** Size of the source image */
     QSize               _targetSize;        /** Size of the target image */
     QString             _datasetName;       /** The name of the dataset */
+    QString             _dimensionTag;      /** The dimension (TIFF) tag */
     bool                _toGrayscale;       /** Whether to convert the images in the collection to grayscale */
     ImageData::Type     _type;              /** How to load the collection (as image sequence or image stack) */
     SubSampling         _subsampling;       /** Subsampling parameters */

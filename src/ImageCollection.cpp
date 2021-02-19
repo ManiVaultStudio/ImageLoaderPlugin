@@ -722,6 +722,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
     _datasetName(),
+    _dimensionTag("PageName"),
     _toGrayscale(true),
     _type(ImageData::Type::Stack),
     _subsampling(this)
@@ -1177,6 +1178,31 @@ QVariant ImageCollection::getNoSelectedImages(const int& role) const
     }
 
     return QVariant();
+}
+
+QVariant ImageCollection::getDimensionTag(const int& role) const
+{
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return _dimensionTag;
+
+        case Qt::EditRole:
+            return _dimensionTag;
+
+        case Qt::ToolTipRole:
+            return QString("Dimension tag: %1").arg(_dimensionTag);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::setDimensionTag(const QString& dimensionTag)
+{
+    _dimensionTag = dimensionTag;
 }
 
 QVariant ImageCollection::getNoPoints(const int& role) const

@@ -71,6 +71,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
             case ImageCollection::Column::NoSelectedImages:
                 return imageCollection->getNoSelectedImages(role);
 
+            case ImageCollection::Column::DimensionTag:
+                return imageCollection->getDimensionTag(role);
+
             case ImageCollection::Column::SourceSize:
                 return imageCollection->getSourceSize(role);
 
@@ -181,6 +184,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                     case ImageCollection::Column::FileNames:
                         break;
+
+                    case ImageCollection::Column::DimensionTag:
+                    {
+                        imageCollection->setDimensionTag(value.toString());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/DimensionTag", value.toString());
+
+                        break;
+                    }
 
                     case ImageCollection::Column::Type:
                     {
@@ -400,6 +413,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::NoSelectedImages:
                         return "#Selected images";
 
+                    case ImageCollection::Column::DimensionTag:
+                        return "Dimension tag";
+
                     case ImageCollection::Column::SourceSize:
                         return "Source size";
 
@@ -569,6 +585,16 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
                 break;
             }
+            
+            /*
+            case ImageCollection::Column::DimensionTag:
+            {
+                if (index != QModelIndex())
+                    flags |= Qt::ItemIsEditable;
+
+                break;
+            }
+            */
 
             case ImageCollection::Column::Directory:
             case ImageCollection::Column::SourceSize:
@@ -674,6 +700,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DimensionTag", true).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
