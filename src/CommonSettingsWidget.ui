@@ -379,12 +379,12 @@
           </property>
           <item>
            <property name="text">
-            <string>PAGE_NAME</string>
+            <string>PageName</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>DESCRIPTION</string>
+            <string>ImageDescription</string>
            </property>
           </item>
          </widget>

@@ -52,6 +52,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
     //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
     //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoImages));
     _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
+    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DimensionTag));
+    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::IsMultiPage));
     _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
     _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
     //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetWidth));
@@ -66,11 +68,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
     _ui->selectPercentageDoubleSpinBox->setValue(_imageLoaderPlugin->getSetting("Miscellaneous/SelectPercentage", 50.0).toDouble());
 
-    QObject::connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString text) {
+    connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString text) {
         _scanner.setDirectory(text);
     });
 
-    QObject::connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
+    connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
         const auto initialDirectory = _scanner.getDirectory();
         const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
 
@@ -79,27 +81,27 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    QObject::connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
+    connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
         _ui->directoryLineEdit->blockSignals(true);
         _ui->directoryLineEdit->setText(directory);
         _ui->directoryLineEdit->blockSignals(false);
     });
 
-    QObject::connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
+    connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
         _scanner.setSeparateByDirectory(state == Qt::Checked);
     });
 
-    QObject::connect(&_scanner, &ImageCollectionScanner::separateByDirectoryChanged, [this](const bool& separateByDirectory) {
+    connect(&_scanner, &ImageCollectionScanner::separateByDirectoryChanged, [this](const bool& separateByDirectory) {
         _ui->separateByDirectoryCheckBox->blockSignals(true);
         _ui->separateByDirectoryCheckBox->setChecked(separateByDirectory);
         _ui->separateByDirectoryCheckBox->blockSignals(false);
     });
 
-    QObject::connect(_ui->searchFilterLineEdit, &QLineEdit::textChanged, [this](QString text) {
+    connect(_ui->searchFilterLineEdit, &QLineEdit::textChanged, [this](QString text) {
         _scanner.setFilenameFilter(text);
     });
 
-    QObject::connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
+    connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
         //_ui->searchFilterLineEdit->setFocus();
         _ui->searchFilterLineEdit->blockSignals(true);
         _ui->searchFilterLineEdit->setText(filenameFilter);
@@ -108,14 +110,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
     });
 
-    QObject::connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {
+    connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex())
             imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
     });
 
-    QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [&, this]() {
+    connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [&, this]() {
         if (imageCollectionsModel.rowCount(QModelIndex()) > 0) {
             _ui->imageCollectionsTreeView->setEnabled(true);
             _ui->imageCollectionsLabel->setEnabled(true);
@@ -142,7 +144,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [&, this]() {
+    connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [&, this]() {
         _ui->imageCollectionsTreeView->setEnabled(false);
         _ui->imageCollectionsLabel->setEnabled(false);
         _ui->imageCollectionsTreeView->header()->hide();
@@ -159,32 +161,32 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->selectPercentagePushButton->setEnabled(false);
     });
 
-    QObject::connect(_ui->selectAllPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
+    connect(_ui->selectAllPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex())
             imageCollectionsModel.selectAll(index);
     });
 
-    QObject::connect(_ui->selectNonePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
+    connect(_ui->selectNonePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex())
             imageCollectionsModel.selectNone(index);
     });
 
-    QObject::connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
+    connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex())
             imageCollectionsModel.invertSelection(index);
     });
 
-    QObject::connect(_ui->selectPercentageDoubleSpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
+    connect(_ui->selectPercentageDoubleSpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
         _imageLoaderPlugin->setSetting("Miscellaneous/SelectPercentage", value);
     });
 
-    QObject::connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
+    connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex())
@@ -227,7 +229,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->imagesTreeView->header()->hideSection(ult(ImageCollection::Image::Column::FileName));
     };
 
-    QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+    connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex() && topLeft.row() == index.row()) {
@@ -253,7 +255,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    QObject::connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
+    connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto index = selectedImageCollection();
 
         if (index != QModelIndex()) {
@@ -264,6 +266,11 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             _ui->imagesTreeView->setModel(&imageCollectionsModel);
             _ui->imagesTreeView->setRootIndex(index);
             _ui->imagesTreeView->header()->setHidden(false);
+            
+            const auto dimensionTagEnabled = index.siblingAtColumn(ult(ImageCollection::Column::IsMultiPage)).data().toBool();
+
+            _ui->dimensionTagLabel->setEnabled(dimensionTagEnabled);
+            _ui->dimensionTagComboBox->setEnabled(dimensionTagEnabled);
 
             _ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
 

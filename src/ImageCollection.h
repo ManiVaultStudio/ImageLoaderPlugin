@@ -35,6 +35,7 @@ public: // Enumerations
         ToGrayscale,                /** Whether to convert the images to grayscale */
         NoImages,                   /** Number of images in the collection */
         NoSelectedImages,           /** Number of selected images in the collection */
+        IsMultiPage,                /** Whether the collection is a multi-page (TIFF) file */
         DimensionTag,               /** Dimension TIFF tag */
         SourceSize,                 /** Size of the source image(s) */
         TargetSize,                 /** Size of the target image(s) */
@@ -425,6 +426,9 @@ public: // Getters/setters
      * @param dimensionTag Dimension tag
      */
     void setDimensionTag(const QString& dimensionTag);
+
+    /** Returns whether the file is a multi-page (TIFF) file */
+    QVariant getIsMultiPage(const int& role) const;
 
     /**
      * Returns the number of high-dimensional data points

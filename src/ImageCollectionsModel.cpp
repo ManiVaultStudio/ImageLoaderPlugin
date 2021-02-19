@@ -74,6 +74,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
             case ImageCollection::Column::DimensionTag:
                 return imageCollection->getDimensionTag(role);
 
+            case ImageCollection::Column::IsMultiPage:
+                return imageCollection->getIsMultiPage(role);
+
             case ImageCollection::Column::SourceSize:
                 return imageCollection->getSourceSize(role);
 
@@ -415,6 +418,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
                     case ImageCollection::Column::DimensionTag:
                         return "Dimension tag";
+
+                    case ImageCollection::Column::IsMultiPage:
+                        return "Multi-page";
 
                     case ImageCollection::Column::SourceSize:
                         return "Source size";

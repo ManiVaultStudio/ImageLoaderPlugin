@@ -1205,6 +1205,30 @@ void ImageCollection::setDimensionTag(const QString& dimensionTag)
     _dimensionTag = dimensionTag;
 }
 
+QVariant ImageCollection::getIsMultiPage(const int& role) const
+{
+    const auto fileNames                = getFileNames(Qt::EditRole).toStringList();
+    const auto isMultiPageFile          = fileNames.filter(fileNames.first()).size() == fileNames.size();
+    const auto isMultiPageFileString    = isMultiPageFile ? "true" : "false";
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return isMultiPageFileString;
+
+        case Qt::EditRole:
+            return isMultiPageFile;
+
+        case Qt::ToolTipRole:
+            return QString("Is multi-page file: %1").arg(isMultiPageFileString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
 QVariant ImageCollection::getNoPoints(const int& role) const
 {
     auto noPoints = 0;
