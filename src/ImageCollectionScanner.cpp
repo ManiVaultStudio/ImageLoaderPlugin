@@ -150,9 +150,8 @@ void ImageCollectionScanner::scan()
 
         qDebug() << "Found " << imageCollections.size() << "image collections";
 
-        for (auto& imageCollection : imageCollections) {
+        for (auto& imageCollection : imageCollections)
             imageCollection->computeDatasetName();
-        }
 
         auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
 
@@ -241,9 +240,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
     for (int i = 0; i < fileList.size(); ++i)
     {
-        const auto fileName = fileList.at(i);
-        const auto imageFilePath = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
-        const auto rootDir = QFileInfo(imageFilePath).absoluteDir().path();
+        const auto fileName         = fileList.at(i);
+        const auto imageFilePath    = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
+        const auto rootDir          = QFileInfo(imageFilePath).absoluteDir().path();
 
         QImageReader imageReader(imageFilePath);
 
@@ -255,22 +254,20 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
             pageCount = imageReader.imageCount();
 
-            if (pageCount > 1) {
+            if (pageCount > 1)
                 imageExtension = "TIFF (multipage)";
-            }
         }
 
         const auto imageSize = imageReader.size();
 
         auto it = findImageCollection(imageCollections, rootDir, imageExtension, imageSize);
 
-        if (it == imageCollections.end()) {
-            auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().rootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
+        if (it == imageCollections.end() || imageExtension == "TIFF (multipage)") {
+            auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().getRootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
 
             if (imageExtension == "TIFF (multipage)") {
-                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)
                     imageCollection->addImage(imageFilePath, pageIndex);
-                }
             }
             else {
                 imageCollection->addImage(imageFilePath);

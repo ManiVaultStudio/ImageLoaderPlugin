@@ -53,6 +53,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
             case ImageCollection::Column::DatasetName:
                 return imageCollection->getDatasetName(role);
 
+            case ImageCollection::Column::FileNames:
+                return imageCollection->getFileNames(role);
+
             case ImageCollection::Column::ImageType:
                 return imageCollection->getImageType(role);
 
@@ -175,6 +178,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                         break;
                     }
+
+                    case ImageCollection::Column::FileNames:
+                        break;
 
                     case ImageCollection::Column::Type:
                     {
@@ -376,6 +382,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::DatasetName:
                         return "Dataset name";
 
+                    case ImageCollection::Column::FileNames:
+                        return "File name(s)";
+
                     case ImageCollection::Column::ImageType:
                         return "Image type";
 
@@ -456,6 +465,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                 switch (static_cast<ImageCollection::Column>(section)) {
                     case ImageCollection::Column::DatasetName:
                         return tooltip("Dataset name", "The name of the high-dimensional dataset, click to edit");
+
+                    case ImageCollection::Column::FileNames:
+                        return tooltip("File names", "The file name(s)");
 
                     case ImageCollection::Column::ImageType:
                         return tooltip("Type", "The type of images in the scanned image collection");
@@ -660,7 +672,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
         const auto noImages             = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
         const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
 
-        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
+        //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());

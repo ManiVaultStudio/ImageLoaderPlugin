@@ -714,10 +714,10 @@ void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter
     _filter = filter;
 }
 
-ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize) :
+ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageFileType, const QImage::Format& imageFormat, const QSize& sourceSize) :
     TreeItem(parent),
     _directory(directory),
-    _imageFileType(imageType),
+    _imageFileType(imageFileType),
     _imageFormat(imageFormat),
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
@@ -1061,6 +1061,38 @@ void ImageCollection::setDatasetName(const QString& datasetName)
     _datasetName = datasetName;
 }
 
+QVariant ImageCollection::getFileNames(const int& role) const
+{
+    QStringList fileNames;
+
+    for (auto child : _children)
+        fileNames << static_cast<Image*>(child)->getFileName(Qt::EditRole).toString();
+
+    const auto isMultiPageFile = fileNames.filter(fileNames.first()).size() == fileNames.size();
+
+    if (isMultiPageFile)
+        fileNames = QStringList({ fileNames .first() });
+
+    const auto fileNamesString = fileNames.join(", ");
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return fileNamesString;
+
+        case Qt::EditRole:
+            return fileNames;
+
+        case Qt::ToolTipRole:
+            return QString("File names: %1").arg(fileNamesString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
 QVariant ImageCollection::getType(const int& role) const
 {
     const auto typeString = ImageData::typeName(_type);
@@ -1292,7 +1324,7 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 void ImageCollection::computeDatasetName()
 {
     if (getNoImages(Qt::EditRole).toInt() == 1 || getImage(0)->getPageIndex(Qt::EditRole).toInt() >= 0) {
-        setDatasetName(getImage(0)->getFileName(Qt::EditRole).toString() + "_" + _imageFileType.toLower());
+        setDatasetName(getImage(0)->getFileName(Qt::EditRole).toString());
         return;
     }
 

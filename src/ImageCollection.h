@@ -20,8 +20,6 @@ class ImageLoaderPlugin;
 /**
  * Image collection class
  *
- * TODO: Write description
- *
  * @author Thomas Kroes
 */
 class ImageCollection : public TreeItem
@@ -31,6 +29,7 @@ public: // Enumerations
     /** Columns */
     enum class Column {
         DatasetName,                /** The name of the dataset */
+        FileNames,                  /** The filename(s) */
         ImageType,                  /** The type of image(s) */
         ImageFormat,                /** Image format */
         ToGrayscale,                /** Whether to convert the images to grayscale */
@@ -308,7 +307,7 @@ public: // Construction
      * @param imageFormat Format of the image
      * @param sourceSize Source image size
      */
-    ImageCollection(TreeItem* parent, const QString& directory, const QString& imageType, const QImage::Format& imageFormat, const QSize& sourceSize);
+    ImageCollection(TreeItem* parent, const QString& directory, const QString& imageFileType, const QImage::Format& imageFormat, const QSize& sourceSize);
 
     /** Destructor */
     ~ImageCollection();
@@ -387,6 +386,9 @@ public: // Getters/setters
      * @param datasetName Dataset name
      */
     void setDatasetName(const QString& datasetName);
+
+    /** Returns the file names */
+    QVariant getFileNames(const int& role) const;
 
     /**
      * Returns the image collection type (image sequence or image stack)
