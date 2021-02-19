@@ -44,8 +44,16 @@ public: // Filter model
                 return true;
 
             if (parent == QModelIndex()) {
+                const auto fileNamesIndex   = sourceModel()->index(row, ult(ImageCollection::Column::FileNames));
+                const auto fileNames        = sourceModel()->data(fileNamesIndex, Qt::EditRole).toStringList();
+
+                for (auto fileName : fileNames) {
+                    if (fileName.contains(_filter, Qt::CaseInsensitive))
+                        return true;
+                }
+
                 const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
-                const auto datasetName = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
+                const auto datasetName      = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
 
                 return datasetName.contains(_filter, Qt::CaseInsensitive);
             }
@@ -165,7 +173,7 @@ public: // Miscellaneous
     void insert(int row, const std::vector<ImageCollection*>& imageCollections);
 
     /** Get root tree item */
-    TreeItem* rootItem() { return _root; };
+    TreeItem* getRootItem() { return _root; };
 
     /**
      * Guesses the image dimension names

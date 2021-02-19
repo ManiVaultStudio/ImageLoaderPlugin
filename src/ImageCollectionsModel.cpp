@@ -53,6 +53,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
             case ImageCollection::Column::DatasetName:
                 return imageCollection->getDatasetName(role);
 
+            case ImageCollection::Column::FileNames:
+                return imageCollection->getFileNames(role);
+
             case ImageCollection::Column::ImageType:
                 return imageCollection->getImageType(role);
 
@@ -175,6 +178,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                         break;
                     }
+
+                    case ImageCollection::Column::FileNames:
+                        break;
 
                     case ImageCollection::Column::Type:
                     {
@@ -376,6 +382,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::DatasetName:
                         return "Dataset name";
 
+                    case ImageCollection::Column::FileNames:
+                        return "File name(s)";
+
                     case ImageCollection::Column::ImageType:
                         return "Image type";
 
@@ -456,6 +465,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                 switch (static_cast<ImageCollection::Column>(section)) {
                     case ImageCollection::Column::DatasetName:
                         return tooltip("Dataset name", "The name of the high-dimensional dataset, click to edit");
+
+                    case ImageCollection::Column::FileNames:
+                        return tooltip("File names", "The file name(s)");
 
                     case ImageCollection::Column::ImageType:
                         return tooltip("Type", "The type of images in the scanned image collection");
@@ -705,11 +717,10 @@ bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPl
 QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const
 {
     const auto imageCollectionIndex = index.parent().isValid() ? index.parent() : index;
-    const auto directory = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
-    const auto imageType = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ImageType)), Qt::EditRole).toString();
-    const auto datasetName = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+    const auto directory            = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Directory)), Qt::EditRole).toString();
+    const auto fileNames            = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::FileNames)), Qt::EditRole).toStringList();
 
-    return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + imageType);
+    return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + fileNames.first());
 }
 
 bool ImageCollectionsModel::getPersistData() const
