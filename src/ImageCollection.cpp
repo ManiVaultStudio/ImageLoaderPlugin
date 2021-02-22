@@ -563,9 +563,6 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 void ImageCollection::Image::guessDimensionName()
 {
-    if (isFlagSet(ult(Flag::DimensionNamesGuessed)))
-        return;
-
     try
     {
         if (_pageIndex >= 0) {
@@ -584,24 +581,23 @@ void ImageCollection::Image::guessDimensionName()
             if (pageBitmap == nullptr)
                 throw std::runtime_error("Unable to open multi-bitmap page");
 
-            FI::FITAG* tagPageName = nullptr;
+            const auto dimensionTag = getImageCollection()->getDimensionTag(Qt::EditRole).toString();
 
-            FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "PageName", &tagPageName);
+            QString dimensionName;
 
-            if (tagPageName != nullptr)
-                _dimensionName = (char*)FI::FreeImage_GetTagValue(tagPageName);
+            if (!dimensionTag.isEmpty()) {
+                FI::FITAG* tag = nullptr;
 
-            if (_dimensionName.isEmpty()) {
-                FI::FITAG* tagImageDescription = nullptr;
+                FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, dimensionTag.toLatin1(), &tag);
 
-                FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tagImageDescription);
-
-                if (tagImageDescription != nullptr)
-                    _dimensionName = (char*)FI::FreeImage_GetTagValue(tagImageDescription);
+                if (tag != nullptr)
+                    dimensionName = (char*)FI::FreeImage_GetTagValue(tag);
             }
 
-            if (_dimensionName.isEmpty())
+            if (dimensionName.isEmpty())
                 _dimensionName = QString("Dim %1").arg(_pageIndex);
+            else
+                _dimensionName = dimensionName;
 
             FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
             FI::FreeImage_CloseMultiBitmap(multiBitmap);
@@ -722,6 +718,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
     _datasetName(),
+    _dimensionTag("PageName"),
     _toGrayscale(true),
     _type(ImageData::Type::Stack),
     _subsampling(this)
@@ -1171,6 +1168,55 @@ QVariant ImageCollection::getNoSelectedImages(const int& role) const
 
         case Qt::TextAlignmentRole:
             return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+QVariant ImageCollection::getDimensionTag(const int& role) const
+{
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return _dimensionTag;
+
+        case Qt::EditRole:
+            return _dimensionTag;
+
+        case Qt::ToolTipRole:
+            return QString("Dimension tag: %1").arg(_dimensionTag);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::setDimensionTag(const QString& dimensionTag)
+{
+    _dimensionTag = dimensionTag;
+}
+
+QVariant ImageCollection::getIsMultiPage(const int& role) const
+{
+    const auto fileNames                = getFileNames(Qt::EditRole).toStringList();
+    const auto isMultiPageFile          = fileNames.filter(fileNames.first()).size() == fileNames.size();
+    const auto isMultiPageFileString    = isMultiPageFile ? "true" : "false";
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return isMultiPageFileString;
+
+        case Qt::EditRole:
+            return isMultiPageFile;
+
+        case Qt::ToolTipRole:
+            return QString("Is multi-page file: %1").arg(isMultiPageFileString);
 
         default:
             break;

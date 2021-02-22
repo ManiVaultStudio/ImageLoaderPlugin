@@ -11,6 +11,8 @@ ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
     _imageLoaderPlugin(nullptr)
 {
     _ui->setupUi(this);
+
+    setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
 }
 
 ImageLoaderDialog::~ImageLoaderDialog() = default;

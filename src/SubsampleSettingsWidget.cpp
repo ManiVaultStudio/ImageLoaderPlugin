@@ -61,7 +61,6 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
                 _ui->ratio25PushButton->setEnabled(mightEdit);
                 _ui->ratio50PushButton->setEnabled(mightEdit);
                 _ui->ratio75PushButton->setEnabled(mightEdit);
-                _ui->ratio100PushButton->setEnabled(mightEdit);
                 _ui->filterLabel->setEnabled(mightEdit);
                 _ui->filterComboBox->setEnabled(mightEdit);
             }
@@ -148,13 +147,6 @@ void SubsampleSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
         if (index != QModelIndex())
             imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.75f);
-    });
-
-    connect(_ui->ratio100PushButton, &QPushButton::clicked, [&, selectedRow]() {
-        const auto index = selectedRow();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 1.0f);
     });
 
     QObject::connect(_ui->filterComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedRow](int currentIndex) {

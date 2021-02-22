@@ -179,7 +179,7 @@ public: // Miscellaneous
      * Guesses the image dimension names
      * @param index Image collection model index
      */
-    void guessDimensionNames(const QModelIndex& index);
+    void guessDimensionNames(const QModelIndex& imageCollectionIndex);
 
     /**
      * Loads an image collection
