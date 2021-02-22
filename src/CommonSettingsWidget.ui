@@ -55,7 +55,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Load images as high-dimensional image sequence or stack data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Load images as high-dimensional image sequence (each image is a dimension and each pixel coordinate represents a data point) or stack (each image is considered a high-dimensional data point, each pixel is a dimension)</string>
           </property>
           <property name="text">
            <string>Interpret as:</string>
@@ -70,7 +70,7 @@
           <item>
            <widget class="QCheckBox" name="separateByDirectoryCheckBox">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Separate by directory&lt;br/&gt;&lt;/span&gt;Images are grouped by directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Images are grouped by directory</string>
             </property>
             <property name="text">
              <string>Separate by directory</string>
@@ -98,7 +98,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interpret as&lt;br/&gt;&lt;/span&gt;Image sequence: Each image is considered a high-dimensional data point, each pixel is a dimension&lt;br/&gt;Image stack: Each image is a dimension and each pixel coordinate represents a data point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Choose between image sequence and stack</string>
           </property>
           <item>
            <property name="text">
@@ -124,7 +124,7 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Images that were discovered during the scanning process</string>
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
@@ -134,7 +134,7 @@
         <item row="2" column="0">
          <widget class="QLabel" name="directoryLabel">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;The directory where the recursive search for images is initiated&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>The directory where the recursive search for images is initiated</string>
           </property>
           <property name="text">
            <string>Scan directory:</string>
@@ -147,7 +147,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Image collection(s)</string>
           </property>
           <property name="text">
            <string>Collection(s):</string>
@@ -168,7 +168,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select all&lt;/span&gt;&lt;br/&gt;Select all images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Select all images</string>
             </property>
             <property name="text">
              <string>Select All</string>
@@ -181,7 +181,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select none&lt;/span&gt;&lt;br/&gt;Select no images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Select no images</string>
             </property>
             <property name="text">
              <string>Select None</string>
@@ -194,7 +194,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Invert selection&lt;/span&gt;&lt;br/&gt;Invert the image selection&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Invert the image selection</string>
             </property>
             <property name="text">
              <string>Invert</string>
@@ -220,7 +220,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select percentage&lt;/span&gt;&lt;br/&gt;Randomly select a percentage of images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Randomly select a percentage of images</string>
             </property>
             <property name="suffix">
              <string>%</string>
@@ -242,7 +242,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select percentage&lt;/span&gt;&lt;br/&gt;Randomly select a percentage of images&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Randomly select a percentage of images</string>
             </property>
             <property name="text">
              <string>Select %</string>
@@ -253,6 +253,12 @@
         </item>
         <item row="12" column="0">
          <widget class="QLabel" name="dimensionTagLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Dimension name from page tag (multi-page TIFF only)</string>
+          </property>
           <property name="text">
            <string>Dimension tag:</string>
           </property>
@@ -275,7 +281,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;Type to manually enter the scan directory&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Manually enter the scan directory</string>
             </property>
            </widget>
           </item>
@@ -300,7 +306,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Scan directory&lt;br/&gt;&lt;/span&gt;Click to pick directory containing image sequence&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>Click to pick directory containing image sequence</string>
             </property>
             <property name="text">
              <string>...</string>
@@ -315,7 +321,7 @@
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Images&lt;/span&gt;&lt;br/&gt;Images that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Images that were discovered during the scanning process</string>
           </property>
           <property name="text">
            <string>Image(s):</string>
@@ -329,6 +335,9 @@
          <widget class="QLineEdit" name="searchFilterLineEdit">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Search by data set name or image file name(s)</string>
           </property>
           <property name="placeholderText">
            <string>Search for dataset/filename...</string>
@@ -356,7 +365,7 @@
            </size>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Image collection(s) that were discovered during the scanning process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Image collection(s) that were discovered during the scanning process</string>
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
@@ -368,11 +377,17 @@
         </item>
         <item row="12" column="1">
          <widget class="QComboBox" name="dimensionTagComboBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="toolTip">
+           <string>Choose preset tag name or enter one manually</string>
           </property>
           <property name="editable">
            <bool>true</bool>

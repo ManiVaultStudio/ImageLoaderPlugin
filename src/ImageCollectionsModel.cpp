@@ -364,10 +364,6 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
 QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientation, int role /*= Qt::DisplayRole*/) const
 {
-    auto tooltip = [](const QString& title, const QString& description) {
-        return QString("<html><head/><body><p><span style='font-weight: 600;'>%1</span><br/>%2</p></body></html>").arg(title, description);
-    };
-
     if (orientation == Qt::Horizontal) {
         switch (role)
         {
@@ -486,58 +482,58 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
                     case ImageCollection::Column::DatasetName:
-                        return tooltip("Dataset name", "The name of the high-dimensional dataset, click to edit");
+                        return "The name of the high-dimensional dataset, click to edit";
 
                     case ImageCollection::Column::FileNames:
-                        return tooltip("File names", "The file name(s)");
+                        return "File names", "The file name(s)";
 
                     case ImageCollection::Column::ImageType:
-                        return tooltip("Type", "The type of images in the scanned image collection");
+                        return "The type of images in the scanned image collection";
 
                     case ImageCollection::Column::NoImages:
-                        return tooltip("#Images", "The number of images in the collection");
+                        return "The number of images in the collection";
 
                     case ImageCollection::Column::NoSelectedImages:
-                        return tooltip("#Selected images", "The number of selected images in the collection");
+                        return "The number of selected images in the collection";
 
                     case ImageCollection::Column::SourceSize:
-                        return tooltip("Source size", "The size of the images on disk");
+                        return "The size of the images on disk";
 
                     case ImageCollection::Column::TargetSize:
-                        return tooltip("Target size", "The size of the images when loaded as high-dimensional data");
+                        return "The size of the images when loaded as high-dimensional data";
 
                     case ImageCollection::Column::TargetWidth:
-                        return tooltip("Width", "The width of the images when loaded as high-dimensional data");
+                        return "The width of the images when loaded as high-dimensional data";
 
                     case ImageCollection::Column::TargetHeight:
-                        return tooltip("Height", "The height of the images when loaded as high-dimensional data");
+                        return "The height of the images when loaded as high-dimensional data";
 
                     case ImageCollection::Column::NoPoints:
-                        return tooltip("Number of points", "The number of points in the high-dimensional data");
+                        return "The number of points in the high-dimensional data";
 
                     case ImageCollection::Column::NoDimensions:
-                        return tooltip("Number of dimensions", "The number of dimensions in the high-dimensional data");
+                        return "The number of dimensions in the high-dimensional data";
 
                     case ImageCollection::Column::Memory:
-                        return tooltip("Memory", "Memory consumption of the high-dimensional data");
+                        return "Memory consumption of the high-dimensional data";
 
                     case ImageCollection::Column::Directory:
-                        return tooltip("Directory", "The top-level directory where the images were found");
+                        return "The top-level directory where the images were found";
 
                     case ImageCollection::Column::Type:
-                        return tooltip("Load as", "How to interpret the images as high-dimensional data");
+                        return "How to interpret the images as high-dimensional data";
 
                     case ImageCollection::Column::SubsamplingEnabled:
-                        return tooltip("Subsampling enabled", "Whether images are sub-sampled when loaded as high-dimensional data");
+                        return "Whether images are sub-sampled when loaded as high-dimensional data";
 
                     case ImageCollection::Column::SubsamplingRatio:
-                        return tooltip("Subsampling ratio", "The amount of subsampling");
+                        return "The amount of subsampling";
 
                     case ImageCollection::Column::SubsamplingFilter:
-                        return tooltip("Subsampling filter", "The subsampling filter to use");
+                        return "The subsampling filter to use";
 
                     case ImageCollection::Column::ToGrayscale:
-                        return tooltip("Convert to grayscale", "Whether all image channels are combined in to one (grayscale)");
+                        return "Whether all image channels are combined in to one (grayscale)";
 
                     default:
                         break;
@@ -545,16 +541,16 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
                 switch (static_cast<ImageCollection::Image::Column>(section)) {
                     case ImageCollection::Image::Column::ShouldLoad:
-                        return tooltip("Load", "Whether to load the image or not");
+                        return "Whether to load the image or not";
 
                     case ImageCollection::Image::Column::FileName:
-                        return tooltip("Filename", "Name of the image file");
+                        return "Name of the image file";
 
                     case ImageCollection::Image::Column::DimensionName:
-                        return tooltip("Dimension name", "Name of the dimension in the high-dimensional dataset, click to edit");
+                        return "Name of the dimension in the high-dimensional dataset, click to edit";
 
                     case ImageCollection::Image::Column::FilePath:
-                        return tooltip("File path", "The absolute file path of the image");
+                        return "The absolute file path of the image";
 
                     default:
                         break;
