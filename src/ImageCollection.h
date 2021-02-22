@@ -54,11 +54,6 @@ public: // Enumerations
         End = Directory             /** Column End */
     };
 
-    /** Image collection bit flags */
-    enum class Flag {
-        DimensionNamesGuessed = 0x01,       /** Whether the dimension names have already been guessed */
-    };
-
 public: // Nested image class
 
     /**

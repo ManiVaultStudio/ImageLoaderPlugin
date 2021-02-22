@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>666</width>
-    <height>691</height>
+    <height>686</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -34,6 +34,12 @@
    </property>
    <item row="0" column="0" colspan="2">
     <widget class="QGroupBox" name="imagesCollectionsGroupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -41,7 +47,7 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Image collections&lt;/span&gt;&lt;br/&gt;Pick an image collection to load as a high-dimensional dataset&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>Image collection(s)</string>
      </property>
      <property name="title">
       <string>Image collection(s)</string>
@@ -49,116 +55,36 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="0" column="0">
        <layout class="QGridLayout" name="imagesGridLayout">
-        <item row="7" column="0">
-         <widget class="QLabel" name="loadAsLabel">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Load images as high-dimensional image sequence (each image is a dimension and each pixel coordinate represents a data point) or stack (each image is considered a high-dimensional data point, each pixel is a dimension)</string>
-          </property>
-          <property name="text">
-           <string>Interpret as:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <layout class="QHBoxLayout" name="separateByDirectoryHorizontalLayout">
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QCheckBox" name="separateByDirectoryCheckBox">
-            <property name="toolTip">
-             <string>Images are grouped by directory</string>
-            </property>
-            <property name="text">
-             <string>Separate by directory</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="7" column="1">
-         <widget class="QComboBox" name="loadAsComboBox">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Choose between image sequence and stack</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Image sequence</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Image stack</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="11" column="1">
-         <widget class="QTreeView" name="imagesTreeView">
+        <item row="5" column="2">
+         <widget class="QTreeView" name="imageCollectionsTreeView">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
             <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
+            <verstretch>1</verstretch>
            </sizepolicy>
           </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>10</height>
+           </size>
+          </property>
           <property name="toolTip">
-           <string>Images that were discovered during the scanning process</string>
+           <string>Image collection(s) that were discovered during the scanning process</string>
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="directoryLabel">
-          <property name="toolTip">
-           <string>The directory where the recursive search for images is initiated</string>
-          </property>
-          <property name="text">
-           <string>Scan directory:</string>
+          <property name="sortingEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="imageCollectionsLabel">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Image collection(s)</string>
-          </property>
-          <property name="text">
-           <string>Collection(s):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="1">
-         <layout class="QHBoxLayout" name="selectionHorizontalLayout">
+        <item row="15" column="2">
+         <layout class="QHBoxLayout" name="imageSelectionLayout">
           <property name="bottomMargin">
            <number>0</number>
           </property>
@@ -251,11 +177,129 @@
           </item>
          </layout>
         </item>
-        <item row="12" column="0">
-         <widget class="QLabel" name="dimensionTagLabel">
+        <item row="5" column="0">
+         <widget class="QLabel" name="imageCollectionsLabel">
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Image collection(s)</string>
+          </property>
+          <property name="text">
+           <string>Collection(s):</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <layout class="QHBoxLayout" name="separateByDirectoryHorizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QCheckBox" name="separateByDirectoryCheckBox">
+            <property name="toolTip">
+             <string>Images are grouped by directory</string>
+            </property>
+            <property name="text">
+             <string>Separate by directory</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLineEdit" name="searchFilterLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Search by data set name or image file name(s)</string>
+          </property>
+          <property name="placeholderText">
+           <string>Search for dataset/filename...</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="imagesLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Images that were discovered during the scanning process</string>
+          </property>
+          <property name="text">
+           <string>Image(s):</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+          </property>
+         </widget>
+        </item>
+        <item row="15" column="0">
+         <widget class="QLabel" name="label">
+          <property name="toolTip">
+           <string>Image selection:</string>
+          </property>
+          <property name="text">
+           <string>Selection:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="loadAsLabel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Load images as high-dimensional image sequence (each image is a dimension and each pixel coordinate represents a data point) or stack (each image is considered a high-dimensional data point, each pixel is a dimension)</string>
+          </property>
+          <property name="text">
+           <string>Interpret as:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="directoryLabel">
+          <property name="toolTip">
+           <string>The directory where the recursive search for images is initiated</string>
+          </property>
+          <property name="text">
+           <string>Scan directory:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="16" column="2">
+         <layout class="QHBoxLayout" name="selectionHorizontalLayout">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
+        </item>
+        <item row="12" column="0">
+         <widget class="QLabel" name="dimensionTagLabel">
           <property name="toolTip">
            <string>Dimension name from page tag (multi-page TIFF only)</string>
           </property>
@@ -264,7 +308,7 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="2" column="2">
          <layout class="QHBoxLayout" name="directoryLayout">
           <property name="topMargin">
            <number>0</number>
@@ -315,67 +359,46 @@
           </item>
          </layout>
         </item>
-        <item row="11" column="0">
-         <widget class="QLabel" name="imagesLabel">
+        <item row="7" column="2">
+         <widget class="QComboBox" name="loadAsComboBox">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>Images that were discovered during the scanning process</string>
+           <string>Choose between image sequence and stack</string>
           </property>
-          <property name="text">
-           <string>Image(s):</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
+          <item>
+           <property name="text">
+            <string>Image sequence</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Image stack</string>
+           </property>
+          </item>
          </widget>
         </item>
-        <item row="6" column="1">
-         <widget class="QLineEdit" name="searchFilterLineEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Search by data set name or image file name(s)</string>
-          </property>
-          <property name="placeholderText">
-           <string>Search for dataset/filename...</string>
-          </property>
-          <property name="clearButtonEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QTreeView" name="imageCollectionsTreeView">
+        <item row="11" column="2">
+         <widget class="QTreeView" name="imagesTreeView">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
+            <verstretch>1</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>10</height>
-           </size>
-          </property>
           <property name="toolTip">
-           <string>Image collection(s) that were discovered during the scanning process</string>
+           <string>Images that were discovered during the scanning process</string>
           </property>
           <property name="rootIsDecorated">
            <bool>false</bool>
           </property>
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
          </widget>
         </item>
-        <item row="12" column="1">
+        <item row="12" column="2">
          <widget class="QComboBox" name="dimensionTagComboBox">
           <property name="enabled">
            <bool>false</bool>
@@ -387,10 +410,16 @@
            </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>Choose preset tag name or enter one manually</string>
+           <string>Choose dimension tag</string>
           </property>
           <property name="editable">
            <bool>true</bool>
+          </property>
+          <property name="currentText">
+           <string/>
+          </property>
+          <property name="currentIndex">
+           <number>-1</number>
           </property>
           <item>
            <property name="text">

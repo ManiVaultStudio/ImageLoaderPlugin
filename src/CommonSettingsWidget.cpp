@@ -33,7 +33,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
     _ui->imageCollectionsTreeView->setModel(&_imageLoaderPlugin->getImageCollectionsFilterModel());
     _ui->imageCollectionsTreeView->setSelectionModel(&imageCollectionsModel.selectionModel());
 
-    const auto selectedImageCollection = [&]() {
+    const auto selectedImageCollectionIndex = [&]() {
         const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
 
         if (selectedRows.isEmpty())
@@ -110,8 +110,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
     });
 
-    connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollection](int currentIndex) {
-        const auto index = selectedImageCollection();
+    connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollectionIndex](int currentIndex) {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex())
             imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
@@ -161,22 +161,46 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->selectPercentagePushButton->setEnabled(false);
     });
 
-    connect(_ui->selectAllPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
-        const auto index = selectedImageCollection();
+    const auto updateTagUI = [this, selectedImageCollectionIndex]() -> void {
+        const auto index = selectedImageCollectionIndex();
+
+        const auto dimensionTag         = index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)).data().toString();
+        const auto dimensionTagEnabled  = index.siblingAtColumn(ult(ImageCollection::Column::IsMultiPage)).data().toBool();
+
+        _ui->dimensionTagLabel->setEnabled(dimensionTagEnabled);
+        _ui->dimensionTagComboBox->setEnabled(dimensionTagEnabled);
+        _ui->dimensionTagComboBox->setCurrentText(dimensionTagEnabled ? dimensionTag : "");
+    };
+    
+    const auto setDimensionTag = [this, &imageCollectionsModel, selectedImageCollectionIndex]() {
+        const auto index = selectedImageCollectionIndex();
+
+        if (index != QModelIndex()) {
+            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _ui->dimensionTagComboBox->currentText());
+            imageCollectionsModel.guessDimensionNames(index);
+        }
+    };
+
+    connect(_ui->dimensionTagComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [setDimensionTag](int index) {
+        setDimensionTag();
+    });
+
+    connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex())
             imageCollectionsModel.selectAll(index);
     });
 
-    connect(_ui->selectNonePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
-        const auto index = selectedImageCollection();
+    connect(_ui->selectNonePushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex())
             imageCollectionsModel.selectNone(index);
     });
 
-    connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
-        const auto index = selectedImageCollection();
+    connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex())
             imageCollectionsModel.invertSelection(index);
@@ -186,8 +210,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _imageLoaderPlugin->setSetting("Miscellaneous/SelectPercentage", value);
     });
 
-    connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [&, selectedImageCollection]() {
-        const auto index = selectedImageCollection();
+    connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [this, &imageCollectionsModel, selectedImageCollectionIndex]() {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex())
             imageCollectionsModel.selectPercentage(index, 0.01f * _ui->selectPercentageDoubleSpinBox->value());
@@ -204,7 +228,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->selectPercentagePushButton->setEnabled(noImages > 1);
     };
 
-    const auto updateImagesHeader = [&, selectedImageCollection]() {
+    const auto updateImagesHeader = [&, selectedImageCollectionIndex]() {
         for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
             _ui->imagesTreeView->header()->hideSection(column);
 
@@ -219,7 +243,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->imagesTreeView->resizeColumnToContents(ult(ImageCollection::Image::Column::FileName));
         _ui->imagesTreeView->resizeColumnToContents(ult(ImageCollection::Image::Column::DimensionName));
 
-        const auto index = selectedImageCollection();
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex()) {
             const auto type = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt();
@@ -229,8 +253,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->imagesTreeView->header()->hideSection(ult(ImageCollection::Image::Column::FileName));
     };
 
-    connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-        const auto index = selectedImageCollection();
+    connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex() && topLeft.row() == index.row()) {
             for (int column = topLeft.column(); column <= bottomRight.column(); column++) {
@@ -255,8 +279,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedImageCollection, updateImagesHeader, updateSelectionButtons](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto index = selectedImageCollection();
+    connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
+        const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex()) {
             _ui->loadAsLabel->setEnabled(true);
@@ -266,11 +290,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             _ui->imagesTreeView->setModel(&imageCollectionsModel);
             _ui->imagesTreeView->setRootIndex(index);
             _ui->imagesTreeView->header()->setHidden(false);
-            
-            const auto dimensionTagEnabled = index.siblingAtColumn(ult(ImageCollection::Column::IsMultiPage)).data().toBool();
-
-            _ui->dimensionTagLabel->setEnabled(dimensionTagEnabled);
-            _ui->dimensionTagComboBox->setEnabled(dimensionTagEnabled);
 
             _ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
 
@@ -278,6 +297,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
             updateImagesHeader();
             updateSelectionButtons(index);
+            updateTagUI();
         }
     });
 

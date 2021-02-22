@@ -563,9 +563,6 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
 void ImageCollection::Image::guessDimensionName()
 {
-    if (isFlagSet(ult(Flag::DimensionNamesGuessed)))
-        return;
-
     try
     {
         if (_pageIndex >= 0) {
@@ -584,24 +581,23 @@ void ImageCollection::Image::guessDimensionName()
             if (pageBitmap == nullptr)
                 throw std::runtime_error("Unable to open multi-bitmap page");
 
-            FI::FITAG* tagPageName = nullptr;
+            const auto dimensionTag = getImageCollection()->getDimensionTag(Qt::EditRole).toString();
 
-            FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "PageName", &tagPageName);
+            QString dimensionName;
 
-            if (tagPageName != nullptr)
-                _dimensionName = (char*)FI::FreeImage_GetTagValue(tagPageName);
+            if (!dimensionTag.isEmpty()) {
+                FI::FITAG* tag = nullptr;
 
-            if (_dimensionName.isEmpty()) {
-                FI::FITAG* tagImageDescription = nullptr;
+                FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, dimensionTag.toLatin1(), &tag);
 
-                FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tagImageDescription);
-
-                if (tagImageDescription != nullptr)
-                    _dimensionName = (char*)FI::FreeImage_GetTagValue(tagImageDescription);
+                if (tag != nullptr)
+                    dimensionName = (char*)FI::FreeImage_GetTagValue(tag);
             }
 
-            if (_dimensionName.isEmpty())
+            if (dimensionName.isEmpty())
                 _dimensionName = QString("Dim %1").arg(_pageIndex);
+            else
+                _dimensionName = dimensionName;
 
             FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
             FI::FreeImage_CloseMultiBitmap(multiBitmap);

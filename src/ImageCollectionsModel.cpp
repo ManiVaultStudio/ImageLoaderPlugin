@@ -149,9 +149,9 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
         const auto column = static_cast<ImageCollection::Column>(index.column());
 
         auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
-            const auto subsamplingEnabled = imageCollection->getSubsampling().getEnabled(Qt::EditRole).toBool();
-            const auto subsamplingRatio = imageCollection->getSubsampling().getRatio(Qt::EditRole).toFloat();
-            const auto sourceSize = imageCollection->getSourceSize(Qt::EditRole).toSize();
+            const auto subsamplingEnabled   = imageCollection->getSubsampling().getEnabled(Qt::EditRole).toBool();
+            const auto subsamplingRatio     = imageCollection->getSubsampling().getRatio(Qt::EditRole).toFloat();
+            const auto sourceSize           = imageCollection->getSourceSize(Qt::EditRole).toSize();
 
             auto targetSize = sourceSize;
 
@@ -723,14 +723,19 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
     }
 }
 
-void ImageCollectionsModel::guessDimensionNames(const QModelIndex& index)
+void ImageCollectionsModel::guessDimensionNames(const QModelIndex& imageCollectionIndex)
 {
-    if (index.parent() != QModelIndex())
+    if (imageCollectionIndex.parent() != QModelIndex())
         return;
 
-    auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+    auto imageCollection = static_cast<ImageCollection*>((void*)imageCollectionIndex.internalPointer());
 
     imageCollection->guessDimensionNames();
+
+    for (auto child : imageCollection->_children) {
+        const auto imageDimensionNameIndex = index(imageCollection->_children.indexOf(child), ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex);
+        emit dataChanged(imageDimensionNameIndex, imageDimensionNameIndex);
+    }
 }
 
 bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
