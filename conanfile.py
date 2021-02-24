@@ -48,6 +48,7 @@ class ImageLoaderPluginConan(ConanFile):
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
+        cmake.definitions["FREEIMAGE_ROOT_DIR"] = self.deps_cpp_info["freeimage"].rootpath
         cmake.configure(source_folder="hdps/ImageLoaderPlugin")  # needed for scm
         cmake.verbose = True
         return cmake
