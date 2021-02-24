@@ -26,11 +26,12 @@ SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
 
 if (NOT FREEIMAGE_FOUND)
-    message(WARNING "Failed to find FreeImage, not building ImageLoaderPlugin")
+    message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
     return()
 endif()
 
 if (NOT ${FREEIMAGE_FOUND})
+	message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
     return()
 endif()
 
