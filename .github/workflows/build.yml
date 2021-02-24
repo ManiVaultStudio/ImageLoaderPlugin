@@ -90,7 +90,7 @@ jobs:
 
       - name: Linux Mac build
         if: "!startsWith(runner.os, 'Windows')"
-        uses: hdps/github-actions/conan_windows_build@main
+        uses: hdps/github-actions/conan_linuxmac_build@main
         with:
           conan-compiler: ${{matrix.build-compiler}}
           conan-compiler-version: ${{matrix.build-cversion}}

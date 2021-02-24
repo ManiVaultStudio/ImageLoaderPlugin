@@ -27,7 +27,7 @@ class ImageLoaderPluginConan(ConanFile):
 
     requires = (
         "qt/5.15.1@lkeb/stable",
-        "hdps-core/latest@lkeb/stable"
+        "hdps-core/latest@lkeb/stable",
         "freeimage/3.18.0@lkeb/stable"
     )
 
