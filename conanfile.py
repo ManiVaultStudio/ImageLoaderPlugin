@@ -1,29 +1,32 @@
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake
 import os
 import shutil
-import json
 import pathlib
+from rules_support import CoreBranchInfo
+
 
 class ImageLoaderPluginConan(ConanFile):
-    #TODO wrap with Conan build tools to extract version from source
+    """Class to package ImageLoaderPlugin using conan
+
+    Packages both RELEASE and DEBUG.
+    Uses rules_support (github.com/hdps/rulessupport) to derive
+    versioninfo based on the branch naming convention
+    as described in https://github.com/hdps/core/wiki/Branch-naming-rules
+    """
     name = "ImageLoaderPlugin"
-    version = "latest"
-    license = "MIT"
-    author = "B. van Lew b.van_lew@lumc.nl"
-    # The url for the conan recipe
-    url = "https://github.com/bldrvnlw/conan-ImageLoaderPlugin"
     description = "A plugin for viewing image data in the high-dimensional plugin system (HDPS)."
     topics = ("hdps", "plugin", "image data", "loading")
-    settings = "os", "compiler", "build_type", "arch"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
-    #exports_sources = ["CMakeLists.txt", "build_trigger.json"]
+    url = "https://github.com/hdps/ImageLoaderPlugin"
+    author = "B. van Lew b.van_lew@lumc.nl"   # conan recipe author
+    license = "MIT"
+
+    short_paths = True
     generators = ("cmake")
 
-    # Custom attributes for Bincrafters recipe conventions
-    _source_subfolder = name
-    _build_subfolder = "build_subfolder"
-    install_dir = None
+    # Options may need to change depending on the packaged library
+    settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = {"shared": True, "fPIC": True}
 
     requires = (
         "qt/5.15.1@lkeb/stable",
@@ -38,6 +41,24 @@ class ImageLoaderPluginConan(ConanFile):
         "revision": "auto"
     }
 
+    def set_version(self):
+        # Assign a version from the branch name
+        branch_info = CoreBranchInfo(self.recipe_folder)
+        self.version = branch_info.version
+
+    # Remove runtime and use always default (MD/MDd)
+    def configure(self):
+        if self.settings.compiler == "Visual Studio":
+            del self.settings.compiler.runtime
+
+    def system_requirements(self):
+        #  May be needed for macOS or Linux
+        pass
+
+    def config_options(self):
+        if self.settings.os == 'Windows':
+            del self.options.fPIC
+
     def _configure_cmake(self, build_type):
         # locate Qt root to allow find_package to work
         qtpath = pathlib.Path(self.deps_cpp_info["qt"].rootpath)
@@ -47,6 +68,8 @@ class ImageLoaderPluginConan(ConanFile):
         cmake = CMake(self, build_type=build_type)
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
+        if self.settings.os == "Linux" or self.settings.os == "Macos":
+            cmake.definitions["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         cmake.definitions["CMAKE_PREFIX_PATH"] = qt_root
         cmake.definitions["FREEIMAGE_ROOT_DIR"] = self.deps_cpp_info["freeimage"].rootpath
         cmake.configure(source_folder="hdps/ImageLoaderPlugin")  # needed for scm
@@ -66,23 +89,27 @@ class ImageLoaderPluginConan(ConanFile):
         fi_pkg_bin = self.deps_cpp_info["freeimage"].bin_paths[0]
         fi_pkg_inc = self.deps_cpp_info["freeimage"].include_paths[0]
         if self.settings.os == "Windows":
-            shutil.copyfile(os.path.join(fi_pkg_bin, "FreeImage.dll"), os.path.join(fi_pkg_inc, "FreeImage.dll"))
+            shutil.copyfile(os.path.join(fi_pkg_bin, "FreeImage.dll"),
+                            os.path.join(fi_pkg_inc, "FreeImage.dll"))
         elif self.settings.os == "Linux":
-            shutil.copyfile(os.path.join(fi_pkg_bin, "libfreeimage-3.18.0.so"), os.path.join(fi_pkg_inc, "libfreeimage-3.18.0.so"))
+            shutil.copyfile(os.path.join(fi_pkg_bin, "libfreeimage-3.18.0.so"),
+                            os.path.join(fi_pkg_inc, "libfreeimage-3.18.0.so"))
         else:
-            shutil.copyfile(os.path.join(fi_pkg_bin, "libfreeimage.dylib"), os.path.join(fi_pkg_inc, "libfreeimage.dylib"))
+            shutil.copyfile(os.path.join(fi_pkg_bin, "libfreeimage.dylib"),
+                            os.path.join(fi_pkg_inc, "libfreeimage.dylib"))
 
         # The ImageLoaderPlugin build expects the HDPS package to be in this install dir
-        hdps_pkg_root= self.deps_cpp_info["hdps-core"].rootpath
-        print("Install dir type: ", os.path.join(self.install_dir, self.settings.get_safe("build_type")))
-        shutil.copytree(hdps_pkg_root, os.path.join(self.install_dir, self.settings.get_safe("build_type")))
+        hdps_pkg_root = self.deps_cpp_info["hdps-core"].rootpath
+        #print("Install dir type: ", os.path.join(self.install_dir, self.settings.get_safe("build_type")))
+        #shutil.copytree(hdps_pkg_root, os.path.join(self.install_dir, self.settings.get_safe("build_type")))
+        print("Install dir type: ", self.install_dir)
+        shutil.copytree(hdps_pkg_root, self.install_dir)
 
         cmake_debug = self._configure_cmake('Debug')
         cmake_debug.build()
 
         cmake_release = self._configure_cmake('Release')
         cmake_release.build()
-
 
     def package(self):
         print('Packaging install dir: ', self.install_dir)
@@ -95,4 +122,3 @@ class ImageLoaderPluginConan(ConanFile):
         self.cpp_info.release.libdirs = ['Release/lib']
         self.cpp_info.release.bindirs = ['Release/Plugins', 'Release']
         self.cpp_info.release.includedirs = ['Release/include', 'Release']
-
