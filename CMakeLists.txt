@@ -21,6 +21,8 @@ if(MSVC)
 endif(MSVC)
 
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
+# Normalize the incoming install path
+file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
 
 SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
@@ -79,8 +81,8 @@ source_group(Widgets FILES ${WIDGET_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(Aux FILES ${AUX})
 
-message(STATUS "HDPS CORE in $ENV{HDPS_INSTALL_DIR}")
-include_directories("$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/include/")
+message(STATUS "HDPS CORE in ${INSTALL_DIR}")
+include_directories("${INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 include_directories(src)
 
@@ -101,9 +103,9 @@ else()
     set(LIB_SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
-target_link_libraries(${PROJECT} "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ImageData${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ImageData${LIB_SUFFIX}")
 
 target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
 
@@ -130,7 +132,7 @@ install(TARGETS ${PROJECT}
 
 install(FILES
 	"${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-	DESTINATION "$ENV{HDPS_INSTALL_DIR}/$<CONFIGURATION>"
+	DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>"
 	COMPONENT IMPORTLIBS
 )
 
