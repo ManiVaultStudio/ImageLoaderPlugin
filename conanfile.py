@@ -2,6 +2,7 @@ from conans import ConanFile, CMake
 import os
 import shutil
 import pathlib
+import subprocess
 from rules_support import CoreBranchInfo
 
 
@@ -28,8 +29,8 @@ class ImageLoaderPluginConan(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
 
+    # Qt requirement is inherited from hdps-core
     requires = (
-        "qt/5.15.1@lkeb/stable",
         "hdps-core/latest@lkeb/stable",
         "freeimage/3.18.0@lkeb/stable"
     )
@@ -59,13 +60,13 @@ class ImageLoaderPluginConan(ConanFile):
         if self.settings.os == 'Windows':
             del self.options.fPIC
 
-    def _configure_cmake(self, build_type):
+    def _configure_cmake(self, build_type, verbosity="minimal"):
         # locate Qt root to allow find_package to work
         qtpath = pathlib.Path(self.deps_cpp_info["qt"].rootpath)
         qt_root = str(list(qtpath.glob('**/Qt5Config.cmake'))[0].parents[3])
         print("Qt root ", qt_root)
 
-        cmake = CMake(self, build_type=build_type)
+        cmake = CMake(self, build_type=build_type, msbuild_verbosity=verbosity)
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         if self.settings.os == "Linux" or self.settings.os == "Macos":
@@ -100,8 +101,6 @@ class ImageLoaderPluginConan(ConanFile):
 
         # The ImageLoaderPlugin build expects the HDPS package to be in this install dir
         hdps_pkg_root = self.deps_cpp_info["hdps-core"].rootpath
-        #print("Install dir type: ", os.path.join(self.install_dir, self.settings.get_safe("build_type")))
-        #shutil.copytree(hdps_pkg_root, os.path.join(self.install_dir, self.settings.get_safe("build_type")))
         print("Install dir type: ", self.install_dir)
         shutil.copytree(hdps_pkg_root, self.install_dir)
 
@@ -112,8 +111,17 @@ class ImageLoaderPluginConan(ConanFile):
         cmake_release.build()
 
     def package(self):
-        print('Packaging install dir: ', self.install_dir)
-        self.copy(pattern="*", src=self.install_dir)
+        package_dir = os.path.join(self.build_folder, "package")
+        print('Packaging install dir: ', package_dir)
+        subprocess.run(["cmake",
+                        "--install", self.build_folder,
+                        "--config", "Debug",
+                        "--prefix", os.path.join(package_dir, "Debug")])
+        subprocess.run(["cmake",
+                        "--install", self.build_folder,
+                        "--config", "Release",
+                        "--prefix", os.path.join(package_dir, "Release")])
+        self.copy(pattern="*", src=package_dir)
 
     def package_info(self):
         self.cpp_info.debug.libdirs = ['Debug/lib']
