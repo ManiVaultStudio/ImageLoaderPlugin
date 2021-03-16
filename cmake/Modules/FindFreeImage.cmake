@@ -24,6 +24,7 @@ IF (WIN32)
 		DOC "The FreeImage library")
 ELSE (WIN32)
 	FIND_PATH(FREEIMAGE_INCLUDE_PATH FreeImage.h
+        ${FREEIMAGE_ROOT_DIR}/include
 		/usr/include
 		/usr/local/include
 		/sw/include
@@ -32,6 +33,7 @@ ELSE (WIN32)
 	FIND_LIBRARY(FREEIMAGE_LIBRARY
 		NAMES FreeImage freeimage
 		PATHS
+        ${FREEIMAGE_ROOT_DIR}/bin
 		/usr/lib64
 		/usr/lib
 		/usr/local/lib64

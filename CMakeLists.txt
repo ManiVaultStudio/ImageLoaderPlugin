@@ -32,11 +32,6 @@ if (NOT FREEIMAGE_FOUND)
     return()
 endif()
 
-if (NOT ${FREEIMAGE_FOUND})
-	message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
-    return()
-endif()
-
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
@@ -126,14 +121,13 @@ message(STATUS, "Dependencies ${r_deps}")
 
 install(TARGETS ${PROJECT}
    RUNTIME DESTINATION Plugins COMPONENT SHAREDLIB
-   LIBRARY DESTINATION lib COMPONENT LINKLIB
+   LIBRARY DESTINATION Plugins COMPONENT LINKLIB
    ARCHIVE DESTINATION lib COMPONENT LINKLIB
 )
 
 install(FILES
 	"${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-	DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>"
-	COMPONENT IMPORTLIBS
+	DESTINATION Plugins COMPONENT IMPORTLIBS
 )
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD

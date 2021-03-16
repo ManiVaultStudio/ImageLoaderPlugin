@@ -45,6 +45,7 @@ class ImageLoaderPluginConan(ConanFile):
     def set_version(self):
         # Assign a version from the branch name
         branch_info = CoreBranchInfo(self.recipe_folder)
+        print(f"Version from branch {branch_info.version}")
         self.version = branch_info.version
 
     # Remove runtime and use always default (MD/MDd)
@@ -78,7 +79,7 @@ class ImageLoaderPluginConan(ConanFile):
         return cmake
 
     def build(self):
-        print('Build OS is : ', self.settings.os)
+        print(f'Build OS is : {self.settings.os} version: {self.version}')
         # If the user has no preference in HDPS_INSTALL_DIR simply set the install dir
         if not os.environ.get('HDPS_INSTALL_DIR', None):
             os.environ['HDPS_INSTALL_DIR'] = os.path.join(self.build_folder, "install")
