@@ -45,7 +45,7 @@ class ImageLoaderPluginConan(ConanFile):
     def set_version(self):
         # Assign a version from the branch name
         branch_info = CoreBranchInfo(self.recipe_folder)
-        print(f"Version from branch {branch_info.version}")
+        # print(f"Version from branch {branch_info.version}")
         self.version = branch_info.version
 
     # Remove runtime and use always default (MD/MDd)
