@@ -3,7 +3,7 @@ import os
 import shutil
 import pathlib
 import subprocess
-from rules_support import CoreBranchInfo
+from rules_support import PluginBranchInfo
 
 
 class ImageLoaderPluginConan(ConanFile):
@@ -44,7 +44,7 @@ class ImageLoaderPluginConan(ConanFile):
 
     def set_version(self):
         # Assign a version from the branch name
-        branch_info = CoreBranchInfo(self.recipe_folder)
+        branch_info = PluginBranchInfo(self.recipe_folder)
         # print(f"Version from branch {branch_info.version}")
         self.version = branch_info.version
 
