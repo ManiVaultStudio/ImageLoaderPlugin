@@ -1204,7 +1204,7 @@ void ImageCollection::setDimensionTag(const QString& dimensionTag)
 QVariant ImageCollection::getIsMultiPage(const int& role) const
 {
     const auto fileNames                = getFileNames(Qt::EditRole).toStringList();
-    const auto isMultiPageFile          = fileNames.filter(fileNames.first()).size() == fileNames.size();
+    const auto isMultiPageFile          = fileNames.size() == 1 ? false : fileNames.filter(fileNames.first()).size() == fileNames.size();
     const auto isMultiPageFileString    = isMultiPageFile ? "true" : "false";
 
     switch (role)
