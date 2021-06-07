@@ -1466,7 +1466,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         const auto noPoints = this->getNoPoints(Qt::EditRole).toInt();
         const auto noDimensions = this->getNoDimensions(Qt::EditRole).toInt();
 
-        data.resize(noPoints * noDimensions);
+        data.resize((unsigned long long) noPoints * noDimensions);
 
         auto imageFilePaths = QStringList();
         auto dimensionNames = QStringList();
