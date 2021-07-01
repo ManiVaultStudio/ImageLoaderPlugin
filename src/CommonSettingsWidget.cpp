@@ -162,28 +162,33 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
     });
 
     const auto updateTagUI = [this, selectedImageCollectionIndex]() -> void {
-        const auto index = selectedImageCollectionIndex();
-
+        const auto index				= selectedImageCollectionIndex();
         const auto dimensionTag         = index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)).data().toString();
         const auto dimensionTagEnabled  = index.siblingAtColumn(ult(ImageCollection::Column::IsMultiPage)).data().toBool();
+
+		QSignalBlocker blocker(_ui->dimensionTagComboBox);
 
         _ui->dimensionTagLabel->setEnabled(dimensionTagEnabled);
         _ui->dimensionTagComboBox->setEnabled(dimensionTagEnabled);
         _ui->dimensionTagComboBox->setCurrentText(dimensionTagEnabled ? dimensionTag : "");
     };
     
-    const auto setDimensionTag = [this, &imageCollectionsModel, selectedImageCollectionIndex]() {
+    const auto setDimensionTag = [this, &imageCollectionsModel, selectedImageCollectionIndex](const QString& dimensionTag) -> void {
         const auto index = selectedImageCollectionIndex();
 
         if (index != QModelIndex()) {
-            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _ui->dimensionTagComboBox->currentText());
+            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), dimensionTag);
             imageCollectionsModel.guessDimensionNames(index);
         }
     };
 
-    connect(_ui->dimensionTagComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [setDimensionTag](int index) {
-        setDimensionTag();
+    connect(_ui->dimensionTagComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, setDimensionTag](int index) {
+        setDimensionTag(_ui->dimensionTagComboBox->currentText());
     });
+
+	connect(_ui->dimensionTagComboBox, &QComboBox::editTextChanged, [this, setDimensionTag](const QString& editText) {
+		setDimensionTag(editText);
+	});
 
     connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
         const auto index = selectedImageCollectionIndex();
