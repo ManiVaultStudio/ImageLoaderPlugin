@@ -216,14 +216,14 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
     else {
 
 #ifdef _WIN32
-        const void* const voidPtr = _filePath.utf16();
-        const auto wcharPtr = static_cast<const wchar_t*>(voidPtr);
-        const auto format = FI::FreeImage_GetFileTypeU(wcharPtr);
+        const void* const voidPtr	= _filePath.utf16();
+        const auto wcharPtr			= static_cast<const wchar_t*>(voidPtr);
+        const auto format			= FI::FreeImage_GetFileTypeU(wcharPtr);
 
         auto bitmap = FI::FreeImage_LoadU(format, wcharPtr);
 #else
-        const auto utf8 = _filePath.toUtf8();
-        const auto format = FI::FreeImage_GetFileType(utf8);
+        const auto utf8		= _filePath.toUtf8();
+        const auto format	= FI::FreeImage_GetFileType(utf8);
 
         auto bitmap = FI::FreeImage_Load(format, utf8);
 #endif
@@ -242,11 +242,11 @@ template<class T> static void readSequence(ImageCollection* imageCollection, FI:
     if (bitmap == nullptr)
         throw std::runtime_error("Bitmap handle is NULL");
 
-    const auto targetSize = imageCollection->getTargetSize(Qt::EditRole).toSize();
-    const auto targetWidth = targetSize.width();
+    const auto targetSize	= imageCollection->getTargetSize(Qt::EditRole).toSize();
+    const auto targetWidth	= targetSize.width();
     const auto targetHeight = targetSize.height();
-    const auto noPixels = targetWidth * targetHeight;
-    const auto grayscale = imageCollection->getToGrayscale(Qt::EditRole).toBool();
+    const auto noPixels		= targetWidth * targetHeight;
+    const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
 
     for (std::int32_t y = 0; y < targetHeight; y++) {
         auto scanLine = reinterpret_cast<T*>(FI::FreeImage_GetScanLine(bitmap, y));
@@ -277,12 +277,14 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
 {
     if (bitmap == nullptr)
         throw std::runtime_error("Bitmap handle is NULL");
-
-    const auto targetSize = imageCollection->getTargetSize(Qt::EditRole).toSize();
-    const auto targetWidth = targetSize.width();
+	
+    const auto targetSize	= imageCollection->getTargetSize(Qt::EditRole).toSize();
+    const auto targetWidth	= targetSize.width();
     const auto targetHeight = targetSize.height();
-    const auto noPixels = targetWidth * targetHeight;
-    const auto grayscale = imageCollection->getToGrayscale(Qt::EditRole).toBool();
+    const auto noPixels		= targetWidth * targetHeight;
+    const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
+	const auto imageType	= FI::FreeImage_GetImageType(bitmap);
+	const auto isBitmap		= imageType == FI::FIT_BITMAP;
 
     for (std::int32_t y = 0; y < targetHeight; y++) {
         auto scanLine = reinterpret_cast<T*>(FI::FreeImage_GetScanLine(bitmap, y));
@@ -300,14 +302,21 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
                 if (grayscale) {
                     auto sum = 0.0f;
 
-                    for (std::int32_t c = 0; c < 3; c++)
+                    for (std::int32_t c = 0; c < noComponents; c++)
                         sum += static_cast<float>(scanLine[x * noComponents + c]);
 
                     data[pixelIndex * noDimensions + imageIndex] = sum / 3.0f;
                 }
                 else {
-                    for (std::int32_t c = 0; c < 3; c++)
-                        data[pixelIndex * noDimensions + (imageIndex + c)] = static_cast<float>(scanLine[x * noComponents + c]);
+					if (isBitmap && FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_BGR) {
+						data[pixelIndex * noDimensions + (imageIndex + 0)] = static_cast<float>(scanLine[x * noComponents + 2]);
+						data[pixelIndex * noDimensions + (imageIndex + 1)] = static_cast<float>(scanLine[x * noComponents + 1]);
+						data[pixelIndex * noDimensions + (imageIndex + 2)] = static_cast<float>(scanLine[x * noComponents + 0]);
+					}
+					else {
+						for (std::int32_t c = 0; c < 3; c++)
+							data[pixelIndex * noDimensions + (imageIndex + c)] = static_cast<float>(scanLine[x * noComponents + c]);
+					}
                 }
             }
         }
@@ -316,8 +325,8 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
 
 void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames)
 {
-    FI::FIBITMAP* subsampledBitmap = nullptr;
-    FI::FIBITMAP* convertedBitmap = nullptr;
+    FI::FIBITMAP* subsampledBitmap	= nullptr;
+    FI::FIBITMAP* convertedBitmap	= nullptr;
 
     const auto handleException = [&](const QString& message) {
         if (subsampledBitmap != bitmap)
@@ -332,15 +341,15 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
         if (bitmap == nullptr)
             throw std::runtime_error("FI::FreeImage bitmap handle is NULL");
 
-        const auto imageCollectionType = static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
-        const auto sourceWidth = FI::FreeImage_GetWidth(bitmap);
-        const auto sourceHeight = FI::FreeImage_GetHeight(bitmap);
-        const auto targetSize = getImageCollection()->getTargetSize(Qt::EditRole).toSize();
-        const auto targetWidth = targetSize.width();
-        const auto targetHeight = targetSize.height();
-        const auto noDimensions = getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
-        const auto subsample = QSize(sourceWidth, sourceHeight) != targetSize;
-        const auto filter = static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
+        const auto imageCollectionType	= static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
+        const auto sourceWidth			= FI::FreeImage_GetWidth(bitmap);
+        const auto sourceHeight			= FI::FreeImage_GetHeight(bitmap);
+        const auto targetSize			= getImageCollection()->getTargetSize(Qt::EditRole).toSize();
+        const auto targetWidth			= targetSize.width();
+        const auto targetHeight			= targetSize.height();
+        const auto noDimensions			= getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
+        const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
+        const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
 
         subsampledBitmap = subsample ? FI::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
 
