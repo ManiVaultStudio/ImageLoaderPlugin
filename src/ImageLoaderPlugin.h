@@ -36,9 +36,6 @@ public: // Inherited from LoaderPlugin
     /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-	/** Returns the supported data types */
-	hdps::DataTypes supportedDataTypes() const override;
-
 public: // Models
 
     /** Returns the image collections model */
@@ -73,4 +70,7 @@ public:
 
     /** Creates an image loader plugin instance */
     LoaderPlugin* produce() override;
+
+	/** Returns the supported data types */
+	hdps::DataTypes supportedDataTypes() const override;
 };

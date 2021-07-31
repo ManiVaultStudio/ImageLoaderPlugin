@@ -35,14 +35,14 @@ void ImageLoaderPlugin::loadData()
     dialog.exec();
 }
 
-hdps::DataTypes ImageLoaderPlugin::supportedDataTypes() const
-{
-	DataTypes supportedTypes;
-	supportedTypes.append(PointType);
-	return supportedTypes;
-}
-
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
     return new ImageLoaderPlugin();
+}
+
+hdps::DataTypes ImageLoaderPluginFactory::supportedDataTypes() const
+{
+    DataTypes supportedTypes;
+    supportedTypes.append(PointType);
+    return supportedTypes;
 }
