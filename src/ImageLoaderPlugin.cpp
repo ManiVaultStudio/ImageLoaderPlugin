@@ -12,8 +12,8 @@ using namespace hdps;
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
-ImageLoaderPlugin::ImageLoaderPlugin() :
-    LoaderPlugin("Image Loader"),
+ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
+    LoaderPlugin(factory),
     _imageCollectionsModel(this),
     _imageCollectionsFilterModel()
 {
@@ -37,7 +37,7 @@ void ImageLoaderPlugin::loadData()
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
-    return new ImageLoaderPlugin();
+    return new ImageLoaderPlugin(this);
 }
 
 hdps::DataTypes ImageLoaderPluginFactory::supportedDataTypes() const

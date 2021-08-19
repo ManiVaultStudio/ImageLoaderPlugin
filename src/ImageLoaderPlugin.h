@@ -21,7 +21,7 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
     /** Default constructor */
-    ImageLoaderPlugin();
+    ImageLoaderPlugin(const PluginFactory* factory);
 
 public: // Inherited from LoaderPlugin
 
