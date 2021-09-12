@@ -2,6 +2,7 @@
 #include "ImageLoaderDialog.h"
 #include "Set.h"
 #include "PointData.h"
+#include "Application.h"
 
 #include <QtCore>
 #include <QDebug>
@@ -33,6 +34,11 @@ void ImageLoaderPlugin::loadData()
     dialog.initialize(this);
 
     dialog.exec();
+}
+
+QIcon ImageLoaderPluginFactory::getIcon() const
+{
+    return hdps::Application::getIconFont("FontAwesome").getIcon("images");
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
