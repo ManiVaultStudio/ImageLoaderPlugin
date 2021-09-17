@@ -149,6 +149,11 @@ public: // Nested image class
          */
         void setPageIndex(const std::int32_t& pageIndex);
 
+        /** Get the number of components per pixel */
+        const std::int32_t& getNumberOfComponentsPerPixel() const {
+            return _numberOfComponentsPerPixel;
+        }
+
     public:
 
         /**
@@ -177,12 +182,13 @@ public: // Nested image class
         ImageCollection* getImageCollection();
 
     private:
-        std::int32_t    _index;             /** Image index (index < 0: image not loaded)*/
-        QString         _filePath;          /** The absolute image file path */
-        QString         _fileName;          /** The file name */
-        QString         _dimensionName;     /** Dimension name (in case of image stack) */
-        bool            _shouldLoad;        /** Whether the image should be loaded */
-        std::int32_t    _pageIndex;         /** Page index (in case of multi-page TIFF) */
+        std::int32_t    _index;                         /** Image index (index < 0: image not loaded)*/
+        QString         _filePath;                      /** The absolute image file path */
+        QString         _fileName;                      /** The file name */
+        QString         _dimensionName;                 /** Dimension name (in case of image stack) */
+        bool            _shouldLoad;                    /** Whether the image should be loaded */
+        std::int32_t    _pageIndex;                     /** Page index (in case of multi-page TIFF) */
+        std::int32_t    _numberOfComponentsPerPixel;    /** Number of components per pixel */
     };
 
     /**

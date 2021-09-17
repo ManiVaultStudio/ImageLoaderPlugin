@@ -2,6 +2,7 @@
 #include "ImageLoaderPlugin.h"
 #include "SanitizeDataDialog.h"
 #include "Common.h"
+#include "util/DatasetRef.h"
 
 #include "PointData.h"
 
@@ -22,6 +23,8 @@ namespace fi {
 #include <FreeImage.h>
 }
 
+using namespace hdps::util;
+
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
     TreeItem(parent),
     _index(-1),
@@ -29,7 +32,8 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
     _fileName(QFileInfo(filePath).completeBaseName()),
     _dimensionName(),
     _shouldLoad(true),
-    _pageIndex(pageIndex)
+    _pageIndex(pageIndex),
+    _numberOfComponentsPerPixel(0)
 {
     _dimensionName = QFileInfo(filePath).completeBaseName();
 }
@@ -358,13 +362,13 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
         const auto imageType = FI::FreeImage_GetImageType(bitmap);
 
-        auto noComponents = 0;
+        _numberOfComponentsPerPixel = 0;
 
         switch (imageType)
         {
             case FI::FIT_UINT16:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -377,7 +381,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_INT16:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -390,7 +394,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_UINT32:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -403,7 +407,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_INT32:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -416,7 +420,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_FLOAT:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -429,7 +433,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_DOUBLE:
             {
-                noComponents = 1;
+                _numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<double>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -450,31 +454,31 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
                 switch (bpp)
                 {
                     case 8:
-                        noComponents = 1;
+                        _numberOfComponentsPerPixel = 1;
                         break;
 
                     case 16:
-                        noComponents = 2;
+                        _numberOfComponentsPerPixel = 2;
                         break;
 
                     case 24:
-                        noComponents = 3;
+                        _numberOfComponentsPerPixel = 3;
                         break;
 
                     case 32:
-                        noComponents = 4;
+                        _numberOfComponentsPerPixel = 4;
                         break;
 
                     default:
                         break;
                 }
 
-                if (noComponents > 0) {
+                if (_numberOfComponentsPerPixel > 0) {
                     if (imageCollectionType == ImageData::Type::Sequence)
-                        readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+                        readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
 
                     if (imageCollectionType == ImageData::Type::Stack)
-                        readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+                        readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
                 }
 
                 break;
@@ -485,7 +489,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_RGBF:
             {
-                noComponents = 3;
+                _numberOfComponentsPerPixel = 3;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, 3);
@@ -498,26 +502,26 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_RGBA16:
             {
-                noComponents = 4;
+                _numberOfComponentsPerPixel = 4;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
-                    readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+                    readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
 
                 if (imageCollectionType == ImageData::Type::Stack)
-                    readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+                    readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
 
                 break;
             }
 
             case FI::FIT_RGBAF:
             {
-                noComponents = 4;
+                _numberOfComponentsPerPixel = 4;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
-                    readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noComponents);
+                    readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
 
                 if (imageCollectionType == ImageData::Type::Stack)
-                    readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, noComponents);
+                    readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
 
                 break;
             }
@@ -530,7 +534,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
             dimensionNames << getDimensionName(Qt::EditRole).toString();
         }
         else {
-            switch (noComponents)
+            switch (_numberOfComponentsPerPixel)
             {
                 case 1:
                 {
@@ -1101,7 +1105,7 @@ QVariant ImageCollection::getFileNames(const int& role) const
 
 QVariant ImageCollection::getType(const int& role) const
 {
-    const auto typeString = ImageData::typeName(_type);
+    const auto typeString = ImageData::getTypeName(_type);
 
     switch (role)
     {
@@ -1458,7 +1462,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
     try
     {
-        const auto typeName = ImageData::typeName(_type);
+        const auto typeName = ImageData::getTypeName(_type);
 
         QProgressDialog progressDialog("Loading", "Abort loading", 0, getNoSelectedImages(Qt::EditRole).toInt(), nullptr);
 
@@ -1472,7 +1476,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         std::vector<float> data;
 
-        const auto noPoints = this->getNoPoints(Qt::EditRole).toInt();
+        const auto noPoints     = this->getNoPoints(Qt::EditRole).toInt();
         const auto noDimensions = this->getNoDimensions(Qt::EditRole).toInt();
 
         data.resize(static_cast<unsigned long long>(noPoints) * noDimensions);
@@ -1482,8 +1486,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         auto imageIndex = 0;
 
-        const auto firstChild = static_cast<ImageCollection::Image*>(_children.first());
-        const auto multiPageTiff = firstChild->getPageIndex(Qt::EditRole).toInt() >= 0;
+        const auto firstChild       = static_cast<ImageCollection::Image*>(_children.first());
+        const auto multiPageTiff    = firstChild->getPageIndex(Qt::EditRole).toInt() >= 0;
 
         FI::FIMULTIBITMAP* multiBitmap = nullptr;
 
@@ -1528,22 +1532,28 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        const auto datasetName = imageLoaderPlugin->_core->addData("Points", _datasetName);
+        DatasetRef<Points> points(imageLoaderPlugin->_core->addData("Points", _datasetName));
 
-        auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->requestData(datasetName));
+        if (!points.isValid())
+            throw std::runtime_error("Unable to create points dataset");
 
-        points.setData(std::move(data), noDimensions);
-        points.setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
+        DatasetRef<Images> images(imageLoaderPlugin->_core->addData("Images", "images", points->getName()));
 
-        points.setProperty("Type", "Images");
-        points.setProperty("CollectionType", _type);
-        points.setProperty("ImageSize", _targetSize);
-        points.setProperty("NoImages", getNoSelectedImages(Qt::EditRole).toInt());
-        points.setProperty("ImageSize", getTargetSize(Qt::EditRole).toSize());
-        points.setProperty("ImageFilePaths", imageFilePaths);
-        points.setProperty("DimensionNames", dimensionNames);
+        if (!images.isValid())
+            throw std::runtime_error("Unable to create images dataset");
 
-        imageLoaderPlugin->_core->notifyDataAdded(datasetName);
+        points->setData(std::move(data), noDimensions);
+        points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
+
+        images->setType(_type);
+        images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
+        images->setImageSize(_targetSize);
+        images->setNumberOfComponentsPerPixel(firstChild->getNumberOfComponentsPerPixel());
+        images->setImageFilePaths(imageFilePaths);
+        images->setDimensionNames(dimensionNames);
+
+        imageLoaderPlugin->_core->notifyDataAdded(points->getName());
+        imageLoaderPlugin->_core->notifyDataAdded(images->getName());
 
         return true;
     }
