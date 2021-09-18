@@ -32,10 +32,81 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
     _fileName(QFileInfo(filePath).completeBaseName()),
     _dimensionName(),
     _shouldLoad(true),
-    _pageIndex(pageIndex),
-    _numberOfComponentsPerPixel(0)
+    _pageIndex(pageIndex)
 {
     _dimensionName = QFileInfo(filePath).completeBaseName();
+
+    /*
+#ifdef _WIN32
+    const void* const voidPtr   = _filePath.utf16();
+    const auto wcharPtr         = static_cast<const wchar_t*>(voidPtr);
+    const auto format           = FI::FreeImage_GetFileTypeU(wcharPtr);
+
+    auto bitmap = FI::FreeImage_LoadU(format, wcharPtr);
+#else
+    const auto utf8 = _filePath.toUtf8();
+    const auto format = FI::FreeImage_GetFileType(utf8);
+
+    auto bitmap = FI::FreeImage_Load(format, utf8);
+#endif
+
+    if (bitmap == nullptr)
+        throw std::runtime_error("Unable to load bitmap");
+
+    const auto imageType = FI::FreeImage_GetImageType(bitmap);
+
+    auto numberOfComponentsPerPixel = 0;
+
+    switch (imageType)
+    {
+        case FI::FIT_UINT16:
+        case FI::FIT_INT16:
+        case FI::FIT_UINT32:
+        case FI::FIT_INT32:
+        case FI::FIT_FLOAT:
+        case FI::FIT_DOUBLE:
+            numberOfComponentsPerPixel = 1;
+            break;
+        
+        case FI::FIT_COMPLEX:
+            break;
+
+        case FI::FIT_BITMAP:
+        {
+            switch (FI::FreeImage_GetBPP(bitmap))
+            {
+                case 8:     numberOfComponentsPerPixel = 1;     break;
+                case 16:    numberOfComponentsPerPixel = 2;     break;
+                case 24:    numberOfComponentsPerPixel = 3;     break;
+                case 32:    numberOfComponentsPerPixel = 4;     break;
+
+                default:
+                    break;
+            }
+
+            break;
+        }
+
+        case FI::FIT_RGB16:
+            break;
+
+        case FI::FIT_RGBF:
+            numberOfComponentsPerPixel = 3;
+            break;
+
+        case FI::FIT_RGBA16:
+        case FI::FIT_RGBAF:
+            numberOfComponentsPerPixel = 4;
+            break;
+
+        default:
+            break;
+    }
+
+    qDebug() << numberOfComponentsPerPixel;
+
+    FI::FreeImage_Unload(bitmap);
+    */
 }
 
 QVariant ImageCollection::Image::getShouldLoad(const int& role) const
@@ -362,13 +433,13 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
         const auto imageType = FI::FreeImage_GetImageType(bitmap);
 
-        _numberOfComponentsPerPixel = 0;
+        auto numberOfComponentsPerPixel = 0;
 
         switch (imageType)
         {
             case FI::FIT_UINT16:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -381,7 +452,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_INT16:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::int16_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -394,7 +465,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_UINT32:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::uint32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -407,7 +478,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_INT32:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<std::int32_t>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -420,7 +491,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_FLOAT:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -433,7 +504,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_DOUBLE:
             {
-                _numberOfComponentsPerPixel = 1;
+                numberOfComponentsPerPixel = 1;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<double>(getImageCollection(), subsampledBitmap, data, imageIndex);
@@ -454,31 +525,31 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
                 switch (bpp)
                 {
                     case 8:
-                        _numberOfComponentsPerPixel = 1;
+                        numberOfComponentsPerPixel = 1;
                         break;
 
                     case 16:
-                        _numberOfComponentsPerPixel = 2;
+                        numberOfComponentsPerPixel = 2;
                         break;
 
                     case 24:
-                        _numberOfComponentsPerPixel = 3;
+                        numberOfComponentsPerPixel = 3;
                         break;
 
                     case 32:
-                        _numberOfComponentsPerPixel = 4;
+                        numberOfComponentsPerPixel = 4;
                         break;
 
                     default:
                         break;
                 }
 
-                if (_numberOfComponentsPerPixel > 0) {
+                if (numberOfComponentsPerPixel > 0) {
                     if (imageCollectionType == ImageData::Type::Sequence)
-                        readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
+                        readSequence<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, numberOfComponentsPerPixel);
 
                     if (imageCollectionType == ImageData::Type::Stack)
-                        readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
+                        readStack<FI::BYTE>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, numberOfComponentsPerPixel);
                 }
 
                 break;
@@ -489,7 +560,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_RGBF:
             {
-                _numberOfComponentsPerPixel = 3;
+                numberOfComponentsPerPixel = 3;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
                     readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, 3);
@@ -502,26 +573,26 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_RGBA16:
             {
-                _numberOfComponentsPerPixel = 4;
+                numberOfComponentsPerPixel = 4;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
-                    readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
+                    readSequence<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, numberOfComponentsPerPixel);
 
                 if (imageCollectionType == ImageData::Type::Stack)
-                    readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
+                    readStack<std::uint16_t>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, numberOfComponentsPerPixel);
 
                 break;
             }
 
             case FI::FIT_RGBAF:
             {
-                _numberOfComponentsPerPixel = 4;
+                numberOfComponentsPerPixel = 4;
 
                 if (imageCollectionType == ImageData::Type::Sequence)
-                    readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, _numberOfComponentsPerPixel);
+                    readSequence<float>(getImageCollection(), subsampledBitmap, data, imageIndex, numberOfComponentsPerPixel);
 
                 if (imageCollectionType == ImageData::Type::Stack)
-                    readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, _numberOfComponentsPerPixel);
+                    readStack<float>(getImageCollection(), subsampledBitmap, data, imageIndex, noDimensions, numberOfComponentsPerPixel);
 
                 break;
             }
@@ -534,7 +605,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
             dimensionNames << getDimensionName(Qt::EditRole).toString();
         }
         else {
-            switch (_numberOfComponentsPerPixel)
+            switch (numberOfComponentsPerPixel)
             {
                 case 1:
                 {
@@ -942,6 +1013,121 @@ void ImageCollection::setToGrayscale(const bool& toGrayscale)
     _toGrayscale = toGrayscale;
 }
 
+QVariant ImageCollection::getNumberOfChannelsPerPixel(const int& role) const
+{
+    auto numberOfChannelsPerPixel = 1;
+
+    switch (_imageFormat)
+    {
+        case QImage::Format_Invalid:
+        case QImage::Format_Mono:
+        case QImage::Format_MonoLSB:
+        case QImage::Format_Indexed8:
+            break;
+
+        case QImage::Format_RGB32:
+            numberOfChannelsPerPixel = 3;
+            break;
+
+        case QImage::Format_ARGB32:
+            numberOfChannelsPerPixel = 3;
+            break;
+
+        case QImage::Format_ARGB32_Premultiplied:
+            numberOfChannelsPerPixel = 4;
+            break;
+
+        case QImage::Format_RGB16:
+            numberOfChannelsPerPixel = 3;
+            break;
+
+        case QImage::Format_ARGB8565_Premultiplied:
+        case QImage::Format_RGB666:
+        case QImage::Format_ARGB6666_Premultiplied:
+        case QImage::Format_RGB555:
+        case QImage::Format_ARGB8555_Premultiplied:
+            break;
+
+        case QImage::Format_RGB888:
+            numberOfChannelsPerPixel = 3;
+            break;
+
+        case QImage::Format_RGB444:
+        case QImage::Format_ARGB4444_Premultiplied:
+        case QImage::Format_RGBX8888:
+            break;
+
+        case QImage::Format_RGBA8888:
+            numberOfChannelsPerPixel = 4;
+            break;
+
+        case QImage::Format_RGBA8888_Premultiplied:
+            numberOfChannelsPerPixel = 4;
+            break;
+
+        case QImage::Format_BGR30:
+        case QImage::Format_A2BGR30_Premultiplied:
+        case QImage::Format_RGB30:
+        case QImage::Format_A2RGB30_Premultiplied:
+        case QImage::Format_Alpha8:
+            break;
+
+        case QImage::Format_Grayscale8:
+            numberOfChannelsPerPixel = 1;
+            break;
+
+        case QImage::Format_RGBX64:
+            numberOfChannelsPerPixel = 3;
+            break;
+
+        case QImage::Format_RGBA64:
+            numberOfChannelsPerPixel = 4;
+            break;
+
+        case QImage::Format_RGBA64_Premultiplied:
+            numberOfChannelsPerPixel = 1;
+            break;
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
+        case QImage::Format_Grayscale16:
+            numberOfChannelsPerPixel = 1;
+            break;
+#endif
+
+#if QT_VERSION > QT_VERSION_CHECK(5, 14, 0)
+        case QImage::Format_BGR888:
+            numberOfChannelsPerPixel = 3;
+            break;
+#endif
+
+        case QImage::NImageFormats:
+            break;
+
+        default:
+            break;
+    }
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return QString::number(numberOfChannelsPerPixel);
+
+        case Qt::EditRole:
+            return _imageFormat;
+
+        case Qt::ToolTipRole:
+            return QString("Number of channels per pixel: %1").arg(QString::number(numberOfChannelsPerPixel));
+
+        case Qt::TextAlignmentRole:
+            return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
 QVariant ImageCollection::getSourceSize(const int& role) const
 {
     const auto sourceSizeString = QString("%1x%2").arg(QString::number(_sourceSize.width()), QString::number(_sourceSize.height()));
@@ -1306,7 +1492,21 @@ QVariant ImageCollection::getNoDimensions(const int& role) const
 
         case ImageData::Stack:
         {
+            /*
+            if (getIsMultiPage(Qt::EditRole).toBool()) {
+                noDimensions = getNoSelectedImages(Qt::EditRole).toInt();
+            }
+            else {
+                const auto fileNames = getFileNames(Qt::EditRole).toStringList();
+
+                // Load in the bitmap
+                auto bitmap = FI::FreeImage_l
+                FI::FreeImage_GetImageType(bitmap);
+                //noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
+            }
+            */
             noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
+
             break;
         }
 
@@ -1548,7 +1748,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
         images->setImageSize(_targetSize);
-        images->setNumberOfComponentsPerPixel(firstChild->getNumberOfComponentsPerPixel());
+        images->setNumberOfComponentsPerPixel(getNoDimensions(Qt::EditRole).toInt() / getNoImages(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
         images->setDimensionNames(dimensionNames);
 

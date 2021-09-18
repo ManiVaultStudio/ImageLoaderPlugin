@@ -568,7 +568,7 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 {
     auto flags = static_cast<Qt::ItemFlags>(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 
-    //const auto type = static_cast<Type>(_type);
+    auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
     if (index.parent() == QModelIndex()) {
         switch (static_cast<ImageCollection::Column>(index.column())) {
