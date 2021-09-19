@@ -585,6 +585,9 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
                 if (index != QModelIndex())
                     flags |= Qt::ItemIsEditable;
 
+                if (imageCollection->getNumberOfChannelsPerPixel(Qt::EditRole).toInt() == 1)
+                    flags &= ~Qt::ItemIsEnabled;
+
                 break;
             }
             
@@ -701,7 +704,7 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
         const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
 
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
-        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
+        //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DimensionTag", "").toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());

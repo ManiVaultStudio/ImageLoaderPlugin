@@ -35,78 +35,6 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
     _pageIndex(pageIndex)
 {
     _dimensionName = QFileInfo(filePath).completeBaseName();
-
-    /*
-#ifdef _WIN32
-    const void* const voidPtr   = _filePath.utf16();
-    const auto wcharPtr         = static_cast<const wchar_t*>(voidPtr);
-    const auto format           = FI::FreeImage_GetFileTypeU(wcharPtr);
-
-    auto bitmap = FI::FreeImage_LoadU(format, wcharPtr);
-#else
-    const auto utf8 = _filePath.toUtf8();
-    const auto format = FI::FreeImage_GetFileType(utf8);
-
-    auto bitmap = FI::FreeImage_Load(format, utf8);
-#endif
-
-    if (bitmap == nullptr)
-        throw std::runtime_error("Unable to load bitmap");
-
-    const auto imageType = FI::FreeImage_GetImageType(bitmap);
-
-    auto numberOfComponentsPerPixel = 0;
-
-    switch (imageType)
-    {
-        case FI::FIT_UINT16:
-        case FI::FIT_INT16:
-        case FI::FIT_UINT32:
-        case FI::FIT_INT32:
-        case FI::FIT_FLOAT:
-        case FI::FIT_DOUBLE:
-            numberOfComponentsPerPixel = 1;
-            break;
-        
-        case FI::FIT_COMPLEX:
-            break;
-
-        case FI::FIT_BITMAP:
-        {
-            switch (FI::FreeImage_GetBPP(bitmap))
-            {
-                case 8:     numberOfComponentsPerPixel = 1;     break;
-                case 16:    numberOfComponentsPerPixel = 2;     break;
-                case 24:    numberOfComponentsPerPixel = 3;     break;
-                case 32:    numberOfComponentsPerPixel = 4;     break;
-
-                default:
-                    break;
-            }
-
-            break;
-        }
-
-        case FI::FIT_RGB16:
-            break;
-
-        case FI::FIT_RGBF:
-            numberOfComponentsPerPixel = 3;
-            break;
-
-        case FI::FIT_RGBA16:
-        case FI::FIT_RGBAF:
-            numberOfComponentsPerPixel = 4;
-            break;
-
-        default:
-            break;
-    }
-
-    qDebug() << numberOfComponentsPerPixel;
-
-    FI::FreeImage_Unload(bitmap);
-    */
 }
 
 QVariant ImageCollection::Image::getShouldLoad(const int& role) const
@@ -803,10 +731,11 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _targetSize(sourceSize),
     _datasetName(),
     _dimensionTag("PageName"),
-    _toGrayscale(true),
+    _toGrayscale(false),
     _type(ImageData::Type::Stack),
     _subsampling(this)
 {
+    _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
 }
 
 ImageCollection::~ImageCollection()
@@ -1113,7 +1042,7 @@ QVariant ImageCollection::getNumberOfChannelsPerPixel(const int& role) const
             return QString::number(numberOfChannelsPerPixel);
 
         case Qt::EditRole:
-            return _imageFormat;
+            return numberOfChannelsPerPixel;
 
         case Qt::ToolTipRole:
             return QString("Number of channels per pixel: %1").arg(QString::number(numberOfChannelsPerPixel));
@@ -1492,21 +1421,7 @@ QVariant ImageCollection::getNoDimensions(const int& role) const
 
         case ImageData::Stack:
         {
-            /*
-            if (getIsMultiPage(Qt::EditRole).toBool()) {
-                noDimensions = getNoSelectedImages(Qt::EditRole).toInt();
-            }
-            else {
-                const auto fileNames = getFileNames(Qt::EditRole).toStringList();
-
-                // Load in the bitmap
-                auto bitmap = FI::FreeImage_l
-                FI::FreeImage_GetImageType(bitmap);
-                //noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
-            }
-            */
-            noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : 3);
-
+            noDimensions = getNoSelectedImages(Qt::EditRole).toInt() * (_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
             break;
         }
 
@@ -1748,7 +1663,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
         images->setImageSize(_targetSize);
-        images->setNumberOfComponentsPerPixel(getNoDimensions(Qt::EditRole).toInt() / getNoImages(Qt::EditRole).toInt());
+        images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
         images->setDimensionNames(dimensionNames);
 
