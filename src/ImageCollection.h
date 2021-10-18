@@ -177,12 +177,12 @@ public: // Nested image class
         ImageCollection* getImageCollection();
 
     private:
-        std::int32_t    _index;             /** Image index (index < 0: image not loaded)*/
-        QString         _filePath;          /** The absolute image file path */
-        QString         _fileName;          /** The file name */
-        QString         _dimensionName;     /** Dimension name (in case of image stack) */
-        bool            _shouldLoad;        /** Whether the image should be loaded */
-        std::int32_t    _pageIndex;         /** Page index (in case of multi-page TIFF) */
+        std::int32_t    _index;                         /** Image index (index < 0: image not loaded)*/
+        QString         _filePath;                      /** The absolute image file path */
+        QString         _fileName;                      /** The file name */
+        QString         _dimensionName;                 /** Dimension name (in case of image stack) */
+        bool            _shouldLoad;                    /** Whether the image should be loaded */
+        std::int32_t    _pageIndex;                     /** Page index (in case of multi-page TIFF) */
     };
 
     /**
@@ -351,6 +351,9 @@ public: // Getters/setters
      */
     void setToGrayscale(const bool& grayscale);
 
+    /** Returns the number of channels per pixel */
+    QVariant getNumberOfChannelsPerPixel(const int& role) const;
+
     /** Returns the source image size */
     QVariant getSourceSize(const int& role) const;
 
@@ -473,16 +476,16 @@ private:
     bool containsNans(std::vector<float>& data);
 
 protected:
-    QString             _directory;         /** Root directory of the images */
-    QString             _imageFileType;     /** Image file type */
-    QImage::Format      _imageFormat;       /** Image format */
-    QSize               _sourceSize;        /** Size of the source image */
-    QSize               _targetSize;        /** Size of the target image */
-    QString             _datasetName;       /** The name of the dataset */
-    QString             _dimensionTag;      /** The dimension (TIFF) tag */
-    bool                _toGrayscale;       /** Whether to convert the images in the collection to grayscale */
-    ImageData::Type     _type;              /** How to load the collection (as image sequence or image stack) */
-    SubSampling         _subsampling;       /** Subsampling parameters */
+    QString             _directory;                     /** Root directory of the images */
+    QString             _imageFileType;                 /** Image file type */
+    QImage::Format      _imageFormat;                   /** Image format */
+    QSize               _sourceSize;                    /** Size of the source image */
+    QSize               _targetSize;                    /** Size of the target image */
+    QString             _datasetName;                   /** The name of the dataset */
+    QString             _dimensionTag;                  /** The dimension (TIFF) tag */
+    bool                _toGrayscale;                   /** Whether to convert the images in the collection to grayscale */
+    ImageData::Type     _type;                          /** How to load the collection (as image sequence or image stack) */
+    SubSampling         _subsampling;                   /** Subsampling parameters */
 
     friend class SubSampling;
 };

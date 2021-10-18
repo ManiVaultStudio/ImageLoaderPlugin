@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Common.h"
-#include "Application.h"
 
 #include "ImageCollectionsModel.h"
 
@@ -21,14 +20,9 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
     /** Default constructor */
-    ImageLoaderPlugin();
+    ImageLoaderPlugin(const PluginFactory* factory);
 
 public: // Inherited from LoaderPlugin
-
-    /** Returns the icon of this plugin */
-    QIcon getIcon() const override {
-        return hdps::Application::getIconFont("FontAwesome").getIcon("images");
-    }
 
     /** Initializes the plugin */
     void init() override;
@@ -67,6 +61,9 @@ public:
 
     /** Destructor */
     ~ImageLoaderPluginFactory(void) override {}
+
+    /** Returns the plugin icon */
+    QIcon getIcon() const override;
 
     /** Creates an image loader plugin instance */
     LoaderPlugin* produce() override;
