@@ -2,6 +2,7 @@
 #include "ImageLoaderDialog.h"
 #include "Set.h"
 #include "PointData.h"
+#include "Application.h"
 
 #include <QtCore>
 #include <QDebug>
@@ -12,8 +13,8 @@ using namespace hdps;
 
 Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
 
-ImageLoaderPlugin::ImageLoaderPlugin() :
-    LoaderPlugin("Image Loader"),
+ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
+    LoaderPlugin(factory),
     _imageCollectionsModel(this),
     _imageCollectionsFilterModel()
 {
@@ -35,14 +36,19 @@ void ImageLoaderPlugin::loadData()
     dialog.exec();
 }
 
-hdps::DataTypes ImageLoaderPlugin::supportedDataTypes() const
+QIcon ImageLoaderPluginFactory::getIcon() const
 {
-	DataTypes supportedTypes;
-	supportedTypes.append(PointType);
-	return supportedTypes;
+    return hdps::Application::getIconFont("FontAwesome").getIcon("images");
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
-    return new ImageLoaderPlugin();
+    return new ImageLoaderPlugin(this);
+}
+
+hdps::DataTypes ImageLoaderPluginFactory::supportedDataTypes() const
+{
+    DataTypes supportedTypes;
+    supportedTypes.append(PointType);
+    return supportedTypes;
 }
