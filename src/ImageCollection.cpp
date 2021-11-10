@@ -3,6 +3,7 @@
 #include "SanitizeDataDialog.h"
 #include "Common.h"
 #include "util/DatasetRef.h"
+#include "util/Miscellaneous.h"
 
 #include "PointData.h"
 
