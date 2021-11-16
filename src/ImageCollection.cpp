@@ -1648,27 +1648,22 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        DatasetRef<Points> points(imageLoaderPlugin->_core->addData("Points", _datasetName));
+        auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->addData("Points", _datasetName));
+        auto& images = dynamic_cast<Images&>(imageLoaderPlugin->_core->addData("Images", "images", &points));
 
-        if (!points.isValid())
-            throw std::runtime_error("Unable to create points dataset");
+        points.setGuiName(_datasetName);
+        points.setData(std::move(data), noDimensions);
+        points.setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        DatasetRef<Images> images(imageLoaderPlugin->_core->addData("Images", "images", points->getName()));
+        images.setGuiName("Images");
+        images.setType(_type);
+        images.setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
+        images.setImageGeometry(_targetSize);
+        images.setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
+        images.setImageFilePaths(imageFilePaths);
 
-        if (!images.isValid())
-            throw std::runtime_error("Unable to create images dataset");
-
-        points->setData(std::move(data), noDimensions);
-        points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
-
-        images->setType(_type);
-        images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
-        images->setImageGeometry(_targetSize);
-        images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
-        images->setImageFilePaths(imageFilePaths);
-
-        imageLoaderPlugin->_core->notifyDataAdded(points->getName());
-        imageLoaderPlugin->_core->notifyDataAdded(images->getName());
+        imageLoaderPlugin->_core->notifyDataAdded(points);
+        imageLoaderPlugin->_core->notifyDataAdded(images);
 
         return true;
     }
