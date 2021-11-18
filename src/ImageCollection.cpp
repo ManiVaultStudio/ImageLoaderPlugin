@@ -2,7 +2,7 @@
 #include "ImageLoaderPlugin.h"
 #include "SanitizeDataDialog.h"
 #include "Common.h"
-#include "util/DatasetRef.h"
+#include "util/SmartDataset.h"
 #include "util/Miscellaneous.h"
 
 #include "PointData.h"
@@ -24,6 +24,7 @@ namespace fi {
 #include <FreeImage.h>
 }
 
+using namespace hdps;
 using namespace hdps::util;
 
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
@@ -1648,19 +1649,19 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        auto& points = dynamic_cast<Points&>(imageLoaderPlugin->_core->addData("Points", _datasetName));
-        auto& images = dynamic_cast<Images&>(imageLoaderPlugin->_core->addData("Images", "images", &points));
+        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
+        auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
-        points.setGuiName(_datasetName);
-        points.setData(std::move(data), noDimensions);
-        points.setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
+        points->setGuiName(_datasetName);
+        points->setData(std::move(data), noDimensions);
+        points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        images.setGuiName("Images");
-        images.setType(_type);
-        images.setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
-        images.setImageGeometry(_targetSize);
-        images.setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
-        images.setImageFilePaths(imageFilePaths);
+        images->setGuiName("Images");
+        images->setType(_type);
+        images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
+        images->setImageGeometry(_targetSize);
+        images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
+        images->setImageFilePaths(imageFilePaths);
 
         imageLoaderPlugin->_core->notifyDataAdded(points);
         imageLoaderPlugin->_core->notifyDataAdded(images);
