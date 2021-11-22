@@ -2,7 +2,7 @@
 #include "ImageLoaderPlugin.h"
 #include "SanitizeDataDialog.h"
 #include "Common.h"
-#include "util/SmartDataset.h"
+#include "util/Dataset.h"
 #include "util/Miscellaneous.h"
 
 #include "PointData.h"
