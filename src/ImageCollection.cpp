@@ -1583,8 +1583,6 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         imageLoaderPlugin->_core->notifyDataAdded(points);
 
-        points->lock();
-
         points->getDataHierarchyItem().setTaskName("Loading");
         points->getDataHierarchyItem().setTaskRunning();
 
@@ -1658,13 +1656,9 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         points->getDataHierarchyItem().setTaskFinished();
 
-        points->unlock();
-
         auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
         imageLoaderPlugin->_core->notifyDataAdded(images);
-
-        images->lock();
 
         images->setGuiName("Images");
         images->setType(_type);
@@ -1674,8 +1668,6 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setImageFilePaths(imageFilePaths);
 
         imageLoaderPlugin->_core->notifyDataChanged(images);
-
-        images->unlock();
 
         return true;
     }
