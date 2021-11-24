@@ -1579,15 +1579,16 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
     try
     {
+        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
+
+        imageLoaderPlugin->_core->notifyDataAdded(points);
+
+        points->lock();
+
+        points->getDataHierarchyItem().setTaskName("Loading");
+        points->getDataHierarchyItem().setTaskRunning();
+
         const auto typeName = ImageData::getTypeName(_type);
-
-        QProgressDialog progressDialog("Loading", "Abort loading", 0, getNoSelectedImages(Qt::EditRole).toInt(), nullptr);
-
-        progressDialog.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
-        progressDialog.setWindowModality(Qt::WindowModal);
-        progressDialog.setMinimumDuration(100);
-        progressDialog.setFixedWidth(600);
-        progressDialog.show();
 
         qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
@@ -1619,13 +1620,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         }
 
         for (auto& childItem : _children) {
-            if (progressDialog.wasCanceled()) {
-                throw std::runtime_error("Loading was aborted");
-            }
+            //if (progressDialog.wasCanceled()) {
+            //    throw std::runtime_error("Loading was aborted");
+            //}
 
             auto image = static_cast<ImageCollection::Image*>(childItem);
 
-            progressDialog.setLabelText(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
+            points->getDataHierarchyItem().setTaskDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
             QCoreApplication::processEvents();
 
@@ -1636,7 +1637,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
             imageIndex++;
 
-            progressDialog.setValue(imageIndex);
+            points->getDataHierarchyItem().setTaskProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
 
             imageFilePaths << image->getFilePath(Qt::EditRole).toString();
         }
@@ -1649,12 +1650,21 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
-        auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
-
         points->setGuiName(_datasetName);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
+
+        imageLoaderPlugin->_core->notifyDataChanged(points);
+
+        points->getDataHierarchyItem().setTaskFinished();
+
+        points->unlock();
+
+        auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
+
+        imageLoaderPlugin->_core->notifyDataAdded(images);
+
+        images->lock();
 
         images->setGuiName("Images");
         images->setType(_type);
@@ -1663,8 +1673,9 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        imageLoaderPlugin->_core->notifyDataAdded(points);
-        imageLoaderPlugin->_core->notifyDataAdded(images);
+        imageLoaderPlugin->_core->notifyDataChanged(images);
+
+        images->unlock();
 
         return true;
     }
