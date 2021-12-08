@@ -2,7 +2,7 @@
 #include "ImageLoaderPlugin.h"
 #include "SanitizeDataDialog.h"
 #include "Common.h"
-#include "util/DatasetRef.h"
+#include "Dataset.h"
 #include "util/Miscellaneous.h"
 
 #include "PointData.h"
@@ -24,6 +24,7 @@ namespace fi {
 #include <FreeImage.h>
 }
 
+using namespace hdps;
 using namespace hdps::util;
 
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
@@ -1578,15 +1579,14 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 {
     try
     {
+        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
+
+        imageLoaderPlugin->_core->notifyDataAdded(points);
+
+        points->getDataHierarchyItem().setTaskName("Loading");
+        points->getDataHierarchyItem().setTaskRunning();
+
         const auto typeName = ImageData::getTypeName(_type);
-
-        QProgressDialog progressDialog("Loading", "Abort loading", 0, getNoSelectedImages(Qt::EditRole).toInt(), nullptr);
-
-        progressDialog.setWindowTitle(QString("Loading image %1: %2").arg(typeName.toLower(), _datasetName));
-        progressDialog.setWindowModality(Qt::WindowModal);
-        progressDialog.setMinimumDuration(100);
-        progressDialog.setFixedWidth(600);
-        progressDialog.show();
 
         qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
 
@@ -1618,13 +1618,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         }
 
         for (auto& childItem : _children) {
-            if (progressDialog.wasCanceled()) {
-                throw std::runtime_error("Loading was aborted");
-            }
+            //if (progressDialog.wasCanceled()) {
+            //    throw std::runtime_error("Loading was aborted");
+            //}
 
             auto image = static_cast<ImageCollection::Image*>(childItem);
 
-            progressDialog.setLabelText(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
+            points->getDataHierarchyItem().setTaskDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
             QCoreApplication::processEvents();
 
@@ -1635,7 +1635,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
             imageIndex++;
 
-            progressDialog.setValue(imageIndex);
+            points->getDataHierarchyItem().setTaskProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
 
             imageFilePaths << image->getFilePath(Qt::EditRole).toString();
         }
@@ -1648,27 +1648,26 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        DatasetRef<Points> points(imageLoaderPlugin->_core->addData("Points", _datasetName));
-
-        if (!points.isValid())
-            throw std::runtime_error("Unable to create points dataset");
-
-        DatasetRef<Images> images(imageLoaderPlugin->_core->addData("Images", "images", points->getName()));
-
-        if (!images.isValid())
-            throw std::runtime_error("Unable to create images dataset");
-
+        points->setGuiName(_datasetName);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
+        imageLoaderPlugin->_core->notifyDataChanged(points);
+
+        points->getDataHierarchyItem().setTaskFinished();
+
+        auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
+
+        imageLoaderPlugin->_core->notifyDataAdded(images);
+
+        images->setGuiName("Images");
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
         images->setImageGeometry(_targetSize);
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        imageLoaderPlugin->_core->notifyDataAdded(points->getName());
-        imageLoaderPlugin->_core->notifyDataAdded(images->getName());
+        imageLoaderPlugin->_core->notifyDataChanged(images);
 
         return true;
     }
