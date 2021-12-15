@@ -125,9 +125,10 @@ install(TARGETS ${PROJECT}
    ARCHIVE DESTINATION lib COMPONENT LINKLIB
 )
 
+# copy the FreeImage library to the root install directory (the same level as the hdps executable)
 install(FILES
 	"${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-	DESTINATION Plugins COMPONENT IMPORTLIBS
+	DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
 )
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
