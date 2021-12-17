@@ -1663,7 +1663,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setGuiName("Images");
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
-        images->setImageGeometry(_targetSize);
+        images->setImageSize(_targetSize);
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
