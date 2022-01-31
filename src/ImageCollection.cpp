@@ -1514,7 +1514,7 @@ void ImageCollection::computeDatasetName()
         if (rootDir == "")
             rootDir = path;
 
-        if (path.size() < rootDir) {
+        if (path.length() < rootDir.length()) {
             rootDir = path;
 
             rootDirs.insert(path);

@@ -34,7 +34,7 @@ class ImageLoaderPluginConan(ConanFile):
     default_options = {"shared": True, "fPIC": True}
 
     # Qt requirement is inherited from hdps-core
-    requires = "freeimage/3.18.0@lkeb/stable"
+    requires = ("hdps-core/qt6@lkeb/stable", "freeimage/3.18.0@lkeb/stable")
 
     scm = {
         "type": "git",
@@ -44,10 +44,13 @@ class ImageLoaderPluginConan(ConanFile):
     }
 
     def __get_git_path(self):
-        path = load(
-            pathlib.Path(pathlib.Path(__file__).parent.resolve(), "__gitpath.txt")
-        )
-        print(f"git info from {path}")
+        if pathlib.Path(".git").exists():
+            path = pathlib.Path.cwd()
+        else:
+            path = load(
+                pathlib.Path(pathlib.Path(__file__).parent.resolve(), "__gitpath.txt")
+            )
+            print(f"Loaded path {path}")
         return path
 
     def export(self):
@@ -64,10 +67,10 @@ class ImageLoaderPluginConan(ConanFile):
         # print(f"Version from branch {branch_info.version}")
         self.version = branch_info.version
 
-    def requirements(self):
-        branch_info = PluginBranchInfo(self.__get_git_path())
-        print(f"Core requirement {branch_info.core_requirement}")
-        self.requires(branch_info.core_requirement)
+    # def requirements(self):
+    #    branch_info = PluginBranchInfo(self.__get_git_path())
+    #    print(f"Core requirement {branch_info.core_requirement}")
+    #    self.requires(branch_info.core_requirement)
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
@@ -85,7 +88,7 @@ class ImageLoaderPluginConan(ConanFile):
     def _configure_cmake(self, build_type, verbosity="minimal"):
         # locate Qt root to allow find_package to work
         qtpath = pathlib.Path(self.deps_cpp_info["qt"].rootpath)
-        qt_root = str(list(qtpath.glob("**/Qt5Config.cmake"))[0].parents[3])
+        qt_root = str(list(qtpath.glob("**/Qt6Config.cmake"))[0].parents[3])
         print("Qt root ", qt_root)
 
         cmake = CMake(self, build_type=build_type, msbuild_verbosity=verbosity)
