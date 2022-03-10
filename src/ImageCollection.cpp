@@ -1581,7 +1581,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
     {
         auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
 
-        imageLoaderPlugin->_core->notifyDataAdded(points);
+        imageLoaderPlugin->_core->notifyDatasetAdded(points);
 
         points->getDataHierarchyItem().setTaskName("Loading");
         points->getDataHierarchyItem().setTaskRunning();
@@ -1652,13 +1652,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        imageLoaderPlugin->_core->notifyDataChanged(points);
+        imageLoaderPlugin->_core->notifyDatasetChanged(points);
 
         points->getDataHierarchyItem().setTaskFinished();
 
         auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
-        imageLoaderPlugin->_core->notifyDataAdded(images);
+        imageLoaderPlugin->_core->notifyDatasetAdded(images);
 
         images->setGuiName("Images");
         images->setType(_type);
@@ -1667,7 +1667,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        imageLoaderPlugin->_core->notifyDataChanged(images);
+        imageLoaderPlugin->_core->notifyDatasetChanged(images);
 
         return true;
     }
