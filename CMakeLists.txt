@@ -15,9 +15,9 @@ set(FREEIMAGE_ROOT_DIR ${CMAKE_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP")
-	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /NODEFAULTLIB:LIBCMT")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /NODEFAULTLIB:LIBCMT")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
 find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
@@ -35,26 +35,26 @@ endif()
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
-	src/TreeItem.h
-	src/TreeItem.cpp
-	src/ImageCollectionScanner.h
-	src/ImageCollectionScanner.cpp
-	src/ImageCollection.h
-	src/ImageCollection.cpp
-	src/ImageCollectionsModel.h
-	src/ImageCollectionsModel.cpp
-	src/Common.h
+    src/TreeItem.h
+    src/TreeItem.cpp
+    src/ImageCollectionScanner.h
+    src/ImageCollectionScanner.cpp
+    src/ImageCollection.h
+    src/ImageCollection.cpp
+    src/ImageCollectionsModel.h
+    src/ImageCollectionsModel.cpp
+    src/Common.h
 )
 
 set(WIDGET_SOURCES
-	src/CommonSettingsWidget.h
+    src/CommonSettingsWidget.h
     src/CommonSettingsWidget.cpp
-	src/ImageLoaderDialog.h
+    src/ImageLoaderDialog.h
     src/ImageLoaderDialog.cpp
-	src/SubsampleSettingsWidget.h
-	src/SubsampleSettingsWidget.cpp
+    src/SubsampleSettingsWidget.h
+    src/SubsampleSettingsWidget.cpp
     src/SanitizeDataDialog.h
-	src/SanitizeDataDialog.cpp
+    src/SanitizeDataDialog.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)
@@ -64,11 +64,11 @@ file(GLOB UIS src/*.ui)
 set(AUX src/ImageLoaderPlugin.json)
 
 set(SOURCES 
-	${PLUGIN_SOURCES}
-	${LOADER_SOURCES}
-	${SCANNER_SOURCES}
-	${WIDGET_SOURCES}
-	${MODEL_SOURCES}
+    ${PLUGIN_SOURCES}
+    ${LOADER_SOURCES}
+    ${SCANNER_SOURCES}
+    ${WIDGET_SOURCES}
+    ${MODEL_SOURCES}
 )
 
 source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
@@ -113,9 +113,9 @@ else()
 endif()
 
 file(GET_RUNTIME_DEPENDENCIES
-	LIBRARIES "${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-	RESOLVED_DEPENDENCIES_VAR r_deps
-	UNRESOLVED_DEPENDENCIES_VAR u_deps) 
+    LIBRARIES "${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    RESOLVED_DEPENDENCIES_VAR r_deps
+    UNRESOLVED_DEPENDENCIES_VAR u_deps) 
 
 message(STATUS, "Dependencies ${r_deps}")
 
@@ -127,13 +127,31 @@ install(TARGETS ${PROJECT}
 
 # copy the FreeImage library to the root install directory (the same level as the hdps executable)
 install(FILES
-	"${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-	DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
+    "${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
 )
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
-	COMMAND "${CMAKE_COMMAND}"
-	--install ${CMAKE_CURRENT_BINARY_DIR}
-	--config $<CONFIGURATION>
-	--prefix ${INSTALL_DIR}/$<CONFIGURATION>
+    COMMAND "${CMAKE_COMMAND}"
+    --install ${CMAKE_CURRENT_BINARY_DIR}
+    --config $<CONFIGURATION>
+    --prefix ${INSTALL_DIR}/$<CONFIGURATION>
 )
+
+# Automatically set the debug environment (command + working directory) for MSVC in debug and release mode
+if(MSVC)	
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT}.vcxproj.user"
+    "<?xml version=\"1.0\" encoding=\"utf-8\"?>     \
+    <Project ToolsVersion=\"4.0\" xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">
+    <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Debug|x64'\">
+        <LocalDebuggerCommand>${INSTALL_DIR}/debug/HDPS.exe</LocalDebuggerCommand>
+        <LocalDebuggerWorkingDirectory>${INSTALL_DIR}/debug/</LocalDebuggerWorkingDirectory>
+        <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    </PropertyGroup>
+    <PropertyGroup Condition=\"'$(Configuration)|$(Platform)'=='Release|x64'\">
+        <LocalDebuggerCommand>${INSTALL_DIR}/release/HDPS.exe</LocalDebuggerCommand>
+        <LocalDebuggerWorkingDirectory>${INSTALL_DIR}/release/</LocalDebuggerWorkingDirectory>
+        <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    </PropertyGroup>
+    </Project>")
+endif(MSVC)
