@@ -450,29 +450,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
 
             case FI::FIT_BITMAP:
             {
-                const auto bpp = FI::FreeImage_GetBPP(subsampledBitmap);
-
-                switch (bpp)
-                {
-                    case 8:
-                        numberOfComponentsPerPixel = 1;
-                        break;
-
-                    case 16:
-                        numberOfComponentsPerPixel = 2;
-                        break;
-
-                    case 24:
-                        numberOfComponentsPerPixel = 3;
-                        break;
-
-                    case 32:
-                        numberOfComponentsPerPixel = 4;
-                        break;
-
-                    default:
-                        break;
-                }
+                numberOfComponentsPerPixel = getImageCollection()->getNumberOfChannelsPerPixel(Qt::EditRole).toInt();
 
                 if (numberOfComponentsPerPixel > 0) {
                     if (imageCollectionType == ImageData::Type::Sequence)
