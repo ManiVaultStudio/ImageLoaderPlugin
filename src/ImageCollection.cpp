@@ -1530,6 +1530,7 @@ void ImageCollection::guessDimensionNames()
         progressDialog.setMinimum(0);
         progressDialog.setMaximum(_children.size());
         progressDialog.setValue(0);
+        progressDialog.setWindowIcon(Application::getIconFont("FontAwesome").getIcon("images"));
 
         for (auto child : _children) {
             const auto dimensionIndex = _children.indexOf(child);
