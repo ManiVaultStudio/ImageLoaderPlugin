@@ -1647,6 +1647,8 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         imageLoaderPlugin->_core->notifyDatasetChanged(images);
 
+        images->getDataHierarchyItem().select();
+
         return true;
     }
     catch (const std::runtime_error& e)
