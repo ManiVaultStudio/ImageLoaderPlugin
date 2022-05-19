@@ -31,7 +31,7 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Qt requirement is inherited from hdps-core
     requires = (
-        "hdps-core/latest@lkeb/stable",
+        "hdps-core/0.2@lkeb/stable",
         "freeimage/3.18.0@lkeb/stable"
     )
 
