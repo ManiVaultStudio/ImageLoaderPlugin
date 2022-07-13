@@ -20,7 +20,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
-find_package(Qt5 COMPONENTS Widgets WebEngineWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 # Normalize the incoming install path
 file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
 
@@ -81,7 +81,7 @@ include_directories("${INSTALL_DIR}/$<CONFIGURATION>/include/")
 include_directories("${FREEIMAGE_INCLUDE_PATH}")
 include_directories(src)
 
-QT5_WRAP_UI(UI_HEADERS ${UIS})
+QT6_WRAP_UI(UI_HEADERS ${UIS})
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
@@ -89,8 +89,8 @@ target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  
-target_link_libraries(${PROJECT} Qt5::Widgets)
-target_link_libraries(${PROJECT} Qt5::WebEngineWidgets)
+target_link_libraries(${PROJECT} Qt6::Widgets)
+target_link_libraries(${PROJECT} Qt6::WebEngineWidgets)
 
 if(MSVC)
     set(LIB_SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -127,7 +127,7 @@ install(TARGETS ${PROJECT}
 
 # copy the FreeImage library to the root install directory (the same level as the hdps executable)
 install(FILES
-    "${FREEIMAGE_INCLUDE_PATH}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${FREEIMAGE_DLL}/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
 )
 
