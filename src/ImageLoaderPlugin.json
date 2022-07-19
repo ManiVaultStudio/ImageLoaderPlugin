@@ -2,5 +2,6 @@
     "name" : "Image Loader",
     "menuName" : "Images",
     "version" : "0.1.0",
-    "dependencies" : ["Images"]
+    "dependencies" : ["Images"],
+	"inputs": []
 }
