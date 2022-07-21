@@ -65,9 +65,9 @@ public:
     /** Returns the plugin icon */
     QIcon getIcon() const override;
 
-    /** Creates an image loader plugin instance */
+    /**
+     * Produces the plugin
+     * @return Pointer to the produced plugin
+     */
     LoaderPlugin* produce() override;
-
-	/** Returns the supported data types */
-	hdps::DataTypes supportedDataTypes() const override;
 };

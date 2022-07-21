@@ -45,10 +45,3 @@ LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
     return new ImageLoaderPlugin(this);
 }
-
-hdps::DataTypes ImageLoaderPluginFactory::supportedDataTypes() const
-{
-    DataTypes supportedTypes;
-    supportedTypes.append(PointType);
-    return supportedTypes;
-}
