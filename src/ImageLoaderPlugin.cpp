@@ -36,9 +36,9 @@ void ImageLoaderPlugin::loadData()
     dialog.exec();
 }
 
-QIcon ImageLoaderPluginFactory::getIcon() const
+QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
 {
-    return hdps::Application::getIconFont("FontAwesome").getIcon("images");
+    return hdps::Application::getIconFont("FontAwesome").getIcon("images", color);
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
