@@ -3,6 +3,8 @@
 
 #include "ui_CommonSettingsWidget.h"
 
+#include <PointData.h>
+
 #include <QDebug>
 #include <QFileDialog>
 #include <QDir>
@@ -307,7 +309,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    //_pluginTriggerPickerAction.initialize("Pick conversion plugin", "DataConversionPlugin", hdps::Datasets());
+    _pluginTriggerPickerAction.initialize("PointDataConversion", hdps::DataTypes({ PointType }));
+
+    qDebug() << "Count" << _pluginTriggerPickerAction.getPluginTriggerActions().count();
 
     _ui->imagesGridLayout->addWidget(_pluginTriggerPickerAction.createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
 
