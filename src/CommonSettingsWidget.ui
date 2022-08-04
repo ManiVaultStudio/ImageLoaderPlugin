@@ -391,16 +391,6 @@
           </property>
          </widget>
         </item>
-        <item row="18" column="2">
-         <layout class="QHBoxLayout" name="selectionHorizontalLayout">
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QComboBox" name="conversionComboBox"/>
-          </item>
-         </layout>
-        </item>
         <item row="13" column="2">
          <widget class="QComboBox" name="dimensionTagComboBox">
           <property name="enabled">

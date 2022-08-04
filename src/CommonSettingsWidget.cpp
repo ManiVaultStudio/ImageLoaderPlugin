@@ -11,7 +11,8 @@ CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
     QWidget(parent),
     _imageLoaderPlugin(nullptr),
     _ui(new Ui::CommonSettingsWidget()),
-    _scanner()
+    _scanner(),
+    _pluginTriggerPickerAction(this)
 {
     _ui->setupUi(this);
 }
@@ -305,6 +306,10 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             updateTagUI();
         }
     });
+
+    _pluginTriggerPickerAction.initialize("Pick conversion plugin", "DataConversionPlugin", hdps::Datasets());
+
+    _ui->imagesGridLayout->addWidget(_pluginTriggerPickerAction.createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
 
     _scanner.loadSettings();
     _scanner.scan();
