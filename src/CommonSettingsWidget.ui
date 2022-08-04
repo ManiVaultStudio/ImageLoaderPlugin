@@ -396,6 +396,9 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
+          <item>
+           <widget class="QComboBox" name="conversionComboBox"/>
+          </item>
          </layout>
         </item>
         <item row="13" column="2">
@@ -431,6 +434,13 @@
             <string>ImageDescription</string>
            </property>
           </item>
+         </widget>
+        </item>
+        <item row="18" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Conversion:</string>
+          </property>
          </widget>
         </item>
        </layout>
