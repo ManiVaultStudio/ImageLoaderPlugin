@@ -307,7 +307,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    _pluginTriggerPickerAction.initialize("Pick conversion plugin", "DataConversionPlugin", hdps::Datasets());
+    //_pluginTriggerPickerAction.initialize("Pick conversion plugin", "DataConversionPlugin", hdps::Datasets());
 
     _ui->imagesGridLayout->addWidget(_pluginTriggerPickerAction.createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
 
