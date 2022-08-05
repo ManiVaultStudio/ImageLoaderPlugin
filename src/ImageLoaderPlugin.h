@@ -6,6 +6,8 @@
 
 #include <LoaderPlugin.h>
 
+#include <actions/PluginTriggerPickerAction.h>
+
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
 
@@ -19,8 +21,10 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-    /** Default constructor */
     ImageLoaderPlugin(const PluginFactory* factory);
+    ~ImageLoaderPlugin();
+
+    hdps::gui::PluginTriggerPickerAction& getPluginTriggerPickerAction();
 
 public: // Inherited from LoaderPlugin
 
@@ -39,8 +43,9 @@ public: // Models
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
 
 private:
-    ImageCollectionsModel           _imageCollectionsModel;         /** Image collections model */
-    ImageCollectionsModel::Filter   _imageCollectionsFilterModel;   /** Image collections filter model */
+    ImageCollectionsModel                   _imageCollectionsModel;         /** Image collections model */
+    ImageCollectionsModel::Filter           _imageCollectionsFilterModel;   /** Image collections filter model */
+    hdps::gui::PluginTriggerPickerAction    _pluginTriggerPickerAction;     /** Plugin trigger picker action */
 
     friend class ImageCollection;
 };

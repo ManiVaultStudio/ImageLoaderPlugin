@@ -713,7 +713,8 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _dimensionTag("PageName"),
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
-    _subsampling(this)
+    _subsampling(this),
+    _conversion()
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
 }
@@ -1470,6 +1471,31 @@ ImageCollection::SubSampling& ImageCollection::getSubsampling()
     return _subsampling;
 }
 
+QVariant ImageCollection::getConversion(const int& role) const
+{
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return _conversion;
+
+        case Qt::EditRole:
+            return _conversion;
+
+        case Qt::ToolTipRole:
+            return QString("Conversion: %1").arg(_directory);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::setConversion(const QString& conversion)
+{
+    _conversion = conversion;
+}
+
 void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
     appendChild(new Image(this, filePath, pageIndex));
@@ -1632,6 +1658,13 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
         imageLoaderPlugin->_core->notifyDatasetChanged(points);
+
+        auto conversionPluginTriggerAction = imageLoaderPlugin->getPluginTriggerPickerAction().getCurrentPluginTriggerAction();
+
+        if (conversionPluginTriggerAction != nullptr) {
+            conversionPluginTriggerAction->setDatasets({ points });
+            conversionPluginTriggerAction->trigger();
+        }
 
         points->getDataHierarchyItem().setTaskFinished();
 

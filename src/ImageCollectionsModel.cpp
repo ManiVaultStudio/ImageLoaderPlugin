@@ -112,6 +112,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
             case ImageCollection::Column::SubsamplingFilter:
                 return imageCollection->getSubsampling().getFilter(role);
+
+            case ImageCollection::Column::Conversion:
+                return imageCollection->getConversion(role);
         }
     }
     else {
@@ -239,6 +242,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                         if (_persistData)
                             _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Filter", value.toInt());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::Conversion:
+                    {
+                        imageCollection->setConversion(value.toString());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Conversion/SHA", value.toString());
 
                         break;
                     }
@@ -454,6 +467,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::SubsamplingFilter:
                         return "Subsampling filter";
 
+                    case ImageCollection::Column::Conversion:
+                        return "Conversion";
+
                     default:
                         break;
                 }
@@ -534,6 +550,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
                     case ImageCollection::Column::ToGrayscale:
                         return "Whether all image channels are combined in to one (grayscale)";
+
+                    case ImageCollection::Column::Conversion:
+                        return "Conversion";
 
                     default:
                         break;
@@ -710,6 +729,12 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Filter", 0).toInt());
+
+        const auto conversion = _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", "").toString();
+
+        //_imageLoaderPlugin->getPluginTriggerPickerAction().setCurrentPluginTriggerAction(conversion);
+
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Conversion)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", 0).toString());
 
         /*
         blockSignals(true);

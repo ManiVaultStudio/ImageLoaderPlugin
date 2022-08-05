@@ -13,8 +13,7 @@ CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
     QWidget(parent),
     _imageLoaderPlugin(nullptr),
     _ui(new Ui::CommonSettingsWidget()),
-    _scanner(),
-    _pluginTriggerPickerAction(this)
+    _scanner()
 {
     _ui->setupUi(this);
 }
@@ -113,6 +112,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
     });
 
+    
+
     connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollectionIndex](int currentIndex) {
         const auto index = selectedImageCollectionIndex();
 
@@ -142,6 +143,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Memory));
             _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
             _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
+
+            _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Conversion));
 
             _ui->searchFilterLineEdit->setEnabled(true);
         }
@@ -287,8 +290,10 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
+    connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, imageLoaderPlugin, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto index = selectedImageCollectionIndex();
+
+        imageLoaderPlugin->getPluginTriggerPickerAction().setEnabled(index != QModelIndex());
 
         if (index != QModelIndex()) {
             _ui->loadAsLabel->setEnabled(true);
@@ -301,6 +306,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
             _ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
 
+            imageLoaderPlugin->getPluginTriggerPickerAction().reset();
+            imageLoaderPlugin->getPluginTriggerPickerAction().setCurrentPluginTriggerAction(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), Qt::EditRole).toString());
+
             imageCollectionsModel.guessDimensionNames(index);
 
             updateImagesHeader();
@@ -309,11 +317,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    _pluginTriggerPickerAction.initialize("PointDataConversion", hdps::DataTypes({ PointType }));
+    connect(&imageLoaderPlugin->getPluginTriggerPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this, imageLoaderPlugin, &imageCollectionsModel, selectedImageCollectionIndex](const PluginTriggerAction* currentPluginTriggerAction) -> void {
+        const auto index = selectedImageCollectionIndex();
 
-    qDebug() << "Count" << _pluginTriggerPickerAction.getPluginTriggerActions().count();
+        if (index.isValid() && currentPluginTriggerAction != nullptr)
+            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), currentPluginTriggerAction->getSha());
+    });
 
-    _ui->imagesGridLayout->addWidget(_pluginTriggerPickerAction.createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
+    _ui->imagesGridLayout->addWidget(imageLoaderPlugin->getPluginTriggerPickerAction().createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
 
     _scanner.loadSettings();
     _scanner.scan();

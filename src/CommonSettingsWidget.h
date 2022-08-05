@@ -2,8 +2,6 @@
 
 #include "ImageCollectionScanner.h"
 
-#include <actions/PluginTriggerPickerAction.h>
-
 #include <QWidget>
 
 namespace Ui {
@@ -49,5 +47,4 @@ private:
     ImageLoaderPlugin*                          _imageLoaderPlugin;             /** Image loader plugin instance */
     QSharedPointer<Ui::CommonSettingsWidget>    _ui;                            /** Externally loaded UI */
     ImageCollectionScanner                      _scanner;                       /** Image collection scanner */
-    hdps::gui::PluginTriggerPickerAction        _pluginTriggerPickerAction;     /** Plugin trigger picker action */
 };

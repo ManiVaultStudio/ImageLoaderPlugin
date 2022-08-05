@@ -49,9 +49,10 @@ public: // Enumerations
         NoDimensions,               /** Number of high-dimensional data dimensions */
         Memory,                     /** Estimated memory consumption by the high-dimensional data */
         Directory,                  /** Directory */
+        Conversion,                 /** Conversion */
 
         Start = DatasetName,        /** Column start */
-        End = Directory             /** Column End */
+        End = Conversion            /** Column End */
     };
 
 public: // Nested image class
@@ -449,6 +450,15 @@ public: // Getters/setters
     /** Get subsampling parameters */
     SubSampling& getSubsampling();
 
+    /** Returns the root directory */
+    QVariant getConversion(const int& role) const;
+
+    /**
+     * Sets the conversion
+     * @param conversion Conversion
+     */
+    void setConversion(const QString& conversion);
+
 public:
 
     /**
@@ -486,6 +496,7 @@ protected:
     bool                _toGrayscale;                   /** Whether to convert the images in the collection to grayscale */
     ImageData::Type     _type;                          /** How to load the collection (as image sequence or image stack) */
     SubSampling         _subsampling;                   /** Subsampling parameters */
+    QString             _conversion;                    /** Conversion */
 
     friend class SubSampling;
 };
