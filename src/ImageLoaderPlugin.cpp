@@ -3,20 +3,18 @@
 
 #include <Set.h>
 #include <PointData.h>
-#include <Application.h>
 
-#include <QtCore>
 #include <QDebug>
 
 using namespace hdps;
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
+Q_PLUGIN_METADATA(IID "nl.BioVault.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     LoaderPlugin(factory),
+    _pluginTriggerPickerAction(this),
     _imageCollectionsModel(this),
-    _imageCollectionsFilterModel(),
-    _pluginTriggerPickerAction(this)
+    _imageCollectionsFilterModel()
 {
     _imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
 
@@ -41,9 +39,7 @@ void ImageLoaderPlugin::init()
 
 void ImageLoaderPlugin::loadData()
 {
-    ImageLoaderDialog dialog;
-
-    dialog.initialize(this);
+    ImageLoaderDialog dialog(*this);
 
     dialog.exec();
 }

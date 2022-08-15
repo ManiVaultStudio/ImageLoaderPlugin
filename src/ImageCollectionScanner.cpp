@@ -1,5 +1,6 @@
 #include "ImageCollectionScanner.h"
 #include "ImageLoaderPlugin.h"
+#include "ImageCollection.h"
 
 #include <QDebug>
 #include <QDir>

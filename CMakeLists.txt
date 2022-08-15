@@ -57,6 +57,13 @@ set(WIDGET_SOURCES
     src/SanitizeDataDialog.cpp
 )
 
+set(ACTION_SOURCES
+    src/CommonSettingsAction.h
+    src/CommonSettingsAction.cpp
+    src/SubsamplingAction.h
+    src/SubsamplingAction.cpp
+)
+
 set(AUX src/ImageLoaderPlugin.json)
 
 file(GLOB UIS src/*.ui)
@@ -69,10 +76,12 @@ set(SOURCES
     ${SCANNER_SOURCES}
     ${WIDGET_SOURCES}
     ${MODEL_SOURCES}
+    ${ACTION_SOURCES}
 )
 
 source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
 source_group(Widgets FILES ${WIDGET_SOURCES})
+source_group(Actions FILES ${ACTION_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(Aux FILES ${AUX})
 

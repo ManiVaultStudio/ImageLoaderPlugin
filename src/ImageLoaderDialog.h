@@ -1,5 +1,11 @@
 #pragma once
 
+#include "CommonSettingsAction.h"
+#include "SubsamplingAction.h"
+
+#include <actions/ToggleAction.h>
+#include <actions/TriggerAction.h>
+
 #include <QDialog>
 
 class ImageLoaderPlugin;
@@ -21,20 +27,20 @@ public:
 
     /**
      * Constructor
-     * @param parent Parent object
+     * @param imageLoaderPlugin Reference to parent image loader plugin
      */
-    ImageLoaderDialog(QObject* parent = nullptr);
+    ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin);
 
     /** Destructor */
     ~ImageLoaderDialog() override;
 
-    /**
-     * Initializes the dialog
-     * @param imageLoaderPlugin Pointer to image loader plugin
-     */
-    void initialize(ImageLoaderPlugin* imageLoaderPlugin);
+    QSize sizeHint() const override;
 
 private:
-    QSharedPointer<Ui::ImageLoaderDialog>   _ui;                    /** Externally loaded UI */
-    ImageLoaderPlugin*                      _imageLoaderPlugin;     /** Image loader plugin */
+    ImageLoaderPlugin&              _imageLoaderPlugin;             /** Reference to parent image loader plugin */
+    
+    CommonSettingsAction            _commonSettingsAction;          /** Action for common settings */
+    SubsamplingAction               _subsamplingAction;             /** Action for image subsampling settings */
+    ToggleAction                    _closeAfterLoadingAction;       /** Action for loading image collection(s) */
+    TriggerAction                   _loadAction;                    /** Close the dialog when loading is complete action */
 };

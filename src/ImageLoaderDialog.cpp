@@ -1,30 +1,53 @@
 #include "ImageLoaderDialog.h"
+#include "ImageLoaderPlugin.h"
 
 #include <QDebug>
 
-#include "ImageLoaderPlugin.h"
-
-#include "ui_ImageLoaderDialog.h"
-
-ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
-    _ui(new Ui::ImageLoaderDialog()),
-    _imageLoaderPlugin(nullptr)
+ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
+    _imageLoaderPlugin(imageLoaderPlugin),
+    _commonSettingsAction(this, imageLoaderPlugin),
+    _subsamplingAction(this, imageLoaderPlugin),
+    _closeAfterLoadingAction(this, "Close after loading", true, true),
+    _loadAction(this, "Load")
 {
-    _ui->setupUi(this);
-
     setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
+
+    _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
+    _closeAfterLoadingAction.setChecked(_imageLoaderPlugin.getSetting("GUI/CloseAfterLoaded", true).toBool());
+
+    connect(&_closeAfterLoadingAction, &ToggleAction::toggled, [this]() {
+        _imageLoaderPlugin.setSetting("GUI/CloseAfterLoaded", _closeAfterLoadingAction.isChecked());
+    });
+
+    auto mainLayout = new QVBoxLayout();
+
+    //mainLayout->setContentsMargins(4, 4, 4, 4);
+    mainLayout->addWidget(_commonSettingsAction.createWidget(this), 1);
+    mainLayout->addWidget(_subsamplingAction.createWidget(this));
+
+    auto bottomLayout = new QHBoxLayout();
+
+    bottomLayout->setContentsMargins(0, 0, 0, 0);
+    bottomLayout->addStretch(1);
+    bottomLayout->addWidget(_closeAfterLoadingAction.createWidget(this));
+    bottomLayout->addWidget(_loadAction.createWidget(this));
+
+    mainLayout->addLayout(bottomLayout);
+
+    setLayout(mainLayout);
 }
 
 ImageLoaderDialog::~ImageLoaderDialog() = default;
 
+QSize ImageLoaderDialog::sizeHint() const
+{
+    return QSize(800, 600);
+}
+
+/*
 void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
-    _imageLoaderPlugin = imageLoaderPlugin;
-
-    _ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
-    _ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
-
-    _ui->closeAfterLoadedCheckBox->setChecked(_imageLoaderPlugin->getSetting("GUI/CloseAfterLoaded", true).toBool());
+    _ui->closeAfterLoadedCheckBox->setChecked();
 
     auto& imageCollectionsModel             = _imageLoaderPlugin->getImageCollectionsModel();
     auto& imageCollectionsSelectionModel    = imageCollectionsModel.selectionModel();
@@ -61,9 +84,7 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         updateLoadButton();
     });
 
-    QObject::connect(_ui->closeAfterLoadedCheckBox, &QPushButton::clicked, [&]() {
-        _imageLoaderPlugin->setSetting("GUI/CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
-    });
+    QObject::
 
     QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
         const auto index = selectedRow();
@@ -76,3 +97,4 @@ void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 }
+*/

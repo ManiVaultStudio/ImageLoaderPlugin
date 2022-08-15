@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Common.h"
-
 #include "ImageCollectionsModel.h"
 
 #include <LoaderPlugin.h>
+#include <PluginFactory.h>
 
 #include <actions/PluginTriggerPickerAction.h>
 
@@ -21,7 +21,7 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-    ImageLoaderPlugin(const PluginFactory* factory);
+    ImageLoaderPlugin(const hdps::plugin::PluginFactory* factory);
     ~ImageLoaderPlugin();
 
     hdps::gui::PluginTriggerPickerAction& getPluginTriggerPickerAction();
@@ -34,7 +34,7 @@ public: // Inherited from LoaderPlugin
     /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-public: // Models
+public:
 
     /** Returns the image collections model */
     ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
@@ -58,7 +58,7 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
     Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
         Q_OBJECT
-        Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
+        Q_PLUGIN_METADATA(IID   "nl.BioVault.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
 
 public:
     /** Default constructor */
