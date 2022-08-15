@@ -9,13 +9,13 @@ class ImageLoaderPlugin;
 
 using namespace hdps::gui;
 
-class CommonSettingsAction : public WidgetAction
+class ScanAction : public WidgetAction
 {
 protected:
 
     class Widget : public WidgetActionWidget {
     public:
-        Widget(QWidget* parent, CommonSettingsAction* commonSettingsAction, const std::int32_t& widgetFlags);
+        Widget(QWidget* parent, ScanAction* commonSettingsAction, const std::int32_t& widgetFlags);
     };
 
 public:
@@ -25,7 +25,7 @@ public:
     };
 
 public:
-    CommonSettingsAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin);
+    ScanAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 public:
 

@@ -58,4 +58,6 @@ SubsamplingAction::Widget::Widget(QWidget* parent, SubsamplingAction* subsamplin
     mainLayout->addWidget(subsamplingAction->getFilterTypeAction().createWidget(this), 1, 1);
 
     setPopupLayout(mainLayout);
+
+    layout()->setContentsMargins(0, 0, 0, 0);
 }

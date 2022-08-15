@@ -58,10 +58,14 @@ set(WIDGET_SOURCES
 )
 
 set(ACTION_SOURCES
-    src/CommonSettingsAction.h
-    src/CommonSettingsAction.cpp
+    src/ScanAction.h
+    src/ScanAction.cpp
     src/SubsamplingAction.h
     src/SubsamplingAction.cpp
+    src/ImageCollectionsAction.h
+    src/ImageCollectionsAction.cpp
+    src/ImagesAction.h
+    src/ImagesAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

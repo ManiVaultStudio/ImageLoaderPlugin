@@ -5,7 +5,9 @@
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
-    _commonSettingsAction(this, imageLoaderPlugin),
+    _scanAction(this, imageLoaderPlugin),
+    _imageCollectionsAction(this, imageLoaderPlugin),
+    _imagesAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _closeAfterLoadingAction(this, "Close after loading", true, true),
     _loadAction(this, "Load")
@@ -22,7 +24,10 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     auto mainLayout = new QVBoxLayout();
 
     //mainLayout->setContentsMargins(4, 4, 4, 4);
-    mainLayout->addWidget(_commonSettingsAction.createWidget(this), 1);
+    //mainLayout->setSpacing(0);
+    mainLayout->addWidget(_scanAction.createWidget(this));
+    mainLayout->addWidget(_imageCollectionsAction.createWidget(this), 2);
+    mainLayout->addWidget(_imagesAction.createWidget(this), 1);
     mainLayout->addWidget(_subsamplingAction.createWidget(this));
 
     auto bottomLayout = new QHBoxLayout();
