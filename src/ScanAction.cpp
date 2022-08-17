@@ -7,11 +7,12 @@ ScanAction::ScanAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent),
     _imageLoaderPlugin(imageLoaderPlugin),
     _scanDirectoryAction(this, "Directory"),
-    _separateByDirectoryAction(this, "Separate by directory"),
-    _filterAction(this, "Filter"),
-    _nameAction(this, "Name")
+    _separateByDirectoryAction(this, "Separate by directory")
 {
     setText("Scan");
+    
+    _scanDirectoryAction.setSettingsPrefix(&imageLoaderPlugin, "ScanDirectory");
+    _separateByDirectoryAction.setSettingsPrefix(&imageLoaderPlugin, "SeparateByDirectory");
 }
 
 ScanAction::Widget::Widget(QWidget* parent, ScanAction* commonSettingsAction, const std::int32_t& widgetFlags) :

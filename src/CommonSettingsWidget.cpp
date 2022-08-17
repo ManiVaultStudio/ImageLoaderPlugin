@@ -12,10 +12,8 @@
 CommonSettingsWidget::CommonSettingsWidget(QWidget* parent) :
     QWidget(parent),
     _imageLoaderPlugin(nullptr),
-    _ui(new Ui::CommonSettingsWidget()),
-    _scanner()
+    _ui(new Ui::CommonSettingsWidget())
 {
-    _ui->setupUi(this);
 }
 
 CommonSettingsWidget::~CommonSettingsWidget() = default;
@@ -23,10 +21,6 @@ CommonSettingsWidget::~CommonSettingsWidget() = default;
 void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 {
     _imageLoaderPlugin = imageLoaderPlugin;
-
-    _scanner.setImageLoaderPlugin(imageLoaderPlugin);
-
-    _ui->separateByDirectoryCheckBox->setChecked(_scanner.getSeparateByDirectory());
 
     auto& imageCollectionsModel             = _imageLoaderPlugin->getImageCollectionsModel();
     auto& imageCollectionsSelectionModel    = imageCollectionsModel.selectionModel();
@@ -44,75 +38,9 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         return filterModel.mapToSource(selectedRows.first());
     };
 
-    // Column visibility
-    for (int column = ult(ImageCollection::Image::Column::Start); column <= ult(ImageCollection::Image::Column::End); column++)
-        _ui->imageCollectionsTreeView->header()->hideSection(column);
-
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DatasetName));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ImageType));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ImageFormat));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::ToGrayscale));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoImages));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::NoSelectedImages));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::DimensionTag));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::IsMultiPage));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SourceSize));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetSize));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetWidth));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::TargetHeight));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Type));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingEnabled));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
-    _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
-    //_ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Directory));
-
     _ui->imagesTreeView->header()->setHidden(true);
 
     _ui->selectPercentageDoubleSpinBox->setValue(_imageLoaderPlugin->getSetting("Miscellaneous/SelectPercentage", 50.0).toDouble());
-
-    connect(_ui->directoryLineEdit, &QLineEdit::textChanged, [this](QString text) {
-        _scanner.setDirectory(text);
-    });
-
-    connect(_ui->directoryPushButton, &QPushButton::clicked, [this]() {
-        const auto initialDirectory = _scanner.getDirectory();
-        const auto pickedDirectory = QFileDialog::getExistingDirectory(Q_NULLPTR, "Choose image sequence directory", initialDirectory);
-
-        if (!pickedDirectory.isNull() || !pickedDirectory.isEmpty()) {
-            _scanner.setDirectory(pickedDirectory);
-        }
-    });
-
-    connect(&_scanner, &ImageCollectionScanner::directoryChanged, [this](const QString& directory) {
-        _ui->directoryLineEdit->blockSignals(true);
-        _ui->directoryLineEdit->setText(directory);
-        _ui->directoryLineEdit->blockSignals(false);
-    });
-
-    connect(_ui->separateByDirectoryCheckBox, &QCheckBox::stateChanged, [this](int state) {
-        _scanner.setSeparateByDirectory(state == Qt::Checked);
-    });
-
-    connect(&_scanner, &ImageCollectionScanner::separateByDirectoryChanged, [this](const bool& separateByDirectory) {
-        _ui->separateByDirectoryCheckBox->blockSignals(true);
-        _ui->separateByDirectoryCheckBox->setChecked(separateByDirectory);
-        _ui->separateByDirectoryCheckBox->blockSignals(false);
-    });
-
-    connect(_ui->searchFilterLineEdit, &QLineEdit::textChanged, [this](QString text) {
-        _scanner.setFilenameFilter(text);
-    });
-
-    connect(&_scanner, &ImageCollectionScanner::filenameFilterChanged, [this](const QString& filenameFilter) {
-        //_ui->searchFilterLineEdit->setFocus();
-        _ui->searchFilterLineEdit->blockSignals(true);
-        _ui->searchFilterLineEdit->setText(filenameFilter);
-        _ui->searchFilterLineEdit->blockSignals(false);
-
-        _imageLoaderPlugin->getImageCollectionsFilterModel().setFilter(filenameFilter);
-    });
-
-    
 
     connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollectionIndex](int currentIndex) {
         const auto index = selectedImageCollectionIndex();
@@ -121,34 +49,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
     });
 
-    connect(&imageCollectionsModel, &ImageCollectionsModel::rowsInserted, [&, this]() {
-        if (imageCollectionsModel.rowCount(QModelIndex()) > 0) {
-            _ui->imageCollectionsTreeView->setEnabled(true);
-            _ui->imageCollectionsLabel->setEnabled(true);
-
-            _ui->imageCollectionsTreeView->header()->show();
-
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageType));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ImageFormat));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoImages));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoSelectedImages));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::SourceSize));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetSize));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetWidth));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::TargetHeight));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoPoints));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::NoDimensions));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Memory));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Directory));
-            _ui->imageCollectionsTreeView->resizeColumnToContents(ult(ImageCollection::Column::Type));
-
-            _ui->imageCollectionsTreeView->header()->hideSection(ult(ImageCollection::Column::Conversion));
-
-            _ui->searchFilterLineEdit->setEnabled(true);
-        }
-    });
+    
 
     connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [&, this]() {
         _ui->imageCollectionsTreeView->setEnabled(false);
@@ -293,7 +194,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
     connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, imageLoaderPlugin, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto index = selectedImageCollectionIndex();
 
-        imageLoaderPlugin->getPluginTriggerPickerAction().setEnabled(index != QModelIndex());
+        imageLoaderPlugin->getConversionPickerAction().setEnabled(index != QModelIndex());
 
         if (index != QModelIndex()) {
             _ui->loadAsLabel->setEnabled(true);
@@ -306,8 +207,8 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
             _ui->loadAsComboBox->setCurrentIndex(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::EditRole).toInt());
 
-            imageLoaderPlugin->getPluginTriggerPickerAction().reset();
-            imageLoaderPlugin->getPluginTriggerPickerAction().setCurrentPluginTriggerAction(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), Qt::EditRole).toString());
+            imageLoaderPlugin->getConversionPickerAction().reset();
+            imageLoaderPlugin->getConversionPickerAction().setCurrentPluginTriggerAction(imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), Qt::EditRole).toString());
 
             imageCollectionsModel.guessDimensionNames(index);
 
@@ -317,15 +218,14 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
-    connect(&imageLoaderPlugin->getPluginTriggerPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this, imageLoaderPlugin, &imageCollectionsModel, selectedImageCollectionIndex](const PluginTriggerAction* currentPluginTriggerAction) -> void {
+    connect(&imageLoaderPlugin->getConversionPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this, imageLoaderPlugin, &imageCollectionsModel, selectedImageCollectionIndex](const PluginTriggerAction* currentPluginTriggerAction) -> void {
         const auto index = selectedImageCollectionIndex();
 
         if (index.isValid() && currentPluginTriggerAction != nullptr)
             imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), currentPluginTriggerAction->getSha());
     });
 
-    _ui->imagesGridLayout->addWidget(imageLoaderPlugin->getPluginTriggerPickerAction().createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
+    _ui->imagesGridLayout->addWidget(imageLoaderPlugin->getConversionPickerAction().createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
 
-    _scanner.loadSettings();
-    _scanner.scan();
+    
 }

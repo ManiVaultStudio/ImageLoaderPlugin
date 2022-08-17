@@ -14,7 +14,8 @@ namespace fi {
 #include <FreeImage.h>
 }
 
-ImageCollectionScanner::ImageCollectionScanner() :
+ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin) :
+    _imageLoaderPlugin(imageLoaderPlugin),
     _directory(),
     _separateByDirectory(false),
     _previousDirectories(),
@@ -26,10 +27,10 @@ ImageCollectionScanner::ImageCollectionScanner() :
 
 void ImageCollectionScanner::loadSettings()
 {
-    const auto directory = _imageLoaderPlugin->getSetting("Scanner/Directory", "").toString();
+    const auto directory = _imageLoaderPlugin.getSetting("Scanner/Directory", "").toString();
 
     setDirectory(QDir(directory).exists() ? directory : "", true);
-    setSeparateByDirectory(_imageLoaderPlugin->getSetting("Scanner/SeparateByDirectory", true).toBool());
+    setSeparateByDirectory(_imageLoaderPlugin.getSetting("Scanner/SeparateByDirectory", true).toBool());
 
     auto supportedImageTypes = QStringList();
 
@@ -37,15 +38,10 @@ void ImageCollectionScanner::loadSettings()
 
     setSupportedImageTypes(supportedImageTypes);
 
-    setSupportedImageTypes(_imageLoaderPlugin->getSetting("Scanner/ImageTypes", supportedImageTypes).toStringList(), true);
-    setFilenameFilter(_imageLoaderPlugin->getSetting("Scanner/FilenameFilter", QString()).toString(), true);
+    setSupportedImageTypes(_imageLoaderPlugin.getSetting("Scanner/ImageTypes", supportedImageTypes).toStringList(), true);
+    setFilenameFilter(_imageLoaderPlugin.getSetting("Scanner/FilenameFilter", QString()).toString(), true);
 
     _initialized = true;
-}
-
-void ImageCollectionScanner::setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin)
-{
-    _imageLoaderPlugin = imageLoaderPlugin;
 }
 
 QString ImageCollectionScanner::getDirectory() const
@@ -60,7 +56,7 @@ void ImageCollectionScanner::setDirectory(const QString& directory, const bool& 
 
     _directory = directory;
 
-    _imageLoaderPlugin->setSetting("Scanner/Directory", _directory);
+    _imageLoaderPlugin.setSetting("Scanner/Directory", _directory);
 
     qDebug() << "Set directory" << _directory;
 
@@ -84,7 +80,7 @@ void ImageCollectionScanner::setSeparateByDirectory(const bool& separateByDirect
 
     _separateByDirectory = separateByDirectory;
 
-    _imageLoaderPlugin->setSetting("Scanner/SeparateByDirectory", _separateByDirectory);
+    _imageLoaderPlugin.setSetting("Scanner/SeparateByDirectory", _separateByDirectory);
 
     emit separateByDirectoryChanged(_separateByDirectory);
     emit settingsChanged();
@@ -105,7 +101,7 @@ void ImageCollectionScanner::setSupportedImageTypes(const QStringList& supported
 
     _supportedImageTypes = supportedImageTypes;
 
-    _imageLoaderPlugin->setSetting("Scanner/ImageTypes", _supportedImageTypes);
+    _imageLoaderPlugin.setSetting("Scanner/ImageTypes", _supportedImageTypes);
 
     qDebug() << "Set image types" << _supportedImageTypes;
 
@@ -129,7 +125,7 @@ void ImageCollectionScanner::setFilenameFilter(const QString& filenameFilter, co
 
     _filenameFilter = filenameFilter;
 
-    _imageLoaderPlugin->setSetting("Scanner/FilenameFilter", _filenameFilter);
+    _imageLoaderPlugin.setSetting("Scanner/FilenameFilter", _filenameFilter);
 
     qDebug() << "Set filename filter" << _filenameFilter;
 
@@ -154,7 +150,7 @@ void ImageCollectionScanner::scan()
         for (auto& imageCollection : imageCollections)
             imageCollection->computeDatasetName();
 
-        auto& imageCollectionsModel = _imageLoaderPlugin->getImageCollectionsModel();
+        auto& imageCollectionsModel = _imageLoaderPlugin.getImageCollectionsModel();
 
         imageCollectionsModel.clear();
 
@@ -264,7 +260,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         auto it = findImageCollection(imageCollections, rootDir, imageExtension, imageSize);
 
         if (it == imageCollections.end() || imageExtension == "TIFF (multipage)") {
-            auto imageCollection = new ImageCollection(_imageLoaderPlugin->getImageCollectionsModel().getRootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
+            auto imageCollection = new ImageCollection(_imageLoaderPlugin.getImageCollectionsModel().getRootItem(), rootDir, imageExtension, imageReader.imageFormat(), imageSize);
 
             if (imageExtension == "TIFF (multipage)") {
                 for (int pageIndex = 0; pageIndex < pageCount; pageIndex++)

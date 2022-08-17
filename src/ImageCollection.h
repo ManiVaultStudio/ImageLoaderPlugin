@@ -27,7 +27,7 @@ class ImageCollection : public TreeItem
 public: // Enumerations
 
     /** Columns */
-    enum class Column {
+    enum Column {
         DatasetName,                /** The name of the dataset */
         FileNames,                  /** The filename(s) */
         ImageType,                  /** The type of image(s) */

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "ImageCollectionScanner.h"
 #include "ImageCollectionsModel.h"
 
 #include <LoaderPlugin.h>
@@ -22,30 +23,26 @@ class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
     ImageLoaderPlugin(const hdps::plugin::PluginFactory* factory);
-    ~ImageLoaderPlugin();
-
-    hdps::gui::PluginTriggerPickerAction& getPluginTriggerPickerAction();
-
-public: // Inherited from LoaderPlugin
 
     /** Initializes the plugin */
-    void init() override;
+    void init() override {};
 
     /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-public:
-
-    /** Returns the image collections model */
+    ImageCollectionScanner& getImageCollectionScanner() { return _imageCollectionScanner; }
     ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
-
-    /** Returns the image collections model */
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+    hdps::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
+
+    QModelIndex getSelectedImageCollectionIndex() const;;
 
 private:
+    ImageCollectionScanner                  _imageCollectionScanner;        /** Image collection scanner */
     ImageCollectionsModel                   _imageCollectionsModel;         /** Image collections model */
     ImageCollectionsModel::Filter           _imageCollectionsFilterModel;   /** Image collections filter model */
-    hdps::gui::PluginTriggerPickerAction    _pluginTriggerPickerAction;     /** Plugin trigger picker action */
+    hdps::gui::PluginTriggerPickerAction    _conversionPickerAction;        /** Conversion plugin trigger picker action */
+    
 
     friend class ImageCollection;
 };

@@ -38,13 +38,7 @@ public: // Initialization
      */
     void initialize(ImageLoaderPlugin* imageLoaderPlugin);
 
-public: // Miscellaneous
-
-    /** Returns the image collection scanner */
-    ImageCollectionScanner& getScanner() { return _scanner; }
-
 private:
     ImageLoaderPlugin*                          _imageLoaderPlugin;             /** Image loader plugin instance */
     QSharedPointer<Ui::CommonSettingsWidget>    _ui;                            /** Externally loaded UI */
-    ImageCollectionScanner                      _scanner;                       /** Image collection scanner */
 };

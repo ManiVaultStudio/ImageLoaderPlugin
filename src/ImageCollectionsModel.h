@@ -160,6 +160,7 @@ public: // Inherited MVC
 public: // Miscellaneous
 
     /** Returns the selection model */
+    const QItemSelectionModel& selectionModel() const { return _selectionModel; }
     QItemSelectionModel& selectionModel() { return _selectionModel; }
 
     /** Clears the model */

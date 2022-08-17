@@ -382,14 +382,6 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
         {
             case Qt::DecorationRole:
             {
-                switch (static_cast<ImageCollection::Column>(section)) {
-                    case ImageCollection::Column::DatasetName:
-                        return hdps::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
-
-                    default:
-                        break;
-                }
-
                 switch (static_cast<ImageCollection::Image::Column>(section)) {
                     case ImageCollection::Image::Column::DimensionName:
                         return hdps::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
@@ -592,10 +584,7 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
     if (index.parent() == QModelIndex()) {
         switch (static_cast<ImageCollection::Column>(index.column())) {
             case ImageCollection::Column::DatasetName:
-            {
-                flags |= Qt::ItemIsEditable;
                 break;
-            }
 
             case ImageCollection::Column::ToGrayscale:
             {

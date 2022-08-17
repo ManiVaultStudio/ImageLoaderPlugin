@@ -3,7 +3,6 @@
 #include <actions/WidgetAction.h>
 #include <actions/DirectoryPickerAction.h>
 #include <actions/ToggleAction.h>
-#include <actions/StringAction.h>
 
 class ImageLoaderPlugin;
 
@@ -31,15 +30,11 @@ public:
 
     DirectoryPickerAction& getScanDirectoryAction() { return _scanDirectoryAction; }
     ToggleAction& getSeparateByDirectoryAction() { return _separateByDirectoryAction; }
-    StringAction& getFilterAction() { return _filterAction; }
-    StringAction& getNameAction() { return _nameAction; }
 
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;
     DirectoryPickerAction   _scanDirectoryAction;
     ToggleAction            _separateByDirectoryAction;
-    StringAction            _filterAction;
-    StringAction            _nameAction;
 
     friend class Widget;
 };

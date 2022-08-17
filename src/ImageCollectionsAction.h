@@ -1,6 +1,10 @@
 #pragma once
 
 #include <actions/WidgetAction.h>
+#include <actions/StringAction.h>
+#include <actions/OptionAction.h>
+
+#include <QTreeView>
 
 class ImageLoaderPlugin;
 
@@ -13,6 +17,13 @@ protected:
     class Widget : public WidgetActionWidget {
     public:
         Widget(QWidget* parent, ImageCollectionsAction* imageCollectionsAction, const std::int32_t& widgetFlags);
+
+    private:
+        void updateTreeView();
+
+    private:
+        ImageCollectionsAction* _imageCollectionsAction;
+        QTreeView               _treeView;
     };
 
 public:
@@ -25,18 +36,13 @@ public:
     ImageCollectionsAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 public:
-
-    //DirectoryPickerAction& getScanDirectoryAction() { return _scanDirectoryAction; }
-    //ToggleAction& getSeparateByDirectoryAction() { return _separateByDirectoryAction; }
-    //StringAction& getFilterAction() { return _filterAction; }
-    //StringAction& getNameAction() { return _nameAction; }
+    StringAction& getFilterAction() { return _filterAction;  }
+    StringAction& getDatasetNameAction() { return _datasetNameAction; }
+    OptionAction& getLoadAsAction() { return _loadAsAction; }
 
 protected:
-    ImageLoaderPlugin&      _imageLoaderPlugin;
-    //DirectoryPickerAction   _scanDirectoryAction;
-    //ToggleAction            _separateByDirectoryAction;
-    //StringAction            _filterAction;
-    //StringAction            _nameAction;
-
-    friend class Widget;
+    ImageLoaderPlugin&      _imageLoaderPlugin;     /** Reference to image loader plugin instance */
+    StringAction            _filterAction;          /** Filter by image name action */
+    StringAction            _datasetNameAction;     /** Produced dataset name action */
+    OptionAction            _loadAsAction;          /** Image data layout action */
 };

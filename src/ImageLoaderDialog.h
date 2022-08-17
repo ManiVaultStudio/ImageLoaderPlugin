@@ -39,6 +39,10 @@ public:
     QSize sizeHint() const override;
 
 private:
+
+    void updateActions();
+
+private:
     ImageLoaderPlugin&          _imageLoaderPlugin;             /** Reference to parent image loader plugin */
     ScanAction                  _scanAction;                    /** Action for scan settings */
     ImageCollectionsAction      _imageCollectionsAction;        /** Action for interacting with image collections */
