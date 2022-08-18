@@ -66,6 +66,8 @@ set(ACTION_SOURCES
     src/ImageCollectionsAction.cpp
     src/ImagesAction.h
     src/ImagesAction.cpp
+    src/DimensionTagAction.h
+    src/DimensionTagAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

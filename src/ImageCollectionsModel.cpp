@@ -397,7 +397,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
                     case ImageCollection::Column::DatasetName:
-                        return "Dataset name";
+                        return "Name";
 
                     case ImageCollection::Column::FileNames:
                         return "File name(s)";

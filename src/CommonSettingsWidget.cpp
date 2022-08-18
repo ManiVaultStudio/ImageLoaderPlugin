@@ -42,15 +42,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
     _ui->selectPercentageDoubleSpinBox->setValue(_imageLoaderPlugin->getSetting("Miscellaneous/SelectPercentage", 50.0).toDouble());
 
-    connect(_ui->loadAsComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [&, selectedImageCollectionIndex](int currentIndex) {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Type)), currentIndex);
-    });
-
-    
-
     connect(&imageCollectionsModel, &ImageCollectionsModel::modelReset, [&, this]() {
         _ui->imageCollectionsTreeView->setEnabled(false);
         _ui->imageCollectionsLabel->setEnabled(false);
@@ -67,35 +58,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->selectPercentageDoubleSpinBox->setEnabled(false);
         _ui->selectPercentagePushButton->setEnabled(false);
     });
-
-    const auto updateTagUI = [this, selectedImageCollectionIndex]() -> void {
-        const auto index				= selectedImageCollectionIndex();
-        const auto dimensionTag         = index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)).data().toString();
-        const auto dimensionTagEnabled  = index.siblingAtColumn(ult(ImageCollection::Column::IsMultiPage)).data().toBool();
-
-		QSignalBlocker blocker(_ui->dimensionTagComboBox);
-
-        _ui->dimensionTagLabel->setEnabled(dimensionTagEnabled);
-        _ui->dimensionTagComboBox->setEnabled(dimensionTagEnabled);
-        _ui->dimensionTagComboBox->setCurrentText(dimensionTagEnabled ? dimensionTag : "");
-    };
-    
-    const auto setDimensionTag = [this, &imageCollectionsModel, selectedImageCollectionIndex](const QString& dimensionTag) -> void {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex()) {
-            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), dimensionTag);
-            imageCollectionsModel.guessDimensionNames(index);
-        }
-    };
-
-    connect(_ui->dimensionTagComboBox, qOverload<int>(&QComboBox::currentIndexChanged), [this, setDimensionTag](int index) {
-        setDimensionTag(_ui->dimensionTagComboBox->currentText());
-    });
-
-	connect(_ui->dimensionTagComboBox, &QComboBox::editTextChanged, [this, setDimensionTag](const QString& editText) {
-		setDimensionTag(editText);
-	});
 
     connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
         const auto index = selectedImageCollectionIndex();
@@ -191,6 +153,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         }
     });
 
+    /*
     connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, imageLoaderPlugin, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto index = selectedImageCollectionIndex();
 
@@ -217,15 +180,5 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
             updateTagUI();
         }
     });
-
-    connect(&imageLoaderPlugin->getConversionPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this, imageLoaderPlugin, &imageCollectionsModel, selectedImageCollectionIndex](const PluginTriggerAction* currentPluginTriggerAction) -> void {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index.isValid() && currentPluginTriggerAction != nullptr)
-            imageCollectionsModel.setData(index.siblingAtColumn(ult(ImageCollection::Column::Conversion)), currentPluginTriggerAction->getSha());
-    });
-
-    _ui->imagesGridLayout->addWidget(imageLoaderPlugin->getConversionPickerAction().createWidget(this), _ui->imagesGridLayout->rowCount() - 1, 2);
-
-    
+    */
 }

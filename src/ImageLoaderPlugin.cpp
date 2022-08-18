@@ -34,14 +34,14 @@ void ImageLoaderPlugin::loadData()
     dialog.exec();
 }
 
-QModelIndex ImageLoaderPlugin::getSelectedImageCollectionIndex() const
+QModelIndexList ImageLoaderPlugin::getSelectedImageCollectionIndices() const
 {
-    const auto selectedRows = _imageCollectionsModel.selectionModel().selectedRows();
+    QModelIndexList selectedImageCollectionIndices;
 
-    if (selectedRows.isEmpty())
-        return QModelIndex();
+    for (const auto& selectedRow : _imageCollectionsModel.selectionModel().selectedRows())
+        selectedImageCollectionIndices << _imageCollectionsFilterModel.mapToSource(selectedRow);
 
-    return _imageCollectionsFilterModel.mapToSource(selectedRows.first());
+    return selectedImageCollectionIndices;
 }
 
 QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const

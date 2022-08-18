@@ -591,6 +591,8 @@ void ImageCollection::Image::guessDimensionName()
             else
                 _dimensionName = dimensionName;
 
+            _dimensionName.truncate(256);
+
             FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
             FI::FreeImage_CloseMultiBitmap(multiBitmap);
         }
@@ -1550,13 +1552,13 @@ void ImageCollection::guessDimensionNames()
         QProgressDialog progressDialog("Establishing dimension names", "", 0, _children.size(), nullptr);
 
         progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_datasetName));
+        progressDialog.setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
         progressDialog.setWindowModality(Qt::WindowModal);
         progressDialog.setMinimumDuration(1000);
         progressDialog.setFixedWidth(600);
         progressDialog.setMinimum(0);
         progressDialog.setMaximum(_children.size());
         progressDialog.setValue(0);
-        progressDialog.setWindowIcon(Application::getIconFont("FontAwesome").getIcon("images"));
 
         for (auto child : _children) {
             const auto dimensionIndex = _children.indexOf(child);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "DimensionTagAction.h"
+#include "ImagesAction.h"
+
 #include <actions/WidgetAction.h>
 #include <actions/StringAction.h>
 #include <actions/OptionAction.h>
@@ -39,10 +42,14 @@ public:
     StringAction& getFilterAction() { return _filterAction;  }
     StringAction& getDatasetNameAction() { return _datasetNameAction; }
     OptionAction& getLoadAsAction() { return _loadAsAction; }
+    DimensionTagAction& getDimensionTagAction() { return _dimensionTagAction; }
+    ImagesAction& getImagesAction() { return _imagesAction; }
 
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;     /** Reference to image loader plugin instance */
     StringAction            _filterAction;          /** Filter by image name action */
     StringAction            _datasetNameAction;     /** Produced dataset name action */
     OptionAction            _loadAsAction;          /** Image data layout action */
+    DimensionTagAction      _dimensionTagAction;    /** Dimension tag action (in case of multi-page TIFF) */
+    ImagesAction            _imagesAction;          /** Images action */
 };

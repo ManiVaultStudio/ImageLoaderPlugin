@@ -200,6 +200,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         progressDialog = QSharedPointer<QProgressDialog>::create("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
 
         progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
+        progressDialog->setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
         progressDialog->setWindowModality(Qt::WindowModal);
         progressDialog->setMinimumDuration(500);
         progressDialog->setMinimum(0);

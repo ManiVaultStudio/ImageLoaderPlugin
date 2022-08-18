@@ -46,7 +46,6 @@ private:
     ImageLoaderPlugin&          _imageLoaderPlugin;             /** Reference to parent image loader plugin */
     ScanAction                  _scanAction;                    /** Action for scan settings */
     ImageCollectionsAction      _imageCollectionsAction;        /** Action for interacting with image collections */
-    ImagesAction                _imagesAction;                  /** Action for interacting with images */
     SubsamplingAction           _subsamplingAction;             /** Action for image subsampling settings */
     ToggleAction                _closeAfterLoadingAction;       /** Action for loading image collection(s) */
     TriggerAction               _loadAction;                    /** Close the dialog when loading is complete action */

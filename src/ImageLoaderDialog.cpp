@@ -7,11 +7,11 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
     _scanAction(this, imageLoaderPlugin),
     _imageCollectionsAction(this, imageLoaderPlugin),
-    _imagesAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _closeAfterLoadingAction(this, "Close after loading", true, true),
     _loadAction(this, "Load")
 {
+    setWindowTitle("Load high-dimensional image data");
     setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
 
     _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
@@ -27,7 +27,6 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     //mainLayout->setSpacing(0);
     mainLayout->addWidget(_scanAction.createWidget(this));
     mainLayout->addWidget(_imageCollectionsAction.createWidget(this), 2);
-    mainLayout->addWidget(_imagesAction.createWidget(this), 1);
     mainLayout->addWidget(_subsamplingAction.createWidget(this));
 
     auto bottomLayout = new QHBoxLayout();

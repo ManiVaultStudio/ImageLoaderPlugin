@@ -2,6 +2,8 @@
 
 #include <actions/WidgetAction.h>
 
+#include <QTreeView>
+
 class ImageLoaderPlugin;
 
 using namespace hdps::gui;
@@ -13,6 +15,13 @@ protected:
     class Widget : public WidgetActionWidget {
     public:
         Widget(QWidget* parent, ImagesAction* imagesAction, const std::int32_t& widgetFlags);
+
+    private:
+        void updateTreeView();
+
+    private:
+        ImagesAction*   _imagesAction;
+        QTreeView       _treeView;
     };
 
 public:
@@ -22,7 +31,7 @@ public:
     };
 
 public:
-    ImagesAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin);
+    ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 public:
 

@@ -11,6 +11,14 @@ ScanAction::ScanAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin) :
 {
     setText("Scan");
     
+    connect(&_scanDirectoryAction, &DirectoryPickerAction::directoryChanged, this, [this](const QString& directory) -> void {
+        _imageLoaderPlugin.getImageCollectionScanner().setDirectory(directory);
+    });
+
+    connect(&_separateByDirectoryAction, &ToggleAction::toggled, this, [this](bool toggled) -> void {
+        _imageLoaderPlugin.getImageCollectionScanner().setSeparateByDirectory(toggled);
+    });
+
     _scanDirectoryAction.setSettingsPrefix(&imageLoaderPlugin, "ScanDirectory");
     _separateByDirectoryAction.setSettingsPrefix(&imageLoaderPlugin, "SeparateByDirectory");
 }
