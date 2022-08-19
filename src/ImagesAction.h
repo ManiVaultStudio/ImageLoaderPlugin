@@ -1,6 +1,7 @@
 #pragma once
 
 #include <actions/WidgetAction.h>
+#include <actions/TriggerAction.h>
 
 #include <QTreeView>
 
@@ -33,19 +34,11 @@ public:
 public:
     ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
-public:
-
-    //DirectoryPickerAction& getScanDirectoryAction() { return _scanDirectoryAction; }
-    //ToggleAction& getSeparateByDirectoryAction() { return _separateByDirectoryAction; }
-    //StringAction& getFilterAction() { return _filterAction; }
-    //StringAction& getNameAction() { return _nameAction; }
-
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;
-    //DirectoryPickerAction   _scanDirectoryAction;
-    //ToggleAction            _separateByDirectoryAction;
-    //StringAction            _filterAction;
-    //StringAction            _nameAction;
+    TriggerAction           _selectAllAction;
+    TriggerAction           _selectNoneAction;
+    TriggerAction           _selectInvertAction;
 
     friend class Widget;
 };

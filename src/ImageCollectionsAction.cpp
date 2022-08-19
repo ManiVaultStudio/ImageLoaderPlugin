@@ -33,6 +33,8 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
 
     _imageLoaderPlugin.getConversionPickerAction().setEnabled(false);
 
+    _imagesAction.setEnabled(false);
+
     connect(&_filterAction, &StringAction::stringChanged, [this](QString text) {
         _imageLoaderPlugin.getImageCollectionsFilterModel().setFilter(text);
     });
@@ -100,6 +102,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
 
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(false);
             _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(nullptr);
+            _imagesAction.setEnabled(false);
         }
 
         if (numberOfSelectedRows == 1) {
@@ -121,6 +124,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
 
             _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(selectedRows.first().siblingAtColumn(ImageCollection::Column::Conversion).data(Qt::EditRole).toString());
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
+            _imagesAction.setEnabled(true);
         }
 
         if (numberOfSelectedRows >= 2) {
@@ -146,6 +150,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
 
             _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction((conversions.isEmpty() || conversions.count() == 2) ? "" : conversions.values().first());
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
+            _imagesAction.setEnabled(false);
 
             auto numberOfMultiPageTiffs = 0u;
 

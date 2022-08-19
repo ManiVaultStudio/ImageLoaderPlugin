@@ -9,7 +9,8 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageCollectionsAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _closeAfterLoadingAction(this, "Close after loading", true, true),
-    _loadAction(this, "Load")
+    _loadAction(this, "Load"),
+    _cancelAction(this, "Cancel")
 {
     setWindowTitle("Load high-dimensional image data");
     setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
@@ -17,7 +18,12 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
     _closeAfterLoadingAction.setSettingsPrefix(&imageLoaderPlugin, "CloseAfterLoaded");
 
+    _loadAction.setToolTip("Load the selected image collections");
+    _cancelAction.setToolTip("Close the image loader");
+
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &ImageLoaderDialog::updateActions);
+    connect(&_loadAction, &TriggerAction::triggered, this, &ImageLoaderDialog::loadImageCollections);
+    connect(&_cancelAction, &TriggerAction::triggered, this, &ImageLoaderDialog::reject);
 
     updateActions();
 
@@ -35,6 +41,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     bottomLayout->addStretch(1);
     bottomLayout->addWidget(_closeAfterLoadingAction.createWidget(this));
     bottomLayout->addWidget(_loadAction.createWidget(this));
+    bottomLayout->addWidget(_cancelAction.createWidget(this));
 
     mainLayout->addLayout(bottomLayout);
 
@@ -65,4 +72,19 @@ void ImageLoaderDialog::updateActions()
     }
     
     _closeAfterLoadingAction.setEnabled(hasSelection);
+}
+
+void ImageLoaderDialog::loadImageCollections()
+{
+    const auto selectedRows = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+    const auto hasSelection = !selectedRows.isEmpty();
+
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedImageCollectionIndices()) {
+        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+
+        imageCollection->load(&_imageLoaderPlugin);
+    }
+
+    if (_closeAfterLoadingAction.isChecked())
+        accept();
 }

@@ -42,6 +42,8 @@ private:
 
     void updateActions();
 
+    void loadImageCollections();
+
 private:
     ImageLoaderPlugin&          _imageLoaderPlugin;             /** Reference to parent image loader plugin */
     ScanAction                  _scanAction;                    /** Action for scan settings */
@@ -49,4 +51,5 @@ private:
     SubsamplingAction           _subsamplingAction;             /** Action for image subsampling settings */
     ToggleAction                _closeAfterLoadingAction;       /** Action for loading image collection(s) */
     TriggerAction               _loadAction;                    /** Close the dialog when loading is complete action */
+    TriggerAction               _cancelAction;                  /** Close the dialog */
 };

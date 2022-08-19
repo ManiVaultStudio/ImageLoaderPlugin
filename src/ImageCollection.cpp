@@ -1661,14 +1661,12 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         imageLoaderPlugin->_core->notifyDatasetChanged(points);
 
-        /*
-        auto conversionPluginTriggerAction = imageLoaderPlugin->getPluginTriggerPickerAction().getCurrentPluginTriggerAction();
-
+        auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
+        
         if (conversionPluginTriggerAction != nullptr) {
             conversionPluginTriggerAction->setDatasets({ points });
             conversionPluginTriggerAction->trigger();
         }
-        */
 
         points->getDataHierarchyItem().setTaskFinished();
 

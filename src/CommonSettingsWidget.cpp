@@ -55,52 +55,7 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
         _ui->selectAllPushButton->setEnabled(false);
         _ui->selectNonePushButton->setEnabled(false);
         _ui->invertSelectionPushButton->setEnabled(false);
-        _ui->selectPercentageDoubleSpinBox->setEnabled(false);
-        _ui->selectPercentagePushButton->setEnabled(false);
     });
-
-    connect(_ui->selectAllPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.selectAll(index);
-    });
-
-    connect(_ui->selectNonePushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.selectNone(index);
-    });
-
-    connect(_ui->invertSelectionPushButton, &QPushButton::clicked, [&imageCollectionsModel, selectedImageCollectionIndex]() {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.invertSelection(index);
-    });
-
-    connect(_ui->selectPercentageDoubleSpinBox, qOverload<double>(&QDoubleSpinBox::valueChanged), [this](double value) {
-        _imageLoaderPlugin->setSetting("Miscellaneous/SelectPercentage", value);
-    });
-
-    connect(_ui->selectPercentagePushButton, &QPushButton::clicked, [this, &imageCollectionsModel, selectedImageCollectionIndex]() {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex())
-            imageCollectionsModel.selectPercentage(index, 0.01f * _ui->selectPercentageDoubleSpinBox->value());
-    });
-
-    auto updateSelectionButtons = [&](const QModelIndex& index) {
-        const auto noImages = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
-        const auto noSelectedImages = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
-
-        _ui->selectAllPushButton->setEnabled(noSelectedImages != noImages);
-        _ui->selectNonePushButton->setEnabled(noSelectedImages > 0);
-        _ui->invertSelectionPushButton->setEnabled(true);
-        _ui->selectPercentageDoubleSpinBox->setEnabled(noImages > 1);
-        _ui->selectPercentagePushButton->setEnabled(noImages > 1);
-    };
 
     const auto updateImagesHeader = [&, selectedImageCollectionIndex]() {
         for (int column = ult(ImageCollection::Column::Start); column <= ult(ImageCollection::Column::End); column++)
@@ -126,32 +81,6 @@ void CommonSettingsWidget::initialize(ImageLoaderPlugin* imageLoaderPlugin)
 
         _ui->imagesTreeView->header()->hideSection(ult(ImageCollection::Image::Column::FileName));
     };
-
-    connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-        const auto index = selectedImageCollectionIndex();
-
-        if (index != QModelIndex() && topLeft.row() == index.row()) {
-            for (int column = topLeft.column(); column <= bottomRight.column(); column++) {
-                switch (static_cast<ImageCollection::Column>(column))
-                {
-                    case ImageCollection::Column::Type:
-                    {
-                        updateImagesHeader();
-                        break;
-                    }
-
-                    case ImageCollection::Column::NoSelectedImages:
-                    {
-                        updateSelectionButtons(index);
-                        break;
-                    }
-
-                    default:
-                        break;
-                }
-            }
-        }
-    });
 
     /*
     connect(_ui->imageCollectionsTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, [&, imageLoaderPlugin, selectedImageCollectionIndex, updateImagesHeader, updateSelectionButtons, updateTagUI](const QItemSelection& selected, const QItemSelection& deselected) {
