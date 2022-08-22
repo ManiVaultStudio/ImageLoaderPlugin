@@ -47,6 +47,10 @@ public:
     StringAction& getTagAction() { return _tagAction; }
     TriggersAction& getDefaultTagsAction() { return _defaultTagsAction; }
 
+private:
+    void setTagSilently(const QString& tag);
+    void updateRows();
+
 signals:
 
     void tagChanged(const QString& tag);

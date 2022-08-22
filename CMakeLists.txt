@@ -47,12 +47,8 @@ set(PLUGIN_SOURCES
 )
 
 set(WIDGET_SOURCES
-    src/CommonSettingsWidget.h
-    src/CommonSettingsWidget.cpp
     src/ImageLoaderDialog.h
     src/ImageLoaderDialog.cpp
-    src/SubsampleSettingsWidget.h
-    src/SubsampleSettingsWidget.cpp
     src/SanitizeDataDialog.h
     src/SanitizeDataDialog.cpp
 )
@@ -68,6 +64,8 @@ set(ACTION_SOURCES
     src/ImagesAction.cpp
     src/DimensionTagAction.h
     src/DimensionTagAction.cpp
+    src/DataLayoutAction.h
+    src/DataLayoutAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

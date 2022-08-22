@@ -5,14 +5,35 @@
 
 using namespace hdps::gui;
 
+const QMap<ImageCollectionsAction::ScaleFactor, TriggersAction::Trigger> ImageCollectionsAction::triggers = QMap<ImageCollectionsAction::ScaleFactor, TriggersAction::Trigger>({
+    { ImageCollectionsAction::Perc5, TriggersAction::Trigger("5.0%", "Scale down to 5%") },
+    { ImageCollectionsAction::Perc10, TriggersAction::Trigger("10.0%", "Scale down to 10%") },
+    { ImageCollectionsAction::Perc25, TriggersAction::Trigger("25.0%", "Scale down to 25%") },
+    { ImageCollectionsAction::Perc50, TriggersAction::Trigger("50.0%", "Scale down to 50%") },
+    { ImageCollectionsAction::Perc75, TriggersAction::Trigger("75.0%", "Scale down to 75%") }
+});
+
+const QMap<ImageCollectionsAction::ScaleFactor, float> ImageCollectionsAction::scaleFactors = QMap<ImageCollectionsAction::ScaleFactor, float>({
+    { ImageCollectionsAction::Perc5, 5.0f },
+    { ImageCollectionsAction::Perc10, 10.0f },
+    { ImageCollectionsAction::Perc25, 25.0f },
+    { ImageCollectionsAction::Perc50, 50.0f },
+    { ImageCollectionsAction::Perc75, 75.0f }
+});
+
 ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent),
     _imageLoaderPlugin(imageLoaderPlugin),
     _filterAction(this, "Filter"),
     _datasetNameAction(this, "Dataset name"),
     _loadAsAction(this, "Load as", { "Image sequence", "Image stack" }),
+    _dataLayoutAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
-    _imagesAction(this, imageLoaderPlugin)
+    _imagesAction(this, imageLoaderPlugin),
+    _subsamplingEnabledAction(this, "Subsampling"),
+    _subsamplingRatioAction(this, "Ratio", 1.0f, 100.0f, 50.0f, 50.0f, 1),
+    _subsamplingDefaultRatiosAction(this, "Default ratios", triggers.values().toVector()),
+    _subsamplingFilterTypeAction(this, "Filter type", { "Box", "Bilinear", "BSpline", "Bicubic", "Catmull Rom", "Lanczos" })
 {
     setText("Image collections");
 
@@ -22,11 +43,6 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _datasetNameAction.setEnabled(false);
     _datasetNameAction.setToolTip("Name of the dataset in HDPS");
 
-    _loadAsAction.setEnabled(false);
-    _loadAsAction.setToolTip("Determines the layout of the loaded image data");
-    _loadAsAction.setPlaceHolderString("Choose data layout");
-    _loadAsAction.setCurrentIndex(-1);
-
     _dimensionTagAction.setEnabled(false);
     _dimensionTagAction.setToolTip("The dimension tag for multi-page TIFF files");
     _dimensionTagAction.setTag("");
@@ -35,41 +51,33 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
 
     _imagesAction.setEnabled(false);
 
+    _subsamplingRatioAction.setToolTip("Subsampling ratio");
+    _subsamplingRatioAction.setSuffix("%");
+
+    _subsamplingFilterTypeAction.setToolTip("Type of subsampling filter");
+    _subsamplingFilterTypeAction.setPlaceHolderString("Pick subsampling filter");
+
+    connect(&_subsamplingDefaultRatiosAction, &TriggersAction::triggered, this, [this](std::int32_t triggerIndex) {
+        _subsamplingRatioAction.setValue(scaleFactors.values().at(triggerIndex));
+    });
+
     connect(&_filterAction, &StringAction::stringChanged, [this](QString text) {
         _imageLoaderPlugin.getImageCollectionsFilterModel().setFilter(text);
     });
 
-    const auto updateLoadAs = [this](const std::uint32_t& currentIndex) -> void {
-        if (currentIndex < 0)
-            return;
-
+    const auto updateSubsamplingFilter = [this](const std::int32_t& subsamplingFilter) -> void {
         for (const auto& selectedRow : _imageLoaderPlugin.getImageCollectionsModel().selectionModel().selectedRows())
-            _imageLoaderPlugin.getImageCollectionsModel().setData(_imageLoaderPlugin.getImageCollectionsFilterModel().mapToSource(selectedRow).siblingAtColumn(ImageCollection::Column::Type), currentIndex);
+            _imageLoaderPlugin.getImageCollectionsModel().setData(_imageLoaderPlugin.getImageCollectionsFilterModel().mapToSource(selectedRow).siblingAtColumn(ImageCollection::Column::SubsamplingFilter), subsamplingFilter);
     };
 
-    const auto setLoadAs = [this, updateLoadAs](const std::int32_t& loadAs) -> void {
-        disconnect(&_loadAsAction, &OptionAction::currentIndexChanged, this, nullptr);
+    connect(&_subsamplingFilterTypeAction, &OptionAction::currentIndexChanged, this, updateSubsamplingFilter);
+
+    const auto setSubsamplingFilter = [this, updateSubsamplingFilter](const std::int32_t& subsamplingFilter) -> void {
+        disconnect(&_subsamplingFilterTypeAction, &OptionAction::currentIndexChanged, this, nullptr);
         {
-            _loadAsAction.setCurrentIndex(loadAs);
+            _subsamplingFilterTypeAction.setCurrentIndex(subsamplingFilter);
         }
-        connect(&_loadAsAction, &OptionAction::currentIndexChanged, this, updateLoadAs);
-    };
-
-    connect(&_loadAsAction, &OptionAction::currentIndexChanged, this, updateLoadAs);
-
-    const auto updateTag = [this](const QString& tag) -> void {
-        for (const auto& selectedRow : _imageLoaderPlugin.getImageCollectionsModel().selectionModel().selectedRows())
-            _imageLoaderPlugin.getImageCollectionsModel().setData(_imageLoaderPlugin.getImageCollectionsFilterModel().mapToSource(selectedRow).siblingAtColumn(ImageCollection::Column::DimensionTag), tag);
-    };
-
-    connect(&_dimensionTagAction, &DimensionTagAction::tagChanged, this, updateTag);
-
-    const auto setTag = [this, updateTag](const QString& tag) -> void {
-        disconnect(&_dimensionTagAction, &DimensionTagAction::tagChanged, this, nullptr);
-        {
-            _dimensionTagAction.setTag(tag);
-        }
-        connect(&_dimensionTagAction, &DimensionTagAction::tagChanged, this, updateTag);
+        connect(&_subsamplingFilterTypeAction, &OptionAction::currentIndexChanged, this, updateSubsamplingFilter);
     };
 
     connect(&_imageLoaderPlugin.getConversionPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this](const PluginTriggerAction* currentPluginTriggerAction) -> void {
@@ -87,61 +95,34 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     connect(&_imageLoaderPlugin.getImageCollectionsModel(), &ImageCollectionsModel::rowsRemoved, this, updateReadOnly);
     connect(&_imageLoaderPlugin.getImageCollectionsModel(), &ImageCollectionsModel::rowsInserted, this, updateReadOnly);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this, setLoadAs, setTag](const QItemSelection& selected, const QItemSelection& deselected) {
+    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this, setSubsamplingFilter](const QItemSelection& selected, const QItemSelection& deselected) {
         const auto selectedRows = _imageLoaderPlugin.getSelectedImageCollectionIndices();
         const auto numberOfSelectedRows = selectedRows.count();
 
         if (numberOfSelectedRows == 0) {
             _datasetNameAction.setEnabled(false);
             _datasetNameAction.setString("");
-            _loadAsAction.setEnabled(false);
-            setLoadAs(-1);
-            _dimensionTagAction.setEnabled(false);
-            
-            setTag("");
-
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(false);
             _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(nullptr);
             _imagesAction.setEnabled(false);
+            _subsamplingEnabledAction.setEnabled(false);
         }
 
         if (numberOfSelectedRows == 1) {
             _datasetNameAction.setEnabled(true);
             _datasetNameAction.setString(selectedRows.first().data(Qt::DisplayRole).toString());
-            _loadAsAction.setEnabled(true);
-            setLoadAs(selectedRows.first().siblingAtColumn(ImageCollection::Column::Type).data(Qt::EditRole).toInt());
-
-            if (selectedRows.first().siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool()) {
-                _dimensionTagAction.setEnabled(true);
-                
-                setTag(selectedRows.first().siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
-            }
-            else {
-                _dimensionTagAction.setEnabled(false);
-                
-                setTag("");
-            }
-
             _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(selectedRows.first().siblingAtColumn(ImageCollection::Column::Conversion).data(Qt::EditRole).toString());
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
             _imagesAction.setEnabled(true);
+            _subsamplingEnabledAction.setEnabled(true);
+            _subsamplingEnabledAction.setChecked(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingEnabled).data(Qt::EditRole).toBool());
+            setSubsamplingFilter(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingFilter).data(Qt::EditRole).toInt());
         }
 
         if (numberOfSelectedRows >= 2) {
             _datasetNameAction.setEnabled(false);
             _datasetNameAction.setString("");
             _loadAsAction.setEnabled(true);
-
-            QSet<std::int32_t> types;
-
-            for (const auto& selectedRow : selectedRows)
-                types.insert(selectedRow.siblingAtColumn(ImageCollection::Column::Type).data(Qt::EditRole).toInt());
-
-            if (types.count() == 1)
-                setLoadAs(types.values().first());
-
-            if (types.count() == 2)
-                setLoadAs(-1);
 
             QSet<QString> conversions;
 
@@ -152,35 +133,68 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
             _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
             _imagesAction.setEnabled(false);
 
-            auto numberOfMultiPageTiffs = 0u;
+            QSet<std::int32_t> subsamplingEnabled;
 
             for (const auto& selectedRow : selectedRows)
-                if (selectedRow.siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool())
-                    numberOfMultiPageTiffs++;
+                subsamplingEnabled.insert(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingEnabled).data(Qt::EditRole).toBool());
 
-            _dimensionTagAction.setEnabled(numberOfMultiPageTiffs > 0);
+            if (subsamplingEnabled.count() == 1)
+                setSubsamplingFilter(subsamplingEnabled.values().first());
 
-            QSet<QString> tags;
+            if (subsamplingEnabled.count() >= 2)
+                _subsamplingEnabledAction.setIndeterminate(true);
+
+            QSet<std::int32_t> subsamplingFilterTypes;
 
             for (const auto& selectedRow : selectedRows)
-                tags.insert(selectedRow.siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
+                subsamplingFilterTypes.insert(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingFilter).data(Qt::EditRole).toInt());
 
-            if (tags.count() == 0)
-                setTag("");
-                
-            if (tags.count() == 1)
-                setTag(tags.values().first());
+            if (subsamplingFilterTypes.count() == 1)
+                setSubsamplingFilter(subsamplingFilterTypes.values().first());
 
-            if (tags.count() >= 2)
-                setTag("");
+            if (subsamplingFilterTypes.count() >= 2)
+                setSubsamplingFilter(-1);
+
+            _subsamplingEnabledAction.setEnabled(true);
         }
 
-        if (selectedRows.count() == 1)
+        if (selectedRows.count() >= 1)
             for (const auto& selectedRow : selectedRows)
                 _imageLoaderPlugin.getImageCollectionsModel().guessDimensionNames(selectedRow);
     });
 
     _filterAction.setSettingsPrefix(&imageLoaderPlugin, "ImageNameFilter");
+
+    const auto updateSubsamplingActions = [this]() -> void {
+        _subsamplingRatioAction.setEnabled(_subsamplingEnabledAction.isChecked());
+        _subsamplingDefaultRatiosAction.setEnabled(_subsamplingEnabledAction.isChecked());
+        _subsamplingFilterTypeAction.setEnabled(_subsamplingEnabledAction.isChecked());
+    };
+
+    connect(&_subsamplingEnabledAction, &ToggleAction::toggled, this, [this, updateSubsamplingActions](bool toggled) -> void {
+        updateSubsamplingActions();
+
+        const auto selectedImageCollectionIndices = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+
+        for (const auto& selectedImageCollectionIndex : selectedImageCollectionIndices)
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedImageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), toggled);
+    });
+
+    connect(&_subsamplingRatioAction, &DecimalAction::valueChanged, this, [this](const float& value) -> void {
+        const auto selectedImageCollectionIndices = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+
+        for (const auto& selectedImageCollectionIndex : selectedImageCollectionIndices)
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedImageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), 0.01f * value);
+    });
+
+    connect(&_subsamplingFilterTypeAction, &OptionAction::currentIndexChanged, this, [this](const std::int32_t& currentIndex) -> void {
+        const auto selectedImageCollectionIndices = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+
+        for (const auto& selectedImageCollectionIndex : selectedImageCollectionIndices)
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedImageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), currentIndex);
+    });
+
+    updateSubsamplingActions();
 }
 
 ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* imageCollectionsAction, const std::int32_t& widgetFlags) :
@@ -223,17 +237,30 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     subLayout->addWidget(imageCollectionsAction->_datasetNameAction.createLabelWidget(this), 1, 0);
     subLayout->addWidget(imageCollectionsAction->_datasetNameAction.createWidget(this), 1, 1);
 
-    subLayout->addWidget(imageCollectionsAction->_loadAsAction.createLabelWidget(this), 2, 0);
-    subLayout->addWidget(imageCollectionsAction->_loadAsAction.createWidget(this), 2, 1);
+    subLayout->addWidget(imageCollectionsAction->_dataLayoutAction.createLabelWidget(this), 2, 0);
+    subLayout->addWidget(imageCollectionsAction->_dataLayoutAction.createWidget(this), 2, 1);
 
-    subLayout->addWidget(imageCollectionsAction->getDimensionTagAction().createLabelWidget(this), 3, 0);
-    subLayout->addWidget(imageCollectionsAction->getDimensionTagAction().createWidget(this), 3, 1);
+    subLayout->addWidget(imageCollectionsAction->_dimensionTagAction.createLabelWidget(this), 3, 0);
+    subLayout->addWidget(imageCollectionsAction->_dimensionTagAction.createWidget(this), 3, 1);
 
     subLayout->addWidget(imageCollectionsAction->_imageLoaderPlugin.getConversionPickerAction().createLabelWidget(this), 4, 0);
     subLayout->addWidget(imageCollectionsAction->_imageLoaderPlugin.getConversionPickerAction().createWidget(this), 4, 1);
 
-    subLayout->addWidget(imageCollectionsAction->getImagesAction().createLabelWidget(this), 5, 0);
-    subLayout->addWidget(imageCollectionsAction->getImagesAction().createWidget(this), 5, 1);
+    subLayout->addWidget(imageCollectionsAction->_imagesAction.createLabelWidget(this), 5, 0);
+    subLayout->addWidget(imageCollectionsAction->_imagesAction.createWidget(this), 5, 1);
+
+    subLayout->addWidget(imageCollectionsAction->_subsamplingEnabledAction.createWidget(this), 6, 1);
+
+    auto ratioLayout = new QHBoxLayout();
+
+    ratioLayout->setContentsMargins(0, 0, 0, 0);
+    ratioLayout->addWidget(imageCollectionsAction->_subsamplingRatioAction.createWidget(this));
+    ratioLayout->addWidget(imageCollectionsAction->_subsamplingDefaultRatiosAction.createWidget(this));
+
+    subLayout->addLayout(ratioLayout, 7, 1);
+
+    subLayout->addWidget(imageCollectionsAction->_subsamplingFilterTypeAction.createLabelWidget(this), 8, 0);
+    subLayout->addWidget(imageCollectionsAction->_subsamplingFilterTypeAction.createWidget(this), 8, 1);
 
     mainLayout->addLayout(subLayout);
 
