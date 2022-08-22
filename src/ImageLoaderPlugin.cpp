@@ -15,7 +15,7 @@ ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     _imageCollectionScanner(*this),
     _imageCollectionsModel(this),
     _imageCollectionsFilterModel(),
-    _conversionPickerAction(this, "Conversion")
+    _conversionPickerAction(this, *this)
 {
     _imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
 

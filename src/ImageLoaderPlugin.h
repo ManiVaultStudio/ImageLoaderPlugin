@@ -3,11 +3,10 @@
 #include "Common.h"
 #include "ImageCollectionScanner.h"
 #include "ImageCollectionsModel.h"
+#include "ConversionAction.h"
 
 #include <LoaderPlugin.h>
 #include <PluginFactory.h>
-
-#include <actions/PluginTriggerPickerAction.h>
 
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
@@ -38,11 +37,10 @@ public:
     QModelIndexList getSelectedRows() const;;
 
 private:
-    ImageCollectionScanner                  _imageCollectionScanner;        /** Image collection scanner */
-    ImageCollectionsModel                   _imageCollectionsModel;         /** Image collections model */
-    ImageCollectionsModel::Filter           _imageCollectionsFilterModel;   /** Image collections filter model */
-    hdps::gui::PluginTriggerPickerAction    _conversionPickerAction;        /** Conversion plugin trigger picker action */
-    
+    ImageCollectionScanner              _imageCollectionScanner;        /** Image collection scanner */
+    ImageCollectionsModel               _imageCollectionsModel;         /** Image collections model */
+    ImageCollectionsModel::Filter       _imageCollectionsFilterModel;   /** Image collections filter model */
+    ConversionAction                    _conversionPickerAction;        /** Conversion plugin trigger picker action */
 
     friend class ImageCollection;
 };

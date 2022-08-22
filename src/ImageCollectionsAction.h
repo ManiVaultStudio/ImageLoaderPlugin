@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DatasetNameAction.h"
 #include "DataLayoutAction.h"
 #include "DimensionTagAction.h"
 #include "SubsamplingAction.h"
@@ -45,8 +46,7 @@ public:
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to image loader plugin instance */
     StringAction            _filterAction;              /** Filter by image name action */
-    StringAction            _datasetNameAction;         /** Produced dataset name action */
-    OptionAction            _loadAsAction;              /** Image data layout action */
+    DatasetNameAction       _datasetNameAction;         /** Produced dataset name action */
     DataLayoutAction        _dataLayoutAction;          /** Data layout action (stack/sequence) */
     DimensionTagAction      _dimensionTagAction;        /** Dimension tag action (in case of multi-page TIFF) */
     SubsamplingAction       _subsamplingAction;         /** Subsampling action */

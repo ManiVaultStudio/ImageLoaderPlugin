@@ -74,6 +74,10 @@ set(ACTION_SOURCES
     src/SubsamplingRatioAction.cpp
     src/SubsamplingFilterTypeAction.h
     src/SubsamplingFilterTypeAction.cpp
+    src/DatasetNameAction.h
+    src/DatasetNameAction.cpp
+    src/ConversionAction.h
+    src/ConversionAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

@@ -9,8 +9,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     WidgetAction(parent),
     _imageLoaderPlugin(imageLoaderPlugin),
     _filterAction(this, "Filter"),
-    _datasetNameAction(this, "Dataset name"),
-    _loadAsAction(this, "Load as", { "Image sequence", "Image stack" }),
+    _datasetNameAction(this, imageLoaderPlugin),
     _dataLayoutAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
@@ -25,20 +24,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
         _imageLoaderPlugin.getImageCollectionsFilterModel().setFilter(string);
     });
 
-    _datasetNameAction.setEnabled(false);
-    _datasetNameAction.setToolTip("Name of the dataset in HDPS");
-
-    _imageLoaderPlugin.getConversionPickerAction().setEnabled(false);
-
     _imagesAction.setEnabled(false);
-
-    connect(&_imageLoaderPlugin.getConversionPickerAction(), &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, [this](const PluginTriggerAction* currentPluginTriggerAction) -> void {
-        if (currentPluginTriggerAction == nullptr || currentPluginTriggerAction->getSha() == "")
-            return;
-
-        for (const auto& selectedRow : _imageLoaderPlugin.getImageCollectionsModel().selectionModel().selectedRows())
-            _imageLoaderPlugin.getImageCollectionsModel().setData(_imageLoaderPlugin.getImageCollectionsFilterModel().mapToSource(selectedRow).siblingAtColumn(ImageCollection::Column::Conversion), currentPluginTriggerAction->getSha());
-    });
 
     const auto updateReadOnly = [this]() -> void {
         setEnabled(_imageLoaderPlugin.getImageCollectionsModel().rowCount(QModelIndex()) >= 1);
@@ -52,36 +38,15 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
         const auto numberOfSelectedRows = selectedRows.count();
 
         if (numberOfSelectedRows == 0) {
-            _datasetNameAction.setEnabled(false);
-            _datasetNameAction.setString("");
-            _imageLoaderPlugin.getConversionPickerAction().setEnabled(false);
-            _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(nullptr);
             _imagesAction.setEnabled(false);
         }
 
         if (numberOfSelectedRows == 1) {
-            _datasetNameAction.setEnabled(true);
-            _datasetNameAction.setString(selectedRows.first().data(Qt::DisplayRole).toString());
-            _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction(selectedRows.first().siblingAtColumn(ImageCollection::Column::Conversion).data(Qt::EditRole).toString());
-            _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
             _imagesAction.setEnabled(true);
         }
 
         if (numberOfSelectedRows >= 2) {
-            _datasetNameAction.setEnabled(false);
-            _datasetNameAction.setString("");
-            _loadAsAction.setEnabled(true);
-
-            QSet<QString> conversions;
-
-            for (const auto& selectedRow : selectedRows)
-                conversions.insert(selectedRow.siblingAtColumn(ImageCollection::Column::Conversion).data(Qt::EditRole).toString());
-
-            _imageLoaderPlugin.getConversionPickerAction().setCurrentPluginTriggerAction((conversions.isEmpty() || conversions.count() == 2) ? "" : conversions.values().first());
-            _imageLoaderPlugin.getConversionPickerAction().setEnabled(true);
             _imagesAction.setEnabled(false);
-
-            
         }
 
         if (selectedRows.count() >= 1)
@@ -120,6 +85,10 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     header->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
     header->hideSection(ult(ImageCollection::Column::SubsamplingNumberOfLevels));
     header->hideSection(ult(ImageCollection::Column::Conversion));
+    header->hideSection(ult(ImageCollection::Image::Column::ShouldLoad));
+    header->hideSection(ult(ImageCollection::Image::Column::FileName));
+    header->hideSection(ult(ImageCollection::Image::Column::DimensionName));
+    header->hideSection(ult(ImageCollection::Image::Column::FilePath));
 
     connect(&_imageCollectionsAction->_imageLoaderPlugin.getImageCollectionsModel(), &ImageCollectionsModel::rowsInserted, this, &ImageCollectionsAction::Widget::updateTreeView);
 
