@@ -3,8 +3,7 @@
 
 DataLayoutAction::DataLayoutAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     OptionAction(parent, "Data layout", { "Image sequence", "Image stack" }),
-    _imageLoaderPlugin(imageLoaderPlugin),
-    _indices()
+    _imageLoaderPlugin(imageLoaderPlugin)
 {
     setEnabled(false);
     setToolTip("Determines the layout of the loaded image data");
@@ -14,7 +13,7 @@ DataLayoutAction::DataLayoutAction(QObject* parent, ImageLoaderPlugin& imageLoad
     connect(this, &OptionAction::currentIndexChanged, this, &DataLayoutAction::updateRows);
 
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows         = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+        const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
         const auto numberOfSelectedRows = selectedRows.count();
 
         if (numberOfSelectedRows == 0)

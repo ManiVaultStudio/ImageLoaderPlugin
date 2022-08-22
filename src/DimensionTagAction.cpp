@@ -18,7 +18,9 @@ DimensionTagAction::DimensionTagAction(QObject* parent, ImageLoaderPlugin& image
     _defaultTagsAction(this, "Default tags", triggers.values().toVector())
 {
     setText("Dimension tag");
-    
+    setEnabled(false);
+
+    _tagAction.setToolTip("The dimension tag for multi-page TIFF files");
     _tagAction.setClearable(true);
     _tagAction.setPlaceHolderString("Enter multi-page TIFF dimension tag here...");
 
@@ -31,7 +33,7 @@ DimensionTagAction::DimensionTagAction(QObject* parent, ImageLoaderPlugin& image
     connect(this, &DimensionTagAction::tagChanged, this, &DimensionTagAction::updateRows);
 
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows         = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+        const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
         const auto numberOfSelectedRows = selectedRows.count();
 
         if (numberOfSelectedRows == 0)
@@ -97,7 +99,7 @@ void DimensionTagAction::updateRows()
 {
     auto& imageCollectionsModel = _imageLoaderPlugin.getImageCollectionsModel();
 
-    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedImageCollectionIndices()) {
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         imageCollectionsModel.setData(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::DimensionTag), _tagAction.getString());
         imageCollectionsModel.guessDimensionNames(selectedImageCollectionIndex);
     }

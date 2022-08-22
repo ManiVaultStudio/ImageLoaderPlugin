@@ -2,20 +2,19 @@
 
 #include <actions/OptionAction.h>
 
-#include <QModelIndexList>
-
 class ImageLoaderPlugin;
 
 using namespace hdps::gui;
 
-class DataLayoutAction : public OptionAction
+class SubsamplingTypeAction : public OptionAction
 {
 public:
-    DataLayoutAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
+    SubsamplingTypeAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 private:
     void setCurrentIndexSilently(const std::int32_t& currentIndex);
     void updateRows();
+    void updateStateFromModel();
 
 private:
     ImageLoaderPlugin&      _imageLoaderPlugin;

@@ -66,6 +66,14 @@ set(ACTION_SOURCES
     src/DimensionTagAction.cpp
     src/DataLayoutAction.h
     src/DataLayoutAction.cpp
+    src/SubsamplingTypeAction.h
+    src/SubsamplingTypeAction.cpp
+    src/NumberOfLevelsActions.h
+    src/NumberOfLevelsActions.cpp
+    src/SubsamplingRatioAction.h
+    src/SubsamplingRatioAction.cpp
+    src/SubsamplingFilterTypeAction.h
+    src/SubsamplingFilterTypeAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

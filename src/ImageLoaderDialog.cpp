@@ -76,10 +76,10 @@ void ImageLoaderDialog::updateActions()
 
 void ImageLoaderDialog::loadImageCollections()
 {
-    const auto selectedRows = _imageLoaderPlugin.getSelectedImageCollectionIndices();
+    const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
     const auto hasSelection = !selectedRows.isEmpty();
 
-    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedImageCollectionIndices()) {
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
 
         imageCollection->load(&_imageLoaderPlugin);

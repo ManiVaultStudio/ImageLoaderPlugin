@@ -34,7 +34,7 @@ void ImageLoaderPlugin::loadData()
     dialog.exec();
 }
 
-QModelIndexList ImageLoaderPlugin::getSelectedImageCollectionIndices() const
+QModelIndexList ImageLoaderPlugin::getSelectedRows() const
 {
     QModelIndexList selectedImageCollectionIndices;
 

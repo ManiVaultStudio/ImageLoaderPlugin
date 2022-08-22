@@ -15,21 +15,21 @@ ImagesAction::ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     setText("Images");
 
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
-        setEnabled(_imageLoaderPlugin.getSelectedImageCollectionIndices().count() == 1);
+        setEnabled(_imageLoaderPlugin.getSelectedRows().count() == 1);
     });
 
     connect(&_selectAllAction, &TriggerAction::triggered, [this]() {
-        for (const auto& index : _imageLoaderPlugin.getSelectedImageCollectionIndices())
+        for (const auto& index : _imageLoaderPlugin.getSelectedRows())
             _imageLoaderPlugin.getImageCollectionsModel().selectAll(index);
     });
 
     connect(&_selectNoneAction, &TriggerAction::triggered, [this]() {
-        for (const auto& index : _imageLoaderPlugin.getSelectedImageCollectionIndices())
+        for (const auto& index : _imageLoaderPlugin.getSelectedRows())
             _imageLoaderPlugin.getImageCollectionsModel().selectNone(index);
     });
 
     connect(&_selectInvertAction, &TriggerAction::triggered, [this]() {
-        for (const auto& index : _imageLoaderPlugin.getSelectedImageCollectionIndices())
+        for (const auto& index : _imageLoaderPlugin.getSelectedRows())
             _imageLoaderPlugin.getImageCollectionsModel().invertSelection(index);
     });
 }
@@ -66,7 +66,7 @@ ImagesAction::Widget::Widget(QWidget* parent, ImagesAction* imagesAction, const 
 
 void ImagesAction::Widget::updateTreeView()
 {
-    const auto selectedRows = _imagesAction->_imageLoaderPlugin.getSelectedImageCollectionIndices();
+    const auto selectedRows = _imagesAction->_imageLoaderPlugin.getSelectedRows();
 
     _treeView.setModel(!selectedRows.isEmpty() ? &_imagesAction->_imageLoaderPlugin.getImageCollectionsModel() : nullptr);
     _treeView.setRootIndex(selectedRows.count() == 1 ? selectedRows.first() : QModelIndex());

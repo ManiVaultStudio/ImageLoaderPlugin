@@ -35,7 +35,7 @@ public:
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
     hdps::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
 
-    QModelIndexList getSelectedImageCollectionIndices() const;;
+    QModelIndexList getSelectedRows() const;;
 
 private:
     ImageCollectionScanner                  _imageCollectionScanner;        /** Image collection scanner */

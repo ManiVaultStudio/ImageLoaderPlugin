@@ -27,6 +27,21 @@ namespace fi {
 using namespace hdps;
 using namespace hdps::util;
 
+const QMap<ImageCollection::SubSampling::Type, QString> ImageCollection::SubSampling::types = QMap<ImageCollection::SubSampling::Type, QString>({
+    { ImageCollection::SubSampling::Type::None, "None"},
+    { ImageCollection::SubSampling::Type::Immediate, "Immediate"},
+    { ImageCollection::SubSampling::Type::Pyramid, "Pyramid"}
+});
+
+const QMap<ImageCollection::SubSampling::Filter, QString> ImageCollection::SubSampling::filters = QMap<ImageCollection::SubSampling::Filter, QString>({
+    { ImageCollection::SubSampling::Filter::Box, "Box"},
+    { ImageCollection::SubSampling::Filter::Bilinear, "Bilinear"},
+    { ImageCollection::SubSampling::Filter::BSpline, "BSpline"},
+    { ImageCollection::SubSampling::Filter::Bicubic, "Bicubic"},
+    { ImageCollection::SubSampling::Filter::CatmullRom, "Catmull-Rom"},
+    { ImageCollection::SubSampling::Filter::Lanczos, "Lanczos"}
+});
+
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
     TreeItem(parent),
     _index(-1),
@@ -615,28 +630,30 @@ ImageCollection* ImageCollection::Image::getImageCollection()
     return static_cast<ImageCollection*>(getParentItem());
 }
 
-ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const Filter& filter /*= ImageResamplingFilter::Bicubic*/) :
     _imageCollection(imageCollection),
-    _enabled(enabled),
+    _type(Type::Immediate),
     _ratio(ratio),
-    _filter(filter)
+    _filter(filter),
+    _numberOfLevels(3),
+    _levelFactor(2)
 {
 }
 
-QVariant ImageCollection::SubSampling::getEnabled(const int& role) const
+QVariant ImageCollection::SubSampling::getType(const int& role) const
 {
-    const auto enabledString = _enabled ? "true" : "false";
+    const auto typeString = types[_type];
 
     switch (role)
     {
         case Qt::DisplayRole:
-            return enabledString;
+            return typeString;
 
         case Qt::EditRole:
-            return _enabled;
+            return QVariant::fromValue(static_cast<std::int32_t>(_type));
 
         case Qt::ToolTipRole:
-            return QString("Subsampling enabled: %1").arg(enabledString);
+            return QString("Subsampling type: %1").arg(typeString);
 
         default:
             break;
@@ -645,9 +662,9 @@ QVariant ImageCollection::SubSampling::getEnabled(const int& role) const
     return QVariant();
 }
 
-void ImageCollection::SubSampling::setEnabled(const bool& enabled)
+void ImageCollection::SubSampling::setType(const Type& type)
 {
-    _enabled = enabled;
+    _type = type;
 }
 
 QVariant ImageCollection::SubSampling::getRatio(const int& role) const
@@ -679,7 +696,7 @@ void ImageCollection::SubSampling::setRatio(const float& ratio)
 
 QVariant ImageCollection::SubSampling::getFilter(const int& role) const
 {
-    const auto filterString = imageResamplingFilterName(_filter);
+    const auto filterString = filters[_filter];
 
     switch (role)
     {
@@ -699,9 +716,63 @@ QVariant ImageCollection::SubSampling::getFilter(const int& role) const
     return QVariant();
 }
 
-void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter)
+void ImageCollection::SubSampling::setFilter(const Filter& filter)
 {
     _filter = filter;
+}
+
+QVariant ImageCollection::SubSampling::getNumberOfLevels(const int& role) const
+{
+    const auto numberOfLevelsString = QString::number(_numberOfLevels);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return numberOfLevelsString;
+
+        case Qt::EditRole:
+            return QVariant::fromValue(_numberOfLevels);
+
+        case Qt::ToolTipRole:
+            return QString("Number of image pyramid levels: %1").arg(numberOfLevelsString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::SubSampling::setNumberOfLevels(std::uint32_t numberOfLevels)
+{
+    _numberOfLevels = numberOfLevels;
+}
+
+QVariant ImageCollection::SubSampling::getLevelFactor(const int& role) const
+{
+    const auto levelFactorString = QString::number(_levelFactor);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return levelFactorString;
+
+        case Qt::EditRole:
+            return QVariant::fromValue(_numberOfLevels);
+
+        case Qt::ToolTipRole:
+            return QString("Level factor string: %1").arg(levelFactorString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::SubSampling::setLevelFactor(std::uint32_t levelFactor)
+{
+    _levelFactor = levelFactor;
 }
 
 ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageFileType, const QImage::Format& imageFormat, const QSize& sourceSize) :
