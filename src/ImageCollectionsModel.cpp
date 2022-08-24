@@ -50,6 +50,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
         auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
         switch (static_cast<ImageCollection::Column>(index.column())) {
+            case ImageCollection::Column::Name:
+                return imageCollection->getName(role);
+
             case ImageCollection::Column::DatasetName:
                 return imageCollection->getDatasetName(role);
 
@@ -184,6 +187,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
             case Qt::EditRole:
             {
                 switch (column) {
+                    case ImageCollection::Column::Name:
+                    {
+                        imageCollection->setName(value.toString());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Name", value.toString());
+
+                        break;
+                    }
+
                     case ImageCollection::Column::DatasetName:
                     {
                         imageCollection->setDatasetName(value.toString());
@@ -422,8 +435,11 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             case Qt::DisplayRole:
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
-                    case ImageCollection::Column::DatasetName:
+                    case ImageCollection::Column::Name:
                         return "Name";
+
+                    case ImageCollection::Column::DatasetName:
+                        return "Dataset name";
 
                     case ImageCollection::Column::FileNames:
                         return "File name(s)";
@@ -521,8 +537,11 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             case Qt::ToolTipRole:
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
-                    case ImageCollection::Column::DatasetName:
+                    case ImageCollection::Column::Name:
                         return "The name of the high-dimensional dataset, click to edit";
+
+                    case ImageCollection::Column::DatasetName:
+                        return "The name of the dataset";
 
                     case ImageCollection::Column::FileNames:
                         return "File names", "The file name(s)";
@@ -621,7 +640,7 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
     if (index.parent() == QModelIndex()) {
         switch (static_cast<ImageCollection::Column>(index.column())) {
-            case ImageCollection::Column::DatasetName:
+            case ImageCollection::Column::Name:
                 break;
 
             case ImageCollection::Column::ToGrayscale:
@@ -745,10 +764,11 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 
     for (int rowIndex = 0; rowIndex < rowCount(QModelIndex()); rowIndex++) {
         const auto imageCollectionIndex = index(rowIndex, 0);
-        const auto datasetName          = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+        const auto datasetName          = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), Qt::EditRole).toString();
         const auto noImages             = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
         const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
 
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Name", datasetName).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
         //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DimensionTag", "").toString());

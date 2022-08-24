@@ -53,6 +53,8 @@ void SubsamplingRatioAction::updateRows()
 
 void SubsamplingRatioAction::updateStateFromModel()
 {
+    return;
+
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
 

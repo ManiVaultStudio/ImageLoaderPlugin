@@ -4,6 +4,7 @@
 #include "DataLayoutAction.h"
 #include "DimensionTagAction.h"
 #include "SubsamplingAction.h"
+#include "GroupDataAction.h"
 #include "ImagesAction.h"
 
 #include <actions/WidgetAction.h>
@@ -50,6 +51,7 @@ protected:
     DataLayoutAction        _dataLayoutAction;          /** Data layout action (stack/sequence) */
     DimensionTagAction      _dimensionTagAction;        /** Dimension tag action (in case of multi-page TIFF) */
     SubsamplingAction       _subsamplingAction;         /** Subsampling action */
+    GroupDataAction         _groupDataAction;           /** Group data into single points dataset action */
     ImagesAction            _imagesAction;              /** Images action */
 
     friend class Widget;

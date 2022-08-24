@@ -782,7 +782,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _imageFormat(imageFormat),
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
-    _datasetName(),
+    _name(),
     _dimensionTag("PageName"),
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
@@ -1215,6 +1215,33 @@ void ImageCollection::setTargetSize(const QSize& targetSize)
     _targetSize = targetSize;
 }
 
+QVariant ImageCollection::getName(const int& role) const
+{
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return _name;
+
+        case Qt::EditRole:
+            return _name;
+
+        case Qt::ToolTipRole:
+            return QString("Image collection name: %1").arg(_name);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::setName(const QString& name)
+{
+    _name = name;
+
+    setDatasetName(name);
+}
+
 QVariant ImageCollection::getDatasetName(const int& role) const
 {
     switch (role)
@@ -1577,7 +1604,7 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 void ImageCollection::computeDatasetName()
 {
     if (getNoImages(Qt::EditRole).toInt() == 1 || getImage(0)->getPageIndex(Qt::EditRole).toInt() >= 0) {
-        setDatasetName(getImage(0)->getFileName(Qt::EditRole).toString());
+        setName(getImage(0)->getFileName(Qt::EditRole).toString());
         return;
     }
 
@@ -1610,7 +1637,7 @@ void ImageCollection::computeDatasetName()
         setDirectory(childDir.absolutePath());
     }
 
-    setDatasetName(QString("%1").arg(QDir(rootDir).dirName()));
+    setName(QString("%1").arg(QDir(rootDir).dirName()));
 }
 
 void ImageCollection::guessDimensionNames()
@@ -1622,7 +1649,7 @@ void ImageCollection::guessDimensionNames()
     {
         QProgressDialog progressDialog("Establishing dimension names", "", 0, _children.size(), nullptr);
 
-        progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_datasetName));
+        progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_name));
         progressDialog.setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
         progressDialog.setWindowModality(Qt::WindowModal);
         progressDialog.setMinimumDuration(1000);
@@ -1645,11 +1672,11 @@ void ImageCollection::guessDimensionNames()
     }
     catch (const std::runtime_error& e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
     }
     catch (std::exception e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
     }
 }
 
@@ -1666,7 +1693,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         const auto typeName = ImageData::getTypeName(_type);
 
-        qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
+        qDebug() << QString("Loading %1: %2").arg(typeName, _name);
 
         std::vector<float> data;
 
@@ -1726,7 +1753,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        points->setGuiName(_datasetName);
+        points->setGuiName(_name);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
@@ -1760,11 +1787,11 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
     }
     catch (const std::runtime_error& e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
     catch (std::exception e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
 
     return false;

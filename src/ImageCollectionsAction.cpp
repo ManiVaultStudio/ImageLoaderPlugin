@@ -13,7 +13,8 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _dataLayoutAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
-    _imagesAction(this, imageLoaderPlugin)
+    _imagesAction(this, imageLoaderPlugin),
+    _groupDataAction(this, imageLoaderPlugin)
 {
     setText("Image collections");
 
@@ -49,7 +50,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
             _imagesAction.setEnabled(false);
         }
 
-        if (selectedRows.count() >= 1)
+        if (selectedRows.count() == 1)
             for (const auto& selectedRow : selectedRows)
                 _imageLoaderPlugin.getImageCollectionsModel().guessDimensionNames(selectedRow);
     });
@@ -84,6 +85,7 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     header->hideSection(ult(ImageCollection::Column::SubsamplingRatio));
     header->hideSection(ult(ImageCollection::Column::SubsamplingFilter));
     header->hideSection(ult(ImageCollection::Column::SubsamplingNumberOfLevels));
+    header->hideSection(ult(ImageCollection::Column::SubsamplingLevelFactor));
     header->hideSection(ult(ImageCollection::Column::Conversion));
     header->hideSection(ult(ImageCollection::Image::Column::ShouldLoad));
     header->hideSection(ult(ImageCollection::Image::Column::FileName));
@@ -126,6 +128,8 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createLabelWidget(this), 9, 0);
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createWidget(this), 9, 1);
 
+    subLayout->addWidget(imageCollectionsAction->_groupDataAction.createWidget(this), 10, 1);
+
     mainLayout->addLayout(subLayout);
 
     setPopupLayout(mainLayout);
@@ -144,7 +148,7 @@ void ImageCollectionsAction::Widget::updateTreeView()
 
     setEnabled(true);
 
-    _treeView.resizeColumnToContents(ult(ImageCollection::Column::DatasetName));
+    _treeView.resizeColumnToContents(ult(ImageCollection::Column::Name));
     _treeView.resizeColumnToContents(ult(ImageCollection::Column::ImageType));
     _treeView.resizeColumnToContents(ult(ImageCollection::Column::ImageFormat));
     _treeView.resizeColumnToContents(ult(ImageCollection::Column::ToGrayscale));

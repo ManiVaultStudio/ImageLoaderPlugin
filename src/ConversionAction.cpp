@@ -10,7 +10,13 @@ ConversionAction::ConversionAction(QObject* parent, ImageLoaderPlugin& imageLoad
 
     connect(this, &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, &ConversionAction::updateRows);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &ConversionAction::updateStateFromModel);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>()) -> void {
+        if (topLeft.column() < ImageCollection::Column::Conversion && bottomRight.column() > ImageCollection::Column::Conversion)
+            return;
+
+        updateStateFromModel();
+    });
+
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &ConversionAction::updateStateFromModel);
 
     updateStateFromModel();

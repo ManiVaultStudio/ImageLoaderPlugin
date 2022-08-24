@@ -38,6 +38,8 @@ void SubsamplingFilterTypeAction::updateRows()
 
 void SubsamplingFilterTypeAction::updateStateFromModel()
 {
+    return;
+
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
 

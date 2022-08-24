@@ -52,7 +52,7 @@ public: // Filter model
                         return true;
                 }
 
-                const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
+                const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::Name));
                 const auto datasetName      = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
 
                 return datasetName.contains(_filter, Qt::CaseInsensitive);

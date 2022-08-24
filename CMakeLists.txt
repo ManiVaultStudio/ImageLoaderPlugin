@@ -78,6 +78,8 @@ set(ACTION_SOURCES
     src/DatasetNameAction.cpp
     src/ConversionAction.h
     src/ConversionAction.cpp
+    src/GroupDataAction.h
+    src/GroupDataAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

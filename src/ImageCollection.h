@@ -28,7 +28,8 @@ public: // Enumerations
 
     /** Columns */
     enum Column {
-        DatasetName,                    /** The name of the dataset */
+        Name,                           /** The name of the image collection */
+        DatasetName,                    /** The name of the dataset in the data hierarchy */
         FileNames,                      /** The filename(s) */
         ImageType,                      /** The type of image(s) */
         ImageFormat,                    /** Image format */
@@ -53,7 +54,7 @@ public: // Enumerations
         Directory,                      /** Directory */
         Conversion,                     /** Conversion */
 
-        Start = DatasetName,            /** Column start */
+        Start = Name,                   /** Column start */
         End = Conversion                /** Column End */
     };
 
@@ -405,6 +406,15 @@ public: // Getters/setters
      */
     void setTargetSize(const QSize& targetSize);
 
+    /** Returns the image collection name */
+    QVariant getName(const int& role) const;
+
+    /**
+     * Sets the image collection name
+     * @param name Image collection name
+     */
+    void setName(const QString& name);
+
     /** Returns the dataset name */
     QVariant getDatasetName(const int& role) const;
 
@@ -512,17 +522,18 @@ private:
     bool containsNans(std::vector<float>& data);
 
 protected:
-    QString             _directory;                     /** Root directory of the images */
-    QString             _imageFileType;                 /** Image file type */
-    QImage::Format      _imageFormat;                   /** Image format */
-    QSize               _sourceSize;                    /** Size of the source image */
-    QSize               _targetSize;                    /** Size of the target image */
-    QString             _datasetName;                   /** The name of the dataset */
-    QString             _dimensionTag;                  /** The dimension (TIFF) tag */
-    bool                _toGrayscale;                   /** Whether to convert the images in the collection to grayscale */
-    ImageData::Type     _type;                          /** How to load the collection (as image sequence or image stack) */
-    SubSampling         _subsampling;                   /** Subsampling parameters */
-    QString             _conversion;                    /** Conversion */
+    QString             _directory;             /** Root directory of the images */
+    QString             _imageFileType;         /** Image file type */
+    QImage::Format      _imageFormat;           /** Image format */
+    QSize               _sourceSize;            /** Size of the source image */
+    QSize               _targetSize;            /** Size of the target image */
+    QString             _name;                  /** The name of the image collection */
+    QString             _datasetName;           /** The name of the dataset */
+    QString             _dimensionTag;          /** The dimension (TIFF) tag */
+    bool                _toGrayscale;           /** Whether to convert the images in the collection to grayscale */
+    ImageData::Type     _type;                  /** How to load the collection (as image sequence or image stack) */
+    SubSampling         _subsampling;           /** Subsampling parameters */
+    QString             _conversion;            /** Conversion SHA */
 
     friend class SubSampling;
 };

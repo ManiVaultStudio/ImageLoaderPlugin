@@ -7,7 +7,7 @@ DatasetNameAction::DatasetNameAction(QObject* parent, ImageLoaderPlugin& imageLo
 {
     setEnabled(false);
     setToolTip("Determines the dataset name in the HDPS data model");
-    setPlaceHolderString("Choose dataset name...");
+    setPlaceHolderString("Enter dataset name...");
 
     connect(this, &StringAction::stringChanged, this, &DatasetNameAction::updateRows);
 

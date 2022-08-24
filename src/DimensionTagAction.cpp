@@ -32,48 +32,8 @@ DimensionTagAction::DimensionTagAction(QObject* parent, ImageLoaderPlugin& image
 
     connect(this, &DimensionTagAction::tagChanged, this, &DimensionTagAction::updateRows);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
-        const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
-        const auto numberOfSelectedRows = selectedRows.count();
-
-        if (numberOfSelectedRows == 0)
-            setEnabled(false);
-
-        if (numberOfSelectedRows == 1) {
-            if (selectedRows.first().siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool()) {
-                setEnabled(true);
-                setTagSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
-            }
-            else {
-                setEnabled(false);
-                setTagSilently("");
-            }
-        }
-
-        if (numberOfSelectedRows >= 2) {
-            auto numberOfMultiPageTiffs = 0u;
-
-            for (const auto& selectedRow : selectedRows)
-                if (selectedRow.siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool())
-                    numberOfMultiPageTiffs++;
-
-            setEnabled(numberOfMultiPageTiffs > 0);
-
-            QSet<QString> tags;
-
-            for (const auto& selectedRow : selectedRows)
-                tags.insert(selectedRow.siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
-
-            if (tags.count() == 0)
-                setTagSilently("");
-
-            if (tags.count() == 1)
-                setTagSilently(tags.values().first());
-
-            if (tags.count() >= 2)
-                setTagSilently("");
-        }
-    });
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DimensionTagAction::dataChanged);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &DimensionTagAction::updateStateFromModel);
 }
 
 QString DimensionTagAction::getTag() const
@@ -95,13 +55,69 @@ void DimensionTagAction::setTagSilently(const QString& tag)
     connect(&_tagAction, &StringAction::stringChanged, this, &DimensionTagAction::updateRows);
 }
 
+void DimensionTagAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (topLeft.column() > ImageCollection::Column::DimensionTag || bottomRight.column() < ImageCollection::Column::DimensionTag)
+        return;
+
+    updateStateFromModel();
+}
+
 void DimensionTagAction::updateRows()
 {
-    auto& imageCollectionsModel = _imageLoaderPlugin.getImageCollectionsModel();
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        auto& imageCollectionsModel = _imageLoaderPlugin.getImageCollectionsModel();
 
-    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
-        imageCollectionsModel.setData(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::DimensionTag), _tagAction.getString());
-        imageCollectionsModel.guessDimensionNames(selectedImageCollectionIndex);
+        for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+            imageCollectionsModel.setData(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::DimensionTag), _tagAction.getString());
+            imageCollectionsModel.guessDimensionNames(selectedImageCollectionIndex);
+        }
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DimensionTagAction::dataChanged);
+}
+
+void DimensionTagAction::updateStateFromModel()
+{
+    const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
+    const auto numberOfSelectedRows = selectedRows.count();
+
+    if (numberOfSelectedRows == 0)
+        setEnabled(false);
+
+    if (numberOfSelectedRows == 1) {
+        if (selectedRows.first().siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool()) {
+            setEnabled(true);
+            setTagSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
+        }
+        else {
+            setEnabled(false);
+            setTagSilently("");
+        }
+    }
+
+    if (numberOfSelectedRows >= 2) {
+        auto numberOfMultiPageTiffs = 0u;
+
+        for (const auto& selectedRow : selectedRows)
+            if (selectedRow.siblingAtColumn(ImageCollection::Column::IsMultiPage).data(Qt::EditRole).toBool())
+                numberOfMultiPageTiffs++;
+
+        setEnabled(numberOfMultiPageTiffs > 0);
+
+        QSet<QString> tags;
+
+        for (const auto& selectedRow : selectedRows)
+            tags.insert(selectedRow.siblingAtColumn(ImageCollection::Column::DimensionTag).data(Qt::EditRole).toString());
+
+        if (tags.count() == 0)
+            setTagSilently("");
+
+        if (tags.count() == 1)
+            setTagSilently(tags.values().first());
+
+        if (tags.count() >= 2)
+            setTagSilently("");
     }
 }
 
