@@ -39,7 +39,7 @@ SubsamplingRatioAction::SubsamplingRatioAction(QObject* parent, ImageLoaderPlugi
         _ratioAction.setValue(defaultRatios.values().at(triggerIndex));
     });
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingRatioAction::updateStateFromModel);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingRatioAction::dataChanged);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &SubsamplingRatioAction::updateStateFromModel);
 
     updateStateFromModel();
@@ -47,14 +47,22 @@ SubsamplingRatioAction::SubsamplingRatioAction(QObject* parent, ImageLoaderPlugi
 
 void SubsamplingRatioAction::updateRows()
 {
-    for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-        _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingRatio), 0.01f * _ratioAction.getValue());
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingRatio), 0.01f * _ratioAction.getValue());
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingRatioAction::dataChanged);
+}
+
+void SubsamplingRatioAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingType) && isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingRatio))
+        updateStateFromModel();
 }
 
 void SubsamplingRatioAction::updateStateFromModel()
 {
-    return;
-
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
 

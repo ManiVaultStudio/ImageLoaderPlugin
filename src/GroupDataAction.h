@@ -29,6 +29,10 @@ public:
 private:
     void updateStateFromModel();
 
+public:
+    ToggleAction& getEnabledAction() { return _enabledAction; }
+    StringAction& getNameAction() { return _nameAction; }
+
 private:
     ImageLoaderPlugin&  _imageLoaderPlugin;
     ToggleAction        _enabledAction;

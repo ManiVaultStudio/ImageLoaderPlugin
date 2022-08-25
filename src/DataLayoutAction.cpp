@@ -25,14 +25,6 @@ void DataLayoutAction::setCurrentIndexSilently(const std::int32_t& currentIndex)
     connect(this, &OptionAction::currentIndexChanged, this, &DataLayoutAction::updateRows);
 }
 
-void DataLayoutAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
-{
-    if (topLeft.column() > ImageCollection::Column::Type || bottomRight.column() < ImageCollection::Column::Type)
-        return;
-
-    updateStateFromModel();
-}
-
 void DataLayoutAction::updateRows()
 {
     if (getCurrentIndex() < 0)
@@ -42,6 +34,16 @@ void DataLayoutAction::updateRows()
     {
         for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
             _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::Type), getCurrentIndex());
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DataLayoutAction::dataChanged);
+}
+
+void DataLayoutAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::Type))
+            updateStateFromModel();
     }
     connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DataLayoutAction::dataChanged);
 }

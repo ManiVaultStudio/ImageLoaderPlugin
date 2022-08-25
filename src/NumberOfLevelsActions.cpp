@@ -38,19 +38,33 @@ NumberOfLevelsActions::NumberOfLevelsActions(QObject* parent, ImageLoaderPlugin&
     _infoAction.setEnabled(false);
 
     connect(&_numberOfLevelsAction, &IntegralAction::valueChanged, this, [this](const std::int32_t& currentIndex) {
-        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingNumberOfLevels), currentIndex);
+        disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+        {
+            for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+                _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingNumberOfLevels), currentIndex);
+        }
+        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
     });
 
     connect(&_levelFactorAction, &OptionAction::currentIndexChanged, this, [this](const std::int32_t& currentIndex) {
-        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor), levelFactors.value(static_cast<NumberOfLevelsActions::LevelFactor>(currentIndex)));
+        disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+        {
+            for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+                _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor), levelFactors.value(static_cast<NumberOfLevelsActions::LevelFactor>(currentIndex)));
+        }
+        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
     });
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::updateStateFromModel);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &NumberOfLevelsActions::updateStateFromModel);
 
     updateStateFromModel();
+}
+
+void NumberOfLevelsActions::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingType) || isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingLevelFactor))
+        updateStateFromModel();
 }
 
 void NumberOfLevelsActions::updateStateFromModel()

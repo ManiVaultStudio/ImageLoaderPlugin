@@ -13,8 +13,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _dataLayoutAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
-    _imagesAction(this, imageLoaderPlugin),
-    _groupDataAction(this, imageLoaderPlugin)
+    _imagesAction(this, imageLoaderPlugin)
 {
     setText("Image collections");
 
@@ -49,10 +48,6 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
         if (numberOfSelectedRows >= 2) {
             _imagesAction.setEnabled(false);
         }
-
-        if (selectedRows.count() == 1)
-            for (const auto& selectedRow : selectedRows)
-                _imageLoaderPlugin.getImageCollectionsModel().guessDimensionNames(selectedRow);
     });
 
     _filterAction.setSettingsPrefix(&imageLoaderPlugin, "ImageNameFilter");
@@ -127,8 +122,6 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
 
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createLabelWidget(this), 9, 0);
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createWidget(this), 9, 1);
-
-    subLayout->addWidget(imageCollectionsAction->_groupDataAction.createWidget(this), 10, 1);
 
     mainLayout->addLayout(subLayout);
 

@@ -11,7 +11,7 @@ DatasetNameAction::DatasetNameAction(QObject* parent, ImageLoaderPlugin& imageLo
 
     connect(this, &StringAction::stringChanged, this, &DatasetNameAction::updateRows);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DatasetNameAction::updateStateFromModel);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DatasetNameAction::dataChanged);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &DatasetNameAction::updateStateFromModel);
 
     updateStateFromModel();
@@ -28,8 +28,18 @@ void DatasetNameAction::setDatasetNameSilently(const QString& datasetName)
 
 void DatasetNameAction::updateRows()
 {
-    for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-        _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::DatasetName), getString());
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::DatasetName), getString());
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DatasetNameAction::dataChanged);
+}
+
+void DatasetNameAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::DatasetName))
+        updateStateFromModel();
 }
 
 void DatasetNameAction::updateStateFromModel()

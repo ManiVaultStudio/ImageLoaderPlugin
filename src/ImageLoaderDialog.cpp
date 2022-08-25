@@ -1,7 +1,10 @@
 #include "ImageLoaderDialog.h"
 #include "ImageLoaderPlugin.h"
+#include "Application.h"
 
 #include <QDebug>
+
+using namespace hdps;
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
@@ -52,7 +55,7 @@ ImageLoaderDialog::~ImageLoaderDialog() = default;
 
 QSize ImageLoaderDialog::sizeHint() const
 {
-    return QSize(1024, 768);
+    return QSize(1024, 1024);
 }
 
 void ImageLoaderDialog::updateActions()

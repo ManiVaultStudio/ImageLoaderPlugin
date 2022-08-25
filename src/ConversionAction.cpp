@@ -10,13 +10,7 @@ ConversionAction::ConversionAction(QObject* parent, ImageLoaderPlugin& imageLoad
 
     connect(this, &PluginTriggerPickerAction::currentPluginTriggerActionChanged, this, &ConversionAction::updateRows);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>()) -> void {
-        if (topLeft.column() < ImageCollection::Column::Conversion && bottomRight.column() > ImageCollection::Column::Conversion)
-            return;
-
-        updateStateFromModel();
-    });
-
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &ConversionAction::dataChanged);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &ConversionAction::updateStateFromModel);
 
     updateStateFromModel();
@@ -35,11 +29,18 @@ void ConversionAction::updateRows()
 {
     auto currentPluginTriggerAction = getCurrentPluginTriggerAction();
 
-    if (currentPluginTriggerAction == nullptr || currentPluginTriggerAction->getSha() == "")
-        return;
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::Conversion), currentPluginTriggerAction == nullptr ? "" : currentPluginTriggerAction->getSha());
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &ConversionAction::dataChanged);
+}
 
-    for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-        _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::Conversion), currentPluginTriggerAction->getSha());
+void ConversionAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::Conversion))
+        updateStateFromModel();
 }
 
 void ConversionAction::updateStateFromModel()

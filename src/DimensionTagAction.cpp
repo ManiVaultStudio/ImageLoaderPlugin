@@ -55,14 +55,6 @@ void DimensionTagAction::setTagSilently(const QString& tag)
     connect(&_tagAction, &StringAction::stringChanged, this, &DimensionTagAction::updateRows);
 }
 
-void DimensionTagAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
-{
-    if (topLeft.column() > ImageCollection::Column::DimensionTag || bottomRight.column() < ImageCollection::Column::DimensionTag)
-        return;
-
-    updateStateFromModel();
-}
-
 void DimensionTagAction::updateRows()
 {
     disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
@@ -75,6 +67,12 @@ void DimensionTagAction::updateRows()
         }
     }
     connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DimensionTagAction::dataChanged);
+}
+
+void DimensionTagAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::DimensionTag))
+        updateStateFromModel();
 }
 
 void DimensionTagAction::updateStateFromModel()

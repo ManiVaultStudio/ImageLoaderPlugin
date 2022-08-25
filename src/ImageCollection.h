@@ -3,7 +3,8 @@
 #include "Common.h"
 #include "TreeItem.h"
 
-#include "ImageData/Images.h"
+#include <ImageData/Images.h>
+#include <Dataset.h>
 
 #include <QObject>
 #include <QString>
@@ -513,6 +514,8 @@ public:
     /**
      * Loads the image collection into a high-dimensional data vector
      * @param imageLoaderPlugin Pointer to image loader plugin
+     * @return Boolean indicating whether the image collection is loaded properly or not
+     * 
      */
     bool load(ImageLoaderPlugin* imageLoaderPlugin);
 

@@ -14,7 +14,6 @@ GroupDataAction::GroupDataAction(QObject* parent, ImageLoaderPlugin& imageLoader
     _nameAction.setToolTip("The name of the group dataset");
     _nameAction.setPlaceHolderString("Enter dataset group name...");
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &GroupDataAction::updateStateFromModel);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &GroupDataAction::updateStateFromModel);
 
     updateStateFromModel();
@@ -30,8 +29,6 @@ GroupDataAction::GroupDataAction(QObject* parent, ImageLoaderPlugin& imageLoader
 
 void GroupDataAction::updateStateFromModel()
 {
-    return;
-
     const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
 
     QSet<std::int32_t> noDimensions;

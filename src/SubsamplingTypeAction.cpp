@@ -12,7 +12,7 @@ SubsamplingTypeAction::SubsamplingTypeAction(QObject* parent, ImageLoaderPlugin&
 
     connect(this, &OptionAction::currentIndexChanged, this, &SubsamplingTypeAction::updateRows);
 
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingTypeAction::updateStateFromModel);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingTypeAction::dataChanged);
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &SubsamplingTypeAction::updateStateFromModel);
 
     updateStateFromModel();
@@ -32,14 +32,22 @@ void SubsamplingTypeAction::updateRows()
     if (getCurrentIndex() < 0)
         return;
 
-    for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-        _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingType), getCurrentIndex());
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingType), getCurrentIndex());
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &SubsamplingTypeAction::dataChanged);
+}
+
+void SubsamplingTypeAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+{
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingType))
+        updateStateFromModel();
 }
 
 void SubsamplingTypeAction::updateStateFromModel()
 {
-    return;
-
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
 

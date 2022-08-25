@@ -45,6 +45,7 @@ public:
 
 private:
     void updateRows();
+    void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>());
     void updateStateFromModel();
 
 private:

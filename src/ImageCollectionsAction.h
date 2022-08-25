@@ -51,7 +51,6 @@ protected:
     DataLayoutAction        _dataLayoutAction;          /** Data layout action (stack/sequence) */
     DimensionTagAction      _dimensionTagAction;        /** Dimension tag action (in case of multi-page TIFF) */
     SubsamplingAction       _subsamplingAction;         /** Subsampling action */
-    GroupDataAction         _groupDataAction;           /** Group data into single points dataset action */
     ImagesAction            _imagesAction;              /** Images action */
 
     friend class Widget;

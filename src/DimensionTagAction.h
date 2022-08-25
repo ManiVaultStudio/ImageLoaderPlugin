@@ -49,8 +49,8 @@ public:
 
 private:
     void setTagSilently(const QString& tag);
-    void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>());
     void updateRows();
+    void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>());
     void updateStateFromModel();
 
 signals:
