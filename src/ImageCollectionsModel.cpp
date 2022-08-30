@@ -50,6 +50,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
         auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
 
         switch (static_cast<ImageCollection::Column>(index.column())) {
+            case ImageCollection::Column::Name:
+                return imageCollection->getName(role);
+
             case ImageCollection::Column::DatasetName:
                 return imageCollection->getDatasetName(role);
 
@@ -104,14 +107,20 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
             case ImageCollection::Column::Type:
                 return imageCollection->getType(role);
 
-            case ImageCollection::Column::SubsamplingEnabled:
-                return imageCollection->getSubsampling().getEnabled(role);
+            case ImageCollection::Column::SubsamplingType:
+                return imageCollection->getSubsampling().getType(role);
 
             case ImageCollection::Column::SubsamplingRatio:
                 return imageCollection->getSubsampling().getRatio(role);
 
             case ImageCollection::Column::SubsamplingFilter:
                 return imageCollection->getSubsampling().getFilter(role);
+
+            case ImageCollection::Column::SubsamplingNumberOfLevels:
+                return imageCollection->getSubsampling().getNumberOfLevels(role);
+
+            case ImageCollection::Column::SubsamplingLevelFactor:
+                return imageCollection->getSubsampling().getLevelFactor(role);
 
             case ImageCollection::Column::Conversion:
                 return imageCollection->getConversion(role);
@@ -152,13 +161,13 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
         const auto column = static_cast<ImageCollection::Column>(index.column());
 
         auto updateTargetSize = [&index, &imageCollection, &affectedIndices]() {
-            const auto subsamplingEnabled   = imageCollection->getSubsampling().getEnabled(Qt::EditRole).toBool();
+            const auto subsamplingType      = static_cast<ImageCollection::SubSampling::Type>(imageCollection->getSubsampling().getType(Qt::EditRole).toInt());
             const auto subsamplingRatio     = imageCollection->getSubsampling().getRatio(Qt::EditRole).toFloat();
             const auto sourceSize           = imageCollection->getSourceSize(Qt::EditRole).toSize();
 
             auto targetSize = sourceSize;
 
-            if (subsamplingEnabled) {
+            if (subsamplingType == ImageCollection::SubSampling::Type::Immediate) {
                 targetSize.setWidth(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.width()), 1));
                 targetSize.setHeight(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.height()), 1));
             }
@@ -178,6 +187,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
             case Qt::EditRole:
             {
                 switch (column) {
+                    case ImageCollection::Column::Name:
+                    {
+                        imageCollection->setName(value.toString());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Name", value.toString());
+
+                        break;
+                    }
+
                     case ImageCollection::Column::DatasetName:
                     {
                         imageCollection->setDatasetName(value.toString());
@@ -214,12 +233,12 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         break;
                     }
 
-                    case ImageCollection::Column::SubsamplingEnabled:
+                    case ImageCollection::Column::SubsamplingType:
                     {
-                        imageCollection->getSubsampling().setEnabled(value.toBool());
+                        imageCollection->getSubsampling().setType(static_cast<ImageCollection::SubSampling::Type>(value.toInt()));
 
                         if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Enabled", value.toBool());
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Type", value.toInt());
 
                         updateTargetSize();
                         break;
@@ -238,10 +257,30 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                     case ImageCollection::Column::SubsamplingFilter:
                     {
-                        imageCollection->getSubsampling().setFilter(static_cast<ImageCollection::SubSampling::ImageResamplingFilter>(value.toInt()));
+                        imageCollection->getSubsampling().setFilter(static_cast<ImageCollection::SubSampling::Filter>(value.toInt()));
 
                         if (_persistData)
                             _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Filter", value.toInt());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::SubsamplingNumberOfLevels:
+                    {
+                        imageCollection->getSubsampling().setNumberOfLevels(value.toInt());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/NumberOfLevels", value.toInt());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::SubsamplingLevelFactor:
+                    {
+                        imageCollection->getSubsampling().setLevelFactor(value.toInt());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/LevelFactor", value.toInt());
 
                         break;
                     }
@@ -382,14 +421,6 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
         {
             case Qt::DecorationRole:
             {
-                switch (static_cast<ImageCollection::Column>(section)) {
-                    case ImageCollection::Column::DatasetName:
-                        return hdps::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
-
-                    default:
-                        break;
-                }
-
                 switch (static_cast<ImageCollection::Image::Column>(section)) {
                     case ImageCollection::Image::Column::DimensionName:
                         return hdps::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
@@ -404,6 +435,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             case Qt::DisplayRole:
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
+                    case ImageCollection::Column::Name:
+                        return "Name";
+
                     case ImageCollection::Column::DatasetName:
                         return "Dataset name";
 
@@ -458,14 +492,20 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::Type:
                         return "Load as";
 
-                    case ImageCollection::Column::SubsamplingEnabled:
-                        return "Subsampling enabled";
+                    case ImageCollection::Column::SubsamplingType:
+                        return "Subsampling type";
 
                     case ImageCollection::Column::SubsamplingRatio:
                         return "Subsampling ratio";
 
                     case ImageCollection::Column::SubsamplingFilter:
                         return "Subsampling filter";
+
+                    case ImageCollection::Column::SubsamplingNumberOfLevels:
+                        return "Subsampling number of levels";
+
+                    case ImageCollection::Column::SubsamplingLevelFactor:
+                        return "Subsampling level factor";
 
                     case ImageCollection::Column::Conversion:
                         return "Conversion";
@@ -497,8 +537,11 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             case Qt::ToolTipRole:
             {
                 switch (static_cast<ImageCollection::Column>(section)) {
-                    case ImageCollection::Column::DatasetName:
+                    case ImageCollection::Column::Name:
                         return "The name of the high-dimensional dataset, click to edit";
+
+                    case ImageCollection::Column::DatasetName:
+                        return "The name of the dataset";
 
                     case ImageCollection::Column::FileNames:
                         return "File names", "The file name(s)";
@@ -539,14 +582,20 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::Type:
                         return "How to interpret the images as high-dimensional data";
 
-                    case ImageCollection::Column::SubsamplingEnabled:
-                        return "Whether images are sub-sampled when loaded as high-dimensional data";
+                    case ImageCollection::Column::SubsamplingType:
+                        return "Type of image subsampling";
 
                     case ImageCollection::Column::SubsamplingRatio:
                         return "The amount of subsampling";
 
                     case ImageCollection::Column::SubsamplingFilter:
                         return "The subsampling filter to use";
+
+                    case ImageCollection::Column::SubsamplingNumberOfLevels:
+                        return "The number of image pyramid subsampling levels to use";
+
+                    case ImageCollection::Column::SubsamplingLevelFactor:
+                        return "The level factor in case of image pyramid subsampling";
 
                     case ImageCollection::Column::ToGrayscale:
                         return "Whether all image channels are combined in to one (grayscale)";
@@ -591,11 +640,8 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 
     if (index.parent() == QModelIndex()) {
         switch (static_cast<ImageCollection::Column>(index.column())) {
-            case ImageCollection::Column::DatasetName:
-            {
-                flags |= Qt::ItemIsEditable;
+            case ImageCollection::Column::Name:
                 break;
-            }
 
             case ImageCollection::Column::ToGrayscale:
             {
@@ -718,36 +764,24 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 
     for (int rowIndex = 0; rowIndex < rowCount(QModelIndex()); rowIndex++) {
         const auto imageCollectionIndex = index(rowIndex, 0);
-        const auto datasetName          = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), Qt::EditRole).toString();
+        const auto datasetName          = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), Qt::EditRole).toString();
         const auto noImages             = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
         const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
 
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Name", datasetName).toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", datasetName).toString());
         //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DimensionTag", "").toString());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
-        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingEnabled)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Enabled", false).toBool());
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingType)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Type", 0).toInt());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Filter", 0).toInt());
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingNumberOfLevels)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/NumberOfLevels", 0).toInt());
+        setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingLevelFactor)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/LevelFactor", 0).toInt());
 
         const auto conversion = _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", "").toString();
 
-        //_imageLoaderPlugin->getPluginTriggerPickerAction().setCurrentPluginTriggerAction(conversion);
-
         setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Conversion)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", 0).toString());
-
-        /*
-        blockSignals(true);
-        {
-            for (int imageIndex = 0; imageIndex < noImages; imageIndex++) {
-                const auto dimensionName	= index(imageIndex, ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex).data(Qt::EditRole).toString();
-                const auto shouldLoad		= _imageLoaderPlugin->getSetting(settingsPrefix + "/Images/" + dimensionName, true).toBool();
-
-                setData(imageCollectionIndex.child(imageIndex, ult(ImageCollection::Image::Column::ShouldLoad)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Images/" + dimensionName, true).toBool());
-            }
-        }
-        blockSignals(false);
-        */
     }
 }
 

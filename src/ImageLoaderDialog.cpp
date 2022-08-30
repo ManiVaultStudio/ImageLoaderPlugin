@@ -1,78 +1,93 @@
 #include "ImageLoaderDialog.h"
+#include "ImageLoaderPlugin.h"
+#include "Application.h"
 
 #include <QDebug>
 
-#include "ImageLoaderPlugin.h"
+using namespace hdps;
 
-#include "ui_ImageLoaderDialog.h"
-
-ImageLoaderDialog::ImageLoaderDialog(QObject* parent /*= nullptr*/) :
-    _ui(new Ui::ImageLoaderDialog()),
-    _imageLoaderPlugin(nullptr)
+ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
+    _imageLoaderPlugin(imageLoaderPlugin),
+    _scanAction(this, imageLoaderPlugin),
+    _imageCollectionsAction(this, imageLoaderPlugin),
+    _subsamplingAction(this, imageLoaderPlugin),
+    _closeAfterLoadingAction(this, "Close after loading", true, true),
+    _loadAction(this, "Load"),
+    _cancelAction(this, "Cancel")
 {
-    _ui->setupUi(this);
-
+    setWindowTitle("Load high-dimensional image data");
     setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
+
+    _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
+    _closeAfterLoadingAction.setSettingsPrefix(&imageLoaderPlugin, "CloseAfterLoaded");
+
+    _loadAction.setToolTip("Load the selected image collections");
+    _cancelAction.setToolTip("Close the image loader");
+
+    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &ImageLoaderDialog::updateActions);
+    connect(&_loadAction, &TriggerAction::triggered, this, &ImageLoaderDialog::loadImageCollections);
+    connect(&_cancelAction, &TriggerAction::triggered, this, &ImageLoaderDialog::reject);
+
+    updateActions();
+
+    auto mainLayout = new QVBoxLayout();
+
+    //mainLayout->setContentsMargins(4, 4, 4, 4);
+    //mainLayout->setSpacing(0);
+    mainLayout->addWidget(_scanAction.createWidget(this));
+    mainLayout->addWidget(_imageCollectionsAction.createWidget(this), 2);
+    mainLayout->addWidget(_subsamplingAction.createWidget(this));
+
+    auto bottomLayout = new QHBoxLayout();
+
+    bottomLayout->setContentsMargins(0, 0, 0, 0);
+    bottomLayout->addStretch(1);
+    bottomLayout->addWidget(_closeAfterLoadingAction.createWidget(this));
+    bottomLayout->addWidget(_loadAction.createWidget(this));
+    bottomLayout->addWidget(_cancelAction.createWidget(this));
+
+    mainLayout->addLayout(bottomLayout);
+
+    setLayout(mainLayout);
 }
 
 ImageLoaderDialog::~ImageLoaderDialog() = default;
 
-void ImageLoaderDialog::initialize(ImageLoaderPlugin* imageLoaderPlugin)
+QSize ImageLoaderDialog::sizeHint() const
 {
-    _imageLoaderPlugin = imageLoaderPlugin;
+    return QSize(1024, 1024);
+}
 
-    _ui->commonSettingsWidget->initialize(_imageLoaderPlugin);
-    _ui->subsampleSettingswidget->initialize(_imageLoaderPlugin);
+void ImageLoaderDialog::updateActions()
+{
+    const auto selectedRows = _imageLoaderPlugin.getImageCollectionsModel().selectionModel().selectedRows();
+    const auto hasSelection = !selectedRows.isEmpty();
 
-    _ui->closeAfterLoadedCheckBox->setChecked(_imageLoaderPlugin->getSetting("GUI/CloseAfterLoaded", true).toBool());
+    _loadAction.setEnabled(hasSelection);
 
-    auto& imageCollectionsModel             = _imageLoaderPlugin->getImageCollectionsModel();
-    auto& imageCollectionsSelectionModel    = imageCollectionsModel.selectionModel();
-    auto& filterModel                       = _imageLoaderPlugin->getImageCollectionsFilterModel();
+    if (selectedRows.isEmpty()) {
+        _loadAction.setText("Load");
+        _loadAction.setToolTip("Load image datasets into HDPS");
+    }
+    else {
+        _loadAction.setText(QString("Load %1").arg(QString::number(selectedRows.count())));
+        _loadAction.setToolTip(QString("Load %1 image datasets into HDPS").arg(QString::number(selectedRows.count())));
+    }
+    
+    _closeAfterLoadingAction.setEnabled(hasSelection);
+}
 
-    const auto selectedRow = [&]() {
-        const auto selectedRows = imageCollectionsSelectionModel.selectedRows();
+void ImageLoaderDialog::loadImageCollections()
+{
+    const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
+    const auto hasSelection = !selectedRows.isEmpty();
 
-        if (selectedRows.isEmpty())
-            return QModelIndex();
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
 
-        return filterModel.mapToSource(selectedRows.first());
-    };
+        imageCollection->load(&_imageLoaderPlugin);
+    }
 
-    const auto updateLoadButton = [&, selectedRow]() {
-        const auto index = selectedRow();
-
-        _ui->loadPushButton->setEnabled(false);
-
-        if (index != QModelIndex()) {
-            const auto imageCollectionType  = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::Type)), Qt::DisplayRole).toString();
-            const auto noSelectedImages     = imageCollectionsModel.data(index.siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages)), Qt::EditRole).toInt();
-
-            _ui->loadPushButton->setEnabled(noSelectedImages > 0);
-            _ui->loadPushButton->setText(QString("Load %1").arg(imageCollectionType));
-        }
-    };
-
-    QObject::connect(&imageCollectionsModel.selectionModel(), &QItemSelectionModel::selectionChanged, [&, selectedRow, updateLoadButton](const QItemSelection& selected, const QItemSelection& deselected) {
-        updateLoadButton();
-    });
-
-    QObject::connect(&imageCollectionsModel, &ImageCollectionsModel::dataChanged, [&, selectedRow, updateLoadButton](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QVector<int> &roles) {
-        updateLoadButton();
-    });
-
-    QObject::connect(_ui->closeAfterLoadedCheckBox, &QPushButton::clicked, [&]() {
-        _imageLoaderPlugin->setSetting("GUI/CloseAfterLoaded", _ui->closeAfterLoadedCheckBox->isChecked());
-    });
-
-    QObject::connect(_ui->loadPushButton, &QPushButton::clicked, [&, selectedRow]() {
-        const auto index = selectedRow();
-
-        if (index != QModelIndex()) {
-            const auto loaded = imageCollectionsModel.loadImageCollection(_imageLoaderPlugin, index);
-
-            if (loaded && _imageLoaderPlugin->getSetting("GUI/CloseAfterLoaded", true).toBool())
-                this->close();
-        }
-    });
+    if (_closeAfterLoadingAction.isChecked())
+        accept();
 }

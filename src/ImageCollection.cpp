@@ -27,6 +27,21 @@ namespace fi {
 using namespace hdps;
 using namespace hdps::util;
 
+const QMap<ImageCollection::SubSampling::Type, QString> ImageCollection::SubSampling::types = QMap<ImageCollection::SubSampling::Type, QString>({
+    { ImageCollection::SubSampling::Type::None, "None"},
+    { ImageCollection::SubSampling::Type::Immediate, "Immediate"},
+    { ImageCollection::SubSampling::Type::Pyramid, "Pyramid"}
+});
+
+const QMap<ImageCollection::SubSampling::Filter, QString> ImageCollection::SubSampling::filters = QMap<ImageCollection::SubSampling::Filter, QString>({
+    { ImageCollection::SubSampling::Filter::Box, "Box"},
+    { ImageCollection::SubSampling::Filter::Bilinear, "Bilinear"},
+    { ImageCollection::SubSampling::Filter::BSpline, "BSpline"},
+    { ImageCollection::SubSampling::Filter::Bicubic, "Bicubic"},
+    { ImageCollection::SubSampling::Filter::CatmullRom, "Catmull-Rom"},
+    { ImageCollection::SubSampling::Filter::Lanczos, "Lanczos"}
+});
+
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
     TreeItem(parent),
     _index(-1),
@@ -591,6 +606,8 @@ void ImageCollection::Image::guessDimensionName()
             else
                 _dimensionName = dimensionName;
 
+            _dimensionName.truncate(256);
+
             FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
             FI::FreeImage_CloseMultiBitmap(multiBitmap);
         }
@@ -613,28 +630,30 @@ ImageCollection* ImageCollection::Image::getImageCollection()
     return static_cast<ImageCollection*>(getParentItem());
 }
 
-ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const ImageResamplingFilter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const Filter& filter /*= ImageResamplingFilter::Bicubic*/) :
     _imageCollection(imageCollection),
-    _enabled(enabled),
+    _type(Type::Immediate),
     _ratio(ratio),
-    _filter(filter)
+    _filter(filter),
+    _numberOfLevels(3),
+    _levelFactor(2)
 {
 }
 
-QVariant ImageCollection::SubSampling::getEnabled(const int& role) const
+QVariant ImageCollection::SubSampling::getType(const int& role) const
 {
-    const auto enabledString = _enabled ? "true" : "false";
+    const auto typeString = types[_type];
 
     switch (role)
     {
         case Qt::DisplayRole:
-            return enabledString;
+            return typeString;
 
         case Qt::EditRole:
-            return _enabled;
+            return QVariant::fromValue(static_cast<std::int32_t>(_type));
 
         case Qt::ToolTipRole:
-            return QString("Subsampling enabled: %1").arg(enabledString);
+            return QString("Subsampling type: %1").arg(typeString);
 
         default:
             break;
@@ -643,9 +662,9 @@ QVariant ImageCollection::SubSampling::getEnabled(const int& role) const
     return QVariant();
 }
 
-void ImageCollection::SubSampling::setEnabled(const bool& enabled)
+void ImageCollection::SubSampling::setType(const Type& type)
 {
-    _enabled = enabled;
+    _type = type;
 }
 
 QVariant ImageCollection::SubSampling::getRatio(const int& role) const
@@ -677,7 +696,7 @@ void ImageCollection::SubSampling::setRatio(const float& ratio)
 
 QVariant ImageCollection::SubSampling::getFilter(const int& role) const
 {
-    const auto filterString = imageResamplingFilterName(_filter);
+    const auto filterString = filters[_filter];
 
     switch (role)
     {
@@ -697,9 +716,63 @@ QVariant ImageCollection::SubSampling::getFilter(const int& role) const
     return QVariant();
 }
 
-void ImageCollection::SubSampling::setFilter(const ImageResamplingFilter& filter)
+void ImageCollection::SubSampling::setFilter(const Filter& filter)
 {
     _filter = filter;
+}
+
+QVariant ImageCollection::SubSampling::getNumberOfLevels(const int& role) const
+{
+    const auto numberOfLevelsString = QString::number(_numberOfLevels);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return numberOfLevelsString;
+
+        case Qt::EditRole:
+            return QVariant::fromValue(_numberOfLevels);
+
+        case Qt::ToolTipRole:
+            return QString("Number of image pyramid levels: %1").arg(numberOfLevelsString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::SubSampling::setNumberOfLevels(std::uint32_t numberOfLevels)
+{
+    _numberOfLevels = numberOfLevels;
+}
+
+QVariant ImageCollection::SubSampling::getLevelFactor(const int& role) const
+{
+    const auto levelFactorString = QString::number(_levelFactor);
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return levelFactorString;
+
+        case Qt::EditRole:
+            return QVariant::fromValue(_numberOfLevels);
+
+        case Qt::ToolTipRole:
+            return QString("Level factor string: %1").arg(levelFactorString);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::SubSampling::setLevelFactor(std::uint32_t levelFactor)
+{
+    _levelFactor = levelFactor;
 }
 
 ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, const QString& imageFileType, const QImage::Format& imageFormat, const QSize& sourceSize) :
@@ -709,7 +782,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _imageFormat(imageFormat),
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
-    _datasetName(),
+    _name(),
     _dimensionTag("PageName"),
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
@@ -1142,6 +1215,33 @@ void ImageCollection::setTargetSize(const QSize& targetSize)
     _targetSize = targetSize;
 }
 
+QVariant ImageCollection::getName(const int& role) const
+{
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            return _name;
+
+        case Qt::EditRole:
+            return _name;
+
+        case Qt::ToolTipRole:
+            return QString("Image collection name: %1").arg(_name);
+
+        default:
+            break;
+    }
+
+    return QVariant();
+}
+
+void ImageCollection::setName(const QString& name)
+{
+    _name = name;
+
+    setDatasetName(name);
+}
+
 QVariant ImageCollection::getDatasetName(const int& role) const
 {
     switch (role)
@@ -1504,7 +1604,7 @@ void ImageCollection::addImage(const QString& filePath, const std::int32_t& page
 void ImageCollection::computeDatasetName()
 {
     if (getNoImages(Qt::EditRole).toInt() == 1 || getImage(0)->getPageIndex(Qt::EditRole).toInt() >= 0) {
-        setDatasetName(getImage(0)->getFileName(Qt::EditRole).toString());
+        setName(getImage(0)->getFileName(Qt::EditRole).toString());
         return;
     }
 
@@ -1537,7 +1637,7 @@ void ImageCollection::computeDatasetName()
         setDirectory(childDir.absolutePath());
     }
 
-    setDatasetName(QString("%1").arg(QDir(rootDir).dirName()));
+    setName(QString("%1").arg(QDir(rootDir).dirName()));
 }
 
 void ImageCollection::guessDimensionNames()
@@ -1549,14 +1649,14 @@ void ImageCollection::guessDimensionNames()
     {
         QProgressDialog progressDialog("Establishing dimension names", "", 0, _children.size(), nullptr);
 
-        progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_datasetName));
+        progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_name));
+        progressDialog.setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
         progressDialog.setWindowModality(Qt::WindowModal);
         progressDialog.setMinimumDuration(1000);
         progressDialog.setFixedWidth(600);
         progressDialog.setMinimum(0);
         progressDialog.setMaximum(_children.size());
         progressDialog.setValue(0);
-        progressDialog.setWindowIcon(Application::getIconFont("FontAwesome").getIcon("images"));
 
         for (auto child : _children) {
             const auto dimensionIndex = _children.indexOf(child);
@@ -1572,11 +1672,11 @@ void ImageCollection::guessDimensionNames()
     }
     catch (const std::runtime_error& e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
     }
     catch (std::exception e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
     }
 }
 
@@ -1593,7 +1693,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         const auto typeName = ImageData::getTypeName(_type);
 
-        qDebug() << QString("Loading %1: %2").arg(typeName, _datasetName);
+        qDebug() << QString("Loading %1: %2").arg(typeName, _name);
 
         std::vector<float> data;
 
@@ -1653,14 +1753,14 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        points->setGuiName(_datasetName);
+        points->setGuiName(_name);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
         imageLoaderPlugin->_core->notifyDatasetChanged(points);
 
-        auto conversionPluginTriggerAction = imageLoaderPlugin->getPluginTriggerPickerAction().getCurrentPluginTriggerAction();
-
+        auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
+        
         if (conversionPluginTriggerAction != nullptr) {
             conversionPluginTriggerAction->setDatasets({ points });
             conversionPluginTriggerAction->trigger();
@@ -1687,11 +1787,11 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
     }
     catch (const std::runtime_error& e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
     catch (std::exception e)
     {
-        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_datasetName), e.what());
+        QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
 
     return false;

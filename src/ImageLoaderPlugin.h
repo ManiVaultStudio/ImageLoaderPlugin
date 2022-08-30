@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Common.h"
-
+#include "ImageCollectionScanner.h"
 #include "ImageCollectionsModel.h"
+#include "ConversionAction.h"
 
 #include <LoaderPlugin.h>
-
-#include <actions/PluginTriggerPickerAction.h>
+#include <PluginFactory.h>
 
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
@@ -21,31 +21,26 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-    ImageLoaderPlugin(const PluginFactory* factory);
-    ~ImageLoaderPlugin();
-
-    hdps::gui::PluginTriggerPickerAction& getPluginTriggerPickerAction();
-
-public: // Inherited from LoaderPlugin
+    ImageLoaderPlugin(const hdps::plugin::PluginFactory* factory);
 
     /** Initializes the plugin */
-    void init() override;
+    void init() override {};
 
     /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-public: // Models
-
-    /** Returns the image collections model */
+    ImageCollectionScanner& getImageCollectionScanner() { return _imageCollectionScanner; }
     ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
-
-    /** Returns the image collections model */
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+    hdps::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
+
+    QModelIndexList getSelectedRows() const;;
 
 private:
-    ImageCollectionsModel                   _imageCollectionsModel;         /** Image collections model */
-    ImageCollectionsModel::Filter           _imageCollectionsFilterModel;   /** Image collections filter model */
-    hdps::gui::PluginTriggerPickerAction    _pluginTriggerPickerAction;     /** Plugin trigger picker action */
+    ImageCollectionScanner              _imageCollectionScanner;        /** Image collection scanner */
+    ImageCollectionsModel               _imageCollectionsModel;         /** Image collections model */
+    ImageCollectionsModel::Filter       _imageCollectionsFilterModel;   /** Image collections filter model */
+    ConversionAction                    _conversionPickerAction;        /** Conversion plugin trigger picker action */
 
     friend class ImageCollection;
 };
@@ -58,7 +53,7 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
     Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
         Q_OBJECT
-        Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
+        Q_PLUGIN_METADATA(IID   "nl.BioVault.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
 
 public:
     /** Default constructor */

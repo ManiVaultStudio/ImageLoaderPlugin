@@ -1,51 +1,47 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
 
-#include <Set.h>
 #include <PointData.h>
-#include <Application.h>
 
-#include <QtCore>
 #include <QDebug>
 
 using namespace hdps;
+using namespace hdps::plugin;
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
+Q_PLUGIN_METADATA(IID "nl.BioVault.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     LoaderPlugin(factory),
+    _imageCollectionScanner(*this),
     _imageCollectionsModel(this),
     _imageCollectionsFilterModel(),
-    _pluginTriggerPickerAction(this)
+    _conversionPickerAction(this, *this)
 {
     _imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
 
     _imageCollectionsModel.selectionModel().setModel(&_imageCollectionsFilterModel);
 
-    _pluginTriggerPickerAction.setEnabled(false);
-    _pluginTriggerPickerAction.initialize("PointDataConversion", hdps::DataTypes({ PointType }));
-}
+    _imageCollectionScanner.loadSettings();
+    _imageCollectionScanner.scan();
 
-ImageLoaderPlugin::~ImageLoaderPlugin()
-{
-}
-
-PluginTriggerPickerAction& ImageLoaderPlugin::getPluginTriggerPickerAction()
-{
-    return _pluginTriggerPickerAction;
-}
-
-void ImageLoaderPlugin::init()
-{
+    _conversionPickerAction.initialize("PointDataConversion", { PointType });
 }
 
 void ImageLoaderPlugin::loadData()
 {
-    ImageLoaderDialog dialog;
-
-    dialog.initialize(this);
+    ImageLoaderDialog dialog(*this);
 
     dialog.exec();
+}
+
+QModelIndexList ImageLoaderPlugin::getSelectedRows() const
+{
+    QModelIndexList selectedImageCollectionIndices;
+
+    for (const auto& selectedRow : _imageCollectionsModel.selectionModel().selectedRows())
+        selectedImageCollectionIndices << _imageCollectionsFilterModel.mapToSource(selectedRow);
+
+    return selectedImageCollectionIndices;
 }
 
 QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const

@@ -52,7 +52,7 @@ public: // Filter model
                         return true;
                 }
 
-                const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::DatasetName));
+                const auto datasetNameIndex = sourceModel()->index(row, ult(ImageCollection::Column::Name));
                 const auto datasetName      = sourceModel()->data(datasetNameIndex, Qt::EditRole).toString();
 
                 return datasetName.contains(_filter, Qt::CaseInsensitive);
@@ -160,6 +160,7 @@ public: // Inherited MVC
 public: // Miscellaneous
 
     /** Returns the selection model */
+    const QItemSelectionModel& selectionModel() const { return _selectionModel; }
     QItemSelectionModel& selectionModel() { return _selectionModel; }
 
     /** Clears the model */

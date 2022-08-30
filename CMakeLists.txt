@@ -47,14 +47,39 @@ set(PLUGIN_SOURCES
 )
 
 set(WIDGET_SOURCES
-    src/CommonSettingsWidget.h
-    src/CommonSettingsWidget.cpp
     src/ImageLoaderDialog.h
     src/ImageLoaderDialog.cpp
-    src/SubsampleSettingsWidget.h
-    src/SubsampleSettingsWidget.cpp
     src/SanitizeDataDialog.h
     src/SanitizeDataDialog.cpp
+)
+
+set(ACTION_SOURCES
+    src/ScanAction.h
+    src/ScanAction.cpp
+    src/SubsamplingAction.h
+    src/SubsamplingAction.cpp
+    src/ImageCollectionsAction.h
+    src/ImageCollectionsAction.cpp
+    src/ImagesAction.h
+    src/ImagesAction.cpp
+    src/DimensionTagAction.h
+    src/DimensionTagAction.cpp
+    src/DataLayoutAction.h
+    src/DataLayoutAction.cpp
+    src/SubsamplingTypeAction.h
+    src/SubsamplingTypeAction.cpp
+    src/NumberOfLevelsActions.h
+    src/NumberOfLevelsActions.cpp
+    src/SubsamplingRatioAction.h
+    src/SubsamplingRatioAction.cpp
+    src/SubsamplingFilterTypeAction.h
+    src/SubsamplingFilterTypeAction.cpp
+    src/DatasetNameAction.h
+    src/DatasetNameAction.cpp
+    src/ConversionAction.h
+    src/ConversionAction.cpp
+    src/GroupDataAction.h
+    src/GroupDataAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)
@@ -69,10 +94,12 @@ set(SOURCES
     ${SCANNER_SOURCES}
     ${WIDGET_SOURCES}
     ${MODEL_SOURCES}
+    ${ACTION_SOURCES}
 )
 
 source_group(Plugin FILES ${PLUGIN_SOURCES} ${AUX})
 source_group(Widgets FILES ${WIDGET_SOURCES})
+source_group(Actions FILES ${ACTION_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(Aux FILES ${AUX})
 
