@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Common.h"
-
+#include "ImageCollectionScanner.h"
 #include "ImageCollectionsModel.h"
+#include "ConversionAction.h"
 
 #include <LoaderPlugin.h>
+#include <PluginFactory.h>
 
 using hdps::plugin::LoaderPluginFactory;
 using hdps::plugin::LoaderPlugin;
@@ -19,28 +21,26 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-    /** Default constructor */
-    ImageLoaderPlugin(const PluginFactory* factory);
-
-public: // Inherited from LoaderPlugin
+    ImageLoaderPlugin(const hdps::plugin::PluginFactory* factory);
 
     /** Initializes the plugin */
-    void init() override;
+    void init() override {};
 
     /** Load high dimensional image data */
     void loadData() Q_DECL_OVERRIDE;
 
-public: // Models
-
-    /** Returns the image collections model */
+    ImageCollectionScanner& getImageCollectionScanner() { return _imageCollectionScanner; }
     ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
-
-    /** Returns the image collections model */
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
+    hdps::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
+
+    QModelIndexList getSelectedRows() const;;
 
 private:
-    ImageCollectionsModel           _imageCollectionsModel;         /** Image collections model */
-    ImageCollectionsModel::Filter   _imageCollectionsFilterModel;   /** Image collections filter model */
+    ImageCollectionScanner              _imageCollectionScanner;        /** Image collection scanner */
+    ImageCollectionsModel               _imageCollectionsModel;         /** Image collections model */
+    ImageCollectionsModel::Filter       _imageCollectionsFilterModel;   /** Image collections filter model */
+    ConversionAction                    _conversionPickerAction;        /** Conversion plugin trigger picker action */
 
     friend class ImageCollection;
 };
@@ -53,7 +53,7 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
     Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
         Q_OBJECT
-        Q_PLUGIN_METADATA(IID   "nl.tudelft.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
+        Q_PLUGIN_METADATA(IID   "nl.BioVault.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
 
 public:
     /** Default constructor */
@@ -62,12 +62,16 @@ public:
     /** Destructor */
     ~ImageLoaderPluginFactory(void) override {}
 
-    /** Returns the plugin icon */
-    QIcon getIcon() const override;
+    /**
+     * Get plugin icon
+     * @param color Icon color for flat (font) icons
+     * @return Icon
+     */
+    QIcon getIcon(const QColor& color = Qt::black) const override;
 
-    /** Creates an image loader plugin instance */
+    /**
+     * Produces the plugin
+     * @return Pointer to the produced plugin
+     */
     LoaderPlugin* produce() override;
-
-	/** Returns the supported data types */
-	hdps::DataTypes supportedDataTypes() const override;
 };

@@ -1,54 +1,55 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
-#include "Set.h"
-#include "PointData.h"
-#include "Application.h"
 
-#include <QtCore>
+#include <PointData.h>
+
 #include <QDebug>
 
-#include "PointData.h"
-
 using namespace hdps;
+using namespace hdps::plugin;
 
-Q_PLUGIN_METADATA(IID "nl.tudelft.ImageLoaderPlugin")
+Q_PLUGIN_METADATA(IID "nl.BioVault.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     LoaderPlugin(factory),
+    _imageCollectionScanner(*this),
     _imageCollectionsModel(this),
-    _imageCollectionsFilterModel()
+    _imageCollectionsFilterModel(),
+    _conversionPickerAction(this, *this)
 {
     _imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
 
     _imageCollectionsModel.selectionModel().setModel(&_imageCollectionsFilterModel);
-}
 
-void ImageLoaderPlugin::init()
-{
+    _imageCollectionScanner.loadSettings();
+    _imageCollectionScanner.scan();
+
+    _conversionPickerAction.initialize("PointDataConversion", { PointType });
 }
 
 void ImageLoaderPlugin::loadData()
 {
-    ImageLoaderDialog dialog;
-
-    dialog.initialize(this);
+    ImageLoaderDialog dialog(*this);
 
     dialog.exec();
 }
 
-QIcon ImageLoaderPluginFactory::getIcon() const
+QModelIndexList ImageLoaderPlugin::getSelectedRows() const
 {
-    return hdps::Application::getIconFont("FontAwesome").getIcon("images");
+    QModelIndexList selectedImageCollectionIndices;
+
+    for (const auto& selectedRow : _imageCollectionsModel.selectionModel().selectedRows())
+        selectedImageCollectionIndices << _imageCollectionsFilterModel.mapToSource(selectedRow);
+
+    return selectedImageCollectionIndices;
+}
+
+QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
+{
+    return hdps::Application::getIconFont("FontAwesome").getIcon("images", color);
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
     return new ImageLoaderPlugin(this);
-}
-
-hdps::DataTypes ImageLoaderPluginFactory::supportedDataTypes() const
-{
-    DataTypes supportedTypes;
-    supportedTypes.append(PointType);
-    return supportedTypes;
 }

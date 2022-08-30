@@ -12,7 +12,7 @@
 SanitizeDataDialog::SanitizeDataDialog(ImageCollection* imageCollection, std::vector<float>& data, QWidget* parent /*= nullptr*/) :
     QDialog(parent)
 {
-    setWindowTitle(QString("Found NaN values in: %1").arg(imageCollection->getDatasetName(Qt::EditRole).toString()));
+    setWindowTitle(QString("Found NaN values in: %1").arg(imageCollection->getName(Qt::EditRole).toString()));
     setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("exclamation-circle"));
     
     auto layout = new QGridLayout();

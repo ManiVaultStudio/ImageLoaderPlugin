@@ -18,16 +18,10 @@ class ImageCollectionScanner : public QObject {
 
 public:
     /** Default constructor */
-    ImageCollectionScanner();
+    ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin);
 
     /** Load image scanner settings */
     virtual void loadSettings();
-
-    /**
-     * Sets the image loader plugin
-     * @param imageLoaderPlugin Pointer to image loader plugin (for interfacing with data models)
-     */
-    void setImageLoaderPlugin(ImageLoaderPlugin* imageLoaderPlugin);
 
     /** Returns the search directory */
     QString	getDirectory() const;
@@ -133,7 +127,7 @@ signals:
     void message(const QString& message);
 
 protected:
-    ImageLoaderPlugin*      _imageLoaderPlugin;         /** Image loader plugin instance */
+    ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to parent image loader plugin instance */
     QString                 _directory;                 /** Top directory to search in (recursively) */
     bool                    _separateByDirectory;       /** Separate image collections by directory */
     QStringList             _previousDirectories;       /** List of previously visited directories */

@@ -3,7 +3,8 @@
 #include "Common.h"
 #include "TreeItem.h"
 
-#include "ImageData/Images.h"
+#include <ImageData/Images.h>
+#include <Dataset.h>
 
 #include <QObject>
 #include <QString>
@@ -27,31 +28,35 @@ class ImageCollection : public TreeItem
 public: // Enumerations
 
     /** Columns */
-    enum class Column {
-        DatasetName,                /** The name of the dataset */
-        FileNames,                  /** The filename(s) */
-        ImageType,                  /** The type of image(s) */
-        ImageFormat,                /** Image format */
-        ToGrayscale,                /** Whether to convert the images to grayscale */
-        NoImages,                   /** Number of images in the collection */
-        NoSelectedImages,           /** Number of selected images in the collection */
-        IsMultiPage,                /** Whether the collection is a multi-page (TIFF) file */
-        DimensionTag,               /** Dimension TIFF tag */
-        SourceSize,                 /** Size of the source image(s) */
-        TargetSize,                 /** Size of the target image(s) */
-        TargetWidth,                /** Target width of the image(s) */
-        TargetHeight,               /** Target height of the image(s) */
-        Type,                       /** Load as image sequence (0) or image stack (1) */
-        SubsamplingEnabled,         /** Whether subsampling is enabled */
-        SubsamplingRatio,           /** Subsampling ratio */
-        SubsamplingFilter,          /** Subsampling filter */
-        NoPoints,                   /** Number of high-dimensional data points */
-        NoDimensions,               /** Number of high-dimensional data dimensions */
-        Memory,                     /** Estimated memory consumption by the high-dimensional data */
-        Directory,                  /** Directory */
+    enum Column {
+        Name,                           /** The name of the image collection */
+        DatasetName,                    /** The name of the dataset in the data hierarchy */
+        FileNames,                      /** The filename(s) */
+        ImageType,                      /** The type of image(s) */
+        ImageFormat,                    /** Image format */
+        ToGrayscale,                    /** Whether to convert the images to grayscale */
+        NoImages,                       /** Number of images in the collection */
+        NoSelectedImages,               /** Number of selected images in the collection */
+        IsMultiPage,                    /** Whether the collection is a multi-page (TIFF) file */
+        DimensionTag,                   /** Dimension TIFF tag */
+        SourceSize,                     /** Size of the source image(s) */
+        TargetSize,                     /** Size of the target image(s) */
+        TargetWidth,                    /** Target width of the image(s) */
+        TargetHeight,                   /** Target height of the image(s) */
+        Type,                           /** Load as image sequence (0) or image stack (1) */
+        SubsamplingType,                /** Type of subsampling (immediate/pyramid) */
+        SubsamplingRatio,               /** Subsampling ratio */
+        SubsamplingFilter,              /** Subsampling filter */
+        SubsamplingNumberOfLevels,      /** Subsampling number of levels (in case of image pyramids) */
+        SubsamplingLevelFactor,         /** Subsampling level factor (in case of image pyramids) */
+        NoPoints,                       /** Number of high-dimensional data points */
+        NoDimensions,                   /** Number of high-dimensional data dimensions */
+        Memory,                         /** Estimated memory consumption by the high-dimensional data */
+        Directory,                      /** Directory */
+        Conversion,                     /** Conversion */
 
-        Start = DatasetName,        /** Column start */
-        End = Directory             /** Column End */
+        Start = Name,                   /** Column start */
+        End = Conversion                /** Column End */
     };
 
 public: // Nested image class
@@ -196,11 +201,18 @@ public: // Nested image class
     {
     public: // Enumerations
 
-        /**
-         * Image resampling filter
-         * Defines image resampling filters for image subsampling
-         */
-        enum class ImageResamplingFilter
+        /** Image subsampling type */
+        enum class Type
+        {
+            None,           /** No image subsampling, loading as-is */
+            Immediate,      /** Subsampling immediately during loading */
+            Pyramid         /** Build an image pyramid and load it in the data model */
+        };
+
+        static const QMap<Type, QString> types;
+
+        /** Image subsampling filter types for immediate subsampling */
+        enum class Filter
         {
             Box,            /** Box filter */
             Bilinear,       /** Bilinear filter */
@@ -210,31 +222,7 @@ public: // Nested image class
             Lanczos         /** Lanczos filter */
         };
 
-        /** Get string representation of image resampling filter enumeration */
-        static QString imageResamplingFilterName(const ImageResamplingFilter& imageResamplingFilter) {
-            switch (imageResamplingFilter)
-            {
-                case ImageResamplingFilter::Box:
-                    return "Box";
-
-                case ImageResamplingFilter::Bilinear:
-                    return "Bilinear";
-
-                case ImageResamplingFilter::BSpline:
-                    return "BSpline";
-
-                case ImageResamplingFilter::Bicubic:
-                    return "Bicubic";
-
-                case ImageResamplingFilter::CatmullRom:
-                    return "CatmullRom";
-
-                case ImageResamplingFilter::Lanczos:
-                    return "Lanczos";
-            }
-
-            return "";
-        }
+        static const QMap<Filter, QString> filters;
 
     public: // Construction/destruction
 
@@ -245,9 +233,22 @@ public: // Nested image class
          * @param ratio The subsampling ratio
          * @param filter The subsampling filter
          */
-        SubSampling(ImageCollection* imageCollection, const bool& enabled = false, const float& ratio = 0.5f, const ImageResamplingFilter& filter = ImageResamplingFilter::Bicubic);
+        SubSampling(ImageCollection* imageCollection, const bool& enabled = false, const float& ratio = 0.5f, const Filter& filter = Filter::Bicubic);
 
     public: // Getters/setters
+
+        /**
+         * Returns subsampling type
+         * @param role Data role
+         * @return Subsampling type in variant form
+         */
+        QVariant getType(const int& role) const;
+
+        /**
+         * Sets subsampling type
+         * @param type Subsampling type
+         */
+        void setType(const Type& type);
 
         /**
          * Returns whether subsampling is enabled
@@ -286,13 +287,41 @@ public: // Nested image class
          * Sets the subsampling filter
          * @param filter The subsampling filter
          */
-        void setFilter(const ImageResamplingFilter& filter);
+        void setFilter(const Filter& filter);
+
+        /**
+         * Returns the number of pyramid levels
+         * @param role Data role
+         * @return The number of pyramid levels in variant form
+         */
+        QVariant getNumberOfLevels(const int& role) const;
+
+        /**
+         * Sets the number of pyramid levels
+         * @param numberOfLevels The number of pyramid levels
+         */
+        void setNumberOfLevels(std::uint32_t numberOfLevels);
+
+        /**
+         * Returns the level factor
+         * @param role Data role
+         * @return The level factor in variant form
+         */
+        QVariant getLevelFactor(const int& role) const;
+
+        /**
+         * Sets the level factor
+         * @param levelFactor The level factor
+         */
+        void setLevelFactor(std::uint32_t levelFactor);
 
     private:
-        ImageCollection*        _imageCollection;   /** Parent image collection */
-        bool                    _enabled;           /** Whether subsampling is enabled */
-        float                   _ratio;             /** Subsampling ratio */
-        ImageResamplingFilter   _filter;            /** Subsampling filter e.g. box, bilinear */
+        ImageCollection*    _imageCollection;       /** Parent image collection */
+        Type                _type;                  /** Type of subsampling (immediate/pyramid) */
+        float               _ratio;                 /** Subsampling ratio */
+        Filter              _filter;                /** Subsampling filter e.g. box, bilinear */
+        std::uint32_t       _numberOfLevels;        /** Number of levels in case of image pyramids */
+        std::uint32_t       _levelFactor;           /** Level factor in case of image pyramids */
     };
 
 public: // Construction
@@ -378,6 +407,15 @@ public: // Getters/setters
      */
     void setTargetSize(const QSize& targetSize);
 
+    /** Returns the image collection name */
+    QVariant getName(const int& role) const;
+
+    /**
+     * Sets the image collection name
+     * @param name Image collection name
+     */
+    void setName(const QString& name);
+
     /** Returns the dataset name */
     QVariant getDatasetName(const int& role) const;
 
@@ -449,6 +487,15 @@ public: // Getters/setters
     /** Get subsampling parameters */
     SubSampling& getSubsampling();
 
+    /** Returns the root directory */
+    QVariant getConversion(const int& role) const;
+
+    /**
+     * Sets the conversion
+     * @param conversion Conversion
+     */
+    void setConversion(const QString& conversion);
+
 public:
 
     /**
@@ -467,6 +514,8 @@ public:
     /**
      * Loads the image collection into a high-dimensional data vector
      * @param imageLoaderPlugin Pointer to image loader plugin
+     * @return Boolean indicating whether the image collection is loaded properly or not
+     * 
      */
     bool load(ImageLoaderPlugin* imageLoaderPlugin);
 
@@ -476,16 +525,18 @@ private:
     bool containsNans(std::vector<float>& data);
 
 protected:
-    QString             _directory;                     /** Root directory of the images */
-    QString             _imageFileType;                 /** Image file type */
-    QImage::Format      _imageFormat;                   /** Image format */
-    QSize               _sourceSize;                    /** Size of the source image */
-    QSize               _targetSize;                    /** Size of the target image */
-    QString             _datasetName;                   /** The name of the dataset */
-    QString             _dimensionTag;                  /** The dimension (TIFF) tag */
-    bool                _toGrayscale;                   /** Whether to convert the images in the collection to grayscale */
-    ImageData::Type     _type;                          /** How to load the collection (as image sequence or image stack) */
-    SubSampling         _subsampling;                   /** Subsampling parameters */
+    QString             _directory;             /** Root directory of the images */
+    QString             _imageFileType;         /** Image file type */
+    QImage::Format      _imageFormat;           /** Image format */
+    QSize               _sourceSize;            /** Size of the source image */
+    QSize               _targetSize;            /** Size of the target image */
+    QString             _name;                  /** The name of the image collection */
+    QString             _datasetName;           /** The name of the dataset */
+    QString             _dimensionTag;          /** The dimension (TIFF) tag */
+    bool                _toGrayscale;           /** Whether to convert the images in the collection to grayscale */
+    ImageData::Type     _type;                  /** How to load the collection (as image sequence or image stack) */
+    SubSampling         _subsampling;           /** Subsampling parameters */
+    QString             _conversion;            /** Conversion SHA */
 
     friend class SubSampling;
 };
