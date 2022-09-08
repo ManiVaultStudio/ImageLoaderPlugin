@@ -3,7 +3,6 @@
 #include "ScanAction.h"
 #include "ImageCollectionsAction.h"
 #include "ImagesAction.h"
-#include "SubsamplingAction.h"
 
 #include <actions/ToggleAction.h>
 #include <actions/TriggerAction.h>
@@ -48,7 +47,6 @@ private:
     ImageLoaderPlugin&          _imageLoaderPlugin;             /** Reference to parent image loader plugin */
     ScanAction                  _scanAction;                    /** Action for scan settings */
     ImageCollectionsAction      _imageCollectionsAction;        /** Action for interacting with image collections */
-    SubsamplingAction           _subsamplingAction;             /** Action for image subsampling settings */
     ToggleAction                _closeAfterLoadingAction;       /** Action for loading image collection(s) */
     TriggerAction               _loadAction;                    /** Close the dialog when loading is complete action */
     TriggerAction               _cancelAction;                  /** Close the dialog */

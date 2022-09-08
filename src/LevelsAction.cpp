@@ -1,4 +1,4 @@
-#include "NumberOfLevelsActions.h"
+#include "LevelsAction.h"
 #include "ImageLoaderPlugin.h"
 
 #include <QGridLayout>
@@ -6,21 +6,23 @@
 
 using namespace hdps::gui;
 
-const QMap<NumberOfLevelsActions::LevelFactor, std::uint32_t> NumberOfLevelsActions::levelFactors = QMap<NumberOfLevelsActions::LevelFactor, std::uint32_t>({
-    { NumberOfLevelsActions::Level2, 2 },
-    { NumberOfLevelsActions::Level4, 4 },
-    { NumberOfLevelsActions::Level8, 8 },
-    { NumberOfLevelsActions::Level16, 16 },
+const QMap<LevelsAction::LevelFactor, std::uint32_t> LevelsAction::levelFactors = QMap<LevelsAction::LevelFactor, std::uint32_t>({
+    { LevelsAction::LevelFactor::Level2, 2 },
+    { LevelsAction::LevelFactor::Level4, 4 },
+    { LevelsAction::LevelFactor::Level8, 8 },
+    { LevelsAction::LevelFactor::Level16, 16 },
+    { LevelsAction::LevelFactor::Level32, 32 },
 });
 
-const QMap<NumberOfLevelsActions::LevelFactor, QString> NumberOfLevelsActions::levelFactorNames = QMap<NumberOfLevelsActions::LevelFactor, QString>({
-    { NumberOfLevelsActions::Level2, "1/2"},
-    { NumberOfLevelsActions::Level4, "1/4"},
-    { NumberOfLevelsActions::Level8, "1/8"},
-    { NumberOfLevelsActions::Level16, "1/16"},
+const QMap<LevelsAction::LevelFactor, QString> LevelsAction::levelFactorNames = QMap<LevelsAction::LevelFactor, QString>({
+    { LevelsAction::LevelFactor::Level2, "1/2"},
+    { LevelsAction::LevelFactor::Level4, "1/4"},
+    { LevelsAction::LevelFactor::Level8, "1/8"},
+    { LevelsAction::LevelFactor::Level16, "1/16"},
+    { LevelsAction::LevelFactor::Level32, "1/32"},
 });
 
-NumberOfLevelsActions::NumberOfLevelsActions(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
+LevelsAction::LevelsAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent),
     _imageLoaderPlugin(imageLoaderPlugin),
     _numberOfLevelsAction(this, "Number of levels", 1, 5, 2, 2),
@@ -32,7 +34,7 @@ NumberOfLevelsActions::NumberOfLevelsActions(QObject* parent, ImageLoaderPlugin&
     setCheckable(true);
 
     _numberOfLevelsAction.setToolTip("Number of image pyramid levels");
-    _numberOfLevelsAction.setSuffix(" levels");
+    _numberOfLevelsAction.setSuffix(" level(s)");
     _numberOfLevelsAction.setDefaultWidgetFlags(IntegralAction::SpinBox);
 
     _infoAction.setEnabled(false);
@@ -43,31 +45,31 @@ NumberOfLevelsActions::NumberOfLevelsActions(QObject* parent, ImageLoaderPlugin&
             for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
                 _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingNumberOfLevels), currentIndex);
         }
-        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
+        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &LevelsAction::dataChanged);
     });
-
+    
     connect(&_levelFactorAction, &OptionAction::currentIndexChanged, this, [this](const std::int32_t& currentIndex) {
         disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
         {
             for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-                _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor), levelFactors.value(static_cast<NumberOfLevelsActions::LevelFactor>(currentIndex)));
+                _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor), currentIndex);
         }
-        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
+        connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &LevelsAction::dataChanged);
     });
-
-    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &NumberOfLevelsActions::dataChanged);
-    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &NumberOfLevelsActions::updateStateFromModel);
+    
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &LevelsAction::dataChanged);
+    connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &LevelsAction::updateStateFromModel);
 
     updateStateFromModel();
 }
 
-void NumberOfLevelsActions::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
+void LevelsAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
 {
     if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingType) || isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::SubsamplingLevelFactor))
         updateStateFromModel();
 }
 
-void NumberOfLevelsActions::updateStateFromModel()
+void LevelsAction::updateStateFromModel()
 {
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
@@ -76,18 +78,18 @@ void NumberOfLevelsActions::updateStateFromModel()
         setEnabled(false);
 
         _numberOfLevelsAction.setValue(2);
-        _levelFactorAction.setCurrentIndex(levelFactors.key(static_cast<std::int32_t>(LevelFactor::Level2)));
+        _levelFactorAction.setCurrentIndex(0);
     }
 
     if (numberOfSelectedRows >= 1) {
         setEnabled(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingType).data(Qt::EditRole).toInt() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid));
         
         _numberOfLevelsAction.setValue(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingNumberOfLevels).data(Qt::EditRole).toInt());
-        _levelFactorAction.setCurrentIndex(levelFactors.key(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor).data(Qt::EditRole).toInt()));
+        _levelFactorAction.setCurrentIndex(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor).data(Qt::EditRole).toInt());
     }
 }
 
-NumberOfLevelsActions::Widget::Widget(QWidget* parent, NumberOfLevelsActions* numberOfLevelsActions, const std::int32_t& widgetFlags) :
+LevelsAction::Widget::Widget(QWidget* parent, LevelsAction* numberOfLevelsActions, const std::int32_t& widgetFlags) :
     WidgetActionWidget(parent, numberOfLevelsActions, widgetFlags)
 {
     auto layout = new QHBoxLayout();

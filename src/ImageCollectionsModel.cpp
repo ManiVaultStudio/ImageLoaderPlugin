@@ -167,7 +167,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
             auto targetSize = sourceSize;
 
-            if (subsamplingType == ImageCollection::SubSampling::Type::Immediate) {
+            if (subsamplingType == ImageCollection::SubSampling::Type::Resample) {
                 targetSize.setWidth(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.width()), 1));
                 targetSize.setHeight(std::max(static_cast<std::int32_t>(subsamplingRatio * sourceSize.height()), 1));
             }
@@ -798,16 +798,6 @@ void ImageCollectionsModel::guessDimensionNames(const QModelIndex& imageCollecti
         const auto imageDimensionNameIndex = index(imageCollection->_children.indexOf(child), ult(ImageCollection::Image::Column::DimensionName), imageCollectionIndex);
         emit dataChanged(imageDimensionNameIndex, imageDimensionNameIndex);
     }
-}
-
-bool ImageCollectionsModel::loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index)
-{
-    if (index.parent() != QModelIndex())
-        return false;
-
-    auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
-
-    return imageCollection->load(imageLoaderPlugin);
 }
 
 QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const

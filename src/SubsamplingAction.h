@@ -3,7 +3,7 @@
 #include "SubsamplingTypeAction.h"
 #include "SubsamplingRatioAction.h"
 #include "SubsamplingFilterTypeAction.h"
-#include "NumberOfLevelsActions.h"
+#include "LevelsAction.h"
 
 #include <actions/WidgetAction.h>
 #include <actions/OptionAction.h>
@@ -32,14 +32,14 @@ public:
     SubsamplingTypeAction& getTypeAction() { return _typeAction; }
     SubsamplingRatioAction& getRatioAction() { return _ratioAction; }
     SubsamplingFilterTypeAction& getFilterTypeAction() { return _filterTypeAction; }
-    NumberOfLevelsActions& getNumberOfLevelsAction() { return _numberOfLevelsAction; }
+    LevelsAction& getLevelsActions() { return _levelsAction; }
 
 private:
     ImageLoaderPlugin&              _imageLoaderPlugin;         /** Reference to parent image loader plugin */
     SubsamplingTypeAction           _typeAction;                /** Subsampling type action */
     SubsamplingRatioAction          _ratioAction;               /** Subsampling ratio action */
     SubsamplingFilterTypeAction     _filterTypeAction;          /** Subsampling filter type action */
-    NumberOfLevelsActions           _numberOfLevelsAction;      /** Subsampling number of levels action */
+    LevelsAction                    _levelsAction;      /** Levels action */
 
     friend class Widget;
 };

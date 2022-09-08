@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SubsamplingTypeAction.h"
-#include "NumberOfLevelsActions.h"
+#include "LevelsAction.h"
 
 #include <actions/WidgetAction.h>
 #include <actions/DecimalAction.h>

@@ -10,7 +10,6 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
     _scanAction(this, imageLoaderPlugin),
     _imageCollectionsAction(this, imageLoaderPlugin),
-    _subsamplingAction(this, imageLoaderPlugin),
     _closeAfterLoadingAction(this, "Close after loading", true, true),
     _loadAction(this, "Load"),
     _cancelAction(this, "Cancel")
@@ -36,7 +35,6 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     //mainLayout->setSpacing(0);
     mainLayout->addWidget(_scanAction.createWidget(this));
     mainLayout->addWidget(_imageCollectionsAction.createWidget(this), 2);
-    mainLayout->addWidget(_subsamplingAction.createWidget(this));
 
     auto bottomLayout = new QHBoxLayout();
 
@@ -85,7 +83,86 @@ void ImageLoaderDialog::loadImageCollections()
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
 
-        imageCollection->load(&_imageLoaderPlugin);
+        auto currentLevelPoints     = imageCollection->load(&_imageLoaderPlugin);
+        auto level0Points = currentLevelPoints;
+
+        const auto level0Size = imageCollection->getTargetSize(Qt::EditRole).toSize();
+
+        auto currentLevelSize = imageCollection->getTargetSize(Qt::EditRole).toSize();
+
+        if (_imageCollectionsAction.getSubsamplingAction().getTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid)) {
+            auto& levelsAction = _imageCollectionsAction.getSubsamplingAction().getLevelsActions();
+
+            const auto levelFactor = LevelsAction::levelFactors.value(static_cast<LevelsAction::LevelFactor>(levelsAction.getLevelFactorAction().getCurrentIndex()));
+            const auto scaleFactor = 1.0f / levelFactor;
+
+            for (int levelIndex = 1; levelIndex <= levelsAction.getNumberOfLevelsAction().getValue(); ++levelIndex) {
+                imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
+
+                currentLevelSize = currentLevelSize * scaleFactor;
+
+                if (currentLevelSize.width() < 4 || currentLevelSize.height() < 4)
+                    break;
+
+                imageCollection->setTargetSize(currentLevelSize);
+
+                auto previousLevelPoints = currentLevelPoints;
+
+                currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
+                
+                const auto currentLevelFactor = static_cast<std::uint32_t>(powf(levelFactor, levelIndex));
+
+                // Map from current level to level zero
+                {
+                    SelectionMap selectionMap;
+
+                    for (std::int32_t currentLevelPixelX = 0; currentLevelPixelX < currentLevelSize.width(); ++currentLevelPixelX) {
+                        for (std::int32_t currentLevelPixelY = 0; currentLevelPixelY < currentLevelSize.height(); ++currentLevelPixelY) {
+                            const auto currentLevelPixelIndex = currentLevelPixelY * currentLevelSize.width() + currentLevelPixelX;
+
+                            std::vector<std::uint32_t> indices;
+
+                            indices.reserve(currentLevelFactor * currentLevelFactor);
+
+                            const auto level0PixelRangeX = QPair<std::uint32_t, std::uint32_t>(currentLevelPixelX * currentLevelFactor, (currentLevelPixelX + 1) * currentLevelFactor);
+                            const auto level0PixelRangeY = QPair<std::uint32_t, std::uint32_t>(currentLevelPixelY * currentLevelFactor, (currentLevelPixelY + 1) * currentLevelFactor);
+
+                            for (std::int32_t level0PixelX = level0PixelRangeX.first; level0PixelX < level0PixelRangeX.second; ++level0PixelX) {
+                                for (std::int32_t level0PixelY = level0PixelRangeY.first; level0PixelY < level0PixelRangeY.second; ++level0PixelY) {
+                                    if (level0PixelX >= level0Size.width() || level0PixelY >= level0Size.height())
+                                        break;
+
+                                    indices.push_back(level0PixelY * level0Size.width() + level0PixelX);
+                                }
+                            }
+
+                            selectionMap[currentLevelPixelIndex] = indices;
+                        }
+                    }
+
+                    currentLevelPoints->addLinkedData(level0Points, selectionMap);
+                }
+                /*
+                // Map from level zero to current level
+                {
+                    SelectionMap selectionMap;
+
+                    for (std::int32_t level0X = 0; level0X < level0Size.width(); ++level0X) {
+                        for (std::int32_t level0Y = 0; level0Y < level0Size.height(); ++level0Y) {
+                            const auto level0Index  = level0Y * level0Size.width() + level0X;
+                            const auto levelX       = static_cast<std::int32_t>(floorf(level0X / static_cast<float>(levelFactor)));
+                            const auto levelY       = static_cast<std::int32_t>(floorf(level0Y / static_cast<float>(levelFactor)));
+                            const auto levelIndex   = levelY * levelSize.width() + levelX;
+
+                            selectionMap[level0Index] = { static_cast<std::uint32_t>(levelIndex) };
+                        }
+                    }
+
+                    level0Points->addLinkedData(currentLevelPoints, selectionMap);
+                }
+                */
+            }
+        }
     }
 
     if (_closeAfterLoadingAction.isChecked())

@@ -12,7 +12,7 @@ SubsamplingAction::SubsamplingAction(QObject* parent, ImageLoaderPlugin& imageLo
     _typeAction(this, imageLoaderPlugin),
     _ratioAction(this, imageLoaderPlugin),
     _filterTypeAction(this, imageLoaderPlugin),
-    _numberOfLevelsAction(this, imageLoaderPlugin)
+    _levelsAction(this, imageLoaderPlugin)
 {
     setText("Subsampling");
     setCheckable(true);

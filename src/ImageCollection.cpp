@@ -29,7 +29,7 @@ using namespace hdps::util;
 
 const QMap<ImageCollection::SubSampling::Type, QString> ImageCollection::SubSampling::types = QMap<ImageCollection::SubSampling::Type, QString>({
     { ImageCollection::SubSampling::Type::None, "None"},
-    { ImageCollection::SubSampling::Type::Immediate, "Immediate"},
+    { ImageCollection::SubSampling::Type::Resample, "Resample"},
     { ImageCollection::SubSampling::Type::Pyramid, "Pyramid"}
 });
 
@@ -632,7 +632,7 @@ ImageCollection* ImageCollection::Image::getImageCollection()
 
 ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const Filter& filter /*= ImageResamplingFilter::Bicubic*/) :
     _imageCollection(imageCollection),
-    _type(Type::Immediate),
+    _type(Type::Resample),
     _ratio(ratio),
     _filter(filter),
     _numberOfLevels(3),
@@ -1680,11 +1680,11 @@ void ImageCollection::guessDimensionNames()
     }
 }
 
-bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
+Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin, Dataset<DatasetImpl> parent /*= Dataset<DatasetImpl>()*/)
 {
     try
     {
-        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName);
+        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
 
         imageLoaderPlugin->_core->notifyDatasetAdded(points);
 
@@ -1753,7 +1753,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
             sanitizeDataDialog.exec();
         }
 
-        points->setGuiName(_name);
+        points->setGuiName(_datasetName);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
@@ -1783,7 +1783,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
 
         images->getDataHierarchyItem().select();
 
-        return true;
+        return points;
     }
     catch (const std::runtime_error& e)
     {
@@ -1794,7 +1794,7 @@ bool ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin)
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
 
-    return false;
+    return Dataset<Points>();
 }
 
 bool ImageCollection::containsNans(std::vector<float>& data)

@@ -44,6 +44,10 @@ public:
 public:
     ImageCollectionsAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
+public:
+
+    SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
+
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to image loader plugin instance */
     StringAction            _filterAction;              /** Filter by image name action */

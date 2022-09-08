@@ -9,16 +9,17 @@ class ImageLoaderPlugin;
 
 using namespace hdps::gui;
 
-class NumberOfLevelsActions : public WidgetAction
+class LevelsAction : public WidgetAction
 {
 public:
 
     /** Subsampling level factors */
     enum LevelFactor {
-        Level2,     /** Scale each level by factor 2 */
-        Level4,     /** Scale each level by factor 4 */
-        Level8,     /** Scale each level by factor 8 */
-        Level16     /** Scale each level by factor 16 */
+        Level2,     /** Scale each level by factor 1/2 */
+        Level4,     /** Scale each level by factor 1/4 */
+        Level8,     /** Scale each level by factor 1/8 */
+        Level16,    /** Scale each level by factor 1/16 */
+        Level32     /** Scale each level by factor 1/32 */
     };
 
     static const QMap<LevelFactor, std::uint32_t> levelFactors;
@@ -28,7 +29,7 @@ protected:
 
     class Widget : public WidgetActionWidget {
     public:
-        Widget(QWidget* parent, NumberOfLevelsActions* numberOfLevelsActions, const std::int32_t& widgetFlags);
+        Widget(QWidget* parent, LevelsAction* numberOfLevelsActions, const std::int32_t& widgetFlags);
     };
 
     QWidget* getWidget(QWidget* parent, const std::int32_t& widgetFlags) override {
@@ -36,11 +37,16 @@ protected:
     };
 
 public:
-    NumberOfLevelsActions(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
+    LevelsAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 private:
     void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>());
     void updateStateFromModel();
+
+public:
+    IntegralAction& getNumberOfLevelsAction() { return _numberOfLevelsAction; }
+    OptionAction& getLevelFactorAction() { return _levelFactorAction; }
+    StringAction& getInfoAction() { return _infoAction; }
 
 private:
     ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to parent image loader plugin */

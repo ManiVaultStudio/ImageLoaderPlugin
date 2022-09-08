@@ -183,13 +183,6 @@ public: // Miscellaneous
     void guessDimensionNames(const QModelIndex& imageCollectionIndex);
 
     /**
-     * Loads an image collection
-     * @param imageLoaderPlugin Pointer to image loader plugin
-     * @param index Image collection model index
-     */
-    bool loadImageCollection(ImageLoaderPlugin* imageLoaderPlugin, const QModelIndex& index);
-
-    /**
      * Returns the image collection settings prefix given an arbitrary model index
      * @param index Model index of the image collection
      * @return Settings prefix for the image collection

@@ -120,8 +120,8 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getFilterTypeAction().createLabelWidget(this), 8, 0);
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getFilterTypeAction().createWidget(this), 8, 1);
 
-    subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createLabelWidget(this), 9, 0);
-    subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getNumberOfLevelsAction().createWidget(this), 9, 1);
+    subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getLevelsActions().createLabelWidget(this), 9, 0);
+    subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getLevelsActions().createWidget(this), 9, 1);
 
     mainLayout->addLayout(subLayout);
 
