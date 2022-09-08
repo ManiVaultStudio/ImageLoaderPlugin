@@ -176,7 +176,7 @@ public: // Nested image class
         void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames);
 
         /** Guesses dimension name of the image */
-        void guessDimensionName();
+        QString guessDimensionName();
 
         /** Get parent image collection */
         ImageCollection* getImageCollection();
@@ -531,7 +531,7 @@ public:
     void computeDatasetName();
 
     /** Guesses dimension names */
-    void guessDimensionNames();
+    QStringList guessDimensionNames();
 
     /**
      * Loads the image collection into a high-dimensional data vector

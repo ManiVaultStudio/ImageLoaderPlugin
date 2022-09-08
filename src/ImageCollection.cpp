@@ -106,21 +106,6 @@ QVariant ImageCollection::Image::getFileName(const int& role) const
 
 QVariant ImageCollection::Image::getDimensionName(const int& role) const
 {
-    /*
-    auto* pageBitmap = FI::FreeImage_LockPage(multiBitmap, pageIndex);
-
-    FITAG* tag;
-
-    FI::FreeImage_GetMetadata(FREE_IMAGE_MDMODEL::FIMD_CUSTOM, pageBitmap, "DESCRIPTION", &tag);
-
-    if (_dimensionName.isEmpty()) {
-        _dimensionName = QFileInfo(_filePath).completeBaseName();
-
-        if (_pageIndex >= 0)
-            _dimensionName = QString("Dim %1").arg(QString::number(_pageIndex));
-    }
-    */
-
     switch (role)
     {
         case Qt::DisplayRole:
@@ -568,7 +553,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
     }
 }
 
-void ImageCollection::Image::guessDimensionName()
+QString ImageCollection::Image::guessDimensionName()
 {
     try
     {
@@ -602,17 +587,17 @@ void ImageCollection::Image::guessDimensionName()
             }
 
             if (dimensionName.isEmpty())
-                _dimensionName = QString("Dim %1").arg(_pageIndex);
-            else
-                _dimensionName = dimensionName;
+                dimensionName = QString("Dim %1").arg(_pageIndex);
 
-            _dimensionName.truncate(256);
+            dimensionName.truncate(256);
 
             FI::FreeImage_UnlockPage(multiBitmap, pageBitmap, false);
             FI::FreeImage_CloseMultiBitmap(multiBitmap);
+
+            return dimensionName;
         }
         else {
-            _dimensionName = _fileName;
+            return _fileName;
         }
     }
     catch (const std::runtime_error& e)
@@ -623,6 +608,8 @@ void ImageCollection::Image::guessDimensionName()
     {
         throw e;
     }
+
+    return "";
 }
 
 ImageCollection* ImageCollection::Image::getImageCollection()
@@ -783,7 +770,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
     _name(),
-    _dimensionTag("PageName"),
+    _dimensionTag(""),
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
     _subsampling(this),
@@ -1640,43 +1627,26 @@ void ImageCollection::computeDatasetName()
     setName(QString("%1").arg(QDir(rootDir).dirName()));
 }
 
-void ImageCollection::guessDimensionNames()
+QStringList ImageCollection::guessDimensionNames()
 {
-    if (_children.isEmpty())
-        return;
-
     try
     {
-        QProgressDialog progressDialog("Establishing dimension names", "", 0, _children.size(), nullptr);
+        QStringList dimensionNames;
+ 
+        for (auto child : _children)
+            dimensionNames << static_cast<Image*>(child)->guessDimensionName();
 
-        progressDialog.setWindowTitle(QString("Establishing dimension names for: %1").arg(_name));
-        progressDialog.setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
-        progressDialog.setWindowModality(Qt::WindowModal);
-        progressDialog.setMinimumDuration(1000);
-        progressDialog.setFixedWidth(600);
-        progressDialog.setMinimum(0);
-        progressDialog.setMaximum(_children.size());
-        progressDialog.setValue(0);
-
-        for (auto child : _children) {
-            const auto dimensionIndex = _children.indexOf(child);
-
-            progressDialog.setLabelText(QString("Extracting dimension name %1").arg(dimensionIndex));
-
-            static_cast<Image*>(child)->guessDimensionName();
-
-            progressDialog.setValue(dimensionIndex);
-
-            QCoreApplication::processEvents();
-        }
+        return dimensionNames;
     }
     catch (const std::runtime_error& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
+        return QStringList();
     }
     catch (std::exception e)
     {
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
+        return QStringList();
     }
 }
 

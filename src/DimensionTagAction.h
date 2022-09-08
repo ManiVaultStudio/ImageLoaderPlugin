@@ -56,6 +56,8 @@ private:
 signals:
 
     void tagChanged(const QString& tag);
+    void beginEstablishDimensionNames();
+    void endEstablishDimensionNames();
 
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;

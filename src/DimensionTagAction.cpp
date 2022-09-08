@@ -1,6 +1,8 @@
 #include "DimensionTagAction.h"
 #include "ImageLoaderPlugin.h"
 
+#include <QProgressDialog>
+
 const QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger> DimensionTagAction::triggers = QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger>({
     { DimensionTagAction::PageName, TriggersAction::Trigger("PageName", "PageName TIFF tag") },
     { DimensionTagAction::ImageDescription, TriggersAction::Trigger("ImageDescription", "ImageDescription TIFF tag") }
@@ -61,10 +63,35 @@ void DimensionTagAction::updateRows()
     {
         auto& imageCollectionsModel = _imageLoaderPlugin.getImageCollectionsModel();
 
-        for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
-            imageCollectionsModel.setData(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::DimensionTag), _tagAction.getString());
-            imageCollectionsModel.guessDimensionNames(selectedImageCollectionIndex);
+        QProgressDialog progressDialog("Establishing dimension names", "", 0, _imageLoaderPlugin.getSelectedRows().count(), nullptr);
+
+        progressDialog.setWindowTitle(QString("Establishing dimension names for %1 collection(s)").arg(QString::number(_imageLoaderPlugin.getSelectedRows().count())));
+        progressDialog.setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
+        progressDialog.setWindowModality(Qt::WindowModal);
+        progressDialog.setMinimumDuration(1000);
+        progressDialog.setFixedWidth(600);
+        progressDialog.setMinimum(0);
+        progressDialog.setMaximum(_imageLoaderPlugin.getSelectedRows().count());
+        progressDialog.setValue(0);
+
+        emit beginEstablishDimensionNames();
+        {
+            setEnabled(false);
+            {
+                for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+                    progressDialog.setLabelText(QString("Extracting dimensions for %1").arg(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::Name).data(Qt::EditRole).toString()));
+
+                    imageCollectionsModel.setData(selectedImageCollectionIndex.siblingAtColumn(ImageCollection::Column::DimensionTag), _tagAction.getString());
+                    imageCollectionsModel.guessDimensionNames(selectedImageCollectionIndex);
+
+                    progressDialog.setValue(_imageLoaderPlugin.getSelectedRows().indexOf(selectedImageCollectionIndex));
+
+                    QCoreApplication::processEvents();
+                }
+            }
+            setEnabled(true);
         }
+        emit endEstablishDimensionNames();
     }
     connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &DimensionTagAction::dataChanged);
 }

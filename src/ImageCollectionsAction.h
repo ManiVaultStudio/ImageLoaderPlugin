@@ -46,7 +46,12 @@ public:
 
 public:
 
+    StringAction& getFilterAction() { return _filterAction; }
+    DatasetNameAction& getDatasetNameAction() { return _datasetNameAction; }
+    DataLayoutAction& getDataLayoutAction() { return _dataLayoutAction; }
+    DimensionTagAction& getDimensionTagAction() { return _dimensionTagAction; }
     SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
+    ImagesAction& getImagesAction() { return _imagesAction; }
 
 protected:
     ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to image loader plugin instance */

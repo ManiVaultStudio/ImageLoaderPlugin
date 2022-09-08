@@ -30,7 +30,7 @@ LevelsAction::LevelsAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     _infoAction(this, "Info")
 {
     setEnabled(false);
-    setText("Subsampling");
+    setText("Levels");
     setCheckable(true);
 
     _numberOfLevelsAction.setToolTip("Number of image pyramid levels");

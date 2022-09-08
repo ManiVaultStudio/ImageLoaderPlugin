@@ -26,6 +26,18 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, this, &ImageLoaderDialog::updateActions);
     connect(&_loadAction, &TriggerAction::triggered, this, &ImageLoaderDialog::loadImageCollections);
     connect(&_cancelAction, &TriggerAction::triggered, this, &ImageLoaderDialog::reject);
+    
+    connect(&_imageCollectionsAction.getDimensionTagAction(), &DimensionTagAction::beginEstablishDimensionNames, this, [this]() -> void {
+        _closeAfterLoadingAction.setEnabled(false);
+        _loadAction.setEnabled(false);
+        _cancelAction.setEnabled(false);
+    });
+
+    connect(&_imageCollectionsAction.getDimensionTagAction(), &DimensionTagAction::endEstablishDimensionNames, this, [this]() -> void {
+        _closeAfterLoadingAction.setEnabled(true);
+        _loadAction.setEnabled(true);
+        _cancelAction.setEnabled(true);
+    });
 
     updateActions();
 
