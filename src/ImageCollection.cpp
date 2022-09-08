@@ -1772,7 +1772,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         imageLoaderPlugin->_core->notifyDatasetAdded(images);
 
-        images->setGuiName("Images");
+        images->setGuiName(QString("Images (%2x%3)").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height())));
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
         images->setImageSize(_targetSize);
