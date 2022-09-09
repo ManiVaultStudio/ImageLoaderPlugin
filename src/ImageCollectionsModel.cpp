@@ -360,7 +360,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         image->setDimensionName(value.toString());
 
                         if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Images/" + image->getImageCollection()->getName(Qt::EditRole).toString() + "/" + QString::number(index.row()), value.toString());
+                            _imageLoaderPlugin->setSetting(QString("%1/Images/%2/%3/DimensionName").arg(settingsPrefix, image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toString());
 
                         break;
                     }
@@ -784,8 +784,12 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Conversion)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", 0).toString());
 
-            for (int imageRow = 0; imageRow < noImages; imageRow++)
-                setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::DimensionName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Images/" + name + "/" + QString::number(imageRow), "").toString());
+            for (int imageRow = 0; imageRow < noImages; imageRow++) {
+                const auto dimensionName    = _imageLoaderPlugin->getSetting(QString("%1/Images/%2/%3/DimensionName").arg(settingsPrefix, name, QString::number(imageRow)), "").toString();
+                
+                if (!dimensionName.isEmpty())
+                    setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::DimensionName)), dimensionName);
+            }
         }
     }
     _persistData = true;

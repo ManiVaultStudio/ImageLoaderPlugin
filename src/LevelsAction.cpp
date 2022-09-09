@@ -79,6 +79,7 @@ void LevelsAction::updateStateFromModel()
 
         _numberOfLevelsAction.setValue(2);
         _levelFactorAction.setCurrentIndex(0);
+        _infoAction.setString("");
     }
 
     if (numberOfSelectedRows >= 1) {
@@ -86,6 +87,19 @@ void LevelsAction::updateStateFromModel()
         
         _numberOfLevelsAction.setValue(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingNumberOfLevels).data(Qt::EditRole).toInt());
         _levelFactorAction.setCurrentIndex(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingLevelFactor).data(Qt::EditRole).toInt());
+
+        if (numberOfSelectedRows == 1) {
+            const auto sourceSize = selectedRows.first().siblingAtColumn(ImageCollection::Column::SourceSize).data(Qt::EditRole).toSize();
+
+            for (int levelIndex = 0; levelIndex < _numberOfLevelsAction.getValue(); ++levelIndex) {
+                
+            }
+
+            
+        }
+        else {
+            _infoAction.setString("");
+        }
     }
 }
 
