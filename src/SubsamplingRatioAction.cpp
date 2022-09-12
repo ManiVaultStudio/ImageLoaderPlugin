@@ -70,7 +70,7 @@ void SubsamplingRatioAction::updateStateFromModel()
         setEnabled(false);
 
     if (numberOfSelectedRows >= 1) {
-        setEnabled(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingType).data(Qt::EditRole).toInt() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Immediate));
+        setEnabled(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingType).data(Qt::EditRole).toInt() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Resample));
         _ratioAction.setValue(100.0f * selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingRatio).data(Qt::EditRole).toFloat());
     }
 }

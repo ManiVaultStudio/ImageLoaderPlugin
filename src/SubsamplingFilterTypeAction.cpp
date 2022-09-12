@@ -55,7 +55,7 @@ void SubsamplingFilterTypeAction::updateStateFromModel()
         setEnabled(false);
 
     if (numberOfSelectedRows >= 1) {
-        setEnabled(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingType).data(Qt::EditRole).toInt() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Immediate));
+        setEnabled(selectedRows.first().siblingAtColumn(ImageCollection::Column::SubsamplingType).data(Qt::EditRole).toInt() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Resample));
 
         QSet<std::int32_t> filterTypes;
 

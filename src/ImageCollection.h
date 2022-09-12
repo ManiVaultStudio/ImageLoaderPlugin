@@ -176,10 +176,21 @@ public: // Nested image class
         void loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames);
 
         /** Guesses dimension name of the image */
-        void guessDimensionName();
+        QString guessDimensionName();
 
         /** Get parent image collection */
         ImageCollection* getImageCollection();
+
+    public: // Operators
+
+        void operator = (const Image& other) {
+            _index          = other._index;
+            _filePath       = other._filePath;
+            _fileName       = other._fileName;
+            _dimensionName  = other._dimensionName;
+            _shouldLoad     = other._shouldLoad;
+            _pageIndex      = other._pageIndex;
+        }
 
     private:
         std::int32_t    _index;                         /** Image index (index < 0: image not loaded)*/
@@ -204,9 +215,9 @@ public: // Nested image class
         /** Image subsampling type */
         enum class Type
         {
-            None,           /** No image subsampling, loading as-is */
-            Immediate,      /** Subsampling immediately during loading */
-            Pyramid         /** Build an image pyramid and load it in the data model */
+            None,       /** No image subsampling, loading as-is */
+            Resample,   /** Resample */
+            Pyramid     /** Build an image pyramid and load it in the data model */
         };
 
         static const QMap<Type, QString> types;
@@ -314,6 +325,17 @@ public: // Nested image class
          * @param levelFactor The level factor
          */
         void setLevelFactor(std::uint32_t levelFactor);
+
+    public: // Operators
+
+        void operator = (const SubSampling& other) {
+            _imageCollection    = other._imageCollection;
+            _type               = other._type;
+            _ratio              = other._ratio;
+            _filter             = other._filter;
+            _numberOfLevels     = other._numberOfLevels;
+            _levelFactor        = other._levelFactor;
+        }
 
     private:
         ImageCollection*    _imageCollection;       /** Parent image collection */
@@ -509,15 +531,33 @@ public:
     void computeDatasetName();
 
     /** Guesses dimension names */
-    void guessDimensionNames();
+    QStringList guessDimensionNames();
 
     /**
      * Loads the image collection into a high-dimensional data vector
      * @param imageLoaderPlugin Pointer to image loader plugin
-     * @return Boolean indicating whether the image collection is loaded properly or not
+     * @param parent Smart pointer to parent dataset (used for image pyramids)
+     * @return Smart pointer to generated dataset (if loading was successful)
      * 
      */
-    bool load(ImageLoaderPlugin* imageLoaderPlugin);
+    hdps::Dataset<hdps::DatasetImpl> load(ImageLoaderPlugin* imageLoaderPlugin, hdps::Dataset<hdps::DatasetImpl> parent = hdps::Dataset<hdps::DatasetImpl>());
+
+public: // Operators
+
+    void operator = (const ImageCollection& other) {
+        _directory      = other._directory;
+        _imageFileType  = other._imageFileType;
+        _imageFormat    = other._imageFormat;
+        _sourceSize     = other._sourceSize;
+        _targetSize     = other._targetSize;
+        _name           = other._name;
+        _datasetName    = other._datasetName;
+        _dimensionTag   = other._dimensionTag;
+        _toGrayscale    = other._toGrayscale;
+        _type           = other._type;
+        _subsampling    = other._subsampling;
+        _conversion     = other._conversion;
+    }
 
 private:
 
