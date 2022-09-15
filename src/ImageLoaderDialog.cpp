@@ -95,8 +95,8 @@ void ImageLoaderDialog::loadImageCollections()
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
 
-        auto currentLevelPoints     = imageCollection->load(&_imageLoaderPlugin);
-        auto level0Points = currentLevelPoints;
+        auto currentLevelPoints = imageCollection->load(&_imageLoaderPlugin);
+        auto level0Points       = currentLevelPoints;
 
         const auto level0Size = imageCollection->getTargetSize(Qt::EditRole).toSize();
 
@@ -115,62 +115,20 @@ void ImageLoaderDialog::loadImageCollections()
                     break;
 
                 imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
-
                 imageCollection->setTargetSize(currentLevelSize);
 
-                auto previousLevelPoints = currentLevelPoints;
-
                 currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
-                
-                const auto currentLevelFactor = static_cast<std::uint32_t>(powf(levelFactor, levelIndex));
+
+                // Map from level zero to current level
+                {
+                    SelectionMap selectionMap(level0Size, currentLevelSize);
+                    level0Points->addLinkedData(currentLevelPoints, selectionMap);
+                }
 
                 // Map from current level to level zero
                 {
-                    SelectionMap selectionMap;
-
-                    for (std::int32_t currentLevelPixelX = 0; currentLevelPixelX < currentLevelSize.width(); ++currentLevelPixelX) {
-                        for (std::int32_t currentLevelPixelY = 0; currentLevelPixelY < currentLevelSize.height(); ++currentLevelPixelY) {
-                            const auto currentLevelPixelIndex = currentLevelPixelY * currentLevelSize.width() + currentLevelPixelX;
-
-                            std::vector<std::uint32_t> indices;
-
-                            indices.reserve(currentLevelFactor * currentLevelFactor);
-
-                            const auto level0PixelRangeX = QPair<std::uint32_t, std::uint32_t>(currentLevelPixelX * currentLevelFactor, (currentLevelPixelX + 1) * currentLevelFactor);
-                            const auto level0PixelRangeY = QPair<std::uint32_t, std::uint32_t>(currentLevelPixelY * currentLevelFactor, (currentLevelPixelY + 1) * currentLevelFactor);
-
-                            for (std::int32_t level0PixelX = level0PixelRangeX.first; level0PixelX < level0PixelRangeX.second; ++level0PixelX) {
-                                for (std::int32_t level0PixelY = level0PixelRangeY.first; level0PixelY < level0PixelRangeY.second; ++level0PixelY) {
-                                    if (level0PixelX >= level0Size.width() || level0PixelY >= level0Size.height())
-                                        break;
-
-                                    indices.push_back(level0PixelY * level0Size.width() + level0PixelX);
-                                }
-                            }
-
-                            selectionMap[currentLevelPixelIndex] = indices;
-                        }
-                    }
-
+                    SelectionMap selectionMap(currentLevelSize, level0Size);
                     currentLevelPoints->addLinkedData(level0Points, selectionMap);
-                }
-                
-                // Map from level zero to current level
-                {
-                    SelectionMap selectionMap;
-
-                    for (std::int32_t level0PixelX = 0; level0PixelX < level0Size.width(); ++level0PixelX) {
-                        for (std::int32_t level0PixelY = 0; level0PixelY < level0Size.height(); ++level0PixelY) {
-                            const auto level0PixelIndex         = level0PixelY * level0Size.width() + level0PixelX;
-                            const auto currentLevelPixelX       = static_cast<std::int32_t>(floorf(level0PixelX / static_cast<float>(currentLevelFactor)));
-                            const auto currentLevelPixelY       = static_cast<std::int32_t>(floorf(level0PixelY / static_cast<float>(currentLevelFactor)));
-                            const auto currentLevelPixelIndex   = currentLevelPixelY * currentLevelSize.width() + currentLevelPixelX;
-
-                            selectionMap[level0PixelIndex] = { static_cast<std::uint32_t>(currentLevelPixelIndex) };
-                        }
-                    }
-
-                    level0Points->addLinkedData(currentLevelPoints, selectionMap);
                 }
             }
         }
