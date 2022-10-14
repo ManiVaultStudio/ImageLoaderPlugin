@@ -154,7 +154,7 @@ install(TARGETS ${PROJECT}
 
 # copy the FreeImage library to the root install directory (the same level as the hdps executable)
 install(FILES
-    "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${LIB_SUFFIX}"
+    "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
     DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
 )
 
