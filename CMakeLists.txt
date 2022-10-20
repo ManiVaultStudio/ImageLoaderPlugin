@@ -24,6 +24,7 @@ find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 # Normalize the incoming install path
 file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
 
+
 SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
 
