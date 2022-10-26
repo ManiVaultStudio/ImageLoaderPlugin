@@ -10,7 +10,8 @@ ImagesAction::ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     _imageLoaderPlugin(imageLoaderPlugin),
     _selectAllAction(this, "Select all"),
     _selectNoneAction(this, "Select none"),
-    _selectInvertAction(this, "Select invert")
+    _selectInvertAction(this, "Select invert"),
+    _guessDimensionNamesAction(this, "Guess dimension names")
 {
     setText("Images");
 
@@ -31,6 +32,11 @@ ImagesAction::ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     connect(&_selectInvertAction, &TriggerAction::triggered, [this]() {
         for (const auto& index : _imageLoaderPlugin.getSelectedRows())
             _imageLoaderPlugin.getImageCollectionsModel().invertSelection(index);
+    });
+
+    connect(&_guessDimensionNamesAction, &TriggerAction::triggered, [this]() {
+        for (const auto& index : _imageLoaderPlugin.getSelectedRows())
+            _imageLoaderPlugin.getImageCollectionsModel().guessDimensionNames(index);
     });
 }
 
@@ -56,6 +62,7 @@ ImagesAction::Widget::Widget(QWidget* parent, ImagesAction* imagesAction, const 
     selectionLayout->addWidget(imagesAction->_selectNoneAction.createWidget(this));
     selectionLayout->addWidget(imagesAction->_selectInvertAction.createWidget(this));
     selectionLayout->addStretch(1);
+    selectionLayout->addWidget(imagesAction->_guessDimensionNamesAction.createWidget(this));
 
     mainLayout->addLayout(selectionLayout);
 
@@ -80,7 +87,6 @@ void ImagesAction::Widget::updateTreeView()
 
     if (selectedRows.count() >= 1) {
         header->setSectionResizeMode(ult(ImageCollection::Image::Column::ShouldLoad), QHeaderView::Fixed);
-        header->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::ResizeToContents);
         header->setSectionResizeMode(ult(ImageCollection::Image::Column::DimensionName), QHeaderView::Interactive);
         header->setSectionResizeMode(ult(ImageCollection::Image::Column::FileName), QHeaderView::Interactive);
     }

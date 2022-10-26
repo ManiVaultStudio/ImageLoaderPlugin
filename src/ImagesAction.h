@@ -39,6 +39,7 @@ protected:
     TriggerAction           _selectAllAction;
     TriggerAction           _selectNoneAction;
     TriggerAction           _selectInvertAction;
+    TriggerAction           _guessDimensionNamesAction;
 
     friend class Widget;
 };

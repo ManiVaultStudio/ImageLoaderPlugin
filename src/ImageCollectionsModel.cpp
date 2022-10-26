@@ -347,7 +347,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 
                         if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Images/" + image->getDimensionName(Qt::EditRole).toString(), value.toBool());
+                            _imageLoaderPlugin->setSetting(QString("%1/Images/%2/%3/ShouldLoad").arg(settingsPrefix, image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toBool());
 
                         break;
                     }
@@ -380,13 +380,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                 switch (column) {
                     case ImageCollection::Image::Column::ShouldLoad:
                     {
-                        image->setShouldLoad(value.toBool());
-
-                        affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoSelectedImages));
-                        affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoPoints));
-                        affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
-                        affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
-
+                        setData(index, value.toBool(), Qt::EditRole);
                         break;
                     }
 
@@ -786,9 +780,12 @@ void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>&
 
             for (int imageRow = 0; imageRow < noImages; imageRow++) {
                 const auto dimensionName    = _imageLoaderPlugin->getSetting(QString("%1/Images/%2/%3/DimensionName").arg(settingsPrefix, name, QString::number(imageRow)), "").toString();
+                const auto shouldLoad       = _imageLoaderPlugin->getSetting(QString("%1/Images/%2/%3/ShouldLoad").arg(settingsPrefix, name, QString::number(imageRow)), true).toBool();
                 
                 if (!dimensionName.isEmpty())
                     setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::DimensionName)), dimensionName);
+
+                setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::ShouldLoad)), shouldLoad);
             }
         }
     }
