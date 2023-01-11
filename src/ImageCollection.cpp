@@ -1656,7 +1656,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
     {
         auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
 
-        imageLoaderPlugin->_core->notifyDatasetAdded(points);
+        events().notifyDatasetAdded(points);
 
         points->getDataHierarchyItem().setTaskName("Loading");
         points->getDataHierarchyItem().setTaskRunning();
@@ -1727,12 +1727,12 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        imageLoaderPlugin->_core->notifyDatasetChanged(points);
+        events().notifyDatasetChanged(points);
 
         auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
         
         if (conversionPluginTriggerAction != nullptr) {
-            conversionPluginTriggerAction->setDatasets({ points });
+            //conversionPluginTriggerAction->setDatasets({ points });
             conversionPluginTriggerAction->trigger();
         }
 
@@ -1740,7 +1740,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
-        imageLoaderPlugin->_core->notifyDatasetAdded(images);
+        events().notifyDatasetAdded(images);
 
         images->setGuiName(QString("Images (%2x%3)").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height())));
         images->setType(_type);
@@ -1749,7 +1749,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        imageLoaderPlugin->_core->notifyDatasetChanged(images);
+        events().notifyDatasetChanged(images);
 
         images->getDataHierarchyItem().select();
 
