@@ -1,5 +1,6 @@
 #include "SanitizeDataDialog.h"
 #include "ImageCollection.h"
+#include "Application.h"
 
 #include <QDebug>
 #include <QGridLayout>
