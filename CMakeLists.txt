@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(FREEIMAGE_ROOT_DIR ${CMAKE_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG /NODEFAULTLIB:LIBCMT")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
@@ -24,6 +24,7 @@ find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 # Normalize the incoming install path
 file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
 
+message(STATUS "HDPS CORE in ${INSTALL_DIR}")
 
 SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
@@ -104,21 +105,20 @@ source_group(Actions FILES ${ACTION_SOURCES})
 source_group(UI FILES ${UIS})
 source_group(Aux FILES ${AUX})
 
-message(STATUS "HDPS CORE in ${INSTALL_DIR}")
-include_directories("${INSTALL_DIR}/$<CONFIGURATION>/include/")
-include_directories("${FREEIMAGE_INCLUDE_PATH}")
-include_directories(src)
-
 QT6_WRAP_UI(UI_HEADERS ${UIS})
 
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
+
+target_include_directories(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/include/")
+target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
+target_include_directories(${PROJECT} PRIVATE src)
 
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  
-target_link_libraries(${PROJECT} Qt6::Widgets)
-target_link_libraries(${PROJECT} Qt6::WebEngineWidgets)
+target_link_libraries(${PROJECT} PRIVATE Qt6::Widgets)
+target_link_libraries(${PROJECT} PRIVATE Qt6::WebEngineWidgets)
 
 if(MSVC)
     set(LIB_SUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -126,11 +126,11 @@ else()
     set(LIB_SUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 
-target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
-target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
-target_link_libraries(${PROJECT} "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ImageData${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}HDPS_Public${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}PointData${LIB_SUFFIX}")
+target_link_libraries(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ImageData${LIB_SUFFIX}")
 
-target_link_libraries(${PROJECT} "${FREEIMAGE_LIBRARY}")
+target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
 
 if(MSVC)
     set(FreeImageName "FreeImage")
