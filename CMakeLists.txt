@@ -153,11 +153,13 @@ install(TARGETS ${PROJECT}
    ARCHIVE DESTINATION lib COMPONENT LINKLIB
 )
 
-# copy the FreeImage library to the root install directory (the same level as the hdps executable)
-install(FILES
-    "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
+if(MSVC OR APPLE)
+    # copy the FreeImage library to the root install directory (the same level as the hdps executable)
+    install(FILES
+        "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        DESTINATION "${INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
 )
+endif()
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
@@ -169,3 +171,4 @@ add_custom_command(TARGET ${PROJECT} POST_BUILD
 # Automatically set the debug environment (command + working directory) for MSVC in debug mode
 set_property(TARGET ${PROJECT} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<IF:$<CONFIG:DEBUG>,${INSTALL_DIR}/debug,${INSTALL_DIR}/release>)
 set_property(TARGET ${PROJECT} PROPERTY VS_DEBUGGER_COMMAND $<IF:$<CONFIG:DEBUG>,${INSTALL_DIR}/debug/HDPS.exe,${INSTALL_DIR}/release/HDPS.exe>)
+
