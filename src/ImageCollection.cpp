@@ -18,6 +18,7 @@
 #include <QDir>
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 namespace fi {
@@ -1772,7 +1773,7 @@ bool ImageCollection::containsNans(std::vector<float>& data)
     auto containsNans = false;
 
     for (auto element : data)
-        if (isnan(element))
+        if (std::isnan(element))
             return true;
 
     return false;

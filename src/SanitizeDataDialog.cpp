@@ -10,6 +10,8 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
+#include <cmath>
+
 SanitizeDataDialog::SanitizeDataDialog(ImageCollection* imageCollection, std::vector<float>& data, QWidget* parent /*= nullptr*/) :
     QDialog(parent)
 {
@@ -59,6 +61,6 @@ void SanitizeDataDialog::replaceNans(std::vector<float>& data, const float& repl
     qDebug() << QString("Replacing NaN values with: %1").arg(QString::number(replacementValue, 'f', 2));
 
     for (auto& element : data)
-        if (isnan(element))
+        if (std::isnan(element))
             element = static_cast<float>(replacementValue);
 }
