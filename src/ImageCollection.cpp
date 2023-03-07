@@ -186,6 +186,10 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 {
     qDebug() << QString("Loading image: %1").arg(_fileName);
 
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
+
     if (_pageIndex >= 0)
     {
         FI::FIBITMAP* pageBitmap = nullptr;
@@ -224,12 +228,18 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 #ifdef _WIN32
         const void* const voidPtr	= _filePath.utf16();
         const auto wcharPtr			= static_cast<const wchar_t*>(voidPtr);
-        const auto format			= FI::FreeImage_GetFileTypeU(wcharPtr);
+        auto format			        = FI::FreeImage_GetFileTypeU(wcharPtr);
 
+        if(format == FI::FIF_UNKNOWN)
+            format = FI::FreeImage_GetFIFFromFilenameU(wcharPtr);
+            
         auto bitmap = FI::FreeImage_LoadU(format, wcharPtr);
 #else
         const auto utf8		= _filePath.toUtf8();
-        const auto format	= FI::FreeImage_GetFileType(utf8);
+        auto format	        = FI::FreeImage_GetFileType(utf8);
+
+        if(format == FI::FIF_UNKNOWN)
+            format = FI::FreeImage_GetFIFFromFilename(utf8);
 
         auto bitmap = FI::FreeImage_Load(format, utf8);
 #endif
@@ -241,10 +251,17 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
 
         FI::FreeImage_Unload(bitmap);
     }
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
 }
 
 template<class T> static void readSequence(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, const std::int32_t& noComponents = 1)
 {
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
+
     if (bitmap == nullptr)
         throw std::runtime_error("Bitmap handle is NULL");
 
@@ -276,11 +293,18 @@ template<class T> static void readSequence(ImageCollection* imageCollection, FI:
             }
         }
     }
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
 }
 
 template<class T>
 static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, const std::uint32_t& noDimensions, const std::int32_t& noComponents = 1)
 {
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
+
     if (bitmap == nullptr)
         throw std::runtime_error("Bitmap handle is NULL");
 	
@@ -327,10 +351,17 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
             }
         }
     }
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
 }
 
 void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames)
 {
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
+
     FI::FIBITMAP* subsampledBitmap	= nullptr;
     FI::FIBITMAP* convertedBitmap	= nullptr;
 
@@ -552,10 +583,18 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
     {
         handleException(e.what());
     }
+    
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
 }
 
 QString ImageCollection::Image::guessDimensionName()
 {
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
+
     try
     {
         if (_pageIndex >= 0) {
@@ -611,6 +650,10 @@ QString ImageCollection::Image::guessDimensionName()
     }
 
     return "";
+
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
 }
 
 ImageCollection* ImageCollection::Image::getImageCollection()
@@ -1653,6 +1696,9 @@ QStringList ImageCollection::guessDimensionNames()
 
 Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin, Dataset<DatasetImpl> parent /*= Dataset<DatasetImpl>()*/)
 {
+#ifndef _WIN32
+    FI::FreeImage_Initialise();
+#endif
     try
     {
         auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
@@ -1765,6 +1811,9 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
 
+#ifndef _WIN32
+    FI::FreeImage_DeInitialise();
+#endif
     return Dataset<Points>();
 }
 
