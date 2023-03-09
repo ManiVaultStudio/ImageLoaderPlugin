@@ -17,3 +17,11 @@ Macos | x86_64 | clang 10
 
 # ImageLoaderPlugin
 Image loader plugin for the HDPS framework
+
+## Local linux build
+
+Tested with Ubuntu 22.10 and gcc 12.2. 
+Make sure to install some additional dependencies:
+```
+apt install qt6-image-formats-plugins libfreeimage-dev
+```
