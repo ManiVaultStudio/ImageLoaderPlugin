@@ -1,7 +1,7 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageLoaderDialog.h"
 
-#include <PointData.h>
+#include <PointData/PointData.h>
 
 #include <QDebug>
 
