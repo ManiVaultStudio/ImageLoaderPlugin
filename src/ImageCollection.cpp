@@ -5,7 +5,7 @@
 #include "Dataset.h"
 #include "util/Miscellaneous.h"
 
-#include "PointData.h"
+#include "PointData/PointData.h"
 
 #include <QDebug>
 #include <QDir>
