@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(FREEIMAGE_ROOT_DIR ${CMAKE_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
+set(FREEIMAGE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -26,12 +26,13 @@ file(TO_CMAKE_PATH $ENV{HDPS_INSTALL_DIR} INSTALL_DIR)
 
 message(STATUS "HDPS CORE in ${INSTALL_DIR}")
 
-SET(FREEIMAGE_ROOT_DIR CACHE PATH "Location of FreeImage library")
 find_package(FreeImage QUIET)
 
 if (NOT FREEIMAGE_FOUND)
     message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
     return()
+else()
+    message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}")
 endif()
 
 set(PLUGIN_SOURCES
