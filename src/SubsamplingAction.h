@@ -41,5 +41,4 @@ private:
     SubsamplingFilterTypeAction     _filterTypeAction;          /** Subsampling filter type action */
     LevelsAction                    _levelsAction;      /** Levels action */
 
-    friend class Widget;
 };

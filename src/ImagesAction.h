@@ -41,5 +41,4 @@ protected:
     TriggerAction           _selectInvertAction;
     TriggerAction           _guessDimensionNamesAction;
 
-    friend class Widget;
 };

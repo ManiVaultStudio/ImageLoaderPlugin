@@ -54,5 +54,4 @@ private:
     OptionAction            _levelFactorAction;              /** Subsampling levels factor action */
     StringAction            _infoAction;                /** Subsampling info action */
 
-    friend class Widget;
 };

@@ -22,5 +22,4 @@ private:
 private:
     ImageLoaderPlugin&      _imageLoaderPlugin;
 
-    friend class Widget;
 };

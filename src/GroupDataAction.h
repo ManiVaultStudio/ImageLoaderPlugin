@@ -38,5 +38,4 @@ private:
     ToggleAction        _enabledAction;
     StringAction        _nameAction;
 
-    friend class Widget;
 };

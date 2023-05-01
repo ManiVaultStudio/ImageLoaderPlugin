@@ -62,5 +62,4 @@ protected:
     SubsamplingAction       _subsamplingAction;         /** Subsampling action */
     ImagesAction            _imagesAction;              /** Images action */
 
-    friend class Widget;
 };

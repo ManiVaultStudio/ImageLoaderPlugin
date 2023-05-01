@@ -64,5 +64,4 @@ protected:
     StringAction            _tagAction;
     TriggersAction          _defaultTagsAction;
 
-    friend class Widget;
 };

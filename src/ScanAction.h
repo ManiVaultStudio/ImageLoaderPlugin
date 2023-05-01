@@ -36,5 +36,4 @@ protected:
     DirectoryPickerAction   _scanDirectoryAction;
     ToggleAction            _separateByDirectoryAction;
 
-    friend class Widget;
 };
