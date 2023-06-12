@@ -6,15 +6,13 @@
 using namespace hdps::gui;
 
 ImagesAction::ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    WidgetAction(parent),
+    WidgetAction(parent, "Images"),
     _imageLoaderPlugin(imageLoaderPlugin),
     _selectAllAction(this, "Select all"),
     _selectNoneAction(this, "Select none"),
     _selectInvertAction(this, "Select invert"),
     _guessDimensionNamesAction(this, "Guess dimension names")
 {
-    setText("Images");
-
     connect(&_imageLoaderPlugin.getImageCollectionsModel().selectionModel(), &QItemSelectionModel::selectionChanged, [this](const QItemSelection& selected, const QItemSelection& deselected) {
         setEnabled(_imageLoaderPlugin.getSelectedRows().count() == 1);
     });

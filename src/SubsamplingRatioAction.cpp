@@ -22,12 +22,11 @@ const QMap<SubsamplingRatioAction::Ratio, float> SubsamplingRatioAction::default
 });
 
 SubsamplingRatioAction::SubsamplingRatioAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    WidgetAction(parent),
+    WidgetAction(parent, "Subsampling Ratio"),
     _imageLoaderPlugin(imageLoaderPlugin),
     _ratioAction(this, "Ratio", 1.0f, 100.0f, 50.0f, 50.0f, 1),
     _defaultRatiosAction(this, "Default ratios", triggers.values().toVector())
 {
-    setText("Ratio");
     setCheckable(true);
 
     _ratioAction.setToolTip("Subsampling ratio");

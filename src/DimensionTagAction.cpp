@@ -14,12 +14,11 @@ const QMap<DimensionTagAction::DefaultTag, QString> DimensionTagAction::defaultT
 });
 
 DimensionTagAction::DimensionTagAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    WidgetAction(parent),
+    WidgetAction(parent, "Dimension"),
     _imageLoaderPlugin(imageLoaderPlugin),
     _tagAction(this, "Tag"),
     _defaultTagsAction(this, "Default tags", triggers.values().toVector())
 {
-    setText("Dimension tag");
     setEnabled(false);
 
     _tagAction.setToolTip("The dimension tag for multi-page TIFF files");
