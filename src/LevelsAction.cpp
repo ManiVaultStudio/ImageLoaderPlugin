@@ -25,7 +25,7 @@ const QMap<LevelsAction::LevelFactor, QString> LevelsAction::levelFactorNames = 
 LevelsAction::LevelsAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent, "Levels"),
     _imageLoaderPlugin(imageLoaderPlugin),
-    _numberOfLevelsAction(this, "Number of levels", 1, 5, 2, 2),
+    _numberOfLevelsAction(this, "Number of levels", 1, 5, 2),
     _levelFactorAction(this, "Level factor", levelFactorNames.values()),
     _infoAction(this, "Info")
 {
