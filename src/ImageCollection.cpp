@@ -1774,7 +1774,8 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        events().notifyDatasetChanged(points);
+        events().notifyDatasetDataChanged(points);
+        events().notifyDatasetDataDimensionsChanged(points);
 
         auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
         
@@ -1796,7 +1797,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        events().notifyDatasetChanged(images);
+        events().notifyDatasetDataChanged(images);
 
         images->getDataHierarchyItem().select();
 
