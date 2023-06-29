@@ -6,7 +6,7 @@
 using namespace hdps::gui;
 
 ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    WidgetAction(parent),
+    WidgetAction(parent, "Image Collections"),
     _imageLoaderPlugin(imageLoaderPlugin),
     _filterAction(this, "Filter"),
     _datasetNameAction(this, imageLoaderPlugin),
@@ -15,8 +15,6 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _dimensionTagAction(this, imageLoaderPlugin),
     _imagesAction(this, imageLoaderPlugin)
 {
-    setText("Image collections");
-
     _filterAction.setClearable(true);
     _filterAction.setToolTip("Image collection name filter");
 
@@ -125,7 +123,7 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
 
     mainLayout->addLayout(subLayout);
 
-    setPopupLayout(mainLayout);
+    setLayout(mainLayout);
 
     layout()->setContentsMargins(0, 0, 0, 0);
 

@@ -7,14 +7,13 @@
 using namespace hdps::gui;
 
 SubsamplingAction::SubsamplingAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    WidgetAction(parent),
+    WidgetAction(parent, "Subsampling"),
     _imageLoaderPlugin(imageLoaderPlugin),
     _typeAction(this, imageLoaderPlugin),
     _ratioAction(this, imageLoaderPlugin),
     _filterTypeAction(this, imageLoaderPlugin),
     _levelsAction(this, imageLoaderPlugin)
 {
-    setText("Subsampling");
     setCheckable(true);
 }
 

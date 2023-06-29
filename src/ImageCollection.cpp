@@ -1770,11 +1770,12 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
             sanitizeDataDialog.exec();
         }
 
-        points->setGuiName(_datasetName);
+        points->setText(_datasetName);
         points->setData(std::move(data), noDimensions);
         points->setDimensionNames(std::vector<QString>(dimensionNames.begin(), dimensionNames.end()));
 
-        events().notifyDatasetChanged(points);
+        events().notifyDatasetDataChanged(points);
+        events().notifyDatasetDataDimensionsChanged(points);
 
         auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
         
@@ -1789,14 +1790,14 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         events().notifyDatasetAdded(images);
 
-        images->setGuiName(QString("Images (%2x%3)").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height())));
+        images->setText(QString("Images (%2x%3)").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height())));
         images->setType(_type);
         images->setNumberOfImages(getNoSelectedImages(Qt::EditRole).toInt());
         images->setImageSize(_targetSize);
         images->setNumberOfComponentsPerPixel(_toGrayscale ? 1 : getNumberOfChannelsPerPixel(Qt::EditRole).toInt());
         images->setImageFilePaths(imageFilePaths);
 
-        events().notifyDatasetChanged(images);
+        events().notifyDatasetDataChanged(images);
 
         images->getDataHierarchyItem().select();
 

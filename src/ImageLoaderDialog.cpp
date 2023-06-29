@@ -10,7 +10,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
     _scanAction(this, imageLoaderPlugin),
     _imageCollectionsAction(this, imageLoaderPlugin),
-    _closeAfterLoadingAction(this, "Close after loading", true, true),
+    _closeAfterLoadingAction(this, "Close after loading", true),
     _loadAction(this, "Load"),
     _cancelAction(this, "Cancel")
 {
