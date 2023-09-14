@@ -1,9 +1,14 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.12.0)
 
+# -----------------------------------------------------------------------------
+# ImageLoader Plugin
+# -----------------------------------------------------------------------------
 set(PROJECT "ImageLoaderPlugin")
-
 PROJECT(${PROJECT})
 
+# -----------------------------------------------------------------------------
+# CMake Options
+# -----------------------------------------------------------------------------
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -20,14 +25,11 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
+# -----------------------------------------------------------------------------
+# Dependencies
+# -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-# Get the env path and allow the user to change it
-set(INSTALL_DIR $ENV{HDPS_INSTALL_DIR} CACHE PATH "The HDPS Install Directoy")
-# Normalize the incoming install path
-file(TO_CMAKE_PATH ${INSTALL_DIR} INSTALL_DIR)
-
-message(STATUS "HDPS CORE in ${INSTALL_DIR}")
 
 find_package(FreeImage QUIET)
 
@@ -38,6 +40,19 @@ else()
     message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}")
 endif()
 
+# -----------------------------------------------------------------------------
+# Set install directory
+# -----------------------------------------------------------------------------
+# Get the env path and allow the user to change it
+set(INSTALL_DIR $ENV{HDPS_INSTALL_DIR} CACHE PATH "The HDPS Install Directoy")
+# Normalize the incoming install path
+file(TO_CMAKE_PATH ${INSTALL_DIR} INSTALL_DIR)
+
+message(STATUS "HDPS CORE in ${INSTALL_DIR}")
+
+# -----------------------------------------------------------------------------
+# Source files
+# -----------------------------------------------------------------------------
 set(PLUGIN_SOURCES
     src/ImageLoaderPlugin.h
     src/ImageLoaderPlugin.cpp
@@ -50,6 +65,10 @@ set(PLUGIN_SOURCES
     src/ImageCollectionsModel.h
     src/ImageCollectionsModel.cpp
     src/Common.h
+)
+
+set(PLUGIN_MOC_HEADERS
+    src/ImageLoaderPlugin.h
 )
 
 set(WIDGET_SOURCES
@@ -111,16 +130,31 @@ source_group(Aux FILES ${AUX})
 
 QT6_WRAP_UI(UI_HEADERS ${UIS})
 
+# -----------------------------------------------------------------------------
+# CMake Target
+# -----------------------------------------------------------------------------
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
+qt_wrap_cpp(IMAGELOADER_MOC ${PLUGIN_MOC_HEADERS} TARGET ${PROJECT})
+target_sources(${PROJECT} PRIVATE ${IMAGELOADER_MOC})
+
+# -----------------------------------------------------------------------------
+# Target include directories
+# -----------------------------------------------------------------------------
 target_include_directories(${PROJECT} PRIVATE "${INSTALL_DIR}/$<CONFIGURATION>/include/")
 target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
 target_include_directories(${PROJECT} PRIVATE src)
 
+# -----------------------------------------------------------------------------
+# Target properties
+# -----------------------------------------------------------------------------
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  
+# -----------------------------------------------------------------------------
+# Target library linking
+# -----------------------------------------------------------------------------
 target_link_libraries(${PROJECT} PRIVATE Qt6::Widgets)
 target_link_libraries(${PROJECT} PRIVATE Qt6::WebEngineWidgets)
 
@@ -138,6 +172,9 @@ target_link_libraries(${PROJECT} PRIVATE "${IMAGEDATA_LINK_LIBRARY}")
 
 target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
 
+# -----------------------------------------------------------------------------
+# Target installation
+# -----------------------------------------------------------------------------
 if(MSVC)
     set(FreeImageName "FreeImage")
 elseif(APPLE)
@@ -173,6 +210,9 @@ add_custom_command(TARGET ${PROJECT} POST_BUILD
     --prefix ${INSTALL_DIR}/$<CONFIGURATION>
 )
 
+# -----------------------------------------------------------------------------
+# Miscellaneous
+# -----------------------------------------------------------------------------
 # Automatically set the debug environment (command + working directory) for MSVC
 if(MSVC)
     set_property(TARGET ${PROJECT} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY $<IF:$<CONFIG:DEBUG>,${INSTALL_DIR}/debug,${INSTALL_DIR}/release>)
