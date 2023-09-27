@@ -31,7 +31,13 @@ void ImageLoaderPlugin::loadData()
 {
     ImageLoaderDialog dialog(*this);
 
-    dialog.exec();
+    dialog.open();
+
+    QEventLoop eventLoop;
+
+    QObject::connect(&dialog, &QDialog::finished, &eventLoop, &QEventLoop::quit);
+
+    eventLoop.exec();
 }
 
 QModelIndexList ImageLoaderPlugin::getSelectedRows() const

@@ -2,17 +2,20 @@
 #include "ImageLoaderPlugin.h"
 #include "ImageCollection.h"
 
+#include <BackgroundTask.h>
+
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
-#include <QProgressDialog>
 
 #include <stdexcept>
 
 namespace fi {
 #include <FreeImage.h>
 }
+
+using namespace hdps;
 
 ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
@@ -21,8 +24,18 @@ ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlu
     _previousDirectories(),
     _supportedImageTypes(),
     _filenameFilter(),
-    _initialized(false)
+    _initialized(false),
+    _imageCollections(),
+    _scanningTask(this, "Scanning")
 {
+    _scanningTask.setDescription("Scanning for images");
+    _scanningTask.setIcon(Application::getIconFont("FontAwesome").getIcon("barcode"));
+}
+
+ImageCollectionScanner::~ImageCollectionScanner()
+{
+    for (auto imageCollection : _imageCollections)
+        delete imageCollection;
 }
 
 void ImageCollectionScanner::loadSettings()
@@ -136,7 +149,12 @@ void ImageCollectionScanner::scan()
 {
     try
     {
-        std::vector<ImageCollection*> imageCollections;
+        QVector<ImageCollection*> imageCollections;
+
+        //for (auto imageCollection : _imageCollections)
+        //    delete imageCollection;
+
+        //_imageCollections.clear();
 
         QStringList nameFilters;
 
@@ -145,7 +163,7 @@ void ImageCollectionScanner::scan()
 
         scanDir(_directory, nameFilters, imageCollections, true);
 
-        qDebug() << "Found " << imageCollections.size() << "image collections";
+        qDebug() << "Found " << imageCollections.count() << "image collections";
 
         for (auto& imageCollection : imageCollections)
             imageCollection->computeDatasetName();
@@ -170,7 +188,7 @@ void ImageCollectionScanner::scan()
     }
 }
 
-auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
+auto ImageCollectionScanner::findImageCollection(QVector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize)
 {
     return std::find_if(imageCollections.begin(), imageCollections.end(), [this, &directory, &imageType, &imageSize](const auto& imageCollection) {
         if (_separateByDirectory && imageCollection->getDirectory(Qt::EditRole).toString() != directory)
@@ -186,47 +204,34 @@ auto ImageCollectionScanner::findImageCollection(std::vector<ImageCollection*>& 
     });
 }
 
-void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog /*= false*/)
+void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, QVector<ImageCollection*>& imageCollections, const bool& showProgressDialog /*= false*/)
 {
     auto subDirectories = QDir(directory);
 
     subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    const auto dirList = subDirectories.entryList();
-
-    QSharedPointer<QProgressDialog> progressDialog;
-
-    if (showProgressDialog && !dirList.isEmpty()) {
-        progressDialog = QSharedPointer<QProgressDialog>::create("Scanning", "Abort scanning", 0, dirList.size(), nullptr);
-
-        progressDialog->setWindowTitle(QString("Scanning %1 for image collections").arg(directory));
-        progressDialog->setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
-        progressDialog->setWindowModality(Qt::WindowModal);
-        progressDialog->setMinimumDuration(500);
-        progressDialog->setMinimum(0);
-        progressDialog->setMaximum(dirList.size());
-        progressDialog->setValue(0);
-        progressDialog->setFixedWidth(600);
+    const auto dirList              = subDirectories.entryList();
+    const auto hasProgressDialog    = showProgressDialog && !dirList.isEmpty();
+    
+    if (hasProgressDialog) {
+        _scanningTask.setName(QString("Scanning %1").arg(directory));
+        _scanningTask.setSubtasks(dirList.count() + 1);
+        _scanningTask.setStatus(Task::Status::Running);
     }
 
-    const auto hasProgressDialog = !progressDialog.isNull();
-
-    for (int dirIndex = 0; dirIndex < dirList.size(); ++dirIndex)
-    {
-        if (hasProgressDialog && progressDialog->wasCanceled())
+    for (int dirIndex = 0; dirIndex < dirList.count(); ++dirIndex) {
+        if (hasProgressDialog && _scanningTask.isAborted())
             break;
 
         const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
         if (hasProgressDialog)
-            progressDialog->setLabelText(QString("Scanning %1 for images").arg(path));
+            _scanningTask.setProgressDescription(QString("%1").arg(path));
 
         scanDir(path, nameFilters, imageCollections);
 
-        QCoreApplication::processEvents();
-
         if (hasProgressDialog)
-            progressDialog->setValue(dirIndex);
+            _scanningTask.setSubtaskFinished(dirIndex);
     }
 
     auto imageFiles = QDir(directory);
@@ -236,8 +241,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
     const auto fileList = imageFiles.entryList();
 
-    for (int i = 0; i < fileList.size(); ++i)
-    {
+    for (int i = 0; i < fileList.count(); ++i) {
         const auto fileName         = fileList.at(i);
         const auto imageFilePath    = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
         const auto rootDir          = QFileInfo(imageFilePath).absoluteDir().path();
@@ -276,5 +280,11 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         else {
             (*it)->addImage(imageFilePath);
         }
+    }
+
+    if (hasProgressDialog) {
+        _scanningTask.setProgressDescription("Finalize");
+        _scanningTask.setSubtaskFinished(dirList.count());
+        _scanningTask.setFinished(true);
     }
 }

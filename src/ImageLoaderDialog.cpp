@@ -1,6 +1,8 @@
 #include "ImageLoaderDialog.h"
 #include "ImageLoaderPlugin.h"
-#include "Application.h"
+
+#include <Application.h>
+#include <BackgroundTask.h>
 
 #include <QDebug>
 
@@ -95,6 +97,23 @@ void ImageLoaderDialog::loadImageCollections()
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
 
+        auto& task = imageCollection->getTask();
+
+        task.setName(QString("Load %1").arg(imageCollection->getName(Qt::EditRole).toString()));
+        task.setProgressMode(Task::ProgressMode::Subtasks);
+        
+        auto subtasks = imageCollection->getFileNames(Qt::EditRole).toStringList();
+
+        if (_imageCollectionsAction.getSubsamplingAction().getTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid))
+            subtasks << "Create image pyramid";
+
+        task.setSubtasks(subtasks);
+        task.setRunning();
+    }
+
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+
         auto currentLevelPoints = imageCollection->load(&_imageLoaderPlugin);
         auto level0Points       = currentLevelPoints;
 
@@ -102,36 +121,53 @@ void ImageLoaderDialog::loadImageCollections()
 
         auto currentLevelSize = imageCollection->getTargetSize(Qt::EditRole).toSize();
 
+        auto& task = imageCollection->getTask();
+
         if (_imageCollectionsAction.getSubsamplingAction().getTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid)) {
-            auto& levelsAction = _imageCollectionsAction.getSubsamplingAction().getLevelsActions();
+            task.setSubtaskStarted("Create image pyramid");
+            {
+                auto& levelsAction = _imageCollectionsAction.getSubsamplingAction().getLevelsActions();
 
-            const auto levelFactor = LevelsAction::levelFactors.value(static_cast<LevelsAction::LevelFactor>(levelsAction.getLevelFactorAction().getCurrentIndex()));
-            const auto scaleFactor = 1.0f / levelFactor;
+                const auto levelFactor = LevelsAction::levelFactors.value(static_cast<LevelsAction::LevelFactor>(levelsAction.getLevelFactorAction().getCurrentIndex()));
+                const auto scaleFactor = 1.0f / levelFactor;
 
-            for (int levelIndex = 1; levelIndex <= levelsAction.getNumberOfLevelsAction().getValue(); ++levelIndex) {
-                currentLevelSize = currentLevelSize * scaleFactor;
+                for (int levelIndex = 1; levelIndex <= levelsAction.getNumberOfLevelsAction().getValue(); ++levelIndex) {
+                    currentLevelSize = currentLevelSize * scaleFactor;
 
-                if (currentLevelSize.width() < 4 || currentLevelSize.height() < 4)
-                    break;
+                    if (currentLevelSize.width() < 4 || currentLevelSize.height() < 4)
+                        break;
 
-                imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
-                imageCollection->setTargetSize(currentLevelSize);
+                    imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
+                    imageCollection->setTargetSize(currentLevelSize);
 
-                currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
+                    currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
 
-                // Map from level zero to current level
-                {
-                    SelectionMap selectionMap(level0Size, currentLevelSize);
-                    level0Points->addLinkedData(currentLevelPoints, selectionMap);
-                }
+                    // Map from level zero to current level
+                    {
+                        SelectionMap selectionMap(level0Size, currentLevelSize);
+                        level0Points->addLinkedData(currentLevelPoints, selectionMap);
+                    }
 
-                // Map from current level to level zero
-                {
-                    SelectionMap selectionMap(currentLevelSize, level0Size);
-                    currentLevelPoints->addLinkedData(level0Points, selectionMap);
+                    // Map from current level to level zero
+                    {
+                        SelectionMap selectionMap(currentLevelSize, level0Size);
+                        currentLevelPoints->addLinkedData(level0Points, selectionMap);
+                    }
                 }
             }
+            task.setSubtaskFinished("Create image pyramid");
         }
+    }
+
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+
+        Q_ASSERT(imageCollection != nullptr);
+
+        if (imageCollection == nullptr)
+            continue;
+
+        imageCollection->getTask().setFinished();
     }
 
     if (_closeAfterLoadingAction.isChecked())

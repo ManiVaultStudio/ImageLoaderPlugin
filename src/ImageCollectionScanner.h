@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ForegroundTask.h>
+
 #include <QObject>
 
 class ImageLoaderPlugin;
@@ -19,6 +21,8 @@ class ImageCollectionScanner : public QObject {
 public:
     /** Default constructor */
     ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin);
+
+    ~ImageCollectionScanner();
 
     /** Load image scanner settings */
     virtual void loadSettings();
@@ -70,7 +74,7 @@ public:
      * @param imageType Type of image
      * @param imageSize Image size
      */
-    auto findImageCollection(std::vector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize);
+    auto findImageCollection(QVector<ImageCollection*>& imageCollections, const QString& directory, const QString& imageType, const QSize& imageSize);
 
 public:
 
@@ -86,7 +90,7 @@ private:
      * @param imageCollections Scanned image collections
      * @param showProgressDialog Whether to show a progress dialog during scanning
      */
-    void scanDir(const QString& directory, QStringList nameFilters, std::vector<ImageCollection*>& imageCollections, const bool& showProgressDialog = false);
+    void scanDir(const QString& directory, QStringList nameFilters, QVector<ImageCollection*>& imageCollections, const bool& showProgressDialog = false);
 
 signals:
 
@@ -127,11 +131,13 @@ signals:
     void message(const QString& message);
 
 protected:
-    ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to parent image loader plugin instance */
-    QString                 _directory;                 /** Top directory to search in (recursively) */
-    bool                    _separateByDirectory;       /** Separate image collections by directory */
-    QStringList             _previousDirectories;       /** List of previously visited directories */
-    QStringList             _supportedImageTypes;       /** List of supported image types e.g. .tiff, .jpg */
-    QString                 _filenameFilter;            /** Filename filter string */
-    bool                    _initialized;               /** Whether the scanner is initialized or not */
+    ImageLoaderPlugin&          _imageLoaderPlugin;         /** Reference to parent image loader plugin instance */
+    QString                     _directory;                 /** Top directory to search in (recursively) */
+    bool                        _separateByDirectory;       /** Separate image collections by directory */
+    QStringList                 _previousDirectories;       /** List of previously visited directories */
+    QStringList                 _supportedImageTypes;       /** List of supported image types e.g. .tiff, .jpg */
+    QString                     _filenameFilter;            /** Filename filter string */
+    bool                        _initialized;               /** Whether the scanner is initialized or not */
+    QVector<ImageCollection*>   _imageCollections;          /** Scanned image collections */
+    hdps::ForegroundTask        _scanningTask;              /** Foreground task which reports scanning progress */
 };
