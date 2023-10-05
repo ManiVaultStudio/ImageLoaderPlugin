@@ -26,10 +26,10 @@ ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlu
     _filenameFilter(),
     _initialized(false),
     _imageCollections(),
-    _scanningTask(this, "Scanning")
+    _indexImageCollectionsTask(this, "Indexing image collections")
 {
-    _scanningTask.setDescription("Scanning for images");
-    _scanningTask.setIcon(Application::getIconFont("FontAwesome").getIcon("barcode"));
+    _indexImageCollectionsTask.setDescription("Scanning disk for image collections");
+    _indexImageCollectionsTask.setIcon(Application::getIconFont("FontAwesome").getIcon("barcode"));
 }
 
 ImageCollectionScanner::~ImageCollectionScanner()
@@ -165,6 +165,10 @@ void ImageCollectionScanner::scan()
 
         qDebug() << "Found " << imageCollections.count() << "image collections";
 
+        _indexImageCollectionsTask.setSubtaskStarted("Database", "Building database");
+
+        QCoreApplication::processEvents();
+
         for (auto& imageCollection : imageCollections)
             imageCollection->computeDatasetName();
 
@@ -177,6 +181,11 @@ void ImageCollectionScanner::scan()
             imageCollectionsModel.insert(0, imageCollections);
         }
         imageCollectionsModel.setPersistData(true);
+
+        QCoreApplication::processEvents();
+
+        _indexImageCollectionsTask.setSubtaskFinished("Database", "Database built");
+        _indexImageCollectionsTask.setFinished();
     }
     catch (const std::runtime_error& e)
     {
@@ -214,30 +223,41 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
     const auto hasProgressDialog    = showProgressDialog && !dirList.isEmpty();
     
     if (hasProgressDialog) {
-        _scanningTask.setName(QString("Scanning %1").arg(directory));
-        _scanningTask.setSubtasks(dirList.count() + 1);
-        _scanningTask.setStatus(Task::Status::Running);
+        auto subTasks = dirList;
+        
+        subTasks << "TIFF" << "Database";
+
+        _indexImageCollectionsTask.setSubtasks(subTasks);
+        _indexImageCollectionsTask.setStatus(Task::Status::Running);
     }
 
     for (int dirIndex = 0; dirIndex < dirList.count(); ++dirIndex) {
-        if (hasProgressDialog && _scanningTask.isAborted())
+        if (hasProgressDialog && _indexImageCollectionsTask.isAborted())
             break;
 
         const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
         if (hasProgressDialog)
-            _scanningTask.setProgressDescription(QString("%1").arg(path));
+            _indexImageCollectionsTask.setSubtaskStarted(dirList.at(dirIndex), QString("Scanning %1").arg(path));
 
         scanDir(path, nameFilters, imageCollections);
 
+        QCoreApplication::processEvents();
+
         if (hasProgressDialog)
-            _scanningTask.setSubtaskFinished(dirIndex);
+            _indexImageCollectionsTask.setSubtaskFinished(dirList.at(dirIndex), QString("%1 scanned").arg(path));
     }
 
     auto imageFiles = QDir(directory);
 
     imageFiles.setFilter(QDir::Files);
     imageFiles.setNameFilters(nameFilters);
+
+    if (hasProgressDialog) {
+        _indexImageCollectionsTask.setSubtaskStarted("TIFF", "Indexing multi-page TIF image files");
+
+        QCoreApplication::processEvents();
+    }
 
     const auto fileList = imageFiles.entryList();
 
@@ -283,8 +303,8 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
     }
 
     if (hasProgressDialog) {
-        _scanningTask.setProgressDescription("Finalize");
-        _scanningTask.setSubtaskFinished(dirList.count());
-        _scanningTask.setFinished(true);
+        _indexImageCollectionsTask.setSubtaskFinished("TIFF", "Multi-page TIF image files indexed");
+
+        QCoreApplication::processEvents();
     }
 }
