@@ -818,9 +818,13 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
     _subsampling(this),
-    _conversion()
+    _conversion(),
+    _task(nullptr, "Load image collection")
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
+
+    _task.setMayKill(false);
+    _task.setIcon(Application::getIconFont("FontAwesome").getIcon("images"));
 }
 
 ImageCollection::~ImageCollection()
@@ -1627,6 +1631,11 @@ void ImageCollection::setConversion(const QString& conversion)
     _conversion = conversion;
 }
 
+ModalTask& ImageCollection::getTask()
+{
+    return _task;
+}
+
 void ImageCollection::addImage(const QString& filePath, const std::int32_t& pageIndex /*= -1*/)
 {
     appendChild(new Image(this, filePath, pageIndex));
@@ -1701,12 +1710,14 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 #endif
     try
     {
+        //_task.setRunning();
+
         auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
 
         events().notifyDatasetAdded(points);
 
-        points->getDataHierarchyItem().setTaskName("Loading");
-        points->getDataHierarchyItem().setTaskRunning();
+        points->getTask().setName("Loading");
+        points->getTask().setRunning();
 
         const auto typeName = ImageData::getTypeName(_type);
 
@@ -1739,27 +1750,34 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
                 throw std::runtime_error("Unable to open multi- bitmap");
         }
 
+        //_task.setNumberOfSubtasks(_children.count());
+
         for (auto& childItem : _children) {
-            //if (progressDialog.wasCanceled()) {
-            //    throw std::runtime_error("Loading was aborted");
-            //}
+            if (_task.isAborted())
+                throw std::runtime_error("Loading was aborted");
 
             auto image = static_cast<ImageCollection::Image*>(childItem);
 
-            points->getDataHierarchyItem().setTaskDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
+            const auto fileName = image->getFileName(Qt::EditRole).toString();
 
-            QCoreApplication::processEvents();
+            _task.setSubtaskStarted(fileName);
+            {
+                points->getTask().setProgressDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
-            if (!image->getShouldLoad(Qt::EditRole).toBool())
-                continue;
+                QCoreApplication::processEvents();
 
-            image->load(imageLoaderPlugin, data, imageIndex, dimensionNames, multiBitmap);
+                if (!image->getShouldLoad(Qt::EditRole).toBool())
+                    continue;
 
-            imageIndex++;
+                image->load(imageLoaderPlugin, data, imageIndex, dimensionNames, multiBitmap);
 
-            points->getDataHierarchyItem().setTaskProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
+                imageIndex++;
 
-            imageFilePaths << image->getFilePath(Qt::EditRole).toString();
+                points->getTask().setProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
+
+                imageFilePaths << image->getFilePath(Qt::EditRole).toString();
+            }
+            _task.setSubtaskFinished(fileName);
         }
 
         if (multiBitmap != nullptr)
@@ -1784,7 +1802,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
             conversionPluginTriggerAction->trigger();
         }
 
-        points->getDataHierarchyItem().setTaskFinished();
+        points->getTask().setFinished();
 
         auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
@@ -1800,6 +1818,8 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         events().notifyDatasetDataChanged(images);
 
         images->getDataHierarchyItem().select();
+
+        //_task.setFinished();
 
         return points;
     }

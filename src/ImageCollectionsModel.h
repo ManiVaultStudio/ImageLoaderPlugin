@@ -171,7 +171,7 @@ public: // Miscellaneous
      * @param row Row at which to insert the image collections
      * @param imageCollections Image collections to insert
      */
-    void insert(int row, const std::vector<ImageCollection*>& imageCollections);
+    void insert(int row, const QVector<ImageCollection*>& imageCollections);
 
     /** Get root tree item */
     TreeItem* getRootItem() { return _root; };

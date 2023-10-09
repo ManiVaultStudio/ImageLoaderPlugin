@@ -743,7 +743,7 @@ void ImageCollectionsModel::clear()
     endResetModel();
 }
 
-void ImageCollectionsModel::insert(int row, const std::vector<ImageCollection*>& imageCollections)
+void ImageCollectionsModel::insert(int row, const QVector<ImageCollection*>& imageCollections)
 {
     if (imageCollections.empty())
         return;
