@@ -103,6 +103,16 @@ class ImageLoaderPluginConan(ConanFile):
             tc.variables["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         tc.variables["CMAKE_PREFIX_PATH"] = qt_root
         tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+        
+        # Set the installation directory for ManiVault based on the MV_INSTALL_DIR environment variable
+        # or if none is specified, set it to the build/install dir.
+        if not os.environ.get("MV_INSTALL_DIR", None):
+            os.environ["MV_INSTALL_DIR"] = os.path.join(self.build_folder, "install")
+        print("MV_INSTALL_DIR: ", os.environ["MV_INSTALL_DIR"])
+        self.install_dir = pathlib.Path(os.environ["MV_INSTALL_DIR"]).as_posix()
+        # Give the installation directory to CMake
+        tc.variables["MV_INSTALL_DIR"] = self.install_dir
+        
         # Use try except to help debugging
         try:
             tc.generate()
@@ -120,11 +130,6 @@ class ImageLoaderPluginConan(ConanFile):
 
     def build(self):
         print(f"Build OS is : {self.settings.os} version: {self.version}")
-        # If the user has no preference in HDPS_INSTALL_DIR simply set the install dir
-        if not os.environ.get("HDPS_INSTALL_DIR", None):
-            os.environ["HDPS_INSTALL_DIR"] = os.path.join(self.build_folder, "install")
-        print("HDPS_INSTALL_DIR: ", os.environ["HDPS_INSTALL_DIR"])
-        self.install_dir = os.environ["HDPS_INSTALL_DIR"]
 
         # We package FreeImage in separate include, lib and bin directories
         # need to copy dll to allow the cmake copy
