@@ -823,6 +823,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
 
+    _task.setEnabled(false);
     _task.setMayKill(false);
     _task.setIcon(Application::getIconFont("FontAwesome").getIcon("images"));
 }
@@ -1710,7 +1711,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 #endif
     try
     {
-        //_task.setRunning();
+        _task.setEnabled(true);
 
         auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
 
@@ -1820,6 +1821,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         images->getDataHierarchyItem().select();
 
         //_task.setFinished();
+        _task.setEnabled(false);
 
         return points;
     }
