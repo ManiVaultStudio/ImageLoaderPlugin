@@ -7,7 +7,7 @@
 
 class ImageLoaderPlugin;
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 class LevelsAction : public WidgetAction
 {

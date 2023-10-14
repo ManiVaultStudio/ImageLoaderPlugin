@@ -25,8 +25,8 @@ namespace fi {
 #include <FreeImage.h>
 }
 
-using namespace hdps;
-using namespace hdps::util;
+using namespace mv;
+using namespace mv::util;
 
 const QMap<ImageCollection::SubSampling::Type, QString> ImageCollection::SubSampling::types = QMap<ImageCollection::SubSampling::Type, QString>({
     { ImageCollection::SubSampling::Type::None, "None"},

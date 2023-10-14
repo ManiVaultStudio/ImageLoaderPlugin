@@ -416,7 +416,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
             {
                 switch (static_cast<ImageCollection::Image::Column>(section)) {
                     case ImageCollection::Image::Column::DimensionName:
-                        return hdps::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
+                        return mv::Application::getIconFont("FontAwesome").getIcon("pen", Qt::darkGray);
 
                     default:
                         break;

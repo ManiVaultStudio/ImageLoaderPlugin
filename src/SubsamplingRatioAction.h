@@ -11,7 +11,7 @@
 
 class ImageLoaderPlugin;
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 class SubsamplingRatioAction : public WidgetAction
 {

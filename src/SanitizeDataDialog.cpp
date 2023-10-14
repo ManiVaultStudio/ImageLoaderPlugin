@@ -16,7 +16,7 @@ SanitizeDataDialog::SanitizeDataDialog(ImageCollection* imageCollection, std::ve
     QDialog(parent)
 {
     setWindowTitle(QString("Found NaN values in: %1").arg(imageCollection->getName(Qt::EditRole).toString()));
-    setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("exclamation-circle"));
+    setWindowIcon(mv::Application::getIconFont("FontAwesome").getIcon("exclamation-circle"));
     
     auto layout = new QGridLayout();
 

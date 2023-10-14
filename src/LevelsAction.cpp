@@ -4,7 +4,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 const QMap<LevelsAction::LevelFactor, std::uint32_t> LevelsAction::levelFactors = QMap<LevelsAction::LevelFactor, std::uint32_t>({
     { LevelsAction::LevelFactor::Level2, 2 },

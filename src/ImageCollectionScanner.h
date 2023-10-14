@@ -139,5 +139,5 @@ protected:
     QString                     _filenameFilter;            /** Filename filter string */
     bool                        _initialized;               /** Whether the scanner is initialized or not */
     QVector<ImageCollection*>   _imageCollections;          /** Scanned image collections */
-    hdps::ForegroundTask        _indexImageCollectionsTask;              /** Foreground task which reports scanning progress */
+    mv::ForegroundTask        _indexImageCollectionsTask;              /** Foreground task which reports scanning progress */
 };

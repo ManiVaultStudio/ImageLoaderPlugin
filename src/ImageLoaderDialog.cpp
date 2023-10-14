@@ -6,7 +6,7 @@
 
 #include <QDebug>
 
-using namespace hdps;
+using namespace mv;
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
@@ -17,7 +17,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _cancelAction(this, "Cancel")
 {
     setWindowTitle("Load high-dimensional image data");
-    setWindowIcon(hdps::Application::getIconFont("FontAwesome").getIcon("images"));
+    setWindowIcon(mv::Application::getIconFont("FontAwesome").getIcon("images"));
 
     _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
     _closeAfterLoadingAction.setSettingsPrefix(&imageLoaderPlugin, "CloseAfterLoaded");

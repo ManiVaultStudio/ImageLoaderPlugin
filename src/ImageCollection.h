@@ -519,7 +519,7 @@ public: // Getters/setters
      */
     void setConversion(const QString& conversion);
 
-    hdps::ModalTask& getTask();
+    mv::ModalTask& getTask();
 
 public:
 
@@ -543,7 +543,7 @@ public:
      * @return Smart pointer to generated dataset (if loading was successful)
      * 
      */
-    hdps::Dataset<hdps::DatasetImpl> load(ImageLoaderPlugin* imageLoaderPlugin, hdps::Dataset<hdps::DatasetImpl> parent = hdps::Dataset<hdps::DatasetImpl>());
+    mv::Dataset<mv::DatasetImpl> load(ImageLoaderPlugin* imageLoaderPlugin, mv::Dataset<mv::DatasetImpl> parent = mv::Dataset<mv::DatasetImpl>());
 
 public: // Operators
 
@@ -580,7 +580,7 @@ protected:
     ImageData::Type         _type;                  /** How to load the collection (as image sequence or image stack) */
     SubSampling             _subsampling;           /** Subsampling parameters */
     QString                 _conversion;            /** Conversion SHA */
-    hdps::ModalTask         _task;                  /** Task for reporting load progress */
+    mv::ModalTask         _task;                  /** Task for reporting load progress */
 
     friend class SubSampling;
 };

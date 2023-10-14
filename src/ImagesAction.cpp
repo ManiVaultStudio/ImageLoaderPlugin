@@ -3,7 +3,7 @@
 
 #include <QHeaderView>
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 ImagesAction::ImagesAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent, "Images"),
