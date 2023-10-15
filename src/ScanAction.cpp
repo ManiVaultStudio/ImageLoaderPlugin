@@ -1,7 +1,7 @@
 #include "ScanAction.h"
 #include "ImageLoaderPlugin.h"
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 ScanAction::ScanAction(QWidget* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent, "Scan"),

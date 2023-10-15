@@ -4,7 +4,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 SubsamplingAction::SubsamplingAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     WidgetAction(parent, "Subsampling"),

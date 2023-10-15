@@ -5,8 +5,8 @@
 
 #include <QDebug>
 
-using namespace hdps;
-using namespace hdps::plugin;
+using namespace mv;
+using namespace mv::plugin;
 
 Q_PLUGIN_METADATA(IID "nl.BioVault.ImageLoaderPlugin")
 
@@ -52,7 +52,7 @@ QModelIndexList ImageLoaderPlugin::getSelectedRows() const
 
 QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
 {
-    return hdps::Application::getIconFont("FontAwesome").getIcon("images", color);
+    return mv::Application::getIconFont("FontAwesome").getIcon("images", color);
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

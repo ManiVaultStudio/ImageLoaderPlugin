@@ -4,7 +4,7 @@
 
 class ImageLoaderPlugin;
 
-using namespace hdps::gui;
+using namespace mv::gui;
 
 class ConversionAction : public PluginTriggerPickerAction
 {

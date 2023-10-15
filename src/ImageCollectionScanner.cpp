@@ -15,7 +15,7 @@ namespace fi {
 #include <FreeImage.h>
 }
 
-using namespace hdps;
+using namespace mv;
 
 ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),

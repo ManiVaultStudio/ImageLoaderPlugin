@@ -8,8 +8,8 @@
 #include <LoaderPlugin.h>
 #include <PluginFactory.h>
 
-using hdps::plugin::LoaderPluginFactory;
-using hdps::plugin::LoaderPlugin;
+using mv::plugin::LoaderPluginFactory;
+using mv::plugin::LoaderPlugin;
 
 /**
  * Image loader plugin class
@@ -21,7 +21,7 @@ using hdps::plugin::LoaderPlugin;
 class ImageLoaderPlugin : public LoaderPlugin
 {
 public:
-    ImageLoaderPlugin(const hdps::plugin::PluginFactory* factory);
+    ImageLoaderPlugin(const mv::plugin::PluginFactory* factory);
 
     /** Initializes the plugin */
     void init() override {};
@@ -32,7 +32,7 @@ public:
     ImageCollectionScanner& getImageCollectionScanner() { return _imageCollectionScanner; }
     ImageCollectionsModel& getImageCollectionsModel() { return _imageCollectionsModel; }
     ImageCollectionsModel::Filter& getImageCollectionsFilterModel() { return _imageCollectionsFilterModel; }
-    hdps::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
+    mv::gui::PluginTriggerPickerAction& getConversionPickerAction() { return _conversionPickerAction; }
 
     QModelIndexList getSelectedRows() const;;
 
@@ -51,7 +51,7 @@ private:
  */
 class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
-    Q_INTERFACES(hdps::plugin::LoaderPluginFactory hdps::plugin::PluginFactory)
+    Q_INTERFACES(mv::plugin::LoaderPluginFactory mv::plugin::PluginFactory)
         Q_OBJECT
         Q_PLUGIN_METADATA(IID   "nl.BioVault.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
 
