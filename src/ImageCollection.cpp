@@ -1717,8 +1717,8 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         events().notifyDatasetAdded(points);
 
-        points->getDatasetTask().setName("Loading");
-        points->getDatasetTask().setRunning();
+        points->getTask().setName("Loading");
+        points->getTask().setRunning();
 
         const auto typeName = ImageData::getTypeName(_type);
 
@@ -1763,7 +1763,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
             _task.setSubtaskStarted(fileName);
             {
-                points->getDatasetTask().setProgressDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
+                points->getTask().setProgressDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
                 QCoreApplication::processEvents();
 
@@ -1774,7 +1774,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
                 imageIndex++;
 
-                points->getDatasetTask().setProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
+                points->getTask().setProgress(static_cast<float>(imageIndex) / static_cast<float>(_children.size()));
 
                 imageFilePaths << image->getFilePath(Qt::EditRole).toString();
             }
@@ -1803,7 +1803,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
             conversionPluginTriggerAction->trigger();
         }
 
-        points->getDatasetTask().setFinished();
+        points->getTask().setFinished();
 
         auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
