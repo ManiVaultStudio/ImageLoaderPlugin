@@ -33,7 +33,7 @@ ELSE (WIN32)
 	FIND_LIBRARY(FREEIMAGE_LIBRARY
 		NAMES FreeImage freeimage
 		PATHS
-        ${FREEIMAGE_ROOT_DIR}/bin
+        ${FREEIMAGE_ROOT_DIR}/lib
 		/usr/lib64
 		/usr/lib
 		/usr/local/lib64
