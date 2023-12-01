@@ -8,6 +8,7 @@
 #include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QSysInfo>
 
 #include <stdexcept>
 
@@ -30,8 +31,9 @@ ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlu
 {
     _indexImageCollectionsTask.setDescription("Scanning disk for image collections");
     _indexImageCollectionsTask.setIcon(Application::getIconFont("FontAwesome").getIcon("barcode"));
+    _indexImageCollectionsTask.setMayKill(true);
 }
-
+	
 ImageCollectionScanner::~ImageCollectionScanner()
 {
     for (auto imageCollection : _imageCollections)
@@ -40,12 +42,12 @@ ImageCollectionScanner::~ImageCollectionScanner()
 
 void ImageCollectionScanner::loadSettings()
 {
-    const auto directory = _imageLoaderPlugin.getSetting("Scanner/Directory", "").toString();
+    const auto directory = _imageLoaderPlugin.getSetting("Scanner/Directory", QSysInfo::productType() == QString("macos") ? QDir::homePath() : "").toString();
 
-    setDirectory(QDir(directory).exists() ? directory : "", true);
+    setDirectory(QDir(directory).exists() ? directory : QDir::homePath(), true);
     setSeparateByDirectory(_imageLoaderPlugin.getSetting("Scanner/SeparateByDirectory", true).toBool());
 
-    auto supportedImageTypes = QStringList();
+    auto supportedImageTypes = QStringList();	
 
     supportedImageTypes << "jpg" << "png" << "bmp" << "tif" << "tiff";
 
@@ -162,6 +164,10 @@ void ImageCollectionScanner::scan()
             nameFilters << "*." + supportedImageType;
 
         scanDir(_directory, nameFilters, imageCollections, true);
+        if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted()) {
+            _indexImageCollectionsTask.setAborted();
+            return;
+        }
 
         qDebug() << "Found " << imageCollections.count() << "image collections";
 
@@ -186,6 +192,8 @@ void ImageCollectionScanner::scan()
 
         _indexImageCollectionsTask.setSubtaskFinished("Database", "Database built");
         _indexImageCollectionsTask.setFinished();
+        
+        QCoreApplication::processEvents();
     }
     catch (const std::runtime_error& e)
     {
@@ -215,6 +223,9 @@ auto ImageCollectionScanner::findImageCollection(QVector<ImageCollection*>& imag
 
 void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameFilters, QVector<ImageCollection*>& imageCollections, const bool& showProgressDialog /*= false*/)
 {
+    if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted())
+        return;
+    
     auto subDirectories = QDir(directory);
 
     subDirectories.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -230,16 +241,16 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         _indexImageCollectionsTask.setSubtasks(subTasks);
         _indexImageCollectionsTask.setStatus(Task::Status::Running);
     }
-
+    
     for (int dirIndex = 0; dirIndex < dirList.count(); ++dirIndex) {
-        if (hasProgressDialog && _indexImageCollectionsTask.isAborted())
+        if (_indexImageCollectionsTask.isAborting())
             break;
 
         const auto path = QString("%1/%2").arg(subDirectories.absolutePath()).arg(dirList.at(dirIndex));
 
         if (hasProgressDialog)
             _indexImageCollectionsTask.setSubtaskStarted(dirList.at(dirIndex), QString("Scanning %1").arg(path));
-
+        QCoreApplication::processEvents();
         scanDir(path, nameFilters, imageCollections);
 
         QCoreApplication::processEvents();
@@ -248,6 +259,11 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
             _indexImageCollectionsTask.setSubtaskFinished(dirList.at(dirIndex), QString("%1 scanned").arg(path));
     }
 
+    if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted()) {
+        _indexImageCollectionsTask.setAborted();
+        return;
+    }
+    
     auto imageFiles = QDir(directory);
 
     imageFiles.setFilter(QDir::Files);
@@ -262,6 +278,9 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
     const auto fileList = imageFiles.entryList();
 
     for (int i = 0; i < fileList.count(); ++i) {
+        if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted()) {
+            break;
+        }
         const auto fileName         = fileList.at(i);
         const auto imageFilePath    = QString("%1/%2").arg(imageFiles.absolutePath()).arg(fileName);
         const auto rootDir          = QFileInfo(imageFilePath).absoluteDir().path();
@@ -300,6 +319,10 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         else {
             (*it)->addImage(imageFilePath);
         }
+    }
+    if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted()) {
+        _indexImageCollectionsTask.setAborted();
+        return;
     }
 
     if (hasProgressDialog) {
