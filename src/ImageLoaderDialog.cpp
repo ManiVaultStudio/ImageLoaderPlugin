@@ -91,21 +91,28 @@ void ImageLoaderDialog::updateActions()
 
 void ImageLoaderDialog::loadImageCollections()
 {
+    ModalTask loadImageCollectionsTask(this, "Load image collections");
+
+    //loadImageCollectionsTask.setRunning();
+
     const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
     const auto hasSelection = !selectedRows.isEmpty();
 
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
-        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+        const auto imageCollection      = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+        const auto imageCollectionName  = imageCollection->getName(Qt::EditRole).toString();
 
         auto& task = imageCollection->getTask();
 
-        task.setName(QString("Load %1").arg(imageCollection->getName(Qt::EditRole).toString()));
+        task.setEnabled(true);
+        //task.setParentTask(&loadImageCollectionsTask);
+        task.setName(QString("Load %1").arg(imageCollectionName));
         task.setProgressMode(Task::ProgressMode::Subtasks);
         
-        auto subtasks = imageCollection->getFileNames(Qt::EditRole).toStringList();
-
-        if (_imageCollectionsAction.getSubsamplingAction().getTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid))
-            subtasks << "Create image pyramid";
+        QStringList subtasks;
+        
+        for (int subtaskIndex = 0; subtaskIndex < imageCollection->getFileNames(Qt::EditRole).toStringList().count(); subtaskIndex++)
+            subtasks << QString("%1: load image %2").arg(imageCollectionName, QString::number(subtaskIndex));
 
         task.setSubtasks(subtasks);
         task.setRunning();
@@ -124,38 +131,34 @@ void ImageLoaderDialog::loadImageCollections()
         auto& task = imageCollection->getTask();
 
         if (_imageCollectionsAction.getSubsamplingAction().getTypeAction().getCurrentIndex() == static_cast<std::int32_t>(ImageCollection::SubSampling::Type::Pyramid)) {
-            task.setSubtaskStarted("Create image pyramid");
-            {
-                auto& levelsAction = _imageCollectionsAction.getSubsamplingAction().getLevelsActions();
+            auto& levelsAction = _imageCollectionsAction.getSubsamplingAction().getLevelsActions();
 
-                const auto levelFactor = LevelsAction::levelFactors.value(static_cast<LevelsAction::LevelFactor>(levelsAction.getLevelFactorAction().getCurrentIndex()));
-                const auto scaleFactor = 1.0f / levelFactor;
+            const auto levelFactor = LevelsAction::levelFactors.value(static_cast<LevelsAction::LevelFactor>(levelsAction.getLevelFactorAction().getCurrentIndex()));
+            const auto scaleFactor = 1.0f / levelFactor;
 
-                for (int levelIndex = 1; levelIndex <= levelsAction.getNumberOfLevelsAction().getValue(); ++levelIndex) {
-                    currentLevelSize = currentLevelSize * scaleFactor;
+            for (int levelIndex = 1; levelIndex <= levelsAction.getNumberOfLevelsAction().getValue(); ++levelIndex) {
+                currentLevelSize = currentLevelSize * scaleFactor;
 
-                    if (currentLevelSize.width() < 4 || currentLevelSize.height() < 4)
-                        break;
+                if (currentLevelSize.width() < 4 || currentLevelSize.height() < 4)
+                    break;
 
-                    imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
-                    imageCollection->setTargetSize(currentLevelSize);
+                imageCollection->setDatasetName(QString("Level %1").arg(QString::number(levelIndex)));
+                imageCollection->setTargetSize(currentLevelSize);
 
-                    currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
+                currentLevelPoints = imageCollection->load(&_imageLoaderPlugin, currentLevelPoints);
 
-                    // Map from level zero to current level
-                    {
-                        SelectionMap selectionMap(level0Size, currentLevelSize);
-                        level0Points->addLinkedData(currentLevelPoints, selectionMap);
-                    }
+                // Map from level zero to current level
+                {
+                    SelectionMap selectionMap(level0Size, currentLevelSize);
+                    level0Points->addLinkedData(currentLevelPoints, selectionMap);
+                }
 
-                    // Map from current level to level zero
-                    {
-                        SelectionMap selectionMap(currentLevelSize, level0Size);
-                        currentLevelPoints->addLinkedData(level0Points, selectionMap);
-                    }
+                // Map from current level to level zero
+                {
+                    SelectionMap selectionMap(currentLevelSize, level0Size);
+                    currentLevelPoints->addLinkedData(level0Points, selectionMap);
                 }
             }
-            task.setSubtaskFinished("Create image pyramid");
         }
     }
 
@@ -172,4 +175,17 @@ void ImageLoaderDialog::loadImageCollections()
 
     if (_closeAfterLoadingAction.isChecked())
         accept();
+
+    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
+        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+        const auto imageCollectionName = imageCollection->getName(Qt::EditRole).toString();
+
+        auto& task = imageCollection->getTask();
+
+        task.setEnabled(true);
+        task.setParentTask(nullptr);
+    }
+
+
+    //loadImageCollectionsTask.setFinished();
 }

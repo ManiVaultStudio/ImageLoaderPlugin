@@ -519,7 +519,7 @@ public: // Getters/setters
      */
     void setConversion(const QString& conversion);
 
-    mv::ModalTask& getTask();
+    mv::ForegroundTask& getTask();
 
 public:
 
@@ -580,7 +580,7 @@ protected:
     ImageData::Type         _type;                  /** How to load the collection (as image sequence or image stack) */
     SubSampling             _subsampling;           /** Subsampling parameters */
     QString                 _conversion;            /** Conversion SHA */
-    mv::ModalTask         _task;                  /** Task for reporting load progress */
+    mv::ForegroundTask      _task;                  /** Task for reporting load progress */
 
     friend class SubSampling;
 };

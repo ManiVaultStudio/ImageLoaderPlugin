@@ -1632,7 +1632,7 @@ void ImageCollection::setConversion(const QString& conversion)
     _conversion = conversion;
 }
 
-ModalTask& ImageCollection::getTask()
+ForegroundTask& ImageCollection::getTask()
 {
     return _task;
 }
@@ -1713,9 +1713,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
     {
         _task.setEnabled(true);
 
-        auto points = imageLoaderPlugin->_core->addDataset<Points>("Points", _datasetName, parent);
-
-        events().notifyDatasetAdded(points);
+        auto points = mv::data().createDataset<Points>("Points", _datasetName, parent);
 
         points->getTask().setName("Loading");
         points->getTask().setRunning();
@@ -1759,9 +1757,9 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
             auto image = static_cast<ImageCollection::Image*>(childItem);
 
-            const auto fileName = image->getFileName(Qt::EditRole).toString();
+            const auto subtaskName = QString("%1: load image %2").arg(_name, QString::number(_children.indexOf(childItem)));
 
-            _task.setSubtaskStarted(fileName);
+            _task.setSubtaskStarted(subtaskName);
             {
                 points->getTask().setProgressDescription(QString("Loading %1").arg(image->getDimensionName(Qt::EditRole).toString()));
 
@@ -1778,8 +1776,10 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
                 imageFilePaths << image->getFilePath(Qt::EditRole).toString();
             }
-            _task.setSubtaskFinished(fileName);
+            _task.setSubtaskFinished(subtaskName);
         }
+
+        _task.setFinished();
 
         if (multiBitmap != nullptr)
             FI::FreeImage_CloseMultiBitmap(multiBitmap);
@@ -1805,9 +1805,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         points->getTask().setFinished();
 
-        auto images = imageLoaderPlugin->_core->addDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
-
-        events().notifyDatasetAdded(images);
+        auto images = mv::data().createDataset<Images>("Images", "images", Dataset<DatasetImpl>(*points));
 
         images->setText(QString("Images (%2x%3)").arg(QString::number(_targetSize.width()), QString::number(_targetSize.height())));
         images->setType(_type);
@@ -1821,7 +1819,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         images->getDataHierarchyItem().select();
 
         //_task.setFinished();
-        _task.setEnabled(false);
+        //_task.setEnabled(false);
 
         return points;
     }
