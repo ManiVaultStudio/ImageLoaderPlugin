@@ -91,6 +91,10 @@ void ImageLoaderDialog::updateActions()
 
 void ImageLoaderDialog::loadImageCollections()
 {
+    //ModalTask loadImageCollectionsTask(this, "Load image collections");
+
+    //loadImageCollectionsTask.setRunning();
+
     const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
     const auto hasSelection = !selectedRows.isEmpty();
 
@@ -101,6 +105,7 @@ void ImageLoaderDialog::loadImageCollections()
         auto& task = imageCollection->getTask();
 
         task.setEnabled(true);
+        //task.setParentTask(&loadImageCollectionsTask);
         task.setName(QString("Load %1").arg(imageCollectionName));
         task.setProgressMode(Task::ProgressMode::Subtasks);
         
@@ -181,4 +186,6 @@ void ImageLoaderDialog::loadImageCollections()
         task.setParentTask(nullptr);
     }
 
+
+    //loadImageCollectionsTask.setFinished();
 }
