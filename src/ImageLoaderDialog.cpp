@@ -91,7 +91,7 @@ void ImageLoaderDialog::updateActions()
 
 void ImageLoaderDialog::loadImageCollections()
 {
-    ModalTask loadImageCollectionsTask(this, "Load image collections");
+    //ModalTask loadImageCollectionsTask(this, "Load image collections");
 
     //loadImageCollectionsTask.setRunning();
 
