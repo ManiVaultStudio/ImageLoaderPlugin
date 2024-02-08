@@ -14,7 +14,11 @@
 #include <QImage>
 
 namespace FI {
+
+#pragma warning(disable: 4828)
+
 #include <FreeImage.h>
+
 }
 
 class ImageLoaderPlugin;
