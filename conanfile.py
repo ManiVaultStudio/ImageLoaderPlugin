@@ -14,17 +14,17 @@ class ImageLoaderPluginConan(ConanFile):
     """Class to package ImageLoaderPlugin using conan
 
     Packages both RELEASE and DEBUG.
-    Uses rules_support (github.com/hdps/rulessupport) to derive
+    Uses rules_support (github.com/ManiVaultStudio/rulessupport) to derive
     versioninfo based on the branch naming convention
-    as described in https://github.com/hdps/core/wiki/Branch-naming-rules
+    as described in https://github.com/ManiVaultStudio/core/wiki/Branch-naming-rules
     """
 
     name = "ImageLoaderPlugin"
     description = (
-        "A plugin for viewing image data in the high-dimensional plugin system (HDPS)."
+        "A plugin for viewing image data in ManiVaultStudio."
     )
     topics = ("hdps", "plugin", "image data", "loading")
-    url = "https://github.com/hdps/ImageLoaderPlugin"
+    url = "https://github.com/ManiVaultStudio/ImageLoaderPlugin"
     author = "B. van Lew b.van_lew@lumc.nl"  # conan recipe author
     license = "MIT"
 
@@ -37,7 +37,7 @@ class ImageLoaderPluginConan(ConanFile):
     default_options = {"shared": True, "fPIC": True}
 
     # Qt requirement is inherited from hdps-core
-    requires = "freeimage/3.18.0@lkeb/stable"
+    requires = "freeimage/3.18.0"
 
     scm = {
         "type": "git",
