@@ -31,11 +31,6 @@ class ImageLoaderPluginConan(ConanFile):
     short_paths = True
     generators = "CMakeDeps"
 
-    # Options may need to change depending on the packaged library
-    settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": True, "fPIC": True}
-
     # Qt requirement is inherited from hdps-core
     requires = ("zlib/1.3", "freeimage/3.18.0")
 
