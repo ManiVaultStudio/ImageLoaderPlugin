@@ -75,18 +75,16 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
-        pass
-        # if self.settings.compiler == "Visual Studio":
-        #    del self.settings.compiler.runtime
+        self.options["libtiff"].shared = True
+        self.options["libtiff"].fPIC = False
 
     def system_requirements(self):
         #  May be needed for macOS or Linux
         pass
 
     def config_options(self):
-        self.options.fPIC = False
         print(f"self.options.shared {self.options.shared}")
-        print(f"self.options.shared {self.options.fPIC}")
+        print(f"self.options.fPIC {self.options.fPIC}")
 
     def generate(self):
         generator = None
