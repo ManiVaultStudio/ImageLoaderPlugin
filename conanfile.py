@@ -82,13 +82,8 @@ class ImageLoaderPluginConan(ConanFile):
         pass
 
     def config_options(self):
-        if self.settings.os == "Windows":
-            print(f"self.options.shared {self.options.shared}")
-        if self.settings.os == "Linux":
-            print(f"self.options.shared {self.options.shared}")
-        if self.settings.os == "Macos":
-            print(f"self.options.shared {self.options.shared}")
-
+        pass
+    
     def generate(self):
         generator = None
         if self.settings.os == "Macos":
