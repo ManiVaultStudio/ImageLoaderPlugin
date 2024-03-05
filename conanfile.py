@@ -77,6 +77,8 @@ class ImageLoaderPluginConan(ConanFile):
     def configure(self):
         self.options["libtiff"].shared = True
         self.options["libtiff"].fPIC = False
+        self.options["zlib"].shared = False
+        self.options["zlib"].fPIC = True
 
     def system_requirements(self):
         #  May be needed for macOS or Linux
