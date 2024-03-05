@@ -33,7 +33,7 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
-    options = {"shared": True}
+    options = {"shared": [True, False]}
 
     # Qt requirement is inherited from hdps-core
     requires = ("zlib/1.3", "freeimage/3.18.0")
@@ -82,8 +82,13 @@ class ImageLoaderPluginConan(ConanFile):
         pass
 
     def config_options(self):
-        pass
-    
+        if self.settings.os == "Windows":
+            print(f"self.options.shared {self.options.shared}")
+        if self.settings.os == "Linux":
+            print(f"self.options.shared {self.options.shared}")
+        if self.settings.os == "Macos":
+            print(f"self.options.shared {self.options.shared}")
+
     def generate(self):
         generator = None
         if self.settings.os == "Macos":
