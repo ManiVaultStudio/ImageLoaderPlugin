@@ -16,7 +16,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(FREEIMAGE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/FreeImage CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
+set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -30,15 +30,9 @@ endif(MSVC)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+find_package(FreeImage REQUIRED)
 
-find_package(FreeImage QUIET)
-
-if (NOT FREEIMAGE_FOUND)
-    message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
-    return()
-else()
-    message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}")
-endif()
+message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
 
 # -----------------------------------------------------------------------------
 # Set install directory
@@ -177,32 +171,18 @@ target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
 # -----------------------------------------------------------------------------
 # Target installation
 # -----------------------------------------------------------------------------
-if(MSVC)
-    set(FreeImageName "FreeImage")
-elseif(APPLE)
-    set(FreeImageName "freeimage")
-else()
-    set(FreeImageName "freeimage-3.18.0")
-endif()
-
-#file(GET_RUNTIME_DEPENDENCIES
-#    LIBRARIES "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-#    RESOLVED_DEPENDENCIES_VAR r_deps
-#    UNRESOLVED_DEPENDENCIES_VAR u_deps) 
-
-#message(STATUS, "Dependencies ${r_deps}")
-
 install(TARGETS ${PROJECT}
     RUNTIME DESTINATION Plugins COMPONENT PLUGINS # Windows .dll
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-if(MSVC OR APPLE)
-    # copy the FreeImage library to the root install directory (the same level as the hdps executable)
+set(FreeImageNameShared "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}FreeImage${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(EXISTS ${FreeImageNameShared})
+     message(STATUS "Upon install: copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
     install(FILES
-        "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        ${FreeImageNameShared}
         DESTINATION "${MV_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
-)
+    )
 endif()
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
