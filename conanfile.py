@@ -41,6 +41,7 @@ class ImageLoaderPluginConan(ConanFile):
     requires = (
         "zlib/1.3", 
         "zstd/1.5.5", 
+        "xz_utils/5.4.5", 
         "libwebp/1.3.2", 
         "libjpeg/9e", 
         "libdeflate/1.19", 
@@ -93,20 +94,23 @@ class ImageLoaderPluginConan(ConanFile):
 #        self.options["libjpeg"].fPIC = False
         self.options["libwebp"].shared = True
 #        self.options["libwebp"].fPIC = False
+        self.options["xz_utils"].shared = True
         self.options["zstd"].shared = True
-        self.options["zstd"].fPIC = False
-        self.options["zlib"].shared = False
-        self.options["zlib"].fPIC = True
+#        self.options["zstd"].fPIC = False
+        self.options["zlib"].shared = True
+#        self.options["zlib"].fPIC = True
         self.options["freeimage"].shared = True
-        self.options["freeimage"].fPIC = False
+#        self.options["freeimage"].fPIC = False
+        del self.options.fPIC
 
     def system_requirements(self):
         #  May be needed for macOS or Linux
         pass
 
     def config_options(self):
-        print(f"self.options.shared {self.options.shared}")
-        print(f"self.options.fPIC {self.options.fPIC}")
+        pass
+        #print(f"self.options.shared {self.options.shared}")
+        #print(f"self.options.fPIC {self.options.fPIC}")
 
     def generate(self):
         generator = None
