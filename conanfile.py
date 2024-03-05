@@ -84,8 +84,9 @@ class ImageLoaderPluginConan(ConanFile):
         pass
 
     def config_options(self):
-        del self.options.fPIC
+        self.options.fPIC = False
         print(f"self.options.shared {self.options.shared}")
+        print(f"self.options.shared {self.options.fPIC}")
 
     def generate(self):
         generator = None
