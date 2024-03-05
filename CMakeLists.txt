@@ -178,7 +178,7 @@ install(TARGETS ${PROJECT}
 
 set(FreeImageNameShared "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}FreeImage${CMAKE_SHARED_LIBRARY_SUFFIX}")
 if(EXISTS ${FreeImageNameShared})
-     message(STATUS "copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
+     message(STATUS "Upon install: copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
     install(FILES
         ${FreeImageNameShared}
         DESTINATION "${MV_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
