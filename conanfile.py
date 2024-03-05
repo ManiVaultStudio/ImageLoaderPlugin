@@ -44,7 +44,7 @@ class ImageLoaderPluginConan(ConanFile):
         "xz_utils/5.4.5", 
         "libwebp/1.3.2", 
         "libjpeg/9e", 
-        "libdeflate/1.19", 
+        "libdeflate/1.18", 
         "jbig/20160605", 
         "libtiff/4.6.0",
         "freeimage/3.18.0")
