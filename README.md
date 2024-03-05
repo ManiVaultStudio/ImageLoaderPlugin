@@ -1,36 +1,36 @@
 
-# ImageLoaderPlugin
-Image loader plugin for the HDPS framework
+# ImageLoaderPlugin ![Build Status](https://github.com/ManiVaultStudio/ImageLoaderPlugin/actions/workflows/build.yml/badge.svg?branch=master)
+Image loader plugin for the [ManiVault](https://github.com/ManiVaultStudio/core) framework.
 
-## Local Windows build
-
-Download [FreeImage 3.18.0](https://freeimage.sourceforge.io/download.html) and copy the files to this folder in the following manner for CMAKE to find it automatically:
-```
-├── .
-│   ├── FreeImage
-│   │   ├── bin
-│   │   │   ├── FreeImage.dll
-│   │   ├── include
-│   │   │   ├── FreeImage.h
-│   │   ├── lib
-│   │   │   ├── FreeImage.lib
+```bash
+git clone https://github.com/ManiVaultStudio/ImageLoaderPlugin.git
 ```
 
-## Local Linux build
+## Building
+This project depends on the freeimage library.
 
-Tested with Ubuntu 22.10 and gcc 12.2. 
-Make sure to install some additional dependencies:
+### Windows
+Using a package manager: install freeimage with vcpkg or conan and specify the cmake toolchain accordingly.
+
+Manual:
+Download [FreeImage 3.18.0](https://freeimage.sourceforge.io/download.html), copy the files to this folder in the following manner, and define the cmake path variable `FREEIMAGE_ROOT_DIR` to `./FreeImage`:
+```
+.
+├── FreeImage
+│   ├── bin
+│   │   ├── FreeImage.dll
+│   ├── include
+│   │   ├── FreeImage.h
+│   ├── lib
+│   │   ├── FreeImage.lib
+```
+
+### Linux
 ```
 apt install qt6-image-formats-plugins libfreeimage-dev
 ```
 
-## CI-CD
-
-Pushing to the hdps/ImageLoaderPlugin develop will trigger the conan CI_CD to start a build via the configured Webhook.
-
-Currently the following build matrix is performed
-
-OS | Architecture | Compiler
---- | --- | ---
-Windows | x64 | MSVC 2019
-Macos | x86_64 | clang 12
+### Mac
+```
+brew install freeimage
+```

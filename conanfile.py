@@ -1,6 +1,7 @@
 from conans import ConanFile
 from conan.tools.cmake import CMakeDeps, CMake, CMakeToolchain
 from conans.tools import save, load
+from conans.tools import os_info, SystemPackageTool
 import os
 import shutil
 import pathlib
@@ -14,22 +15,22 @@ class ImageLoaderPluginConan(ConanFile):
     """Class to package ImageLoaderPlugin using conan
 
     Packages both RELEASE and DEBUG.
-    Uses rules_support (github.com/hdps/rulessupport) to derive
+    Uses rules_support (github.com/ManiVaultStudio/rulessupport) to derive
     versioninfo based on the branch naming convention
-    as described in https://github.com/hdps/core/wiki/Branch-naming-rules
+    as described in https://github.com/ManiVaultStudio/core/wiki/Branch-naming-rules
     """
 
     name = "ImageLoaderPlugin"
     description = (
-        "A plugin for viewing image data in the high-dimensional plugin system (HDPS)."
+        "A plugin for viewing image data ManiVaultStudio."
     )
-    topics = ("hdps", "plugin", "image data", "loading")
-    url = "https://github.com/hdps/ImageLoaderPlugin"
+    topics = ("hdps", "ManiVaultStudio", "plugin", "image data", "loading")
+    url = "https://github.com/ManiVaultStudio/ImageLoaderPlugin"
     author = "B. van Lew b.van_lew@lumc.nl"  # conan recipe author
     license = "MIT"
 
     short_paths = True
-    generators = "CMakeDeps"
+    generators = "CMakeDeps", "CMakeToolchain"
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
@@ -37,7 +38,6 @@ class ImageLoaderPluginConan(ConanFile):
     default_options = {"shared": True, "fPIC": True}
 
     # Qt requirement is inherited from hdps-core
-    requires = "freeimage/3.18.0@lkeb/stable"
 
     scm = {
         "type": "git",
@@ -72,14 +72,20 @@ class ImageLoaderPluginConan(ConanFile):
         print(f"Core requirement {branch_info.core_requirement}")
         self.requires(branch_info.core_requirement)
 
+        if self.settings.os == "Linux":
+            installer = SystemPackageTool()
+            installer.install("libfreeimage-dev")
+        if self.settings.os == "Macos":
+            installer = SystemPackageTool()
+            installer.install("freeimage")
+        if self.settings.os == "Windows":
+            self.requires("freeimage/3.18.0@lkeb/stable")
+
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
         pass
-        # if self.settings.compiler == "Visual Studio":
-        #    del self.settings.compiler.runtime
 
     def system_requirements(self):
-        #  May be needed for macOS or Linux
         pass
 
     def config_options(self):
@@ -102,7 +108,9 @@ class ImageLoaderPluginConan(ConanFile):
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             tc.variables["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         tc.variables["CMAKE_PREFIX_PATH"] = qt_root
-        tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+
+        if self.settings.os == "Windows":
+            tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
         
         # Set the installation directory for ManiVault based on the MV_INSTALL_DIR environment variable
         # or if none is specified, set it to the build/install dir.
@@ -130,26 +138,6 @@ class ImageLoaderPluginConan(ConanFile):
 
     def build(self):
         print(f"Build OS is : {self.settings.os} version: {self.version}")
-
-        # We package FreeImage in separate include, lib and bin directories
-        # need to copy dll to allow the cmake copy
-        fi_pkg_bin = self.deps_cpp_info["freeimage"].bin_paths[0]
-        fi_pkg_inc = self.deps_cpp_info["freeimage"].include_paths[0]
-        if self.settings.os == "Windows":
-            shutil.copyfile(
-                os.path.join(fi_pkg_bin, "FreeImage.dll"),
-                os.path.join(fi_pkg_inc, "FreeImage.dll"),
-            )
-        elif self.settings.os == "Linux":
-            shutil.copyfile(
-                os.path.join(fi_pkg_bin, "libfreeimage-3.18.0.so"),
-                os.path.join(fi_pkg_inc, "libfreeimage-3.18.0.so"),
-            )
-        else:
-            shutil.copyfile(
-                os.path.join(fi_pkg_bin, "libfreeimage.dylib"),
-                os.path.join(fi_pkg_inc, "libfreeimage.dylib"),
-            )
 
         # The ImageLoaderPlugin build expects the HDPS package to be in this install dir
         hdps_pkg_root = self.deps_cpp_info["hdps-core"].rootpath
