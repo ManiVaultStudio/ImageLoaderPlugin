@@ -16,7 +16,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(FREEIMAGE_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/FreeImage" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
+set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -30,9 +30,16 @@ endif(MSVC)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
-find_package(FreeImage REQUIRED)
+if(FREEIMAGE_ROOT_DIR STREQUAL "") 
+    find_package(FreeImage CONFIG REQUIRED)
+    set(FREEIMAGELINKLIB freeimage::FreeImage)
+else()
+    # when downloading the pre-compiled package manually
+    find_package(FreeImage REQUIRED)
+    set(FREEIMAGELINKLIB ${FREEIMAGE_LIBRARY})
+endif()
 
-message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
+message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}, FREEIMAGELINKLIB: ${FREEIMAGELINKLIB}")
 
 # -----------------------------------------------------------------------------
 # Set install directory
@@ -166,7 +173,7 @@ target_link_libraries(${PROJECT} PRIVATE "${MV_LINK_LIBRARY}")
 target_link_libraries(${PROJECT} PRIVATE "${POINTDATA_LINK_LIBRARY}")
 target_link_libraries(${PROJECT} PRIVATE "${IMAGEDATA_LINK_LIBRARY}")
 
-target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
+target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGELINKLIB}")
 
 # -----------------------------------------------------------------------------
 # Target installation
@@ -182,7 +189,7 @@ if(MSVC)
     install(FILES
         "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
         DESTINATION "${MV_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
-)
+    )
 endif()
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
