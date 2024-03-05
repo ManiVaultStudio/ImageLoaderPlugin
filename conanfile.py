@@ -38,16 +38,7 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Qt requirement is inherited from hdps-core
     #requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
-    requires = (
-        "zlib/1.3", 
-        "zstd/1.5.5", 
-        "xz_utils/5.4.5", 
-        "libwebp/1.3.2", 
-        "libjpeg/9e", 
-        "libdeflate/1.18", 
-        "jbig/20160605", 
-        "libtiff/4.6.0",
-        "freeimage/3.18.0")
+    requires = ("freeimage/3.18.0")
 
     scm = {
         "type": "git",
@@ -84,34 +75,16 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
-        self.options["libtiff"].shared = True
-#        self.options["libtiff"].fPIC = True
-        self.options["jbig"].shared = True
-#        self.options["jbig"].fPIC = True
-        self.options["libdeflate"].shared = True
-#        self.options["libdeflate"].fPIC = False
-        self.options["libjpeg"].shared = True
-#        self.options["libjpeg"].fPIC = False
-        self.options["libwebp"].shared = True
-#        self.options["libwebp"].fPIC = False
-        self.options["xz_utils"].shared = True
-        self.options["zstd"].shared = True
-#        self.options["zstd"].fPIC = False
-        self.options["zlib"].shared = True
-#        self.options["zlib"].fPIC = True
-        self.options["freeimage"].shared = True
-#        self.options["freeimage"].fPIC = False
-        del self.options.fPIC
-        self.settings.compiler.cppstd = "17"
+        pass
 
     def system_requirements(self):
-        #  May be needed for macOS or Linux
-        pass
-
+        if self.settings.os == "Linux":
+            self.requires.remove("freeimage")
+            self.run("sudo apt update && sudo apt install -y libfreeimage-dev")
+    
     def config_options(self):
-        pass
-        #print(f"self.options.shared {self.options.shared}")
-        #print(f"self.options.fPIC {self.options.fPIC}")
+        if self.settings.os == "Windows":
+            del self.options.fPIC
 
     def generate(self):
         generator = None
