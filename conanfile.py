@@ -103,6 +103,7 @@ class ImageLoaderPluginConan(ConanFile):
         self.options["freeimage"].shared = True
 #        self.options["freeimage"].fPIC = False
         del self.options.fPIC
+        self.settings.compiler.cppstd = "17"
 
     def system_requirements(self):
         #  May be needed for macOS or Linux
