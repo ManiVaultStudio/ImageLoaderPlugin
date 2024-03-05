@@ -38,7 +38,15 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Qt requirement is inherited from hdps-core
     #requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
-    requires = ("zlib/1.3", "libtiff/4.6.0",)
+    requires = (
+        "zlib/1.3", 
+        "zstd/1.5.5", 
+        "libwebp/1.3.2", 
+        "libjpeg/9e", 
+        "libdeflate/1.19", 
+        "jbig/20160605", 
+        "libtiff/4.6.0",
+        "freeimage/3.18.0")
 
     scm = {
         "type": "git",
@@ -77,8 +85,20 @@ class ImageLoaderPluginConan(ConanFile):
     def configure(self):
         self.options["libtiff"].shared = True
         self.options["libtiff"].fPIC = False
+        self.options["jbig"].shared = True
+        self.options["jbig"].fPIC = False
+        self.options["libdeflate"].shared = True
+        self.options["libdeflate"].fPIC = False
+        self.options["libjpeg"].shared = True
+        self.options["libjpeg"].fPIC = False
+        self.options["libwebp"].shared = True
+        self.options["libwebp"].fPIC = False
+        self.options["zstd"].shared = True
+        self.options["zstd"].fPIC = False
         self.options["zlib"].shared = False
         self.options["zlib"].fPIC = True
+        self.options["freeimage"].shared = True
+        self.options["freeimage"].fPIC = False
 
     def system_requirements(self):
         #  May be needed for macOS or Linux
