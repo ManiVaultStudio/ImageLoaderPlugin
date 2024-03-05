@@ -32,7 +32,7 @@ find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 find_package(FreeImage REQUIRED)
 
-message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}, FREEIMAGELINKLIB: ${FREEIMAGELINKLIB}")
+message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
 
 # -----------------------------------------------------------------------------
 # Set install directory

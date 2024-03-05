@@ -30,7 +30,7 @@ class ImageLoaderPluginConan(ConanFile):
     license = "MIT"
 
     short_paths = True
-    generators = "CMakeDeps"
+    generators = "CMakeDeps", "CMakeToolchain"
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
@@ -38,7 +38,6 @@ class ImageLoaderPluginConan(ConanFile):
     default_options = {"shared": True, "fPIC": True}
 
     # Qt requirement is inherited from hdps-core
-    #requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
 
     scm = {
         "type": "git",
@@ -80,8 +79,7 @@ class ImageLoaderPluginConan(ConanFile):
             installer = SystemPackageTool()
             installer.install("freeimage")
         if self.settings.os == "Windows":
-            self.requires("freeimage/3.18.0")
-
+            self.requires("freeimage/3.18.0@lkeb/stable")
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
