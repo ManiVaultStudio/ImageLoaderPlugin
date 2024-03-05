@@ -1,6 +1,7 @@
 from conans import ConanFile
 from conan.tools.cmake import CMakeDeps, CMake, CMakeToolchain
 from conans.tools import save, load
+from conans.tools import os_info, SystemPackageTool
 import os
 import shutil
 import pathlib
@@ -38,7 +39,6 @@ class ImageLoaderPluginConan(ConanFile):
 
     # Qt requirement is inherited from hdps-core
     #requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
-    requires = ("freeimage/3.18.0")
 
     scm = {
         "type": "git",
@@ -73,15 +73,23 @@ class ImageLoaderPluginConan(ConanFile):
         print(f"Core requirement {branch_info.core_requirement}")
         self.requires(branch_info.core_requirement)
 
+        if self.settings.os == "Linux":
+            installer = SystemPackageTool()
+            installer.install("libfreeimage-dev")
+        if self.settings.os == "Macos":
+            installer = SystemPackageTool()
+            installer.install("freeimage")
+        if self.settings.os == "Windows":
+            self.requires("freeimage/3.18.0")
+
+
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
         pass
 
     def system_requirements(self):
-        if self.settings.os == "Linux":
-            self.requires.remove("freeimage")
-            self.run("sudo apt update && sudo apt install -y libfreeimage-dev")
-    
+        pass
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC
