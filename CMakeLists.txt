@@ -32,13 +32,6 @@ find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
 find_package(FreeImage REQUIRED)
 
-if(FREEIMAGE_ROOT_DIR STREQUAL "") 
-    set(FREEIMAGELINKLIB freeimage::FreeImage)
-else()
-    # when downloading the pre-compiled package manually
-    set(FREEIMAGELINKLIB ${FREEIMAGE_LIBRARY})
-endif()
-
 message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}, FREEIMAGELINKLIB: ${FREEIMAGELINKLIB}")
 
 # -----------------------------------------------------------------------------
@@ -173,7 +166,7 @@ target_link_libraries(${PROJECT} PRIVATE "${MV_LINK_LIBRARY}")
 target_link_libraries(${PROJECT} PRIVATE "${POINTDATA_LINK_LIBRARY}")
 target_link_libraries(${PROJECT} PRIVATE "${IMAGEDATA_LINK_LIBRARY}")
 
-target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGELINKLIB}")
+target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
 
 # -----------------------------------------------------------------------------
 # Target installation
@@ -183,11 +176,11 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-if(MSVC)
-    # copy the FreeImage library to the root install directory (the same level as the ManiVault executable)
-    set(FreeImageName "FreeImage")
+set(FreeImageNameShared "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}FreeImage${CMAKE_SHARED_LIBRARY_SUFFIX}")
+if(EXISTS ${FreeImageNameShared})
+     message(STATUS "copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
     install(FILES
-        "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+        ${FreeImageNameShared}
         DESTINATION "${MV_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
     )
 endif()
