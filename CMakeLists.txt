@@ -30,15 +30,9 @@ endif(MSVC)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+find_package(FreeImage REQUIRED)
 
-find_package(FreeImage QUIET)
-
-if (NOT FREEIMAGE_FOUND)
-    message(FATAL_ERROR "Failed to find FreeImage, not building ImageLoaderPlugin")
-    return()
-else()
-    message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}")
-endif()
+message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
 
 # -----------------------------------------------------------------------------
 # Set install directory
