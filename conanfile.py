@@ -37,7 +37,8 @@ class ImageLoaderPluginConan(ConanFile):
     default_options = {"shared": True}
 
     # Qt requirement is inherited from hdps-core
-    requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
+    #requires = ("zlib/1.3", "libtiff/4.6.0", "freeimage/3.18.0")
+    requires = ("zlib/1.3", "libtiff/4.6.0",)
 
     scm = {
         "type": "git",
