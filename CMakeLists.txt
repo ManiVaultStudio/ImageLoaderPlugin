@@ -30,12 +30,12 @@ endif(MSVC)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 
+find_package(FreeImage REQUIRED)
+
 if(FREEIMAGE_ROOT_DIR STREQUAL "") 
-    find_package(FreeImage CONFIG REQUIRED)
     set(FREEIMAGELINKLIB freeimage::FreeImage)
 else()
     # when downloading the pre-compiled package manually
-    find_package(FreeImage REQUIRED)
     set(FREEIMAGELINKLIB ${FREEIMAGE_LIBRARY})
 endif()
 
