@@ -171,28 +171,14 @@ target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
 # -----------------------------------------------------------------------------
 # Target installation
 # -----------------------------------------------------------------------------
-if(MSVC)
-    set(FreeImageName "FreeImage")
-elseif(APPLE)
-    set(FreeImageName "freeimage")
-else()
-    set(FreeImageName "freeimage-3.18.0")
-endif()
-
-#file(GET_RUNTIME_DEPENDENCIES
-#    LIBRARIES "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-#    RESOLVED_DEPENDENCIES_VAR r_deps
-#    UNRESOLVED_DEPENDENCIES_VAR u_deps) 
-
-#message(STATUS, "Dependencies ${r_deps}")
-
 install(TARGETS ${PROJECT}
     RUNTIME DESTINATION Plugins COMPONENT PLUGINS # Windows .dll
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-if(MSVC OR APPLE)
-    # copy the FreeImage library to the root install directory (the same level as the hdps executable)
+if(MSVC)
+    # copy the FreeImage library to the root install directory (the same level as the ManiVault executable)
+    set(FreeImageName "FreeImage")
     install(FILES
         "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}${FreeImageName}${CMAKE_SHARED_LIBRARY_SUFFIX}"
         DESTINATION "${MV_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
