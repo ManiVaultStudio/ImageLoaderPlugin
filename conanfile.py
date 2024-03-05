@@ -85,6 +85,7 @@ class ImageLoaderPluginConan(ConanFile):
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
         self.options["libtiff"].shared = True
+        self.options["libtiff"].cppstd = 17
 #        self.options["libtiff"].fPIC = True
         self.options["jbig"].shared = True
 #        self.options["jbig"].fPIC = True
