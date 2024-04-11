@@ -1799,7 +1799,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         auto conversionPluginTriggerAction = imageLoaderPlugin->getConversionPickerAction().getPluginTriggerAction(_conversion);
         
         if (conversionPluginTriggerAction != nullptr) {
-            //conversionPluginTriggerAction->setDatasets({ points });
+            conversionPluginTriggerAction->setDatasets({ points });
             conversionPluginTriggerAction->trigger();
         }
 
