@@ -120,6 +120,9 @@ class ImageLoaderPluginConan(ConanFile):
         self.install_dir = pathlib.Path(os.environ["MV_INSTALL_DIR"]).as_posix()
         # Give the installation directory to CMake
         tc.variables["MV_INSTALL_DIR"] = self.install_dir
+
+        # Set some build options
+        tc.variables["MV_UNITY_BUILD"] = "ON"
         
         # Use try except to help debugging
         try:

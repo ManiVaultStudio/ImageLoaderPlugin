@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12.0)
 
+option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
+
 # -----------------------------------------------------------------------------
 # ImageLoader Plugin
 # -----------------------------------------------------------------------------
@@ -131,9 +133,6 @@ QT6_WRAP_UI(UI_HEADERS ${UIS})
 # -----------------------------------------------------------------------------
 add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 
-qt_wrap_cpp(IMAGELOADER_MOC ${PLUGIN_MOC_HEADERS} TARGET ${PROJECT})
-target_sources(${PROJECT} PRIVATE ${IMAGELOADER_MOC})
-
 # -----------------------------------------------------------------------------
 # Target include directories
 # -----------------------------------------------------------------------------
@@ -148,6 +147,10 @@ target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
 add_definitions(-DDISABLE_PERF_MEASUREMENT)
  
+if(MV_UNITY_BUILD)
+    set_target_properties(${PROJECT} PROPERTIES UNITY_BUILD ON)
+endif()
+
 # -----------------------------------------------------------------------------
 # Target library linking
 # -----------------------------------------------------------------------------
