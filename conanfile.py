@@ -71,15 +71,16 @@ class ImageLoaderPluginConan(ConanFile):
         branch_info = PluginBranchInfo(self.__get_git_path())
         print(f"Core requirement {branch_info.core_requirement}")
         self.requires(branch_info.core_requirement)
-
-        if self.settings.os == "Linux":
-            installer = SystemPackageTool()
-            installer.install("libfreeimage-dev")
-        if self.settings.os == "Macos":
-            installer = SystemPackageTool()
-            installer.install("freeimage")
-        if self.settings.os == "Windows":
-            self.requires("freeimage/3.18.0@lkeb/stable")
+        self.requires("freeimage/3.18.0@lkeb/stable")
+        
+        #if self.settings.os == "Linux":
+        #    installer = SystemPackageTool()
+        #    installer.install("libfreeimage-dev")
+        #if self.settings.os == "Macos":
+        #    installer = SystemPackageTool()
+        #    installer.install("freeimage")
+        #if self.settings.os == "Windows":
+        #    self.requires("freeimage/3.18.0@lkeb/stable")
 
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
@@ -108,9 +109,9 @@ class ImageLoaderPluginConan(ConanFile):
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             tc.variables["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         tc.variables["CMAKE_PREFIX_PATH"] = qt_root
-
-        if self.settings.os == "Windows":
-            tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+        tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+        #if self.settings.os == "Windows":
+        #    tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
         
         # Set the installation directory for ManiVault based on the MV_INSTALL_DIR environment variable
         # or if none is specified, set it to the build/install dir.
