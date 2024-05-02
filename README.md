@@ -15,12 +15,13 @@ git clone https://github.com/ManiVaultStudio/ImageLoaderPlugin.git
   - Filter images by name
 - Edit meta data like data set and dimension names
 - Select which dimensions are to be loaded
-- Multiple image formats: PNG, JPEG, BPM and (single page) TIF/TIFF
+- Multiple image formats: PNG, JPEG, BPM and TIF/TIFF
   - RGB images
   - "High-dimensional" images, i.e. more than three values per pixel. All grayscale (single channel) image files in a folder are interpreted as part of one single image, e.g. the files in `./data/images/stack/sun/`
+  - Layered Tiff: Dimension (channel) names might be stored in one of several tags. Select "PageName", "ImageDescription" or a custom tag to automatically retrieve them
 - Data layout interpretation:
-  - Image sequence (default): Each grayscale image in a folder is interpreted as an image channel, i.e., given 100 images of 28x28 pixels this loader creates a dataset of 28x28=784 data points with 100 dimensions (values per pixel). The image dimensions is 28x28 pixel.
-  - Image stack: Each pixel of all grayscale images in a folder are interpreted as an image channel, i.e., given 100 images of 28x28 pixels this loader creates a dataset of 100 data points with 28x28=784 dimensions. The image dimensions remain 28x28 pixel.
+  - Image stack (default): All same-sized, grayscale images in a folder are layered into a single image data set. Pixels at same coordinates from each layer together form a (high-dimensional) data point. Given 100 images of 28x28 pixels this loader creates a dataset of 28x28=784 data points with 100 dimensions (values per pixel). The image dimensions is 28x28 pixel.
+  - Image sequence: Each same-size, grayscale image in a folder is considered a data point and each pixel is considered a dimension. Given 100 images of 28x28 pixels this loader creates a dataset of 100 data points with 28x28=784 dimensions.
 - Apply data conversion:
   - If a transformation plugin is installed, like the [PointDataConversionPlugin](https://github.com/ManiVaultStudio/PointDataConversionPlugin), you can apply the transformation that it provided upon loading, e.g. `log2` conversions.
 - Subsample images:
