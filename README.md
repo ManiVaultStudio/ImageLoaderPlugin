@@ -15,7 +15,7 @@ git clone https://github.com/ManiVaultStudio/ImageLoaderPlugin.git
   - Filter images by name
 - Edit meta data like data set and dimension names
 - Select which dimensions are to be loaded
-- Multiple image formats: PNG, JPEG, BPM, (single page) TIF and more
+- Multiple image formats: PNG, JPEG, BPM and (single page) TIF/TIFF
   - RGB images
   - "High-dimensional" images, i.e. more than three values per pixel. All grayscale (single channel) image files in a folder are interpreted as part of one single image, e.g. the files in `./data/images/stack/sun/`
 - Data layout interpretation:
