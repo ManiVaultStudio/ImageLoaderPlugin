@@ -9,7 +9,15 @@ import traceback
 import subprocess
 import sys
 from rules_support import PluginBranchInfo
+import re
 
+def compatibility(os, compiler, compiler_version):
+    # On macos fallback to zlib apple-clang 13
+    if os == "Macos" and compiler == "apple-clang" and bool(re.match("14.*", compiler_version)):  
+        print("Compatibility match")
+        return ["zlib/1.3:compiler.version=13"]
+    return None
+    
 class ImageLoaderPluginConan(ConanFile):
     """Class to package ImageLoaderPlugin using conan
 
@@ -79,11 +87,6 @@ class ImageLoaderPluginConan(ConanFile):
             installer.install("freeimage")
         if self.settings.os == "Windows":
             self.requires("freeimage/3.18.0@lkeb/stable")
-            
-    def compatibility(self):
-        if self.settings.compiler == "apple-clang" and self.settings.compiler.version == "14":
-            return [{"settings": [("compiler.version", v)]}
-                    for v in ("13")]
             
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
