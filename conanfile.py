@@ -83,7 +83,7 @@ class ImageLoaderPluginConan(ConanFile):
     def compatibility(self):
         if self.settings.compiler == "apple-clang" and self.settings.compiler.version == "14":
             return [{"settings": [("compiler.version", v)]}
-                    for v in ("13")
+                    for v in ("13")]
             
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
