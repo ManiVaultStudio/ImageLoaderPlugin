@@ -20,7 +20,7 @@ public:
     explicit TreeItem(TreeItem *parentItem = nullptr);
 
     /** Destructor */
-    ~TreeItem();
+    virtual ~TreeItem();
 
     /**
      * Append a child
