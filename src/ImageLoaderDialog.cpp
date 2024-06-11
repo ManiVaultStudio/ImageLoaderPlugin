@@ -93,6 +93,7 @@ void ImageLoaderDialog::loadImageCollections()
 {
     //ModalTask loadImageCollectionsTask(this, "Load image collections");
 
+    //loadImageCollectionsTask.setSubtasks(_imageLoaderPlugin.getSelectedRows().count());
     //loadImageCollectionsTask.setRunning();
 
     const auto selectedRows = _imageLoaderPlugin.getSelectedRows();
@@ -118,8 +119,12 @@ void ImageLoaderDialog::loadImageCollections()
         task.setRunning();
     }
 
+    int imageCollectionIndex = 0;
+
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
+
+        //loadImageCollectionsTask.setSubtaskStarted(imageCollectionIndex, QString("Loading %1").arg(imageCollection->getName(Qt::DisplayRole).toString()));
 
         auto currentLevelPoints = imageCollection->load(&_imageLoaderPlugin);
         auto level0Points       = currentLevelPoints;
@@ -160,7 +165,13 @@ void ImageLoaderDialog::loadImageCollections()
                 }
             }
         }
+
+        //loadImageCollectionsTask.setSubtaskFinished(imageCollectionIndex, QString("Loaded %1").arg(imageCollection->getName(Qt::DisplayRole).toString()));
+
+        ++imageCollectionIndex;
     }
+
+    //loadImageCollectionsTask.setFinished();
 
     for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
         const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
@@ -170,22 +181,13 @@ void ImageLoaderDialog::loadImageCollections()
         if (imageCollection == nullptr)
             continue;
 
-        imageCollection->getTask().setFinished();
+        auto& task = imageCollection->getTask();
+
+        task.setFinished();
+        task.setEnabled(false);
+        task.setParentTask(nullptr);
     }
 
     if (_closeAfterLoadingAction.isChecked())
         accept();
-
-    for (const auto& selectedImageCollectionIndex : _imageLoaderPlugin.getSelectedRows()) {
-        const auto imageCollection = reinterpret_cast<ImageCollection*>(selectedImageCollectionIndex.internalPointer());
-        const auto imageCollectionName = imageCollection->getName(Qt::EditRole).toString();
-
-        auto& task = imageCollection->getTask();
-
-        task.setEnabled(true);
-        task.setParentTask(nullptr);
-    }
-
-
-    //loadImageCollectionsTask.setFinished();
 }
