@@ -115,7 +115,7 @@ class ImageLoaderPluginConan(ConanFile):
         if self.settings.os == "Linux" or self.settings.os == "Macos":
             tc.variables["CMAKE_CXX_STANDARD_REQUIRED"] = "ON"
         tc.variables["CMAKE_PREFIX_PATH"] = qt_root
-        tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+        
         #if self.settings.os == "Windows":
         #    tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
         
