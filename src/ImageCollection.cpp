@@ -381,11 +381,12 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
         const auto imageCollectionType	= static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
         const auto sourceWidth			= FI::FreeImage_GetWidth(bitmap);
         const auto sourceHeight			= FI::FreeImage_GetHeight(bitmap);
+        const auto sourceSize           = QSize(static_cast<int>(sourceWidth), static_cast<int>(sourceHeight));
         const auto targetSize			= getImageCollection()->getTargetSize(Qt::EditRole).toSize();
         const auto targetWidth			= targetSize.width();
         const auto targetHeight			= targetSize.height();
         const auto noDimensions			= getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
-        const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
+        const auto subsample			= (targetWidth >= 0 && targetHeight >= 0) && sourceSize != targetSize;
         const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
 
         subsampledBitmap = subsample ? FI::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
