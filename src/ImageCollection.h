@@ -14,11 +14,9 @@
 #include <QImage>
 
 namespace FI {
-
-#pragma warning(disable: 4828)
-
+#pragma warning(disable:4828)   // The file contains a character starting at offsetthat is illegal in the current source character set
 #include <FreeImage.h>
-
+#pragma warning(default:4828)
 }
 
 class ImageLoaderPlugin;
