@@ -4,10 +4,12 @@
 
 #include <BackgroundTask.h>
 
+#include <QByteArray>
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QStringList>
 #include <QSysInfo>
 
 #include <stdexcept>
@@ -199,7 +201,7 @@ void ImageCollectionScanner::scan()
     {
         QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
     }
@@ -286,6 +288,19 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         const auto rootDir          = QFileInfo(imageFilePath).absoluteDir().path();
 
         QImageReader imageReader(imageFilePath);
+
+        if (!imageReader.canRead())
+        {
+            qWarning() << "ImageLoaderPlugin: cannot read file " << fileName;
+
+            QStringList supportedImageFormats;
+            for (const QByteArray& byteArray : QImageReader::supportedImageFormats()) {
+                supportedImageFormats.append(QString(byteArray));  // Convert QByteArray to QString
+            }
+
+            qWarning() << "ImageLoaderPlugin: supported image formats: " << supportedImageFormats.join(", ");
+            qWarning() << "ImageLoaderPlugin: consider installing the Qt Imaging Formats plugin to support formates like tiff and webp.";
+        }
 
         auto imageExtension = QFileInfo(fileName).suffix().toUpper();
         auto pageCount = 0;

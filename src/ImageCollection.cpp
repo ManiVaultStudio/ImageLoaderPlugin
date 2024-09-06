@@ -182,7 +182,7 @@ void ImageCollection::Image::setPageIndex(const std::int32_t& pageIndex)
     _pageIndex = pageIndex;
 }
 
-void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames, FI::FIMULTIBITMAP* multiBitmap /*= nullptr*/)
+void ImageCollection::Image::load(std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames, FI::FIMULTIBITMAP* multiBitmap /*= nullptr*/)
 {
     qDebug() << QString("Loading image: %1").arg(_fileName);
 
@@ -218,7 +218,7 @@ void ImageCollection::Image::load(ImageLoaderPlugin* imageLoaderPlugin, std::vec
         {
             handleException(e.what());
         }
-        catch (std::exception e)
+        catch (const std::exception& e)
         {
             handleException(e.what());
         }
@@ -269,7 +269,6 @@ template<class T> static void readSequence(ImageCollection* imageCollection, FI:
     const auto targetWidth	= targetSize.width();
     const auto targetHeight = targetSize.height();
     const auto noPixels		= targetWidth * targetHeight;
-    const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
 
     for (std::int32_t y = 0; y < targetHeight; y++) {
         auto scanLine = reinterpret_cast<T*>(FI::FreeImage_GetScanLine(bitmap, y));
@@ -311,7 +310,6 @@ static void readStack(ImageCollection* imageCollection, FI::FIBITMAP* bitmap, st
     const auto targetSize	= imageCollection->getTargetSize(Qt::EditRole).toSize();
     const auto targetWidth	= targetSize.width();
     const auto targetHeight = targetSize.height();
-    const auto noPixels		= targetWidth * targetHeight;
     const auto grayscale	= imageCollection->getToGrayscale(Qt::EditRole).toBool();
 	const auto imageType	= FI::FreeImage_GetImageType(bitmap);
 	const auto isBitmap		= imageType == FI::FIT_BITMAP;
@@ -381,11 +379,12 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
         const auto imageCollectionType	= static_cast<ImageData::Type>(getImageCollection()->getType(Qt::EditRole).toInt());
         const auto sourceWidth			= FI::FreeImage_GetWidth(bitmap);
         const auto sourceHeight			= FI::FreeImage_GetHeight(bitmap);
+        const auto sourceSize           = QSize(static_cast<int>(sourceWidth), static_cast<int>(sourceHeight));
         const auto targetSize			= getImageCollection()->getTargetSize(Qt::EditRole).toSize();
         const auto targetWidth			= targetSize.width();
         const auto targetHeight			= targetSize.height();
         const auto noDimensions			= getImageCollection()->getNoDimensions(Qt::EditRole).toInt();
-        const auto subsample			= QSize(sourceWidth, sourceHeight) != targetSize;
+        const auto subsample			= (targetWidth >= 0 && targetHeight >= 0) && sourceSize != targetSize;
         const auto filter				= static_cast<FI::FREE_IMAGE_FILTER>(getImageCollection()->getSubsampling().getFilter(Qt::EditRole).toInt());
 
         subsampledBitmap = subsample ? FI::FreeImage_Rescale(bitmap, targetWidth, targetHeight, filter) : bitmap;
@@ -579,7 +578,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
     {
         handleException(e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         handleException(e.what());
     }
@@ -601,7 +600,6 @@ QString ImageCollection::Image::guessDimensionName()
             FI::FIMULTIBITMAP* multiBitmap = nullptr;
 
             const auto fileNameUtf8 = _filePath.toUtf8();
-            const auto format = FI::FreeImage_GetFileType(fileNameUtf8);
 
             multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
 
@@ -644,7 +642,7 @@ QString ImageCollection::Image::guessDimensionName()
     {
         throw e;
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         throw e;
     }
@@ -661,7 +659,7 @@ ImageCollection* ImageCollection::Image::getImageCollection()
     return static_cast<ImageCollection*>(getParentItem());
 }
 
-ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const bool& enabled /*= false*/, const float& ratio /*= 0.5f*/, const Filter& filter /*= ImageResamplingFilter::Bicubic*/) :
+ImageCollection::SubSampling::SubSampling(ImageCollection* imageCollection, const float& ratio /*= 0.5f*/, const Filter& filter /*= ImageResamplingFilter::Bicubic*/) :
     _imageCollection(imageCollection),
     _type(Type::Resample),
     _ratio(ratio),
@@ -1697,7 +1695,7 @@ QStringList ImageCollection::guessDimensionNames()
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
         return QStringList();
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
         return QStringList();
@@ -1741,7 +1739,6 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         if (multiPageTiff) {
             const auto fileNameUtf8 = firstChild->getFilePath(Qt::EditRole).toString().toUtf8();
-            const auto format = FI::FreeImage_GetFileType(fileNameUtf8);
 
             multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
 
@@ -1768,7 +1765,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
                 if (!image->getShouldLoad(Qt::EditRole).toBool())
                     continue;
 
-                image->load(imageLoaderPlugin, data, imageIndex, dimensionNames, multiBitmap);
+                image->load(data, imageIndex, dimensionNames, multiBitmap);
 
                 imageIndex++;
 
@@ -1827,7 +1824,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
     {
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
@@ -1840,8 +1837,6 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
 bool ImageCollection::containsNans(std::vector<float>& data)
 {
-    auto containsNans = false;
-
     for (auto element : data)
         if (std::isnan(element))
             return true;

@@ -14,11 +14,9 @@
 #include <QImage>
 
 namespace FI {
-
-#pragma warning(disable: 4828)
-
+#pragma warning(disable:4828)   // The file contains a character starting at offsetthat is illegal in the current source character set
 #include <FreeImage.h>
-
+#pragma warning(default:4828)
 }
 
 class ImageLoaderPlugin;
@@ -163,13 +161,12 @@ public: // Nested image class
 
         /**
          * Loads the image into a high-dimensional data vector
-         * @param imageLoaderPlugin Pointer to image loader plugin
          * @param data High-dimensional data vector
          * @param imageIndex Image index
          * @param dimensionNames Dimension names
          * @param multiBitmap Multi-bitmap in case of multi-page TIFF
          */
-        void load(ImageLoaderPlugin* imageLoaderPlugin, std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames, FI::FIMULTIBITMAP* multiBitmap = nullptr);
+        void load(std::vector<float>& data, const std::uint32_t& imageIndex, QStringList& dimensionNames, FI::FIMULTIBITMAP* multiBitmap = nullptr);
 
         /**
          * Loads the image bitmap into a high-dimensional data vector
@@ -245,11 +242,10 @@ public: // Nested image class
         /**
          * Constructor
          * @param imageCollection Image collection
-         * @param enabled Whether subsampling is enabled
          * @param ratio The subsampling ratio
          * @param filter The subsampling filter
          */
-        SubSampling(ImageCollection* imageCollection, const bool& enabled = false, const float& ratio = 0.5f, const Filter& filter = Filter::Bicubic);
+        SubSampling(ImageCollection* imageCollection, const float& ratio = 0.5f, const Filter& filter = Filter::Bicubic);
 
     public: // Getters/setters
 
@@ -267,19 +263,6 @@ public: // Nested image class
         void setType(const Type& type);
 
         /**
-         * Returns whether subsampling is enabled
-         * @param role Data role
-         * @return Whether subsampling is enabled in variant form
-         */
-        QVariant getEnabled(const int& role) const;
-
-        /**
-         * Sets whether subsampling is enabled
-         * @param enabled Whether subsampling is enabled
-         */
-        void setEnabled(const bool& enabled);
-
-        /**
          * Returns the subsampling ratio
          * @param role Data role
          * @return The subsampling ratio in variant form
@@ -288,7 +271,7 @@ public: // Nested image class
 
         /**
          * Sets the subsampling ratio
-         * @param enabled The subsampling ratio
+         * @param ratio The subsampling ratio
          */
         void setRatio(const float& ratio);
 

@@ -29,7 +29,9 @@ git clone https://github.com/ManiVaultStudio/ImageLoaderPlugin.git
   - Create a image pyramid of user-defined size by downsampling the image on every level 
 
 ## Building
-This project depends on the [freeimage](https://freeimage.sourceforge.io/) library. Ensure that CMake can find freeimage during configuration. 
+This plugin depends on the [FreeImage ](https://freeimage.sourceforge.io/) library. Ensure that CMake can find FreeImage  during configuration. 
+
+The Image Loader can also make use of the `Qt Imaging Formats` plugin to support more than the [standard QT image formats](https://doc.qt.io/qt-6/qimagereader.html#supportedImageFormats) like [TIFF files](https://en.wikipedia.org/wiki/TIFF) and [WebP](https://en.wikipedia.org/wiki/WebP).
 
 ### Windows
 Using a package manager: install freeimage with [vcpkg](https://github.com/microsoft/vcpkg/) or [conan](https://conan.io/) and specify the [cmake toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) accordingly.
@@ -47,9 +49,11 @@ Download [FreeImage 3.18.0](https://freeimage.sourceforge.io/download.html), arr
 │   │   ├── FreeImage.lib
 ```
 
+When installing Qt6, make sure to also install the additional library `Qt Imaging Formats`.
+
 ### Linux
 ```
-apt install qt6-image-formats-plugins libfreeimage-dev
+sudo apt install qt6-image-formats-plugins libfreeimage-dev
 ```
 
 ### Mac
