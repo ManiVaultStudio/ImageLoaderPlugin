@@ -287,6 +287,22 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
         QImageReader imageReader(imageFilePath);
 
+        if (!imageReader.canRead())
+        {
+            if (!imageReader.canRead())
+            {
+                qWarning() << "ImageLoaderPlugin: cannot read file " << fileName;
+
+                QStringList supportedImageFormats;
+                for (const QByteArray& byteArray : QImageReader::supportedImageFormats()) {
+                    supportedImageFormats.append(QString(byteArray));  // Convert QByteArray to QString
+                }
+
+                qWarning() << "ImageLoaderPlugin: supported image formats: " << supportedImageFormats.join(", ");
+                qWarning() << "ImageLoaderPlugin: consider installing the Qt Imaging Formats plugin to support formates like tiff and webp.";
+            }
+        }
+
         auto imageExtension = QFileInfo(fileName).suffix().toUpper();
         auto pageCount = 0;
 
