@@ -218,7 +218,7 @@ void ImageCollection::Image::load(std::vector<float>& data, const std::uint32_t&
         {
             handleException(e.what());
         }
-        catch (std::exception e)
+        catch (const std::exception& e)
         {
             handleException(e.what());
         }
@@ -578,7 +578,7 @@ void ImageCollection::Image::loadBitmap(FI::FIBITMAP* bitmap, std::vector<float>
     {
         handleException(e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         handleException(e.what());
     }
@@ -600,7 +600,6 @@ QString ImageCollection::Image::guessDimensionName()
             FI::FIMULTIBITMAP* multiBitmap = nullptr;
 
             const auto fileNameUtf8 = _filePath.toUtf8();
-            const auto format = FI::FreeImage_GetFileType(fileNameUtf8);
 
             multiBitmap = FI::FreeImage_OpenMultiBitmap(FI::FIF_TIFF, fileNameUtf8, false, false, false);
 
@@ -643,7 +642,7 @@ QString ImageCollection::Image::guessDimensionName()
     {
         throw e;
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         throw e;
     }
@@ -1696,7 +1695,7 @@ QStringList ImageCollection::guessDimensionNames()
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
         return QStringList();
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to guess dimensions names for %1").arg(_name), e.what());
         return QStringList();
@@ -1825,7 +1824,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
     {
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to load %1").arg(_name), e.what());
     }

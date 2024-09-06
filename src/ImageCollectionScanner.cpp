@@ -201,7 +201,7 @@ void ImageCollectionScanner::scan()
     {
         QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
     }
-    catch (std::exception e)
+    catch (const std::exception& e)
     {
         QMessageBox::critical(nullptr, QString("Unable to scan %1").arg(_directory), e.what());
     }
