@@ -4,10 +4,12 @@
 
 #include <BackgroundTask.h>
 
+#include <QByteArray>
 #include <QDebug>
 #include <QDir>
 #include <QImageReader>
 #include <QMessageBox>
+#include <QStringList>
 #include <QSysInfo>
 
 #include <stdexcept>
