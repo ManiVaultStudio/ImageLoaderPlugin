@@ -1850,6 +1850,18 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
             coordinatesData.resize(static_cast<unsigned long long>(this->getNoPoints(Qt::EditRole).toInt()) * 2);
 
+            const auto width    = getTargetWidth(Qt::EditRole).toInt();
+            const auto height   = getTargetheight(Qt::EditRole).toInt();
+
+            for (std::int32_t pixelX = 0; pixelX < width; ++pixelX) {
+                for (std::int32_t pixelY = 0; pixelY < height; ++pixelY) {
+                    const auto globalPixelIndex = pixelY * width + pixelX;
+
+                    coordinatesData[globalPixelIndex * 2 + 0] = static_cast<float>(pixelX);
+                    coordinatesData[globalPixelIndex * 2 + 1] = static_cast<float>(pixelY);
+                }
+            }
+
             coordinatesPoints->setData(std::move(coordinatesData), 2);
 
             events().notifyDatasetDataChanged(coordinatesPoints);
