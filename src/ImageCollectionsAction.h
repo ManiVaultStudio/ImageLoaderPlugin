@@ -51,15 +51,17 @@ public:
     DataLayoutAction& getDataLayoutAction() { return _dataLayoutAction; }
     DimensionTagAction& getDimensionTagAction() { return _dimensionTagAction; }
     SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
+    ToggleAction& getCreateCoordinatesPointsAction() { return _createCoordinatesPointsAction; }
     ImagesAction& getImagesAction() { return _imagesAction; }
 
 protected:
-    ImageLoaderPlugin&      _imageLoaderPlugin;         /** Reference to image loader plugin instance */
-    StringAction            _filterAction;              /** Filter by image name action */
-    DatasetNameAction       _datasetNameAction;         /** Produced dataset name action */
-    DataLayoutAction        _dataLayoutAction;          /** Data layout action (stack/sequence) */
-    DimensionTagAction      _dimensionTagAction;        /** Dimension tag action (in case of multi-page TIFF) */
-    SubsamplingAction       _subsamplingAction;         /** Subsampling action */
-    ImagesAction            _imagesAction;              /** Images action */
+    ImageLoaderPlugin&      _imageLoaderPlugin;                 /** Reference to image loader plugin instance */
+    StringAction            _filterAction;                      /** Filter by image name action */
+    DatasetNameAction       _datasetNameAction;                 /** Produced dataset name action */
+    DataLayoutAction        _dataLayoutAction;                  /** Data layout action (stack/sequence) */
+    DimensionTagAction      _dimensionTagAction;                /** Dimension tag action (in case of multi-page TIFF) */
+    SubsamplingAction       _subsamplingAction;                 /** Subsampling action */
+    ToggleAction            _createCoordinatesPointsAction;     /** Subsampling action */
+    ImagesAction            _imagesAction;                      /** Images action */
 
 };
