@@ -1839,7 +1839,7 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         images->getDataHierarchyItem().select();
 
         if (getAddCoordinatesPoints(Qt::EditRole).toBool()) {
-            auto coordinatesPoints = mv::data().createDataset<Points>("Points", "2D Coordinates", points);
+            auto coordinatesPoints = mv::data().createDerivedDataset<Points>("2D Coordinates", points);
 
             auto& coordinatesPointsTask = coordinatesPoints->getTask();
 
