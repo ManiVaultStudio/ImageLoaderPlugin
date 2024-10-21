@@ -6,7 +6,6 @@
 #include "Application.h"
 
 #include <QDebug>
-#include <QDirIterator>
 #include <QPainter>
 #include <QIcon>
 
@@ -124,6 +123,9 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
             case ImageCollection::Column::Conversion:
                 return imageCollection->getConversion(role);
+
+            case ImageCollection::Column::AddCoordinatesPoints:
+                return imageCollection->getAddCoordinatesPoints(role);
         }
     }
     else {
@@ -144,7 +146,7 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
         }
     }
 
-    return QVariant();
+    return {};
 }
 
 bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& value, int role /*= Qt::EditRole*/)
@@ -291,6 +293,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                         if (_persistData)
                             _imageLoaderPlugin->setSetting(settingsPrefix + "/Conversion/SHA", value.toString());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::AddCoordinatesPoints:
+                    {
+                        imageCollection->setAddCoordinatesPoints(value.toBool());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/AddCoordinatesPoints", value.toBool());
 
                         break;
                     }
@@ -503,6 +515,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::Conversion:
                         return "Conversion";
 
+                    case ImageCollection::Column::AddCoordinatesPoints:
+                        return "Add 2D coordinates points";
+
                     default:
                         break;
                 }
@@ -596,6 +611,9 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::Conversion:
                         return "Conversion";
 
+                    case ImageCollection::Column::AddCoordinatesPoints:
+                        return "Whether to create an additional 2D coordinates points dataset";
+
                     default:
                         break;
                 }
@@ -622,7 +640,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
         }
     }
 
-    return QVariant();
+    return {};
 }
 
 Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
@@ -705,7 +723,7 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
 QModelIndex ImageCollectionsModel::index(int row, int column, const QModelIndex& parent /*= QModelIndex()*/) const
 {
     if (!hasIndex(row, column, parent))
-        return QModelIndex();
+        return {};
 
     TreeItem *parentItem;
 
@@ -714,22 +732,24 @@ QModelIndex ImageCollectionsModel::index(int row, int column, const QModelIndex&
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
-    TreeItem *childItem = parentItem->child(row);
+    TreeItem* childItem = parentItem->child(row);
+
     if (childItem)
         return createIndex(row, column, childItem);
-    return QModelIndex();
+
+    return {};
 }
 
 QModelIndex ImageCollectionsModel::parent(const QModelIndex& index) const
 {
     if (!index.isValid())
-        return QModelIndex();
+        return {};
 
     TreeItem *childItem     = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem    = childItem->getParentItem();
 
     if (parentItem == _root)
-        return QModelIndex();
+        return {};
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
@@ -773,6 +793,7 @@ void ImageCollectionsModel::insert(int row, const QVector<ImageCollection*>& ima
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Filter", 0).toInt());
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingNumberOfLevels)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/NumberOfLevels", 0).toInt());
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingLevelFactor)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/LevelFactor", 0).toInt());
+            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::AddCoordinatesPoints)), _imageLoaderPlugin->getSetting(settingsPrefix + "/AddCoordinatesPoints", 0).toBool());
 
             const auto conversion = _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", "").toString();
 
@@ -866,7 +887,7 @@ void ImageCollectionsModel::selectPercentage(const QModelIndex& parent, const fl
 
     auto imageCollection = static_cast<ImageCollection*>((void*)parent.internalPointer());
 
-    const auto probability = std::clamp(selectionProbability, 0.0f, 1.0f);
+    const auto probability      = std::clamp(selectionProbability, 0.0f, 1.0f);
     const auto shouldLoadColumn = ult(ImageCollection::Image::Column::ShouldLoad);
 
     for (std::int32_t row = 0; row < rowCount(parent); row++) {
