@@ -91,6 +91,8 @@ set(ACTION_SOURCES
     src/ConversionAction.cpp
     src/GroupDataAction.h
     src/GroupDataAction.cpp
+    src/AddCoordinatesPointsAction.h
+    src/AddCoordinatesPointsAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)

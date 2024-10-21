@@ -57,7 +57,8 @@ public: // Enumerations
         Memory,                         /** Estimated memory consumption by the high-dimensional data */
         Directory,                      /** Directory */
         Conversion,                     /** Conversion */
-
+        AddCoordinatesPoints,           /** Determines whether to add an additional two-dimensional points dataset with the x- and y coordinates */
+        
         Start = Name,                   /** Column start */
         End = Conversion                /** Column End */
     };
@@ -506,6 +507,15 @@ public: // Getters/setters
      */
     void setConversion(const QString& conversion);
 
+    /** Returns add coordinates points */
+    QVariant getAddCoordinatesPoints(const int& role) const;
+
+    /**
+     * Sets add coordinates points to \p addCoordinatesPoints
+     * @param addCoordinatesPoints Add coordinates points
+     */
+    void setAddCoordinatesPoints(bool addCoordinatesPoints);
+
     mv::ForegroundTask& getTask();
 
 public:
@@ -567,6 +577,7 @@ protected:
     ImageData::Type         _type;                  /** How to load the collection (as image sequence or image stack) */
     SubSampling             _subsampling;           /** Subsampling parameters */
     QString                 _conversion;            /** Conversion SHA */
+    bool                    _addCoordinatesPoints;  /** Add coordinates points */
     mv::ForegroundTask      _task;                  /** Task for reporting load progress */
 
     friend class SubSampling;

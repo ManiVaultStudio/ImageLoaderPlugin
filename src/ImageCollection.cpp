@@ -48,7 +48,6 @@ ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const s
     _index(-1),
     _filePath(filePath),
     _fileName(QFileInfo(filePath).completeBaseName()),
-    _dimensionName(),
     _shouldLoad(true),
     _pageIndex(pageIndex)
 {
@@ -811,12 +810,11 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _imageFormat(imageFormat),
     _sourceSize(sourceSize),
     _targetSize(sourceSize),
-    _name(),
     _dimensionTag(""),
     _toGrayscale(false),
     _type(ImageData::Type::Stack),
     _subsampling(this),
-    _conversion(),
+    _addCoordinatesPoints(false),
     _task(nullptr, "Load image collection")
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
@@ -992,7 +990,7 @@ QVariant ImageCollection::getImageFormat(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setImageFormat(const QImage::Format& imageFormat)
@@ -1022,7 +1020,7 @@ QVariant ImageCollection::getToGrayscale(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setToGrayscale(const bool& toGrayscale)
@@ -1142,7 +1140,7 @@ QVariant ImageCollection::getNumberOfChannelsPerPixel(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getSourceSize(const int& role) const
@@ -1164,7 +1162,7 @@ QVariant ImageCollection::getSourceSize(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setSourceSize(const QSize& sourceSize)
@@ -1191,7 +1189,7 @@ QVariant ImageCollection::getTargetSize(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getTargetWidth(const int& role) const
@@ -1241,7 +1239,7 @@ QVariant ImageCollection::getTargetheight(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setTargetSize(const QSize& targetSize)
@@ -1266,7 +1264,7 @@ QVariant ImageCollection::getName(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setName(const QString& name)
@@ -1293,7 +1291,7 @@ QVariant ImageCollection::getDatasetName(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setDatasetName(const QString& datasetName)
@@ -1330,7 +1328,7 @@ QVariant ImageCollection::getFileNames(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getType(const int& role) const
@@ -1352,7 +1350,7 @@ QVariant ImageCollection::getType(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setType(const ImageData::Type & type)
@@ -1387,7 +1385,7 @@ QVariant ImageCollection::getNoImages(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getNoSelectedImages(const int& role) const
@@ -1416,7 +1414,7 @@ QVariant ImageCollection::getNoSelectedImages(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getDimensionTag(const int& role) const
@@ -1436,7 +1434,7 @@ QVariant ImageCollection::getDimensionTag(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setDimensionTag(const QString& dimensionTag)
@@ -1465,7 +1463,7 @@ QVariant ImageCollection::getIsMultiPage(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getNoPoints(const int& role) const
@@ -1516,7 +1514,7 @@ QVariant ImageCollection::getNoPoints(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getNoDimensions(const int& role) const
@@ -1567,7 +1565,7 @@ QVariant ImageCollection::getNoDimensions(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 QVariant ImageCollection::getMemoryConsumption(const int& role) const
@@ -1597,7 +1595,7 @@ QVariant ImageCollection::getMemoryConsumption(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 ImageCollection::SubSampling& ImageCollection::getSubsampling()
@@ -1622,12 +1620,37 @@ QVariant ImageCollection::getConversion(const int& role) const
             break;
     }
 
-    return QVariant();
+    return {};
 }
 
 void ImageCollection::setConversion(const QString& conversion)
 {
     _conversion = conversion;
+}
+
+QVariant ImageCollection::getAddCoordinatesPoints(const int& role) const
+{
+    switch (role)
+    {
+	    case Qt::DisplayRole:
+	        return _addCoordinatesPoints ? "true" : "false";
+
+	    case Qt::EditRole:
+	        return _addCoordinatesPoints;
+
+    	case Qt::ToolTipRole:
+	        return QString("Add coordinate points: %1").arg(getAddCoordinatesPoints(Qt::DisplayRole).toString());
+
+	    default:
+	        break;
+    }
+
+    return {};
+}
+
+void ImageCollection::setAddCoordinatesPoints(bool addCoordinatesPoints)
+{
+    _addCoordinatesPoints = addCoordinatesPoints;
 }
 
 ForegroundTask& ImageCollection::getTask()
@@ -1815,8 +1838,37 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         images->getDataHierarchyItem().select();
 
-        //_task.setFinished();
-        //_task.setEnabled(false);
+        if (getAddCoordinatesPoints(Qt::EditRole).toBool()) {
+            auto coordinatesPoints = mv::data().createDerivedDataset<Points>("2D Coordinates", points);
+
+            auto& coordinatesPointsTask = coordinatesPoints->getTask();
+
+            coordinatesPointsTask.setName("Loading");
+            coordinatesPointsTask.setRunning();
+
+            std::vector<float> coordinatesData;
+
+            coordinatesData.resize(static_cast<unsigned long long>(this->getNoPoints(Qt::EditRole).toInt()) * 2);
+
+            const auto width    = getTargetWidth(Qt::EditRole).toInt();
+            const auto height   = getTargetheight(Qt::EditRole).toInt();
+
+            for (std::int32_t pixelX = 0; pixelX < width; ++pixelX) {
+                for (std::int32_t pixelY = 0; pixelY < height; ++pixelY) {
+                    const auto globalPixelIndex = pixelY * width + pixelX;
+
+                    coordinatesData[globalPixelIndex * 2 + 0] = static_cast<float>(pixelX);
+                    coordinatesData[globalPixelIndex * 2 + 1] = static_cast<float>(pixelY);
+                }
+            }
+
+            coordinatesPoints->setData(std::move(coordinatesData), 2);
+
+            events().notifyDatasetDataChanged(coordinatesPoints);
+            events().notifyDatasetDataDimensionsChanged(coordinatesPoints);
+
+            coordinatesPointsTask.setFinished();
+        }
 
         return points;
     }
