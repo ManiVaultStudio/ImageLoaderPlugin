@@ -177,6 +177,12 @@ add_custom_command(TARGET ${PROJECT} POST_BUILD
     --prefix ${ManiVault_INSTALL_DIR}/$<CONFIGURATION>
 )
 
+if(DEFINED FREEIMAGE_ROOT_DIR)
+    message(STATUS "=================${FREEIMAGE_ROOT_DIR}")
+    set(DEPENDENCIES_FOLDERS "${FREEIMAGE_ROOT_DIR}/bin")
+    mv_install_dependencies(${PROJECT})
+endif()
+
 # -----------------------------------------------------------------------------
 # Miscellaneous
 # -----------------------------------------------------------------------------
