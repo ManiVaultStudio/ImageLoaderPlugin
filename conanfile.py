@@ -68,14 +68,7 @@ class ImageLoaderPluginConan(ConanFile):
         print(f"Core requirement {branch_info.core_requirement}")
         self.requires(branch_info.core_requirement)
 
-        if self.settings.os == "Linux":
-            installer = SystemPackageTool()
-            installer.install("libfreeimage-dev")
-        if self.settings.os == "Macos":
-            installer = SystemPackageTool()
-            installer.install("freeimage")
-        if self.settings.os == "Windows":
-            self.requires("freeimage/3.18.0@lkeb/stable")
+        self.requires("freeimage/3.18.0")
             
     # Remove runtime and use always default (MD/MDd)
     def configure(self):
