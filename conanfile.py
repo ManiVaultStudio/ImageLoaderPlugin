@@ -112,8 +112,11 @@ class ImageLoaderPluginConan(ConanFile):
         # for Qt >= 6.4.2
         #tc.variables["Qt6_DIR"] = qt_dir
 
+        print("qt_root: ", qt_root)
+        print("qt_dir: ", qt_dir)
+
         # for Qt < 6.4.2
-        tc.variables["CMAKE_PREFIX_PATH"] = [qt_root, qt_dir]
+        tc.variables["CMAKE_PREFIX_PATH"] = qt_root
 
         # Use the ManiVault .cmake file to find ManiVault with find_package
         mv_core_root = self.deps_cpp_info["hdps-core"].rootpath
