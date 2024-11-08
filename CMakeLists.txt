@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.21.0)
 
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 
@@ -161,14 +161,10 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-set(FreeImageNameShared "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}FreeImage${CMAKE_SHARED_LIBRARY_SUFFIX}")
-if(EXISTS ${FreeImageNameShared})
-     message(STATUS "Upon install: copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
-    install(FILES
-        ${FreeImageNameShared}
-        DESTINATION "${ManiVault_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
-    )
+if(FREEIMAGE_ROOT_DIR)
+    set(DEPENDENCIES_FOLDERS "${FREEIMAGE_ROOT_DIR}/bin")
 endif()
+mv_install_dependencies(${PROJECT})
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
