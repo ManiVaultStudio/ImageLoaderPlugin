@@ -3,13 +3,9 @@ from conan.tools.cmake import CMakeDeps, CMake, CMakeToolchain
 from conans.tools import save, load
 from conans.tools import os_info, SystemPackageTool
 import os
-import shutil
 import pathlib
-import traceback
 import subprocess
-import sys
 from rules_support import PluginBranchInfo
-import re
 
 class ImageLoaderPluginConan(ConanFile):
     """Class to package ImageLoaderPlugin using conan
@@ -30,7 +26,7 @@ class ImageLoaderPluginConan(ConanFile):
     license = "MIT"
 
     short_paths = True
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
@@ -113,10 +109,11 @@ class ImageLoaderPluginConan(ConanFile):
         #tc.variables["Qt6_DIR"] = qt_dir
 
         print("qt_root: ", qt_root)
-        print("qt_dir: ", qt_dir)
 
         # for Qt < 6.4.2
         tc.variables["CMAKE_PREFIX_PATH"] = qt_root
+
+        print("tc.variables[CMAKE_PREFIX_PATH]: ", tc.variables["CMAKE_PREFIX_PATH"])
 
         # Use the ManiVault .cmake file to find ManiVault with find_package
         mv_core_root = self.deps_cpp_info["hdps-core"].rootpath
