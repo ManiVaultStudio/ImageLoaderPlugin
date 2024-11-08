@@ -120,6 +120,9 @@ class ImageLoaderPluginConan(ConanFile):
         # Set some build options
         tc.variables["MV_UNITY_BUILD"] = "ON"
 
+        if self.settings.os == "Windows":
+            tc.variables["FREEIMAGE_ROOT_DIR"] = pathlib.Path(self.deps_cpp_info["freeimage"].rootpath).as_posix()
+
         tc.generate()
     
     def _configure_cmake(self):
