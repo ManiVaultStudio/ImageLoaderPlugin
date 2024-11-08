@@ -26,7 +26,7 @@ class ImageLoaderPluginConan(ConanFile):
     license = "MIT"
 
     short_paths = True
-    generators = "CMakeDeps"
+    generators = "CMakeDeps", "CMakeToolchain"
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
