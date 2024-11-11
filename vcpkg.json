@@ -4,7 +4,7 @@
     "dependencies": [
         "freeimage"
     ],
-    "builtin-baseline":"10b7a178346f3f0abef60cecd5130e295afd8da4",
+    "builtin-baseline":"c82f74667287d3dc386bce81e44964370c91a289",
     "overrides": [
         { "name": "freeimage", "version": "3.18.0#27 " }
     ]

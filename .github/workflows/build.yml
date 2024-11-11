@@ -78,7 +78,7 @@ jobs:
       - name: Clone vcpkg
         run: |
           cd ${{ github.workspace }}
-          git clone --branch 2024.10.21 --single-branch https://github.com/microsoft/vcpkg.git
+          git clone --branch 2024.09.30 --single-branch https://github.com/microsoft/vcpkg.git
 
       # Bootstrap vcpkg
       - name: Bootstrap vcpkg 
