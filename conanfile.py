@@ -73,8 +73,7 @@ class ImageLoaderPluginConan(ConanFile):
         pass
 
     def system_requirements(self):
-        if os_info.is_linux:
-            self.run("sudo apt install -y libxi-dev libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libxrandr-dev libxxf86vm-dev")
+        pass
 
     def config_options(self):
         if self.settings.os == "Windows":

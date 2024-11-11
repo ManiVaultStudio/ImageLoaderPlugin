@@ -143,6 +143,7 @@ jobs:
         shell: bash
         run:  |
           cd ${{ github.workspace }}
+          sudo apt install -y libxi-dev libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev libxrandr-dev libxxf86vm-dev
           ${{ env.VCPKG_EXE }} install --triplet x64-linux
 
       - name: Install vcpkg dependencies 
