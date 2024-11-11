@@ -44,7 +44,7 @@ ImageCollectionScanner::~ImageCollectionScanner()
 
 void ImageCollectionScanner::loadSettings()
 {
-    const auto directory = _imageLoaderPlugin.getSetting("Scanner/Directory", QSysInfo::productType() == QString("macos") ? QDir::homePath() : "").toString();
+    const auto directory = _imageLoaderPlugin.getSetting("Scanner/Directory", QSysInfo::productType() != QString("windows") ? QDir::homePath() : "").toString();
 
     setDirectory(QDir(directory).exists() ? directory : QDir::homePath(), true);
     setSeparateByDirectory(_imageLoaderPlugin.getSetting("Scanner/SeparateByDirectory", true).toBool());
