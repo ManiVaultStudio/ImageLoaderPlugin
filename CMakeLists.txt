@@ -3,11 +3,11 @@ cmake_minimum_required(VERSION 3.21)
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 
 if(DEFINED CMAKE_TOOLCHAIN_FILE AND CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg")
-    set(MV_EXAMPLES_USE_VCPKG ON)
+    set(MV_IMGLOADER_USE_VCPKG ON)
     set(VCPKG_LIBRARY_LINKAGE "dynamic" CACHE STRING "Link vcpkg libraries dynamically")
 else()
     set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
-    set(MV_EXAMPLES_USE_VCPKG OFF)
+    set(MV_IMGLOADER_USE_VCPKG OFF)
 endif()
 
 # -----------------------------------------------------------------------------
@@ -15,6 +15,17 @@ endif()
 # -----------------------------------------------------------------------------
 set(PROJECT "ImageLoaderPlugin")
 PROJECT(${PROJECT})
+
+if(DEFINED MV_IMGLOADER_USE_VCPKG AND NOT MV_IMGLOADER_USE_VCPKG)
+    # vcpkg is used together with conan on ci
+    if(DEFINED VCPKG_TARGET_TRIPLET)
+        set(MV_IMGLOADER_USE_VCPKG ON)
+    else()
+        set(MV_IMGLOADER_USE_VCPKG OFF)
+    endif()
+else()
+    set(MV_IMGLOADER_USE_VCPKG OFF)
+endif()
 
 # -----------------------------------------------------------------------------
 # CMake Options
@@ -39,7 +50,7 @@ endif(MSVC)
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG)
 
-if(${MV_EXAMPLES_USE_VCPKG})
+if(${MV_IMGLOADER_USE_VCPKG})
     find_package(FreeImage CONFIG REQUIRED)
     set(FreeImageTarget freeimage::FreeImage)
 else()
@@ -143,7 +154,7 @@ add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 target_include_directories(${PROJECT} PRIVATE "${ManiVault_INCLUDE_DIR}")
 target_include_directories(${PROJECT} PRIVATE src)
 
-if(NOT ${MV_EXAMPLES_USE_VCPKG})
+if(NOT ${MV_IMGLOADER_USE_VCPKG})
     target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
 endif()
 
