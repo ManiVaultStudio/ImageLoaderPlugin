@@ -136,7 +136,7 @@ jobs:
         shell: pwsh
         run:  |
           cd ${{ github.workspace }}
-          ${{ env.VCPKG_EXE }} install --triplet x64-windows-dynamic
+          ${{ env.VCPKG_EXE }} install --triplet x64-windows
 
       - name: Install vcpkg dependencies 
         if: startsWith(matrix.os, 'ubuntu')
