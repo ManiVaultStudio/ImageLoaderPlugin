@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.21)
 
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 
+if(DEFINED CMAKE_TOOLCHAIN_FILE AND CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg")
+    set(MV_EXAMPLES_USE_VCPKG ON)
+    set(VCPKG_LIBRARY_LINKAGE "dynamic" CACHE STRING "Link vcpkg libraries dynamically")
+else()
+    set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
+    set(MV_EXAMPLES_USE_VCPKG OFF)
+endif()
+
 # -----------------------------------------------------------------------------
 # ImageLoader Plugin
 # -----------------------------------------------------------------------------
@@ -16,9 +24,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -32,9 +38,17 @@ endif(MSVC)
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG)
-find_package(FreeImage REQUIRED)
 
-message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
+if(${MV_EXAMPLES_USE_VCPKG})
+    find_package(FreeImage CONFIG REQUIRED)
+    set(FreeImageTarget freeimage::FreeImage)
+else()
+    find_package(FreeImage REQUIRED)
+    message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
+    set(FreeImageTarget "${FREEIMAGE_LIBRARY}")
+endif()
+
+
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -127,15 +141,18 @@ add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 # Target include directories
 # -----------------------------------------------------------------------------
 target_include_directories(${PROJECT} PRIVATE "${ManiVault_INCLUDE_DIR}")
-target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
 target_include_directories(${PROJECT} PRIVATE src)
+
+if(NOT ${MV_EXAMPLES_USE_VCPKG})
+    target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
+endif()
 
 # -----------------------------------------------------------------------------
 # Target properties
 # -----------------------------------------------------------------------------
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
-add_definitions(-DDISABLE_PERF_MEASUREMENT)
+target_compile_definitions(${PROJECT} PRIVATE DISABLE_PERF_MEASUREMENT)
  
 if(MV_UNITY_BUILD)
     set_target_properties(${PROJECT} PROPERTIES UNITY_BUILD ON)
@@ -151,7 +168,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
+target_link_libraries(${PROJECT} PRIVATE ${FreeImageTarget})
 
 # -----------------------------------------------------------------------------
 # Target installation

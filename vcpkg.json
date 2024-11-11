@@ -1,0 +1,11 @@
+{
+    "name": "imageloader",
+    "version": "1.0.0",
+    "dependencies": [
+        "freeimage"
+    ],
+    "builtin-baseline":"10b7a178346f3f0abef60cecd5130e295afd8da4",
+    "overrides": [
+        { "name": "freeimage", "version": "3.18.0#27 " }
+    ]
+}
