@@ -2,30 +2,11 @@ cmake_minimum_required(VERSION 3.21)
 
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 
-if(DEFINED CMAKE_TOOLCHAIN_FILE AND CMAKE_TOOLCHAIN_FILE MATCHES "vcpkg")
-    set(MV_IMGLOADER_USE_VCPKG ON)
-    set(VCPKG_LIBRARY_LINKAGE "dynamic" CACHE STRING "Link vcpkg libraries dynamically")
-else()
-    set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
-    set(MV_IMGLOADER_USE_VCPKG OFF)
-endif()
-
 # -----------------------------------------------------------------------------
 # ImageLoader Plugin
 # -----------------------------------------------------------------------------
 set(PROJECT "ImageLoaderPlugin")
 PROJECT(${PROJECT})
-
-if(DEFINED MV_IMGLOADER_USE_VCPKG AND NOT MV_IMGLOADER_USE_VCPKG)
-    # vcpkg is used together with conan on ci
-    if(DEFINED VCPKG_TARGET_TRIPLET)
-        set(MV_IMGLOADER_USE_VCPKG ON)
-    else()
-        set(MV_IMGLOADER_USE_VCPKG OFF)
-    endif()
-else()
-    set(MV_IMGLOADER_USE_VCPKG OFF)
-endif()
 
 # -----------------------------------------------------------------------------
 # CMake Options
@@ -44,22 +25,33 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
+include(FetchContent)
+
 # -----------------------------------------------------------------------------
 # Dependencies
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG)
 
-if(${MV_IMGLOADER_USE_VCPKG})
-    find_package(FreeImage CONFIG REQUIRED)
-    set(FreeImageTarget freeimage::FreeImage)
-else()
-    find_package(FreeImage REQUIRED)
-    message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
-    set(FreeImageTarget "${FREEIMAGE_LIBRARY}")
-endif()
+FetchContent_Declare(
+    FreeImage
+    GIT_REPOSITORY https://github.com/biovault/FreeImage
+    GIT_TAG 9deefebb1c92597310b4836f29f8930dbd609118    # master as of 12-11-2024, version 3.18.0 with cmake files
+    GIT_SHALLOW TRUE
+)
 
+FetchContent_MakeAvailable(FreeImage)
 
+set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
+    PROPERTIES 
+    FOLDER ImageLoaderPluginDependencies
+)
+
+# Remove /permissive- for OpenEXR and FreeImage
+if(MSVC)
+    target_compile_options(OpenEXR PRIVATE /permissive)
+    target_compile_options(FreeImage PRIVATE /permissive)
+endif(MSVC)
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -154,10 +146,6 @@ add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 target_include_directories(${PROJECT} PRIVATE "${ManiVault_INCLUDE_DIR}")
 target_include_directories(${PROJECT} PRIVATE src)
 
-if(NOT ${MV_IMGLOADER_USE_VCPKG})
-    target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
-endif()
-
 # -----------------------------------------------------------------------------
 # Target properties
 # -----------------------------------------------------------------------------
@@ -179,7 +167,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE ${FreeImageTarget})
+target_link_libraries(${PROJECT} PRIVATE FreeImage)
 
 # -----------------------------------------------------------------------------
 # Target installation
@@ -189,10 +177,7 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-if(FREEIMAGE_ROOT_DIR)
-    set(DEPENDENCIES_FOLDERS "${FREEIMAGE_ROOT_DIR}/bin")
-endif()
-mv_install_dependencies(${PROJECT})
+mv_install_dependencies(${PROJECT} "FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
