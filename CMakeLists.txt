@@ -47,6 +47,9 @@ set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG L
     FOLDER ImageLoaderPluginDependencies
 )
 
+# Do not build static library
+set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
+
 # Remove /permissive- for OpenEXR and FreeImage
 if(MSVC)
     target_compile_options(OpenEXR PRIVATE /permissive)

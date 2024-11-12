@@ -29,34 +29,8 @@ git clone https://github.com/ManiVaultStudio/ImageLoaderPlugin.git
   - Create a image pyramid of user-defined size by downsampling the image on every level 
 
 ## Building
-This plugin depends on the [FreeImage ](https://freeimage.sourceforge.io/) library. Ensure that CMake can find FreeImage  during configuration. 
+This plugin depends on the [FreeImage](https://freeimage.sourceforge.io/) library. We build FreeImage locally form [https://github.com/biovault/FreeImage](biovault/FreeImage), which wraps the library in a cmake project for simpler consumption.
 
-The Image Loader can also make use of the `Qt Imaging Formats` plugin to support more than the [standard QT image formats](https://doc.qt.io/qt-6/qimagereader.html#supportedImageFormats) like [TIFF files](https://en.wikipedia.org/wiki/TIFF) and [WebP](https://en.wikipedia.org/wiki/WebP).
-
-### Windows
-Using a package manager: install freeimage with [vcpkg](https://github.com/microsoft/vcpkg/) or [conan](https://conan.io/) and specify the [cmake toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) accordingly.
-
-Manual:
-Download [FreeImage 3.18.0](https://freeimage.sourceforge.io/download.html), arrange the files in the following manner in this repo's directory, and set the CMake variable `FREEIMAGE_ROOT_DIR` to `./FreeImage`:
-```
-.
-├── FreeImage
-│   ├── bin
-│   │   ├── FreeImage.dll
-│   ├── include
-│   │   ├── FreeImage.h
-│   ├── lib
-│   │   ├── FreeImage.lib
-```
-
-When installing Qt6, make sure to also install the additional library `Qt Imaging Formats`.
-
-### Linux
-```
-sudo apt install qt6-image-formats-plugins libfreeimage-dev
-```
-
-### Mac
-```
-brew install freeimage
-```
+The Image Loader can also make use of the `Qt Imaging Formats` plugin to support more than the [standard QT image formats](https://doc.qt.io/qt-6/qimagereader.html#supportedImageFormats) like [TIFF files](https://en.wikipedia.org/wiki/TIFF) and [WebP](https://en.wikipedia.org/wiki/WebP):
+- **Windows**: When installing Qt6, make sure to also install the additional library `Qt Imaging Formats`.
+- **Linux**: `sudo apt install qt6-image-formats-plugins`
