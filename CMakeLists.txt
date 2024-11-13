@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12.0)
+cmake_minimum_required(VERSION 3.21)
 
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 
@@ -16,9 +16,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(FREEIMAGE_ROOT_DIR "" CACHE FILEPATH "Path to the directory containing FreeImage .h/.lib/.dll files")
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -27,14 +25,36 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
+include(FetchContent)
+
 # -----------------------------------------------------------------------------
 # Dependencies
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG)
-find_package(FreeImage REQUIRED)
 
-message(STATUS "FreeImage found at ${FREEIMAGE_INCLUDE_PATH}, ${FREEIMAGE_LIBRARY}, ${FREEIMAGE_LIBRARIES} FREEIMAGE_ROOT_DIR: ${FREEIMAGE_ROOT_DIR}")
+FetchContent_Declare(
+    FreeImage
+    GIT_REPOSITORY https://github.com/biovault/FreeImage
+    GIT_TAG c5586983279b5901fbd868bb1582f7427d6e6765    # master as of 12-11-2024, version 3.18.0 with cmake files
+    GIT_SHALLOW TRUE
+)
+
+FetchContent_MakeAvailable(FreeImage)
+
+set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
+    PROPERTIES 
+    FOLDER ImageLoaderPluginDependencies
+)
+
+# Do not build static library
+set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
+
+# Remove /permissive- for OpenEXR and FreeImage
+if(MSVC)
+    target_compile_options(OpenEXR PRIVATE /permissive)
+    target_compile_options(FreeImage PRIVATE /permissive)
+endif(MSVC)
 
 # -----------------------------------------------------------------------------
 # Source files
@@ -127,7 +147,6 @@ add_library(${PROJECT} SHARED ${SOURCES} ${UIS} ${AUX})
 # Target include directories
 # -----------------------------------------------------------------------------
 target_include_directories(${PROJECT} PRIVATE "${ManiVault_INCLUDE_DIR}")
-target_include_directories(${PROJECT} PRIVATE "${FREEIMAGE_INCLUDE_PATH}")
 target_include_directories(${PROJECT} PRIVATE src)
 
 # -----------------------------------------------------------------------------
@@ -135,7 +154,7 @@ target_include_directories(${PROJECT} PRIVATE src)
 # -----------------------------------------------------------------------------
 target_compile_features(${PROJECT} PRIVATE cxx_std_17)
 
-add_definitions(-DDISABLE_PERF_MEASUREMENT)
+target_compile_definitions(${PROJECT} PRIVATE DISABLE_PERF_MEASUREMENT)
  
 if(MV_UNITY_BUILD)
     set_target_properties(${PROJECT} PROPERTIES UNITY_BUILD ON)
@@ -151,7 +170,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE "${FREEIMAGE_LIBRARY}")
+target_link_libraries(${PROJECT} PRIVATE FreeImage)
 
 # -----------------------------------------------------------------------------
 # Target installation
@@ -161,14 +180,7 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-set(FreeImageNameShared "${FREEIMAGE_ROOT_DIR}/bin/${CMAKE_SHARED_LIBRARY_PREFIX}FreeImage${CMAKE_SHARED_LIBRARY_SUFFIX}")
-if(EXISTS ${FreeImageNameShared})
-     message(STATUS "Upon install: copy the shared FreeImage library ${FreeImageNameShared} to the root install directory")
-    install(FILES
-        ${FreeImageNameShared}
-        DESTINATION "${ManiVault_INSTALL_DIR}/$<CONFIGURATION>" COMPONENT IMPORTLIBS
-    )
-endif()
+mv_install_dependencies(${PROJECT} "FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
