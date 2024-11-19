@@ -44,7 +44,7 @@ FetchContent_MakeAvailable(FreeImage)
 
 set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
     PROPERTIES 
-    FOLDER ImageLoaderPluginDependencies
+    FOLDER LoaderPlugins/ImageLoaderPluginDependencies
 )
 
 # Do not build static library
@@ -187,6 +187,11 @@ add_custom_command(TARGET ${PROJECT} POST_BUILD
     --install ${CMAKE_CURRENT_BINARY_DIR}
     --config $<CONFIGURATION>
     --prefix ${ManiVault_INSTALL_DIR}/$<CONFIGURATION>
+)
+
+set_target_properties(${PROJECT}
+    PROPERTIES
+    FOLDER LoaderPlugins
 )
 
 # -----------------------------------------------------------------------------
