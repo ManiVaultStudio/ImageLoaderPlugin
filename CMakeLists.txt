@@ -36,7 +36,7 @@ find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG)
 FetchContent_Declare(
     FreeImage
     GIT_REPOSITORY https://github.com/biovault/FreeImage
-    GIT_TAG c5586983279b5901fbd868bb1582f7427d6e6765    # master as of 12-11-2024, version 3.18.0 with cmake files
+    GIT_TAG 2fcb6ca6d3d4dd36f7be82368275dcce918227fa    # master as of 19-11-2024, version 3.18.0 with cmake files
     GIT_SHALLOW TRUE
 )
 
@@ -54,6 +54,7 @@ set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
 if(MSVC)
     target_compile_options(OpenEXR PRIVATE /permissive)
     target_compile_options(FreeImage PRIVATE /permissive)
+    target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
 endif(MSVC)
 
 # -----------------------------------------------------------------------------
