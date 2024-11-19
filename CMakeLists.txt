@@ -54,6 +54,7 @@ set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
 if(MSVC)
     target_compile_options(OpenEXR PRIVATE /permissive)
     target_compile_options(FreeImage PRIVATE /permissive)
+    target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
 endif(MSVC)
 
 # -----------------------------------------------------------------------------
