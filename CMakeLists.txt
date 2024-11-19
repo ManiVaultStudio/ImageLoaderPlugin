@@ -44,7 +44,7 @@ FetchContent_MakeAvailable(FreeImage)
 
 set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
     PROPERTIES 
-    FOLDER LoaderPlugins/Dependencies
+    FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
 )
 
 # Do not build static library
