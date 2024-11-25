@@ -815,6 +815,8 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _type(ImageData::Type::Stack),
     _subsampling(this),
     _addCoordinatesPoints(false),
+    _mirrorHorizontal(false),
+	_mirrorVertical(false),
     _task(nullptr, "Load image collection")
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
@@ -1651,6 +1653,56 @@ QVariant ImageCollection::getAddCoordinatesPoints(const int& role) const
 void ImageCollection::setAddCoordinatesPoints(bool addCoordinatesPoints)
 {
     _addCoordinatesPoints = addCoordinatesPoints;
+}
+
+QVariant ImageCollection::getMirrorHorizontal(const int& role) const
+{
+    switch (role)
+    {
+	    case Qt::DisplayRole:
+	        return _mirrorHorizontal ? "true" : "false";
+
+	    case Qt::EditRole:
+	        return _mirrorHorizontal;
+
+	    case Qt::ToolTipRole:
+	        return QString("Mirror horizontally: %1").arg(getMirrorHorizontal(Qt::DisplayRole).toString());
+
+	    default:
+	        break;
+    }
+
+    return {};
+}
+
+void ImageCollection::setMirrorHorizontal(bool mirrorHorizontal)
+{
+    _mirrorHorizontal = mirrorHorizontal;
+}
+
+QVariant ImageCollection::getMirrorVertical(const int& role) const
+{
+    switch (role)
+    {
+	    case Qt::DisplayRole:
+	        return _mirrorVertical ? "true" : "false";
+
+	    case Qt::EditRole:
+	        return _mirrorVertical;
+
+	    case Qt::ToolTipRole:
+	        return QString("Mirror vertically: %1").arg(getMirrorVertical(Qt::DisplayRole).toString());
+
+	    default:
+	        break;
+    }
+
+	return {};
+}
+
+void ImageCollection::setMirrorVertical(bool mirrorVertical)
+{
+    _mirrorVertical = mirrorVertical;
 }
 
 ForegroundTask& ImageCollection::getTask()

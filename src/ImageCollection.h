@@ -57,8 +57,10 @@ public: // Enumerations
         Memory,                         /** Estimated memory consumption by the high-dimensional data */
         Directory,                      /** Directory */
         Conversion,                     /** Conversion */
-        AddCoordinatesPoints,           /** Determines whether to add an additional two-dimensional points dataset with the x- and y coordinates */
-        
+        AddCoordinatesPoints,           /** Determines whether to add a two-dimensional points dataset with the x- and y coordinates */
+        MirrorHorizontal,               /** Whether to mirror the image and coordinates horizontally */
+        MirrorVertical,                 /** Whether to mirror the image and coordinates vertically */
+
         Start = Name,                   /** Column start */
         End = Conversion                /** Column End */
     };
@@ -347,7 +349,7 @@ public: // Construction
     ImageCollection(TreeItem* parent, const QString& directory, const QString& imageFileType, const QImage::Format& imageFormat, const QSize& sourceSize);
 
     /** Destructor */
-    ~ImageCollection();
+    ~ImageCollection() override;
 
 public: // Getters/setters
 
@@ -516,6 +518,24 @@ public: // Getters/setters
      */
     void setAddCoordinatesPoints(bool addCoordinatesPoints);
 
+    /** Returns mirror horizontal */
+    QVariant getMirrorHorizontal(const int& role) const;
+
+    /**
+     * Sets mirror horizontal to \p mirrorHorizontal
+     * @param mirrorHorizontal Mirror horizontal
+     */
+    void setMirrorHorizontal(bool mirrorHorizontal);
+
+    /** Returns mirror vertical */
+    QVariant getMirrorVertical(const int& role) const;
+
+    /**
+     * Sets mirror vertical to \p mirrorVertical
+     * @param mirrorVertical Mirror vertical
+     */
+    void setMirrorVertical(bool mirrorVertical);
+
     mv::ForegroundTask& getTask();
 
 public:
@@ -545,18 +565,21 @@ public:
 public: // Operators
 
     void operator = (const ImageCollection& other) {
-        _directory      = other._directory;
-        _imageFileType  = other._imageFileType;
-        _imageFormat    = other._imageFormat;
-        _sourceSize     = other._sourceSize;
-        _targetSize     = other._targetSize;
-        _name           = other._name;
-        _datasetName    = other._datasetName;
-        _dimensionTag   = other._dimensionTag;
-        _toGrayscale    = other._toGrayscale;
-        _type           = other._type;
-        _subsampling    = other._subsampling;
-        _conversion     = other._conversion;
+        _directory              = other._directory;
+        _imageFileType          = other._imageFileType;
+        _imageFormat            = other._imageFormat;
+        _sourceSize             = other._sourceSize;
+        _targetSize             = other._targetSize;
+        _name                   = other._name;
+        _datasetName            = other._datasetName;
+        _dimensionTag           = other._dimensionTag;
+        _toGrayscale            = other._toGrayscale;
+        _type                   = other._type;
+        _subsampling            = other._subsampling;
+        _conversion             = other._conversion;
+        _addCoordinatesPoints   = other._addCoordinatesPoints;
+        _mirrorHorizontal       = other._mirrorHorizontal;
+        _mirrorVertical         = other._mirrorVertical;
     }
 
 private:
@@ -578,6 +601,8 @@ protected:
     SubSampling             _subsampling;           /** Subsampling parameters */
     QString                 _conversion;            /** Conversion SHA */
     bool                    _addCoordinatesPoints;  /** Add coordinates points */
+    bool                    _mirrorHorizontal;      /** Mirror horizontally */
+    bool                    _mirrorVertical;        /** Mirror vertically */
     mv::ForegroundTask      _task;                  /** Task for reporting load progress */
 
     friend class SubSampling;

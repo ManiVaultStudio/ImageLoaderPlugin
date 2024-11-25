@@ -11,7 +11,9 @@ public:
     MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 private:
-    void setAddCoordinatesPointsSilently(bool addCoordinatesPoints);
+    void setMirrorHorizontalSilently(bool mirrorHorizontal);
+    void setMirrorVerticalSilently(bool mirrorVertical);
+
     void updateRows();
     void dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>());
     void updateStateFromModel();

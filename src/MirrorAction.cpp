@@ -7,7 +7,7 @@ MirrorAction::MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     _horizontalAction(this, "Mirror horizontal"),
     _verticalAction(this, "Mirror vertical")
 {
-    setEnabled(false);
+    setEnabled(mv::plugins().isPluginLoaded("ImageTransformationPlugin"));
     setToolTip("Determines whether to add an additional two-dimensional points dataset with the x- and y coordinates");
     setSettingsPrefix(&imageLoaderPlugin, "Mirror");
 
@@ -26,23 +26,35 @@ MirrorAction::MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
     updateStateFromModel();
 }
 
-void MirrorAction::setAddCoordinatesPointsSilently(bool addCoordinatesPoints)
+void MirrorAction::setMirrorHorizontalSilently(bool mirrorHorizontal)
 {
-    //disconnect(this, &AddCoordinatesPointsAction::toggled, this, nullptr);
-    //{
-    //    setChecked(addCoordinatesPoints);
-    //}
-    //connect(this, &AddCoordinatesPointsAction::toggled, this, &AddCoordinatesPointsAction::updateRows);
+    disconnect(&_horizontalAction, &ToggleAction::toggled, this, nullptr);
+    {
+        _horizontalAction.setChecked(mirrorHorizontal);
+    }
+    connect(&_horizontalAction, &ToggleAction::toggled, this, &MirrorAction::updateRows);
+}
+
+void MirrorAction::setMirrorVerticalSilently(bool mirrorVertical)
+{
+    disconnect(&_verticalAction, &ToggleAction::toggled, this, nullptr);
+    {
+        _verticalAction.setChecked(mirrorVertical);
+    }
+    connect(&_verticalAction, &ToggleAction::toggled, this, &MirrorAction::updateRows);
 }
 
 void MirrorAction::updateRows()
 {
-    //disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
-    //{
-    //    for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows())
-    //        _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::AddCoordinatesPoints), isChecked());
-    //}
-    //connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &AddCoordinatesPointsAction::dataChanged);
+    disconnect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, nullptr);
+    {
+        for (const auto& selectedRow : _imageLoaderPlugin.getSelectedRows()) {
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::MirrorHorizontal), _horizontalAction.isChecked());
+            _imageLoaderPlugin.getImageCollectionsModel().setData(selectedRow.siblingAtColumn(ImageCollection::Column::MirrorVertical), _verticalAction.isChecked());
+        }
+            
+    }
+    connect(&_imageLoaderPlugin.getImageCollectionsModel(), &QAbstractItemModel::dataChanged, this, &MirrorAction::dataChanged);
 }
 
 void MirrorAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
@@ -53,21 +65,29 @@ void MirrorAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bo
 
 void MirrorAction::updateStateFromModel()
 {
-    //const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
-    //const auto numberOfSelectedRows = selectedRows.count();
+    const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
+    const auto numberOfSelectedRows = selectedRows.count();
 
-    //if (numberOfSelectedRows == 0) {
-    //    setEnabled(false);
-    //    setAddCoordinatesPointsSilently(false);
-    //}
+    if (numberOfSelectedRows == 0) {
+        _horizontalAction.setEnabled(false);
+        _verticalAction.setEnabled(false);
 
-    //if (numberOfSelectedRows == 1) {
-    //    setEnabled(true);
-    //    setAddCoordinatesPointsSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::AddCoordinatesPoints).data(Qt::EditRole).toBool());
-    //}
+        setMirrorHorizontalSilently(false);
+        setMirrorVerticalSilently(false);
+    }
 
-    //if (numberOfSelectedRows >= 2) {
-    //    setEnabled(false);
-    //    setAddCoordinatesPointsSilently(false);
-    //}
+    if (numberOfSelectedRows == 1) {
+        setEnabled(true);
+
+        setMirrorHorizontalSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::MirrorHorizontal).data(Qt::EditRole).toBool());
+        setMirrorVerticalSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::MirrorVertical).data(Qt::EditRole).toBool());
+    }
+
+    if (numberOfSelectedRows >= 2) {
+        _horizontalAction.setEnabled(false);
+        _verticalAction.setEnabled(false);
+
+        setMirrorHorizontalSilently(false);
+        setMirrorVerticalSilently(false);
+    }
 }
