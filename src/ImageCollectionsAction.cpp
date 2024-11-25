@@ -124,6 +124,8 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getLevelsActions().createWidget(this), 9, 1);
 
     subLayout->addWidget(imageCollectionsAction->getAddCoordinatesPointsAction().createWidget(this), 10, 1);
+
+    subLayout->addWidget(imageCollectionsAction->getMirrorAction().createLabelWidget(this), 11, 0);
     subLayout->addWidget(imageCollectionsAction->getMirrorAction().createWidget(this), 11, 1);
 
     mainLayout->addLayout(subLayout);

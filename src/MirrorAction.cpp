@@ -2,12 +2,11 @@
 #include "ImageLoaderPlugin.h"
 
 MirrorAction::MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
-    HorizontalGroupAction(parent, "Mirror image"),
+    HorizontalGroupAction(parent, "Mirror"),
     _imageLoaderPlugin(imageLoaderPlugin),
-    _horizontalAction(this, "Mirror horizontal"),
-    _verticalAction(this, "Mirror vertical")
+    _horizontalAction(this, "Horizontal"),
+    _verticalAction(this, "Vertical")
 {
-    setEnabled(mv::plugins().isPluginLoaded("ImageTransformationPlugin"));
     setToolTip("Determines whether to add an additional two-dimensional points dataset with the x- and y coordinates");
     setSettingsPrefix(&imageLoaderPlugin, "Mirror");
 
@@ -16,6 +15,7 @@ MirrorAction::MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin
 
     addAction(&_horizontalAction);
     addAction(&_verticalAction);
+    addStretch();
 
     connect(&_horizontalAction, &ToggleAction::toggled, this, &MirrorAction::updateRows);
     connect(&_verticalAction, &ToggleAction::toggled, this, &MirrorAction::updateRows);
@@ -67,6 +67,7 @@ void MirrorAction::updateStateFromModel()
 {
     const auto selectedRows         = _imageLoaderPlugin.getSelectedRows();
     const auto numberOfSelectedRows = selectedRows.count();
+    const auto canMirror            = mv::plugins().isPluginLoaded("Image transformation");
 
     if (numberOfSelectedRows == 0) {
         _horizontalAction.setEnabled(false);
@@ -77,7 +78,8 @@ void MirrorAction::updateStateFromModel()
     }
 
     if (numberOfSelectedRows == 1) {
-        setEnabled(true);
+        _horizontalAction.setEnabled(canMirror);
+        _verticalAction.setEnabled(canMirror);
 
         setMirrorHorizontalSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::MirrorHorizontal).data(Qt::EditRole).toBool());
         setMirrorVerticalSilently(selectedRows.first().siblingAtColumn(ImageCollection::Column::MirrorVertical).data(Qt::EditRole).toBool());
