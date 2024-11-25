@@ -4,8 +4,8 @@
 MirrorAction::MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :
     HorizontalGroupAction(parent, "Mirror image"),
     _imageLoaderPlugin(imageLoaderPlugin),
-    _horizontalAction(this, "Horizontal"),
-    _verticalAction(this, "Vertical")
+    _horizontalAction(this, "Mirror horizontal"),
+    _verticalAction(this, "Mirror vertical")
 {
     setEnabled(false);
     setToolTip("Determines whether to add an additional two-dimensional points dataset with the x- and y coordinates");
