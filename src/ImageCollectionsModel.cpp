@@ -126,6 +126,12 @@ QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt:
 
             case ImageCollection::Column::AddCoordinatesPoints:
                 return imageCollection->getAddCoordinatesPoints(role);
+
+            case ImageCollection::Column::MirrorHorizontal:
+                return imageCollection->getMirrorHorizontal(role);
+
+            case ImageCollection::Column::MirrorVertical:
+                return imageCollection->getMirrorVertical(role);
         }
     }
     else {
@@ -303,6 +309,26 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
                         if (_persistData)
                             _imageLoaderPlugin->setSetting(settingsPrefix + "/AddCoordinatesPoints", value.toBool());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::MirrorHorizontal:
+                    {
+                        imageCollection->setMirrorHorizontal(value.toBool());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Mirror/Horizontal", value.toBool());
+
+                        break;
+                    }
+
+                    case ImageCollection::Column::MirrorVertical:
+                    {
+                        imageCollection->setMirrorVertical(value.toBool());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Mirror/Vertical", value.toBool());
 
                         break;
                     }
@@ -518,6 +544,12 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                     case ImageCollection::Column::AddCoordinatesPoints:
                         return "Add 2D coordinates points";
 
+                    case ImageCollection::Column::MirrorHorizontal:
+                        return "Mirror horizontally";
+
+                    case ImageCollection::Column::MirrorVertical:
+                        return "Mirror vertically";
+
                     default:
                         break;
                 }
@@ -552,7 +584,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                         return "The name of the dataset";
 
                     case ImageCollection::Column::FileNames:
-                        return "File names", "The file name(s)";
+                        return "The file name(s)";
 
                     case ImageCollection::Column::ImageType:
                         return "The type of images in the scanned image collection";
@@ -613,6 +645,12 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
 
                     case ImageCollection::Column::AddCoordinatesPoints:
                         return "Whether to create an additional 2D coordinates points dataset";
+
+                    case ImageCollection::Column::MirrorHorizontal:
+                        return "Whether to mirror horizontally";
+
+                    case ImageCollection::Column::MirrorVertical:
+                        return "Whether to mirror vertically";
 
                     default:
                         break;
@@ -794,6 +832,8 @@ void ImageCollectionsModel::insert(int row, const QVector<ImageCollection*>& ima
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingNumberOfLevels)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/NumberOfLevels", 0).toInt());
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingLevelFactor)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/LevelFactor", 0).toInt());
             setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::AddCoordinatesPoints)), _imageLoaderPlugin->getSetting(settingsPrefix + "/AddCoordinatesPoints", 0).toBool());
+            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorHorizontal)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Mirror/Horizontal", 0).toBool());
+            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorVertical)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Mirror/Vertical", 0).toBool());
 
             const auto conversion = _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", "").toString();
 

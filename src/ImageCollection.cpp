@@ -6,6 +6,7 @@
 #include "util/Miscellaneous.h"
 
 #include "PointData/PointData.h"
+#include "TransformationPlugin.h"
 
 #include <QDebug>
 #include <QDir>
@@ -815,6 +816,8 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
     _type(ImageData::Type::Stack),
     _subsampling(this),
     _addCoordinatesPoints(false),
+    _mirrorHorizontal(false),
+	_mirrorVertical(false),
     _task(nullptr, "Load image collection")
 {
     _toGrayscale = getNumberOfChannelsPerPixel(Qt::EditRole).toInt() > 1;
@@ -1653,6 +1656,56 @@ void ImageCollection::setAddCoordinatesPoints(bool addCoordinatesPoints)
     _addCoordinatesPoints = addCoordinatesPoints;
 }
 
+QVariant ImageCollection::getMirrorHorizontal(const int& role) const
+{
+    switch (role)
+    {
+	    case Qt::DisplayRole:
+	        return _mirrorHorizontal ? "true" : "false";
+
+	    case Qt::EditRole:
+	        return _mirrorHorizontal;
+
+	    case Qt::ToolTipRole:
+	        return QString("Mirror horizontally: %1").arg(getMirrorHorizontal(Qt::DisplayRole).toString());
+
+	    default:
+	        break;
+    }
+
+    return {};
+}
+
+void ImageCollection::setMirrorHorizontal(bool mirrorHorizontal)
+{
+    _mirrorHorizontal = mirrorHorizontal;
+}
+
+QVariant ImageCollection::getMirrorVertical(const int& role) const
+{
+    switch (role)
+    {
+	    case Qt::DisplayRole:
+	        return _mirrorVertical ? "true" : "false";
+
+	    case Qt::EditRole:
+	        return _mirrorVertical;
+
+	    case Qt::ToolTipRole:
+	        return QString("Mirror vertically: %1").arg(getMirrorVertical(Qt::DisplayRole).toString());
+
+	    default:
+	        break;
+    }
+
+	return {};
+}
+
+void ImageCollection::setMirrorVertical(bool mirrorVertical)
+{
+    _mirrorVertical = mirrorVertical;
+}
+
 ForegroundTask& ImageCollection::getTask()
 {
     return _task;
@@ -1838,6 +1891,25 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         images->getDataHierarchyItem().select();
 
+        const auto canMirror = mv::plugins().isPluginLoaded("Image transformation");
+
+        const auto mirrorHorizontal = getMirrorHorizontal(Qt::EditRole).toBool();
+        const auto mirrorVertical   = getMirrorVertical(Qt::EditRole).toBool();
+
+        if (canMirror && mirrorHorizontal) {
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+
+            imageTransformationPlugin->getTypeAction().setCurrentText("Mirror horizontal");
+            imageTransformationPlugin->transform();
+        }
+
+        if (canMirror && mirrorVertical) {
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+
+            imageTransformationPlugin->getTypeAction().setCurrentText("Mirror vertical");
+            imageTransformationPlugin->transform();
+        }
+
         if (getAddCoordinatesPoints(Qt::EditRole).toBool()) {
             auto coordinatesPoints = mv::data().createDerivedDataset<Points>("2D Coordinates", points);
 
@@ -1857,8 +1929,8 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
                 for (std::int32_t pixelY = 0; pixelY < height; ++pixelY) {
                     const auto globalPixelIndex = pixelY * width + pixelX;
 
-                    coordinatesData[globalPixelIndex * 2 + 0] = static_cast<float>(pixelX);
-                    coordinatesData[globalPixelIndex * 2 + 1] = static_cast<float>(pixelY);
+                    coordinatesData[globalPixelIndex * 2 + 0] = mirrorHorizontal ? static_cast<float>(width - pixelX) : static_cast<float>(pixelX);
+                    coordinatesData[globalPixelIndex * 2 + 1] = mirrorVertical ? static_cast<float>(height - pixelY) : static_cast<float>(pixelY);
                 }
             }
 

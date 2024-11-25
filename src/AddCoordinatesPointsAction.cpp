@@ -38,7 +38,7 @@ void AddCoordinatesPointsAction::updateRows()
 
 void AddCoordinatesPointsAction::dataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles /*= QList<int>()*/)
 {
-    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::DatasetName))
+    if (isColumnInModelIndexRange(topLeft, bottomRight, ImageCollection::Column::AddCoordinatesPoints))
         updateStateFromModel();
 }
 

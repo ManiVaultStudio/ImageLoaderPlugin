@@ -4,14 +4,13 @@
 #include "DataLayoutAction.h"
 #include "DimensionTagAction.h"
 #include "SubsamplingAction.h"
-#include "GroupDataAction.h"
 #include "AddCoordinatesPointsAction.h"
+#include "MirrorAction.h"
 #include "ImagesAction.h"
 
 #include <actions/WidgetAction.h>
 #include <actions/StringAction.h>
 #include <actions/OptionAction.h>
-#include <actions/ToggleAction.h>
 #include <actions/DecimalAction.h>
 
 #include <QTreeView>
@@ -53,6 +52,7 @@ public:
     DimensionTagAction& getDimensionTagAction() { return _dimensionTagAction; }
     SubsamplingAction& getSubsamplingAction() { return _subsamplingAction; }
     AddCoordinatesPointsAction& getAddCoordinatesPointsAction() { return _addCoordinatesPointsAction; }
+    MirrorAction& getMirrorAction() { return _mirrorAction; }
     ImagesAction& getImagesAction() { return _imagesAction; }
 
 protected:
@@ -63,6 +63,7 @@ protected:
     DimensionTagAction          _dimensionTagAction;            /** Dimension tag action (in case of multi-page TIFF) */
     SubsamplingAction           _subsamplingAction;             /** Subsampling action */
     AddCoordinatesPointsAction  _addCoordinatesPointsAction;    /** Add 2D coordinates points action */
+    MirrorAction                _mirrorAction;                  /** Mirror action */
     ImagesAction                _imagesAction;                  /** Images action */
 
 };
