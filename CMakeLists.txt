@@ -114,6 +114,8 @@ set(ACTION_SOURCES
     src/GroupDataAction.cpp
     src/AddCoordinatesPointsAction.h
     src/AddCoordinatesPointsAction.cpp
+    src/MirrorAction.h
+    src/MirrorAction.cpp
 )
 
 set(AUX src/ImageLoaderPlugin.json)
