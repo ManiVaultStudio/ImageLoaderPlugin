@@ -12,8 +12,9 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _datasetNameAction(this, imageLoaderPlugin),
     _dataLayoutAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
-    _addCoordinatesPointsAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
+    _addCoordinatesPointsAction(this, imageLoaderPlugin),
+    _mirrorAction(this, imageLoaderPlugin),
     _imagesAction(this, imageLoaderPlugin)
 {
     _filterAction.setClearable(true);
@@ -123,6 +124,7 @@ ImageCollectionsAction::Widget::Widget(QWidget* parent, ImageCollectionsAction* 
     subLayout->addWidget(imageCollectionsAction->_subsamplingAction.getLevelsActions().createWidget(this), 9, 1);
 
     subLayout->addWidget(imageCollectionsAction->getAddCoordinatesPointsAction().createWidget(this), 10, 1);
+    subLayout->addWidget(imageCollectionsAction->getMirrorAction().createWidget(this), 11, 1);
 
     mainLayout->addLayout(subLayout);
 

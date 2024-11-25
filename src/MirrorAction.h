@@ -1,15 +1,14 @@
 #pragma once
 
 #include <actions/ToggleAction.h>
+#include <actions/HorizontalGroupAction.h>
 
 class ImageLoaderPlugin;
 
-using namespace mv::gui;
-
-class AddCoordinatesPointsAction : public ToggleAction
+class MirrorAction : public mv::gui::HorizontalGroupAction
 {
 public:
-    AddCoordinatesPointsAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
+    MirrorAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin);
 
 private:
     void setAddCoordinatesPointsSilently(bool addCoordinatesPoints);
@@ -18,6 +17,8 @@ private:
     void updateStateFromModel();
 
 private:
-    ImageLoaderPlugin&  _imageLoaderPlugin;
+    ImageLoaderPlugin&      _imageLoaderPlugin;
+    mv::gui::ToggleAction   _horizontalAction;
+    mv::gui::ToggleAction   _verticalAction;
 
 };
