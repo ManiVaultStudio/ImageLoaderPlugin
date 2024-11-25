@@ -6,6 +6,7 @@
 #include "util/Miscellaneous.h"
 
 #include "PointData/PointData.h"
+#include "TransformationPlugin.h"
 
 #include <QDebug>
 #include <QDir>
@@ -1889,6 +1890,22 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         events().notifyDatasetDataChanged(images);
 
         images->getDataHierarchyItem().select();
+
+        const auto canMirror = mv::plugins().isPluginLoaded("Image transformation");
+
+        if (canMirror && getMirrorHorizontal(Qt::EditRole).toBool()) {
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+
+            imageTransformationPlugin->getTypeAction().setCurrentText("Mirror horizontal");
+            imageTransformationPlugin->transform();
+        }
+
+        if (canMirror && getMirrorVertical(Qt::EditRole).toBool()) {
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+
+            imageTransformationPlugin->getTypeAction().setCurrentText("Mirror vertical");
+            imageTransformationPlugin->transform();
+        }
 
         if (getAddCoordinatesPoints(Qt::EditRole).toBool()) {
             auto coordinatesPoints = mv::data().createDerivedDataset<Points>("2D Coordinates", points);
