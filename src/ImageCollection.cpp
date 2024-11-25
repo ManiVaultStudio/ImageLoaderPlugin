@@ -1893,14 +1893,17 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
 
         const auto canMirror = mv::plugins().isPluginLoaded("Image transformation");
 
-        if (canMirror && getMirrorHorizontal(Qt::EditRole).toBool()) {
+        const auto mirrorHorizontal = getMirrorHorizontal(Qt::EditRole).toBool();
+        const auto mirrorVertical   = getMirrorVertical(Qt::EditRole).toBool();
+
+        if (canMirror && mirrorHorizontal) {
             auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
 
             imageTransformationPlugin->getTypeAction().setCurrentText("Mirror horizontal");
             imageTransformationPlugin->transform();
         }
 
-        if (canMirror && getMirrorVertical(Qt::EditRole).toBool()) {
+        if (canMirror && mirrorVertical) {
             auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
 
             imageTransformationPlugin->getTypeAction().setCurrentText("Mirror vertical");
@@ -1926,8 +1929,8 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
                 for (std::int32_t pixelY = 0; pixelY < height; ++pixelY) {
                     const auto globalPixelIndex = pixelY * width + pixelX;
 
-                    coordinatesData[globalPixelIndex * 2 + 0] = static_cast<float>(pixelX);
-                    coordinatesData[globalPixelIndex * 2 + 1] = static_cast<float>(pixelY);
+                    coordinatesData[globalPixelIndex * 2 + 0] = mirrorHorizontal ? static_cast<float>(width - pixelX) : static_cast<float>(pixelX);
+                    coordinatesData[globalPixelIndex * 2 + 1] = mirrorVertical ? static_cast<float>(height - pixelY) : static_cast<float>(pixelY);
                 }
             }
 
