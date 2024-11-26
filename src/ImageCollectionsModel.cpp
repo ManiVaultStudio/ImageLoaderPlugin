@@ -958,8 +958,8 @@ void ImageCollectionsModel::requestSaveSettings()
 
 void ImageCollectionsModel::setSettingByPath(QVariantMap root, const QString& path, const QVariant& value)
 {
-    root = setValueByPath(root, path, value).toMap();
-    requestSaveSettings();
+    //root = setValueByPath(root, path, value).toMap();
+    //requestSaveSettings();
 }
 
 void ImageCollectionsModel::saveSettings() const
