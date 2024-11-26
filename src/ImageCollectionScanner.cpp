@@ -184,11 +184,7 @@ void ImageCollectionScanner::scan()
 
         imageCollectionsModel.clear();
 
-        imageCollectionsModel.setPersistData(false);
-        {
-            imageCollectionsModel.insert(0, imageCollections);
-        }
-        imageCollectionsModel.setPersistData(true);
+        imageCollectionsModel.insert(0, imageCollections);
 
         QCoreApplication::processEvents();
 
@@ -289,6 +285,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
 
         QImageReader imageReader(imageFilePath);
 
+        
         if (!imageReader.canRead())
         {
             qWarning() << "ImageLoaderPlugin: cannot read file " << fileName;
@@ -299,7 +296,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
             }
 
             qWarning() << "ImageLoaderPlugin: supported image formats: " << supportedImageFormats.join(", ");
-            qWarning() << "ImageLoaderPlugin: consider installing the Qt Imaging Formats plugin to support formates like tiff and webp.";
+            qWarning() << "ImageLoaderPlugin: consider installing the Qt Imaging Formats plugin to support formats like tiff and webp.";
         }
 
         auto imageExtension = QFileInfo(fileName).suffix().toUpper();
@@ -334,6 +331,7 @@ void ImageCollectionScanner::scanDir(const QString& directory, QStringList nameF
         else {
             (*it)->addImage(imageFilePath);
         }
+        
     }
     if (_indexImageCollectionsTask.isAborting() || _indexImageCollectionsTask.isAborted()) {
         _indexImageCollectionsTask.setAborted();

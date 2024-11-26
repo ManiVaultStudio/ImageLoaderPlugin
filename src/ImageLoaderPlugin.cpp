@@ -14,7 +14,6 @@ ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     LoaderPlugin(factory),
     _imageCollectionScanner(*this),
     _imageCollectionsModel(this),
-    _imageCollectionsFilterModel(),
     _conversionPickerAction(this, *this)
 {
     _imageCollectionsFilterModel.setSourceModel(&_imageCollectionsModel);
@@ -25,6 +24,10 @@ ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     _imageCollectionScanner.scan();
 
     _conversionPickerAction.initialize("PointDataConversion", { PointType });
+}
+
+ImageLoaderPlugin::~ImageLoaderPlugin()
+{
 }
 
 void ImageLoaderPlugin::loadData()

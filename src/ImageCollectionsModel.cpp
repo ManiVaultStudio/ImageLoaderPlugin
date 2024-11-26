@@ -5,17 +5,26 @@
 
 #include "Application.h"
 
+#include "util/Miscellaneous.h"
+
 #include <QDebug>
 #include <QPainter>
 #include <QIcon>
+#include <QtConcurrent>
+
+using namespace mv::util;
 
 ImageCollectionsModel::ImageCollectionsModel(ImageLoaderPlugin* imageLoaderPlugin) :
-    QAbstractItemModel(),
     _imageLoaderPlugin(imageLoaderPlugin),
     _root(new TreeItem(nullptr)),
-    _selectionModel(this),
-    _persistData(true)
+    _selectionModel(this)
 {
+    //_settings = _imageLoaderPlugin->getSetting("Cache").toMap();
+
+    _settingsTimer.setSingleShot(true);
+    _settingsTimer.setInterval(100);
+
+    connect(&_settingsTimer, &QTimer::timeout, this, &ImageCollectionsModel::saveSettings);
 }
 
 ImageCollectionsModel::~ImageCollectionsModel()
@@ -30,9 +39,8 @@ int ImageCollectionsModel::rowCount(const QModelIndex& parent /* = QModelIndex()
 
     if (!parent.isValid())
         return _root->childCount();
-    else {
-        return static_cast<TreeItem*>(parent.internalPointer())->childCount();
-    }
+
+	return static_cast<TreeItem*>(parent.internalPointer())->childCount();
 }
 
 int ImageCollectionsModel::columnCount(const QModelIndex& parent) const
@@ -43,7 +51,7 @@ int ImageCollectionsModel::columnCount(const QModelIndex& parent) const
 QVariant ImageCollectionsModel::data(const QModelIndex& index, int role /* = Qt::DisplayRole */) const
 {
     if (!index.isValid())
-        return QVariant();
+        return {};
 
     if (index.parent() == QModelIndex()) {
         auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
@@ -161,10 +169,17 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
 
     affectedIndices << index;
 
-    const auto settingsPrefix = getSettingsPrefix(index);
+    QVariantMap setting;
 
     if (index.parent() == QModelIndex()) {
         auto imageCollection = static_cast<ImageCollection*>((void*)index.internalPointer());
+
+        const auto directory = imageCollection->getDirectory(Qt::EditRole).toString();
+
+        if (_settings.contains(directory))
+            setting = _settings[directory].toMap();
+
+        //qDebug() << setting;
 
         const auto column = static_cast<ImageCollection::Column>(index.column());
 
@@ -199,9 +214,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setName(value.toString());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Name", value.toString());
-
+                        setSettingByPath(setting, "/Name", value.toString());
                         break;
                     }
 
@@ -209,9 +222,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setDatasetName(value.toString());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/DatasetName", value.toString());
-
+                        setSettingByPath(setting, "/DatasetName", value.toString());
                         break;
                     }
 
@@ -222,9 +233,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setDimensionTag(value.toString());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/DimensionTag", value.toString());
-
+                        setSettingByPath(setting, "/DimensionTag", value.toString());
                         break;
                     }
 
@@ -235,9 +244,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoPoints));
                         affectedIndices << index.siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Type", value.toInt());
-
+                        setSettingByPath(setting, "/Type", value.toInt());
                         break;
                     }
 
@@ -245,9 +252,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->getSubsampling().setType(static_cast<ImageCollection::SubSampling::Type>(value.toInt()));
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Type", value.toInt());
-
+                        setSettingByPath(setting, "/Subsampling/Type", value.toInt());
                         updateTargetSize();
                         break;
                     }
@@ -257,9 +262,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         imageCollection->getSubsampling().setRatio(value.toFloat());
                         updateTargetSize();
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Ratio", value.toFloat());
-
+                        setSettingByPath(setting, "/Subsampling/Ratio", value.toFloat());
                         break;
                     }
 
@@ -267,9 +270,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->getSubsampling().setFilter(static_cast<ImageCollection::SubSampling::Filter>(value.toInt()));
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/Filter", value.toInt());
-
+                        setSettingByPath(setting, "/Subsampling/Filter", value.toInt());
                         break;
                     }
 
@@ -277,9 +278,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->getSubsampling().setNumberOfLevels(value.toInt());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/NumberOfLevels", value.toInt());
-
+                        setSettingByPath(setting, "/Subsampling/NumberOfLevels", value.toInt());
                         break;
                     }
 
@@ -287,9 +286,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->getSubsampling().setLevelFactor(value.toInt());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Subsampling/LevelFactor", value.toInt());
-
+                        setSettingByPath(setting, "/Subsampling/LevelFactor", value.toInt());
                         break;
                     }
 
@@ -297,9 +294,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setConversion(value.toString());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Conversion/SHA", value.toString());
-
+                        setSettingByPath(setting, "/Conversion/SHA", value.toString());
                         break;
                     }
 
@@ -307,9 +302,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setAddCoordinatesPoints(value.toBool());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/AddCoordinatesPoints", value.toBool());
-
+                        setSettingByPath(setting, "/AddCoordinatesPoints", value.toBool());
                         break;
                     }
 
@@ -317,9 +310,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setMirrorHorizontal(value.toBool());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Mirror/Horizontal", value.toBool());
-
+                        setSettingByPath(setting, "/Mirror/Horizontal", value.toBool());
                         break;
                     }
 
@@ -327,9 +318,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         imageCollection->setMirrorVertical(value.toBool());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/Mirror/Vertical", value.toBool());
-
+                        setSettingByPath(setting, "/Mirror/Vertical", value.toBool());
                         break;
                     }
 
@@ -348,9 +337,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         imageCollection->setToGrayscale(value.toBool());
                         updateTargetSize();
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(settingsPrefix + "/ToGrayscale", value.toBool());
-
+                        setSettingByPath(setting, "/ToGrayscale", value.toBool());
                         break;
                     }
 
@@ -364,9 +351,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
             default:
                 break;
         }
+
+        _settings[directory] = setting;
     }
     else {
         auto image = static_cast<ImageCollection::Image*>((void*)index.internalPointer());
+
+        const auto directory = image->getImageCollection()->getDirectory(Qt::EditRole).toString();
+
+        if (_settings.contains(directory))
+            setting = _settings[directory].toMap();
 
         const auto column = static_cast<ImageCollection::Image::Column>(index.column());
 
@@ -384,9 +378,7 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::NoDimensions));
                         affectedIndices << index.parent().siblingAtColumn(ult(ImageCollection::Column::Memory));
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(QString("%1/Images/%2/%3/ShouldLoad").arg(settingsPrefix, image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toBool());
-
+                        setSettingByPath(setting, QString("/Images/%2/%3/ShouldLoad").arg(image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toBool());
                         break;
                     }
 
@@ -397,15 +389,12 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                     {
                         image->setDimensionName(value.toString());
 
-                        if (_persistData)
-                            _imageLoaderPlugin->setSetting(QString("%1/Images/%2/%3/DimensionName").arg(settingsPrefix, image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toString());
+                        setSettingByPath(setting, QString("/Images/%2/%3/DimensionName").arg(image->getImageCollection()->getName(Qt::EditRole).toString(), QString::number(index.row())), value.toString());
 
                         break;
                     }
 
                     case ImageCollection::Image::Column::FilePath:
-                        break;
-
                     default:
                         break;
                 }
@@ -437,6 +426,8 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
             default:
                 break;
         }
+
+        _settings[directory] = setting;
     }
 
     for (auto affectedIndex : affectedIndices)
@@ -460,7 +451,7 @@ QVariant ImageCollectionsModel::headerData(int section, Qt::Orientation orientat
                         break;
                 }
 
-                return QVariant();
+                return {};
             }
 
             case Qt::DisplayRole:
@@ -720,8 +711,6 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
             case ImageCollection::Column::TargetSize:
             case ImageCollection::Column::TargetWidth:
             case ImageCollection::Column::TargetHeight:
-                break;
-
             default:
                 break;
         }
@@ -748,8 +737,6 @@ Qt::ItemFlags ImageCollectionsModel::flags(const QModelIndex& index) const
             }
 
             case ImageCollection::Image::Column::FilePath:
-                break;
-
             default:
                 break;
         }
@@ -763,16 +750,14 @@ QModelIndex ImageCollectionsModel::index(int row, int column, const QModelIndex&
     if (!hasIndex(row, column, parent))
         return {};
 
-    TreeItem *parentItem;
+    TreeItem* parentItem;
 
     if (!parent.isValid())
         parentItem = _root;
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
-    TreeItem* childItem = parentItem->child(row);
-
-    if (childItem)
+    if (auto childItem = parentItem->child(row))
         return createIndex(row, column, childItem);
 
     return {};
@@ -801,56 +786,94 @@ void ImageCollectionsModel::clear()
     endResetModel();
 }
 
+//std::int32_t restoreSettings(ImageCollectionsModel* model, ImageLoaderPlugin* imageLoaderPlugin) {
+//    qDebug() << "Running in thread:" << QThread::currentThread();
+//
+//    QVariantList settings;
+//
+//    //model->beginResetModel();
+//    //{
+//        /*
+//        for (int rowIndex = 0; rowIndex < model->rowCount(QModelIndex()); rowIndex++)
+//        {
+//            const auto imageCollectionIndex = model->index(rowIndex, 0);
+//            const auto name                 = model->data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), Qt::EditRole).toString();
+//            const auto noImages             = model->data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
+//
+//            QVariant setting;
+//
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), );
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), getValueByPath(setting, "/DatasetName", name).toString());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), getValueByPath(setting, "/DimensionTag", "").toString());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), getValueByPath(setting, "/Type", ImageData::Type::Stack).toInt());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingType)), getValueByPath(setting, "/Subsampling/Type", 0).toInt());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), getValueByPath(setting, "/Subsampling/Ratio", 0.5f).toFloat());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), getValueByPath(setting, "/Subsampling/Filter", 0).toInt());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingNumberOfLevels)), getValueByPath(setting, "/Subsampling/NumberOfLevels", 0).toInt());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingLevelFactor)), getValueByPath(setting, "/Subsampling/LevelFactor", 0).toInt());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::AddCoordinatesPoints)), getValueByPath(setting, "/AddCoordinatesPoints", 0).toBool());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorHorizontal)), getValueByPath(setting, "/Mirror/Horizontal", 0).toBool());
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorVertical)), getValueByPath(setting, "/Mirror/Vertical", 0).toBool());
+//
+//            const auto conversion = getValueByPath(setting, "/Conversion/SHA", "").toString();
+//
+//            model->setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Conversion)), getValueByPath(setting, "/Conversion/SHA", 0).toString());
+//
+//            for (int imageRow = 0; imageRow < noImages; imageRow++) {
+//                const auto dimensionName    = getValueByPath(setting, QString("%1/Images/%2/%3/DimensionName").arg(name, QString::number(imageRow)), "").toString();
+//                const auto shouldLoad       = getValueByPath(setting, QString("%1/Images/%2/%3/ShouldLoad").arg(name, QString::number(imageRow)), true).toBool();
+//
+//                if (!dimensionName.isEmpty())
+//                    model->setData(model->index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::DimensionName)), dimensionName);
+//
+//                model->setData(model->index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::ShouldLoad)), shouldLoad);
+//            }
+//        }
+//        */
+//    //}
+//    //model->endResetModel();
+//
+//    return model->rowCount(QModelIndex());
+//}
+
 void ImageCollectionsModel::insert(int row, const QVector<ImageCollection*>& imageCollections)
 {
     if (imageCollections.empty())
         return;
 
-    beginInsertRows(QModelIndex(), static_cast<int>(_root->childCount()), static_cast<int>(_root->childCount() + imageCollections.size() - 1));
+    beginResetModel();
     {
-        for (auto& imageCollection : imageCollections)
-            _root->appendChild(imageCollection);
-    }
-    endInsertRows();
+        beginInsertRows(QModelIndex(), static_cast<int>(_root->childCount()), static_cast<int>(_root->childCount() + imageCollections.size() - 1));
+        {
+            for (auto& imageCollection : imageCollections) {
+                //QVariant setting;
 
-    _persistData = false;
-    {
-        for (int rowIndex = 0; rowIndex < rowCount(QModelIndex()); rowIndex++) {
-            const auto imageCollectionIndex = index(rowIndex, 0);
-            const auto name                 = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), Qt::EditRole).toString();
-            const auto noImages             = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::NoImages)), Qt::EditRole).toInt();
-            const auto settingsPrefix       = getSettingsPrefix(imageCollectionIndex);
+                //const auto directory = imageCollection->getDirectory(Qt::EditRole).toString();
 
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Name)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Name", name).toString());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DatasetName)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DatasetName", name).toString());
-            //setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::ToGrayscale)), _imageLoaderPlugin->getSetting(settingsPrefix + "/ToGrayscale", true).toBool(), Qt::CheckStateRole);
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::DimensionTag)), _imageLoaderPlugin->getSetting(settingsPrefix + "/DimensionTag", "").toString());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Type)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Type", ImageData::Type::Stack).toInt());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingType)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Type", 0).toInt());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingRatio)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Ratio", 0.5f).toFloat());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingFilter)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/Filter", 0).toInt());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingNumberOfLevels)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/NumberOfLevels", 0).toInt());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::SubsamplingLevelFactor)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Subsampling/LevelFactor", 0).toInt());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::AddCoordinatesPoints)), _imageLoaderPlugin->getSetting(settingsPrefix + "/AddCoordinatesPoints", 0).toBool());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorHorizontal)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Mirror/Horizontal", 0).toBool());
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::MirrorVertical)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Mirror/Vertical", 0).toBool());
+                //if (_settings.contains(directory))
+                //    setting = _settings[directory];
 
-            const auto conversion = _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", "").toString();
+                //const auto name = imageCollection->getName(Qt::EditRole).toString();
 
-            setData(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::Conversion)), _imageLoaderPlugin->getSetting(settingsPrefix + "/Conversion/SHA", 0).toString());
+                //imageCollection->setName(getValueByPath(setting, "/Name", name).toString());
+                //imageCollection->setDatasetName(getValueByPath(setting, "/DatasetName", name).toString());
+                //imageCollection->setDimensionTag(getValueByPath(setting, "/DimensionTag", "").toString());
+                //imageCollection->setType(static_cast<ImageData::Type>(getValueByPath(setting, "/Type", ImageData::Type::Stack).toInt()));
+                //imageCollection->getSubsampling().setType(static_cast<ImageCollection::SubSampling::Type>(getValueByPath(setting, "/Subsampling/Type", 0).toInt()));
+                //imageCollection->getSubsampling().setRatio(getValueByPath(setting, "/Subsampling/Ratio", 0.5f).toFloat());
+                //imageCollection->getSubsampling().setFilter(static_cast<ImageCollection::SubSampling::Filter>(getValueByPath(setting, "/Subsampling/Filter", 0).toInt()));
+                //imageCollection->getSubsampling().setNumberOfLevels(getValueByPath(setting, "/Subsampling/NumberOfLevels", 0).toInt());
+                //imageCollection->getSubsampling().setLevelFactor(getValueByPath(setting, "/Subsampling/LevelFactor", 0).toInt());
+                //imageCollection->setAddCoordinatesPoints(getValueByPath(setting, "/AddCoordinatesPoints", 0).toBool());
+                //imageCollection->setMirrorHorizontal(getValueByPath(setting, "/Mirror/Horizontal", 0).toBool());
+                //imageCollection->setMirrorVertical(getValueByPath(setting, "/Mirror/Vertical", 0).toBool());
 
-            for (int imageRow = 0; imageRow < noImages; imageRow++) {
-                const auto dimensionName    = _imageLoaderPlugin->getSetting(QString("%1/Images/%2/%3/DimensionName").arg(settingsPrefix, name, QString::number(imageRow)), "").toString();
-                const auto shouldLoad       = _imageLoaderPlugin->getSetting(QString("%1/Images/%2/%3/ShouldLoad").arg(settingsPrefix, name, QString::number(imageRow)), true).toBool();
-                
-                if (!dimensionName.isEmpty())
-                    setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::DimensionName)), dimensionName);
-
-                setData(index(imageRow, 0, imageCollectionIndex).siblingAtColumn(ult(ImageCollection::Image::Column::ShouldLoad)), shouldLoad);
+                _root->appendChild(imageCollection);
             }
         }
+        endInsertRows();
     }
-    _persistData = true;
+    endResetModel();
 }
 
 void ImageCollectionsModel::guessDimensionNames(const QModelIndex& imageCollectionIndex)
@@ -873,16 +896,6 @@ QString ImageCollectionsModel::getSettingsPrefix(const QModelIndex& index) const
     const auto fileNames            = data(imageCollectionIndex.siblingAtColumn(ult(ImageCollection::Column::FileNames)), Qt::EditRole).toStringList();
 
     return QString("Cache/" + QDir::fromNativeSeparators(directory) + "/" + fileNames.first());
-}
-
-bool ImageCollectionsModel::getPersistData() const
-{
-    return _persistData;
-}
-
-void ImageCollectionsModel::setPersistData(const bool& persistData)
-{
-    _persistData = persistData;
 }
 
 void ImageCollectionsModel::selectAll(const QModelIndex& parent)
@@ -935,4 +948,21 @@ void ImageCollectionsModel::selectPercentage(const QModelIndex& parent, const fl
 
         setData(index(row, shouldLoadColumn, parent), random < selectionProbability);
     }
+}
+
+void ImageCollectionsModel::requestSaveSettings()
+{
+    if (!_settingsTimer.isActive())
+        _settingsTimer.start();
+}
+
+void ImageCollectionsModel::setSettingByPath(QVariantMap root, const QString& path, const QVariant& value)
+{
+    root = setValueByPath(root, path, value).toMap();
+    requestSaveSettings();
+}
+
+void ImageCollectionsModel::saveSettings() const
+{
+    //_imageLoaderPlugin->setSetting("Cache", _settings);
 }

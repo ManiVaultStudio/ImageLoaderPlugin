@@ -23,6 +23,8 @@ class ImageLoaderPlugin : public LoaderPlugin
 public:
     ImageLoaderPlugin(const mv::plugin::PluginFactory* factory);
 
+    ~ImageLoaderPlugin() override;
+
     /** Initializes the plugin */
     void init() override {};
 

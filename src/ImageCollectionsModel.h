@@ -189,18 +189,6 @@ public: // Miscellaneous
      */
     QString getSettingsPrefix(const QModelIndex& index) const;
 
-    /**
-     * Returns whether an update to data is saved to settings
-     * @param persistData Whether to persist data updates
-     */
-    bool getPersistData() const;
-
-    /**
-     * Sets whether an update to data is saved to settings
-     * @param persistData Whether to persist data updates
-     */
-    void setPersistData(const bool& persistData);
-
 public: // Image selection
 
     /**
@@ -228,9 +216,33 @@ public: // Image selection
      */
     void selectPercentage(const QModelIndex& parent, const float& selectionProbability);
 
+public:
+
+    /** If possible save settings right away, otherwise defer it */
+    void requestSaveSettings();
+
+private:
+
+    /**
+     * Set child \p value of \root by \p path
+     * @param root Root element
+     * @param path Path to the value
+     * @param value Value to set
+     */
+    void setSettingByPath(QVariantMap root, const QString& path, const QVariant& value);
+
+    /** Save settings directly */
+    void saveSettings() const;
+
+public:
+
+    using QAbstractItemModel::beginResetModel;
+    using QAbstractItemModel::endResetModel;
+
 private:
     ImageLoaderPlugin*      _imageLoaderPlugin;     /** Image loader plugin instance */
     TreeItem*               _root;                  /** Root tree item */
     QItemSelectionModel     _selectionModel;        /** Selection model */
-    bool                    _persistData;           /** Whether updates to the model data are persisted */
+    QVariantMap             _settings;              /** Persistent settings for image collections */
+    QTimer                  _settingsTimer;         /** Timer for preventing unnecessary settings saves */
 };
