@@ -322,6 +322,16 @@ bool ImageCollectionsModel::setData(const QModelIndex& index, const QVariant& va
                         break;
                     }
 
+                    case ImageCollection::Column::AddCoordinatesPoints:
+                    {
+                        imageCollection->setAddCoordinatesPoints(value.toBool());
+
+                        if (_persistData)
+                            _imageLoaderPlugin->setSetting(settingsPrefix + "/AddCoordinatesPoints", value.toBool());
+
+                        break;
+                    }
+
                     default:
                         break;
                 }
