@@ -14,6 +14,7 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _subsamplingAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
     _mirrorAction(this, imageLoaderPlugin),
+	_addCoordinatesPointsAction(this, imageLoaderPlugin),
     _imagesAction(this, imageLoaderPlugin)
 {
     _filterAction.setClearable(true);
