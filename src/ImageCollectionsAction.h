@@ -6,6 +6,7 @@
 #include "SubsamplingAction.h"
 #include "AddCoordinatesPointsAction.h"
 #include "MirrorAction.h"
+#include "GroupDataAction.h"
 #include "ImagesAction.h"
 
 #include <actions/WidgetAction.h>
