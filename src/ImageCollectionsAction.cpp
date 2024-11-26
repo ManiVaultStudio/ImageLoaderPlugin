@@ -13,7 +13,6 @@ ImageCollectionsAction::ImageCollectionsAction(QWidget* parent, ImageLoaderPlugi
     _dataLayoutAction(this, imageLoaderPlugin),
     _subsamplingAction(this, imageLoaderPlugin),
     _dimensionTagAction(this, imageLoaderPlugin),
-    _addCoordinatesPointsAction(this, imageLoaderPlugin),
     _mirrorAction(this, imageLoaderPlugin),
     _imagesAction(this, imageLoaderPlugin)
 {
