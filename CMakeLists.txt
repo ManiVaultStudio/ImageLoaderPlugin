@@ -11,8 +11,6 @@ PROJECT(${PROJECT})
 # -----------------------------------------------------------------------------
 # CMake Options
 # -----------------------------------------------------------------------------
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -37,7 +35,6 @@ FetchContent_Declare(
     FreeImage
     GIT_REPOSITORY https://github.com/biovault/FreeImage
     GIT_TAG 2fcb6ca6d3d4dd36f7be82368275dcce918227fa    # master as of 19-11-2024, version 3.18.0 with cmake files
-    GIT_SHALLOW TRUE
 )
 
 FetchContent_MakeAvailable(FreeImage)
