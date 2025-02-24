@@ -10,7 +10,7 @@ from rules_support import PluginBranchInfo
 class ImageLoaderPluginConan(ConanFile):
     """Class to package ImageLoaderPlugin using conan
 
-    Packages both RELEASE and DEBUG.
+    Packages both RELEASE and RELWITHDEBINFO.
     Uses rules_support (github.com/ManiVaultStudio/rulessupport) to derive
     versioninfo based on the branch naming convention
     as described in https://github.com/ManiVaultStudio/core/wiki/Branch-naming-rules
