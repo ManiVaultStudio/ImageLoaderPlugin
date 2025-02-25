@@ -13,6 +13,8 @@
 #include <QVector>
 #include <QImage>
 
+#include <vector>
+
 namespace FI {
 #pragma warning(disable:4828)   // The file contains a character starting at offsetthat is illegal in the current source character set
 #include <FreeImage.h>
@@ -204,6 +206,9 @@ public: // Nested image class
         QString         _dimensionName;                 /** Dimension name (in case of image stack) */
         bool            _shouldLoad;                    /** Whether the image should be loaded */
         std::int32_t    _pageIndex;                     /** Page index (in case of multi-page TIFF) */
+
+    private:
+        static std::vector<QString> _omeDimNames;    /** Helper object to store all dimension names (in case of multi-page TIFF) */
     };
 
     /**
