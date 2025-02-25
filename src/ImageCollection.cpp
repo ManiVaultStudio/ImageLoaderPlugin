@@ -649,7 +649,7 @@ QString ImageCollection::Image::guessDimensionName()
                     }
                 }
                 
-                if(_pageIndex <= _omeDimNames.size())
+                if(!_omeDimNames.empty() && _pageIndex <= _omeDimNames.size())
                     dimensionName = _omeDimNames[_pageIndex];
 
             }
