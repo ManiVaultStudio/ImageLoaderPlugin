@@ -7,6 +7,7 @@
 #include <QDebug>
 
 using namespace mv;
+using namespace mv::util;
 
 ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
@@ -17,7 +18,7 @@ ImageLoaderDialog::ImageLoaderDialog(ImageLoaderPlugin& imageLoaderPlugin) :
     _cancelAction(this, "Cancel")
 {
     setWindowTitle("Load high-dimensional image data");
-    setWindowIcon(mv::Application::getIconFont("FontAwesome").getIcon("images"));
+    setWindowIcon(StyledIcon("images"));
 
     _closeAfterLoadingAction.setToolTip("Close the dialog when loading is complete");
     _closeAfterLoadingAction.setSettingsPrefix(&imageLoaderPlugin, "CloseAfterLoaded");

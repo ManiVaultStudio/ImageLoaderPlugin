@@ -3,6 +3,8 @@
 
 #include <QProgressDialog>
 
+using namespace mv::util;
+
 const QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger> DimensionTagAction::triggers = QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger>({
     { DimensionTagAction::PageName, TriggersAction::Trigger("PageName", "PageName TIFF tag") },
     { DimensionTagAction::ImageDescription, TriggersAction::Trigger("ImageDescription", "ImageDescription TIFF tag") }
@@ -65,7 +67,7 @@ void DimensionTagAction::updateRows()
         QProgressDialog progressDialog("Establishing dimension names", "", 0, _imageLoaderPlugin.getSelectedRows().count(), nullptr);
 
         progressDialog.setWindowTitle(QString("Establishing dimension names for %1 collection(s)").arg(QString::number(_imageLoaderPlugin.getSelectedRows().count())));
-        progressDialog.setWindowIcon(mv::Application::getIconFont("FontAwesome").getIcon("images"));
+        progressDialog.setWindowIcon(StyledIcon("images"));
         progressDialog.setWindowModality(Qt::WindowModal);
         progressDialog.setMinimumDuration(1000);
         progressDialog.setFixedWidth(600);
