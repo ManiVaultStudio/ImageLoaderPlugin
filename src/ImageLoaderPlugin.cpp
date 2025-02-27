@@ -53,6 +53,11 @@ QModelIndexList ImageLoaderPlugin::getSelectedRows() const
     return selectedImageCollectionIndices;
 }
 
+ImageLoaderPluginFactory::ImageLoaderPluginFactory()
+{
+    setIconByName("images");
+}
+
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
     return new ImageLoaderPlugin(this);
