@@ -59,10 +59,10 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 
 public:
     /** Default constructor */
-    ImageLoaderPluginFactory(void) {}
+    ImageLoaderPluginFactory() {}
 
     /** Destructor */
-    ~ImageLoaderPluginFactory(void) override {}
+    ~ImageLoaderPluginFactory() override {}
 
     /**
      * Produces the plugin
