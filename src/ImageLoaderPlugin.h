@@ -59,7 +59,7 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 
 public:
     /** Default constructor */
-    ImageLoaderPluginFactory() {}
+    ImageLoaderPluginFactory();
 
     /** Destructor */
     ~ImageLoaderPluginFactory() override {}
