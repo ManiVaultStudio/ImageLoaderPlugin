@@ -34,10 +34,13 @@ find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
 FetchContent_Declare(
     FreeImage
     GIT_REPOSITORY https://github.com/biovault/FreeImage
-    GIT_TAG 2fcb6ca6d3d4dd36f7be82368275dcce918227fa    # master as of 19-11-2024, version 3.18.0 with cmake files
+    GIT_TAG db0f4151dd45a7bf98b9dfe9bd81190b523076dd    # version 3.19.0 with cmake files
 )
 
 FetchContent_MakeAvailable(FreeImage)
+
+get_target_property(FreeImageVersion FreeImageLib VERSION)
+message(STATUS "FreeImage Version: ${FreeImageVersion}")
 
 set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
     PROPERTIES 
