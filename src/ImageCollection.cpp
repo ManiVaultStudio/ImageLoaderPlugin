@@ -824,7 +824,7 @@ ImageCollection::ImageCollection(TreeItem* parent, const QString& directory, con
 
     _task.setEnabled(false);
     _task.setMayKill(false);
-    _task.setIcon(Application::getIconFont("FontAwesome").getIcon("images"));
+    _task.setIcon(StyledIcon("images"));
 }
 
 ImageCollection::~ImageCollection()

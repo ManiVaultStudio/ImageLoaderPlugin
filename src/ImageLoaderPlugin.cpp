@@ -53,9 +53,9 @@ QModelIndexList ImageLoaderPlugin::getSelectedRows() const
     return selectedImageCollectionIndices;
 }
 
-QIcon ImageLoaderPluginFactory::getIcon(const QColor& color /*= Qt::black*/) const
+ImageLoaderPluginFactory::ImageLoaderPluginFactory()
 {
-    return mv::Application::getIconFont("FontAwesome").getIcon("images", color);
+    setIconByName("images");
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()

@@ -19,20 +19,16 @@ namespace fi {
 }
 
 using namespace mv;
+using namespace mv::util;
 
 ImageCollectionScanner::ImageCollectionScanner(ImageLoaderPlugin& imageLoaderPlugin) :
     _imageLoaderPlugin(imageLoaderPlugin),
-    _directory(),
     _separateByDirectory(false),
-    _previousDirectories(),
-    _supportedImageTypes(),
-    _filenameFilter(),
     _initialized(false),
-    _imageCollections(),
     _indexImageCollectionsTask(this, "Indexing image collections")
 {
     _indexImageCollectionsTask.setDescription("Scanning disk for image collections");
-    _indexImageCollectionsTask.setIcon(Application::getIconFont("FontAwesome").getIcon("barcode"));
+    _indexImageCollectionsTask.setIcon(StyledIcon("barcode"));
     _indexImageCollectionsTask.setMayKill(true);
 }
 	
