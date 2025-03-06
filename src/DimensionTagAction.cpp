@@ -7,12 +7,14 @@ using namespace mv::util;
 
 const QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger> DimensionTagAction::triggers = QMap<DimensionTagAction::DefaultTag, TriggersAction::Trigger>({
     { DimensionTagAction::PageName, TriggersAction::Trigger("PageName", "PageName TIFF tag") },
-    { DimensionTagAction::ImageDescription, TriggersAction::Trigger("ImageDescription", "ImageDescription TIFF tag") }
+    { DimensionTagAction::ImageDescription, TriggersAction::Trigger("ImageDescription", "ImageDescription TIFF tag") },
+    { DimensionTagAction::ImageDescriptionOME, TriggersAction::Trigger("OME TIFF", "ImageDescription for OME TIFF tag") }
     });
 
 const QMap<DimensionTagAction::DefaultTag, QString> DimensionTagAction::defaultTags = QMap<DimensionTagAction::DefaultTag, QString>({
     { DimensionTagAction::PageName, "PageName"},
-    { DimensionTagAction::ImageDescription, "ImageDescription"}
+    { DimensionTagAction::ImageDescription, "ImageDescription"},
+    { DimensionTagAction::ImageDescriptionOME, "OME TIFF"}
 });
 
 DimensionTagAction::DimensionTagAction(QObject* parent, ImageLoaderPlugin& imageLoaderPlugin) :

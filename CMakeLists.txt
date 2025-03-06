@@ -69,6 +69,7 @@ set(PLUGIN_SOURCES
     src/ImageCollectionsModel.h
     src/ImageCollectionsModel.cpp
     src/Common.h
+    src/OmeHelper.h
 )
 
 set(PLUGIN_MOC_HEADERS

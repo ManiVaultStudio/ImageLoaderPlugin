@@ -17,7 +17,8 @@ public:
 
     enum DefaultTag {
         PageName,
-        ImageDescription
+        ImageDescription,
+        ImageDescriptionOME
     };
 
     static const QMap<DefaultTag, TriggersAction::Trigger> triggers;

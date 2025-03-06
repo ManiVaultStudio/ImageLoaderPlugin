@@ -1,7 +1,9 @@
 #include "ImageCollection.h"
+
 #include "ImageLoaderPlugin.h"
+#include "OmeHelper.h"
 #include "SanitizeDataDialog.h"
-#include "Common.h"
+
 #include "Dataset.h"
 #include "util/Miscellaneous.h"
 
@@ -14,6 +16,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QCoreApplication>
+#include <QPointer>
 #include <QPushButton>
 #include <QtGlobal>
 #include <QDir>
@@ -21,6 +24,7 @@
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <string>
 
 namespace fi {
 #include <FreeImage.h>
@@ -43,6 +47,8 @@ const QMap<ImageCollection::SubSampling::Filter, QString> ImageCollection::SubSa
     { ImageCollection::SubSampling::Filter::CatmullRom, "Catmull-Rom"},
     { ImageCollection::SubSampling::Filter::Lanczos, "Lanczos"}
 });
+
+std::vector<QString> ImageCollection::Image::_omeDimNames = {};
 
 ImageCollection::Image::Image(TreeItem* parent, const QString& filePath, const std::int32_t& pageIndex /*= -1*/) :
     TreeItem(parent),
@@ -615,7 +621,39 @@ QString ImageCollection::Image::guessDimensionName()
 
             QString dimensionName;
 
-            if (!dimensionTag.isEmpty()) {
+            if (dimensionTag.isEmpty())
+                qWarning() << "ImageLoader: dimensionTag is empty";
+            else if (dimensionTag == "OME TIFF") {
+
+                // OME TIFFS come with one XML stored in the ImageDescription tag of the first page
+                // https://docs.openmicroscopy.org/ome-model/5.5.7/ome-tiff/specification.html
+                if (_pageIndex == 0) {
+                    _omeDimNames.clear();
+
+                    FI::FITAG* tag = nullptr;
+
+                    FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, "ImageDescription", &tag);
+
+                    if (tag != nullptr) {
+                        const char* cstr = reinterpret_cast<const char*>(FI::FreeImage_GetTagValue(tag));
+                        std::string OME_XML(cstr);
+
+                        const bool isValidOME = validateXMLandOME(OME_XML);
+
+                        if (isValidOME) {
+                            std::vector<std::string> channelEntries = extractChannels(OME_XML);
+
+                            for (const auto& channel : channelEntries)
+                                _omeDimNames.push_back(QString::fromStdString(extractChannelName(channel)));
+                        }
+                    }
+                }
+                
+                if(!_omeDimNames.empty() && _pageIndex <= _omeDimNames.size())
+                    dimensionName = _omeDimNames[_pageIndex];
+
+            }
+            else {
                 FI::FITAG* tag = nullptr;
 
                 FI::FreeImage_GetMetadata(FI::FIMD_EXIF_MAIN, pageBitmap, dimensionTag.toLatin1(), &tag);
