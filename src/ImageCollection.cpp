@@ -1613,10 +1613,10 @@ QVariant ImageCollection::getMemoryConsumption(const int& role) const
 {
     const auto noPoints = this->getNoPoints(Qt::EditRole).toInt();
     const auto noDimensions = this->getNoDimensions(Qt::EditRole).toInt();
-    const auto noElements = noPoints * noDimensions;
-    const auto noBytes = noElements * sizeof(float);
+    const size_t noElements = static_cast<size_t>(noPoints) * noDimensions;
+    const size_t noBytes = noElements * sizeof(float);
 
-    const auto memoryString = getNoBytesHumanReadable(static_cast<std::int32_t>(noBytes));
+    const auto memoryString = getNoBytesHumanReadable(noBytes);
 
     switch (role)
     {
