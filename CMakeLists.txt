@@ -50,6 +50,13 @@ set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG L
 # Do not build static library
 set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
 
+# Remove /permissive- for OpenEXR and FreeImage
+if(MSVC)
+    target_compile_options(OpenEXR PRIVATE /permissive)
+    target_compile_options(FreeImage PRIVATE /permissive)
+    target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
+endif(MSVC)
+
 # -----------------------------------------------------------------------------
 # Source files
 # -----------------------------------------------------------------------------
