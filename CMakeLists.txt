@@ -34,7 +34,7 @@ find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
 FetchContent_Declare(
     FreeImage
     GIT_REPOSITORY https://github.com/biovault/FreeImage
-    GIT_TAG db0f4151dd45a7bf98b9dfe9bd81190b523076dd    # version 3.19.0 with cmake files
+    GIT_TAG 4532197864740ae6dc8331f7d956c0b4dbd7029c        # version 3.19.0.1 
 )
 
 FetchContent_MakeAvailable(FreeImage)
