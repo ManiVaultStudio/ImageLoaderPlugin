@@ -6,7 +6,7 @@ option(MV_UNITY_BUILD "Combine target source files into batches for faster compi
 # ImageLoader Plugin
 # -----------------------------------------------------------------------------
 set(PROJECT "ImageLoaderPlugin")
-PROJECT(${PROJECT})
+PROJECT(${PROJECT} C CXX)
 
 # -----------------------------------------------------------------------------
 # CMake Options
