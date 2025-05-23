@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
+option(MV_IML_USE_SYSTEM_FREEIMAGE "Use local freeimage installation instead of building it" OFF)
 
 # -----------------------------------------------------------------------------
 # ImageLoader Plugin
@@ -23,39 +24,44 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif(MSVC)
 
-include(FetchContent)
-
 # -----------------------------------------------------------------------------
 # Dependencies
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
 
-FetchContent_Declare(
-    FreeImage
-    GIT_REPOSITORY https://github.com/biovault/FreeImage
-    GIT_TAG 4532197864740ae6dc8331f7d956c0b4dbd7029c        # version 3.19.0.1 
-)
+if(MV_IML_USE_SYSTEM_FREEIMAGE)
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    find_package(FreeImage REQUIRED)
+else()
+    include(FetchContent)
+    
+    FetchContent_Declare(
+        FreeImage
+        GIT_REPOSITORY https://github.com/biovault/FreeImage
+        GIT_TAG 4532197864740ae6dc8331f7d956c0b4dbd7029c        # version 3.19.0.1, freeimage + cmake files + some updated modules
+    )
 
-FetchContent_MakeAvailable(FreeImage)
+    FetchContent_MakeAvailable(FreeImage)
 
-get_target_property(FreeImageVersion FreeImageLib VERSION)
-message(STATUS "FreeImage Version: ${FreeImageVersion}")
+    get_target_property(FreeImageVersion FreeImageLib VERSION)
+    message(STATUS "FreeImage Version: ${FreeImageVersion}")
 
-set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
-    PROPERTIES 
-    FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
-)
+    set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
+        PROPERTIES 
+        FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
+    )
 
-# Do not build static library
-set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
+    # Do not build static library
+    set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
 
-# Remove /permissive- for OpenEXR and FreeImage
-if(MSVC)
-    target_compile_options(OpenEXR PRIVATE /permissive)
-    target_compile_options(FreeImage PRIVATE /permissive)
-    target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
-endif(MSVC)
+    # Remove /permissive- for OpenEXR and FreeImage
+    if(MSVC)
+        target_compile_options(OpenEXR PRIVATE /permissive)
+        target_compile_options(FreeImage PRIVATE /permissive)
+        target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
+    endif(MSVC)
+endif()
 
 # -----------------------------------------------------------------------------
 # Source files
