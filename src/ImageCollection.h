@@ -541,7 +541,7 @@ public: // Getters/setters
      */
     void setMirrorVertical(bool mirrorVertical);
 
-    mv::ForegroundTask& getTask();
+    mv::Task& getTask();
 
 public:
 
@@ -593,22 +593,22 @@ private:
     bool containsNans(std::vector<float>& data);
 
 protected:
-    QString                 _directory;             /** Root directory of the images */
-    QString                 _imageFileType;         /** Image file type */
-    QImage::Format          _imageFormat;           /** Image format */
-    QSize                   _sourceSize;            /** Size of the source image */
-    QSize                   _targetSize;            /** Size of the target image */
-    QString                 _name;                  /** The name of the image collection */
-    QString                 _datasetName;           /** The name of the dataset */
-    QString                 _dimensionTag;          /** The dimension (TIFF) tag */
-    bool                    _toGrayscale;           /** Whether to convert the images in the collection to grayscale */
-    ImageData::Type         _type;                  /** How to load the collection (as image sequence or image stack) */
-    SubSampling             _subsampling;           /** Subsampling parameters */
-    QString                 _conversion;            /** Conversion SHA */
-    bool                    _addCoordinatesPoints;  /** Add coordinates points */
-    bool                    _mirrorHorizontal;      /** Mirror horizontally */
-    bool                    _mirrorVertical;        /** Mirror vertically */
-    mv::ForegroundTask      _task;                  /** Task for reporting load progress */
+    QString             _directory;                 /** Root directory of the images */
+    QString             _imageFileType;             /** Image file type */
+    QImage::Format      _imageFormat;               /** Image format */
+    QSize               _sourceSize;                /** Size of the source image */
+    QSize               _targetSize;                /** Size of the target image */
+    QString             _name;                      /** The name of the image collection */
+    QString             _datasetName;               /** The name of the dataset */
+    QString             _dimensionTag;              /** The dimension (TIFF) tag */
+    bool                _toGrayscale;               /** Whether to convert the images in the collection to grayscale */
+    ImageData::Type     _type;                      /** How to load the collection (as image sequence or image stack) */
+    SubSampling         _subsampling;               /** Subsampling parameters */
+    QString             _conversion;                /** Conversion SHA */
+    bool                _addCoordinatesPoints;      /** Add coordinates points */
+    bool                _mirrorHorizontal;          /** Mirror horizontally */
+    bool                _mirrorVertical;            /** Mirror vertically */
+    mv::Task            _task;                      /** Task for reporting load progress */
 
     friend class SubSampling;
 };

@@ -1744,7 +1744,7 @@ void ImageCollection::setMirrorVertical(bool mirrorVertical)
     _mirrorVertical = mirrorVertical;
 }
 
-ForegroundTask& ImageCollection::getTask()
+Task& ImageCollection::getTask()
 {
     return _task;
 }
