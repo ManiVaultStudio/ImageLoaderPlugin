@@ -183,6 +183,11 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
 target_link_libraries(${PROJECT} PRIVATE FreeImage)
 
+set_target_properties(${PROJECT} PROPERTIES
+  INSTALL_RPATH "@executable_path/../Frameworks"
+  INSTALL_RPATH_USE_LINK_PATH TRUE
+)
+
 # -----------------------------------------------------------------------------
 # Target installation
 # -----------------------------------------------------------------------------
