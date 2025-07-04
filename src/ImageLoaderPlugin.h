@@ -55,7 +55,8 @@ class ImageLoaderPluginFactory : public LoaderPluginFactory
 {
     Q_INTERFACES(mv::plugin::LoaderPluginFactory mv::plugin::PluginFactory)
         Q_OBJECT
-        Q_PLUGIN_METADATA(IID   "nl.BioVault.ImageLoaderPlugin" FILE  "ImageLoaderPlugin.json")
+        Q_PLUGIN_METADATA(IID   "studio.manivault.ImageLoaderPlugin" 
+                          FILE  "PluginInfo.json")
 
 public:
     /** Default constructor */

@@ -8,7 +8,7 @@
 using namespace mv;
 using namespace mv::plugin;
 
-Q_PLUGIN_METADATA(IID "nl.BioVault.ImageLoaderPlugin")
+Q_PLUGIN_METADATA(IID "studio.manivault.ImageLoaderPlugin")
 
 ImageLoaderPlugin::ImageLoaderPlugin(const PluginFactory* factory) :
     LoaderPlugin(factory),

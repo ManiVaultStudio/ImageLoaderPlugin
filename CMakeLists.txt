@@ -14,7 +14,9 @@ PROJECT(${PROJECT} C CXX)
 # -----------------------------------------------------------------------------
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -125,11 +127,12 @@ set(ACTION_SOURCES
     src/MirrorAction.cpp
 )
 
-set(AUX src/ImageLoaderPlugin.json)
 
 file(GLOB UIS src/*.ui)
 
-set(AUX src/ImageLoaderPlugin.json)
+set(AUX 
+    PluginInfo.json
+)
 
 set(SOURCES 
     ${PLUGIN_SOURCES}
@@ -200,10 +203,7 @@ add_custom_command(TARGET ${PROJECT} POST_BUILD
     --prefix ${ManiVault_INSTALL_DIR}/$<CONFIGURATION>
 )
 
-set_target_properties(${PROJECT}
-    PROPERTIES
-    FOLDER LoaderPlugins
-)
+mv_handle_plugin_config(${PROJECT})
 
 # -----------------------------------------------------------------------------
 # Miscellaneous
