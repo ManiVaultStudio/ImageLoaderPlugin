@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Common.h"
 #include "ImageCollectionScanner.h"
 #include "ImageCollectionsModel.h"
 #include "ConversionAction.h"
@@ -8,8 +7,15 @@
 #include <LoaderPlugin.h>
 #include <PluginFactory.h>
 
+#include <QPointer>
+#include <QUrl>
+
 using mv::plugin::LoaderPluginFactory;
 using mv::plugin::LoaderPlugin;
+
+namespace mv::util {
+    class MarkdownDialog;
+}
 
 /**
  * Image loader plugin class
@@ -65,9 +71,18 @@ public:
     /** Destructor */
     ~ImageLoaderPluginFactory() override {}
 
+    QUrl getReadmeMarkdownUrl() const override;
+
+    bool hasHelp() const override { return true; }
+
+    QUrl getRepositoryUrl() const override;
+
     /**
      * Produces the plugin
      * @return Pointer to the produced plugin
      */
     LoaderPlugin* produce() override;
+
+private:
+    QPointer<mv::util::MarkdownDialog>   _helpMarkdownDialog = {};
 };

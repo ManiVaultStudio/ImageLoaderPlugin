@@ -3,6 +3,8 @@
 
 #include <PointData/PointData.h>
 
+#include <widgets/MarkdownDialog.h>
+
 #include <QDebug>
 
 using namespace mv;
@@ -56,9 +58,31 @@ QModelIndexList ImageLoaderPlugin::getSelectedRows() const
 ImageLoaderPluginFactory::ImageLoaderPluginFactory()
 {
     setIconByName("images");
+
+    connect(&getPluginMetadata().getTriggerHelpAction(), &TriggerAction::triggered, this, [this]() -> void {
+        if (!getReadmeMarkdownUrl().isValid() || _helpMarkdownDialog.get())
+            return;
+
+        _helpMarkdownDialog = new util::MarkdownDialog(getReadmeMarkdownUrl());
+
+        _helpMarkdownDialog->setWindowTitle(QString("%1").arg(getKind()));
+        _helpMarkdownDialog->setAttribute(Qt::WA_DeleteOnClose);
+        _helpMarkdownDialog->setWindowModality(Qt::NonModal);
+        _helpMarkdownDialog->show();
+        });
 }
 
 LoaderPlugin* ImageLoaderPluginFactory::produce()
 {
     return new ImageLoaderPlugin(this);
+}
+
+QUrl ImageLoaderPluginFactory::getReadmeMarkdownUrl() const
+{
+    return QUrl("https://raw.githubusercontent.com/ManiVaultStudio/ImageLoaderPlugin/master/README.md");
+}
+
+QUrl ImageLoaderPluginFactory::getRepositoryUrl() const
+{
+    return QUrl("https://github.com/ManiVaultStudio/ImageLoaderPlugin");
 }
