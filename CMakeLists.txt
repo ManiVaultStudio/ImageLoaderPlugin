@@ -39,7 +39,7 @@ else()
     FetchContent_Declare(
         FreeImage
         GIT_REPOSITORY https://github.com/biovault/FreeImage
-        GIT_TAG 4532197864740ae6dc8331f7d956c0b4dbd7029c        # version 3.19.0.1, freeimage + cmake files + some updated modules
+        GIT_TAG v3.19.0 # version 3.19.0.1, freeimage + cmake files + some updated modules
     )
 
     FetchContent_MakeAvailable(FreeImage)
