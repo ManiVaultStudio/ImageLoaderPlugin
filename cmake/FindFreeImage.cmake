@@ -36,18 +36,18 @@ else()
         ${FREEIMAGE_CHECK_LIBRARY_DIRS}
     )
 
-    if(FREEIMAGE_INCLUDE_DIRS AND FREEIMAGE_LIBRARIES)
+    if(FreeImage_INCLUDE_DIRS AND FreeImage_LIBRARIES)
         set(FREEIMAGE_FOUND TRUE)
 
-        add_library(FreeImage INTERFACE IMPORTED)
-        target_include_directories(
-            FreeImage INTERFACE ${FREEIMAGE_INCLUDE_DIRS})
-        target_link_libraries(
-            FreeImage INTERFACE ${FREEIMAGE_LIBRARIES})
+        add_library(FreeImage SHARED IMPORTED)
+        set_target_properties(FreeImage PROPERTIES
+            IMPORTED_LOCATION "${FreeImage_LIBRARIES}"
+            INTERFACE_INCLUDE_DIRECTORIES "${FreeImage_INCLUDE_DIRS}"
+        )
 
         message(STATUS "Found FreeImage")
-        message(STATUS "  Includes : ${FREEIMAGE_INCLUDE_DIRS}")
-        message(STATUS "  Libraries : ${FREEIMAGE_LIBRARIES}")
+        message(STATUS "  Includes : ${FreeImage_INCLUDE_DIRS}")
+        message(STATUS "  Libraries : ${FreeImage_LIBRARIES}")
     else()
          message(FATAL_ERROR "Could not find FreeImage")
     endif()
