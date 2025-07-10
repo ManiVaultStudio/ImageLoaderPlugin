@@ -26,14 +26,14 @@ else()
         NAMES 
         FreeImage.h
         PATHS 
-        ${FREEIMAGE_CHECK_INCLUDE_DIRS})
+        ${FREEIMAGE_CHECK_INCLUDE_DIRS}
     )
 
     find_library(FreeImage_LIBRARIES
         NAMES 
         freeimage
         PATHS 
-        ${FREEIMAGE_CHECK_LIBRARY_DIRS})
+        ${FREEIMAGE_CHECK_LIBRARY_DIRS}
     )
 
     if(FREEIMAGE_INCLUDE_DIRS AND FREEIMAGE_LIBRARIES)
