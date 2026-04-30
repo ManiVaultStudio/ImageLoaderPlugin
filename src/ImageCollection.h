@@ -64,7 +64,7 @@ public: // Enumerations
         MirrorVertical,                 /** Whether to mirror the image and coordinates vertically */
 
         Start = Name,                   /** Column start */
-        End = Conversion                /** Column End */
+        End = MirrorVertical            /** Column End */
     };
 
 public: // Nested image class
