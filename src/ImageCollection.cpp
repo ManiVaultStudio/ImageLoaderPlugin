@@ -1935,14 +1935,14 @@ Dataset<DatasetImpl> ImageCollection::load(ImageLoaderPlugin* imageLoaderPlugin,
         const auto mirrorVertical   = getMirrorVertical(Qt::EditRole).toBool();
 
         if (canMirror && mirrorHorizontal) {
-            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<mv::plugin::TransformationPlugin>("Image transformation", { images });
 
             imageTransformationPlugin->getTypeAction().setCurrentText("Mirror horizontal");
             imageTransformationPlugin->transform();
         }
 
         if (canMirror && mirrorVertical) {
-            auto imageTransformationPlugin = mv::plugins().requestPlugin<TransformationPlugin>("Image transformation", { images });
+            auto imageTransformationPlugin = mv::plugins().requestPlugin<mv::plugin::TransformationPlugin>("Image transformation", { images });
 
             imageTransformationPlugin->getTypeAction().setCurrentText("Mirror vertical");
             imageTransformationPlugin->transform();
