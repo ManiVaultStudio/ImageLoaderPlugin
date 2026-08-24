@@ -16,7 +16,7 @@ namespace mv::util {
 /**
  * Image loader plugin class
  *
- * This image loader plugin class provides functionality to load high-dimensional image data into HDPS
+ * This image loader plugin class provides functionality to load high-dimensional image data into ManiVault
  *
  * @author Thomas Kroes
  */
