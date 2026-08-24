@@ -6,7 +6,7 @@ DatasetNameAction::DatasetNameAction(QObject* parent, ImageLoaderPlugin& imageLo
     _imageLoaderPlugin(imageLoaderPlugin)
 {
     setEnabled(false);
-    setToolTip("Determines the dataset name in the HDPS data model");
+    setToolTip("Determines the dataset name in the ManiVault data model");
     setPlaceHolderString("Enter dataset name...");
 
     connect(this, &StringAction::stringChanged, this, &DatasetNameAction::updateRows);

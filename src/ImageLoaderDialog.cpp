@@ -80,11 +80,11 @@ void ImageLoaderDialog::updateActions()
 
     if (selectedRows.isEmpty()) {
         _loadAction.setText("Load");
-        _loadAction.setToolTip("Load image datasets into HDPS");
+        _loadAction.setToolTip("Load image datasets into ManiVault");
     }
     else {
         _loadAction.setText(QString("Load %1").arg(QString::number(selectedRows.count())));
-        _loadAction.setToolTip(QString("Load %1 image datasets into HDPS").arg(QString::number(selectedRows.count())));
+        _loadAction.setToolTip(QString("Load %1 image datasets into ManiVault").arg(QString::number(selectedRows.count())));
     }
     
     _closeAfterLoadingAction.setEnabled(hasSelection);
