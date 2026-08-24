@@ -76,7 +76,8 @@ public: // Filter model
 
             _filter = filter;
 
-            invalidateFilter();
+            beginFilterChange();
+            endFilterChange(QSortFilterProxyModel::Direction::Rows);
         }
 
     private:
