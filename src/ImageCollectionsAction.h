@@ -11,7 +11,6 @@
 #include <actions/WidgetAction.h>
 #include <actions/StringAction.h>
 #include <actions/OptionAction.h>
-#include <actions/DecimalAction.h>
 
 #include <QTreeView>
 
