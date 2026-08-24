@@ -12,12 +12,7 @@ PROJECT(${PROJECT} C CXX)
 # -----------------------------------------------------------------------------
 # CMake Options
 # -----------------------------------------------------------------------------
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32 /EHsc /MP /permissive- /Zc:__cplusplus")
@@ -152,12 +147,11 @@ target_include_directories(${PROJECT} PRIVATE "${ManiVault_INCLUDE_DIR}")
 # Target properties
 # -----------------------------------------------------------------------------
 target_compile_features(${PROJECT} PRIVATE cxx_std_20)
-
-target_compile_definitions(${PROJECT} PRIVATE DISABLE_PERF_MEASUREMENT)
  
-if(MV_UNITY_BUILD)
-    set_target_properties(${PROJECT} PROPERTIES UNITY_BUILD ON)
-endif()
+set_target_properties(${PROJECT} PROPERTIES 
+    AUTOMOC ON
+    UNITY_BUILD ${MV_UNITY_BUILD}
+)
 
 if(APPLE)
     set_target_properties(${PROJECT} PROPERTIES
