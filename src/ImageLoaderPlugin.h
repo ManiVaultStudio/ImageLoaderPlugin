@@ -5,13 +5,9 @@
 #include "ConversionAction.h"
 
 #include <LoaderPlugin.h>
-#include <PluginFactory.h>
 
 #include <QPointer>
 #include <QUrl>
-
-using mv::plugin::LoaderPluginFactory;
-using mv::plugin::LoaderPlugin;
 
 namespace mv::util {
     class MarkdownDialog;
@@ -20,11 +16,11 @@ namespace mv::util {
 /**
  * Image loader plugin class
  *
- * This image loader plugin class provides functionality to load high-dimensional image data into HDPS
+ * This image loader plugin class provides functionality to load high-dimensional image data into ManiVault
  *
  * @author Thomas Kroes
  */
-class ImageLoaderPlugin : public LoaderPlugin
+class ImageLoaderPlugin : public mv::plugin::LoaderPlugin
 {
 public:
     ImageLoaderPlugin(const mv::plugin::PluginFactory* factory);
@@ -57,7 +53,7 @@ private:
  * Image loader plugin factory class
  * A factory for creating image loader plugin instances
  */
-class ImageLoaderPluginFactory : public LoaderPluginFactory
+class ImageLoaderPluginFactory : public mv::plugin::LoaderPluginFactory
 {
     Q_INTERFACES(mv::plugin::LoaderPluginFactory mv::plugin::PluginFactory)
         Q_OBJECT
@@ -81,7 +77,7 @@ public:
      * Produces the plugin
      * @return Pointer to the produced plugin
      */
-    LoaderPlugin* produce() override;
+    mv::plugin::LoaderPlugin* produce() override;
 
 private:
     QPointer<mv::util::MarkdownDialog>   _helpMarkdownDialog = {};

@@ -15,5 +15,6 @@ constexpr auto ult(E e) noexcept
 
 inline bool isColumnInModelIndexRange(const QModelIndex& topLeft, const QModelIndex& bottomRight, const std::uint32_t& column)
 {
-    return topLeft.column() <= column || bottomRight.column() >= column;
+    return static_cast<std::uint32_t>(topLeft.column()) <= column 
+    || static_cast<std::uint32_t>(bottomRight.column()) >= column;
 }

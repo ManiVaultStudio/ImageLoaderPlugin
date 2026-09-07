@@ -2,7 +2,6 @@
 
 #include "ScanAction.h"
 #include "ImageCollectionsAction.h"
-#include "ImagesAction.h"
 
 #include <actions/ToggleAction.h>
 #include <actions/TriggerAction.h>
