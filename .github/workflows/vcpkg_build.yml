@@ -1,4 +1,4 @@
-name: CI Build & Dynamic Dependency Cache
+name: CI-Build-Dynamic-Dependency-Cache
 
 # This is a test of building using vcpkg to handle dependencies
 
