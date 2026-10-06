@@ -36,33 +36,15 @@ if(MV_IML_USE_SYSTEM_FREEIMAGE)
     set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
     find_package(FreeImage REQUIRED)
 else()
-    include(FetchContent)
-    
-    FetchContent_Declare(
-        FreeImage
-        GIT_REPOSITORY https://github.com/biovault/FreeImage
-        GIT_TAG v3.19.0.2 # freeimage + cmake files + some updated modules + some build fixes
-    )
 
-    FetchContent_MakeAvailable(FreeImage)
-
+    find_package(FreeImage REQUIRED)
     get_target_property(FreeImageVersion FreeImageLib VERSION)
     message(STATUS "FreeImage Version: ${FreeImageVersion}")
-
     set_target_properties(FreeImage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
         PROPERTIES 
         FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
     )
 
-    # Do not build static library
-    set_target_properties(FreeImageLib PROPERTIES EXCLUDE_FROM_ALL ON)
-
-    # Remove /permissive- for OpenEXR and FreeImage
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-        target_compile_options(OpenEXR PRIVATE /permissive)
-        target_compile_options(FreeImage PRIVATE /permissive)
-        target_compile_options(FreeImageLib PRIVATE /permissive) # we don't need the static library, but just in case someone does build it
-    endif()
 endif()
 
 # -----------------------------------------------------------------------------

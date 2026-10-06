@@ -1,0 +1,17 @@
+{
+  "default-registry": {
+    "kind": "git",
+    "repository": "https://github.com/microsoft/vcpkg",
+    "baseline": "56bb2411609227288b70117ead2c47585ba07713"
+  },
+  "registries": [
+    {
+      "kind": "git",
+      "repository": "https://github.com/ManiVaultStudio/vcpkg-registry",
+      "baseline": "39f1c3af6b19aef6a50dbb49fd3760b0e252360c",
+      "packages": [
+        "qt6", "freeimage"
+      ]
+    }
+  ]
+}
