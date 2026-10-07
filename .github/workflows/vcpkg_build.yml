@@ -61,6 +61,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ninja-build cmake
 
+      - name: Install required Python packages
+        shell: pwsh
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install requests packaging colorama
+          
       # Process mv_deps.toml to produce 
       # an overlay for the ManiVault dependencies
       - name: Create overlay from mv_deps.toml
