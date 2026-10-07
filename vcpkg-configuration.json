@@ -8,7 +8,7 @@
     {
       "kind": "git",
       "repository": "https://github.com/ManiVaultStudio/vcpkg-registry-external",
-      "baseline": "ed7afcf148c84e595c4b44a445e3e97ba96026f0",
+      "baseline": "3015b7ee0a816e6d45ef6bcfb1ba7f180bc86488",
       "packages": [
         "qt6", "freeimage"
       ]
