@@ -35,7 +35,7 @@ jobs:
       packages: write # Required for writing binary caches to GHCR
 
     env:
-      VCPKG_BINARY_SOURCES: 'clear;oci,ghcr.io/${{ github.repository_owner }}/vcpkg-cache:readwrite'
+      VCPKG_BINARY_SOURCES: "clear;http,${{ secrets.VCPKG_ARTIFACTORY_URL }}/{name}/{version}/{triplet}/{sha},readwrite,Authorization: Bearer ${{ secrets.VCPKG_ARTIFACTORY_TOKEN }}"
       VCPKG_DEFAULT_TRIPLET: x64-linux
 
     steps:
