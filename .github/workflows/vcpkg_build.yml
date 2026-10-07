@@ -15,7 +15,9 @@ name: CI-Build-Dynamic-Dependency-Cache
 # along with the portfile.cmake template
 
 on:
+  pull_request:
   workflow_dispatch:
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
