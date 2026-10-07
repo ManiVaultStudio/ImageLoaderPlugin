@@ -63,6 +63,7 @@ jobs:
         run: |
           python3 $GITHUB_WORKSPACE/.github/scripts/create_overlay.py
           ls -R ./ports
+          ls -R ./external
 
       # vcpkg automatically resolves ports under ./ports based on vcpkg-configuration.json
       - name: Run vcpkg Install
