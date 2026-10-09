@@ -11,7 +11,7 @@ set(PROJECT "ImageLoaderPlugin")
 PROJECT(${PROJECT} C CXX)
 
 # add the core cmake scripts
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake")
 
 # -----------------------------------------------------------------------------
 # CMake Options
