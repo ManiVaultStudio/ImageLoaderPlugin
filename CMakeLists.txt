@@ -10,8 +10,6 @@ option(MV_IML_USE_SYSTEM_FREEIMAGE "Use local freeimage installation instead of 
 set(PROJECT "ImageLoaderPlugin")
 PROJECT(${PROJECT} C CXX)
 
-# add the core cmake scripts
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake")
 
 # -----------------------------------------------------------------------------
 # CMake Options
@@ -172,6 +170,10 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
+# add the core cmake scripts - that the CI - need to do this better
+if (DEFINED $ENV{CI}) 
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake")
+endif()
 mv_install_dependencies(${PROJECT} "FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
