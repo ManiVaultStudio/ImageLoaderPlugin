@@ -39,10 +39,10 @@ else()
 
     find_package(freeimage CONFIG REQUIRED)
     message(STATUS "FreeImage Version: ${FreeImage_VERSION}")
-    set_target_properties(freeimage::freeimage FreeImageLib LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
-        PROPERTIES 
-        FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
-    )
+    #set_target_properties(freeimage::freeimage LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
+    #    PROPERTIES 
+    #    FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
+    #)
 
 endif()
 
@@ -158,7 +158,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage)
+target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage-static)
 
 # -----------------------------------------------------------------------------
 # Target installation
