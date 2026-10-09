@@ -6,6 +6,9 @@
     },
     {
       "name": "freeimage"
+    },
+    {
+      "name": "core"
     }
   ]
 }
