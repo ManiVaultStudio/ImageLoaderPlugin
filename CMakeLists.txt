@@ -3,11 +3,15 @@ cmake_minimum_required(VERSION 3.22)
 option(MV_UNITY_BUILD "Combine target source files into batches for faster compilation" OFF)
 option(MV_IML_USE_SYSTEM_FREEIMAGE "Use local freeimage installation instead of building it" OFF)
 
+
 # -----------------------------------------------------------------------------
 # ImageLoader Plugin
 # -----------------------------------------------------------------------------
 set(PROJECT "ImageLoaderPlugin")
 PROJECT(${PROJECT} C CXX)
+
+# add the core cmake scripts
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/cmake")
 
 # -----------------------------------------------------------------------------
 # CMake Options
