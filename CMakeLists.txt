@@ -171,9 +171,11 @@ install(TARGETS ${PROJECT}
 )
 
 # add the core cmake scripts - that the CI - need to do this better
-if (DEFINED $ENV{CI}) 
+if (DEFINED ENV{CI}) 
   list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake")
+  include(mv_install_dependencies_utils)
 endif()
+
 mv_install_dependencies(${PROJECT} "FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
