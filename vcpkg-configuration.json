@@ -13,5 +13,8 @@
         "qt6", "freeimage"
       ]
     }
+  ],
+  "overlay-ports": [
+    "./ports/*"
   ]
 }
