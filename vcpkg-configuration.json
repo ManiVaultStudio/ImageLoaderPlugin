@@ -14,7 +14,8 @@
         "valijson",
         "zlib",
         "qt6",
-        "sentry-native"
+        "sentry-native",
+        "freeimage"
       ]
     }
   ],
