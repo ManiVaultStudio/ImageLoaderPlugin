@@ -2,8 +2,7 @@
   "default-registry": {
     "kind": "git",
     "repository": "https://github.com/ManiVaultStudio/vcpkg-registry-external",
-    "baseline": "3015b7ee0a816e6d45ef6bcfb1ba7f180bc86488",
-    "packages": ["freeimage"]
+    "baseline": "3015b7ee0a816e6d45ef6bcfb1ba7f180bc86488"
   },
   "registries": [
     {
