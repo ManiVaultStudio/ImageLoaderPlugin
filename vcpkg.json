@@ -1,4 +1,6 @@
 {
+  "name": "imageloaderplugin",
+  "version": "0.1.0",
   "dependencies": [
     { 
       "name": "qt6",
