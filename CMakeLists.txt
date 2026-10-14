@@ -34,6 +34,18 @@ endif()
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
 find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
 
+# Add the core cmake scripts - need this on the CI with vcpkg
+# Note the core is called mv-core (due tocore being a vcpkg reserved name)
+# TODO find a better mechanism
+if (DEFINED ENV{CI}) 
+  set(ManiVault_DIR "${ManiVault_INCLUDE_DIR}/../cmake/mv")
+  include("${ManiVault_DIR}/mv_install_dependencies_utils.cmake")
+  include("${ManiVault_DIR}/mv_plugin_meta_data.cmake")
+  #include("${ManiVault_DIR}/Utils.cmake") # For mv_set_version
+  set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake" CACHE INTERNAL "")
+  #mv_set_version() # For MV_VERSION
+endif()
+
 if(MV_IML_USE_SYSTEM_FREEIMAGE)
     set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
     find_package(FreeImage REQUIRED)
@@ -170,17 +182,7 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-# Add the core cmake scripts - need this on the CI with vcpkg
-# Note the core is called mv-core (due tocore being a vcpkg reserved name)
-# TODO find a better mechanism
-if (DEFINED ENV{CI}) 
-  set(ManiVault_DIR "${ManiVault_INCLUDE_DIR}/../cmake/mv")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_install_dependencies_utils.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_plugin_meta_data.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/Utils.cmake") # For mv_set_version
-  set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake" CACHE INTERNAL "")
-  mv_set_version() # For MV_VERSION
-endif()
+
 
 # TODO fix the install - for some reason the 
 mv_install_dependencies(${PROJECT} "FreeImage")
