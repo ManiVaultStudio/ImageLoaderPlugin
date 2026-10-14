@@ -47,15 +47,12 @@ find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET REQUIRED
 # Add the core cmake scripts - need this on the CI with vcpkg
 # Note the core is called mv-core (due tocore being a vcpkg reserved name)
 # TODO find a better mechanism
-if (DEFINED ENV{CI})
+if(DEFINED VCPKG_TARGET_TRIPLET)
   message(STATUS "ManiVault installed ${ManiVault_INSTALL_DIR}") 
   set(ManiVault_DIR "${ManiVault_INSTALL_DIR}/cmake/mv")
   message(STATUS "ManiVault core at ${ManiVault_DIR}")
   include("${ManiVault_DIR}/mv_install_dependencies_utils.cmake")
   include("${ManiVault_DIR}/mv_plugin_meta_data.cmake")
-  #include("${ManiVault_DIR}/Utils.cmake") # For mv_set_version
-  #set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake" CACHE INTERNAL "")
-  #mv_set_version() # For MV_VERSION
 endif()
 
 if(MV_IML_USE_SYSTEM_FREEIMAGE)
@@ -78,7 +75,7 @@ else()
         message(STATUS "print_all_variables------------------------------------------}")
     endmacro()
 
-    print_all_variables()
+    #print_all_variables()
 
 
 endif()
@@ -211,7 +208,11 @@ install(TARGETS ${PROJECT}
 
 
 # TODO fix the install - for some reason the 
-mv_install_dependencies(${PROJECT} "freeimage::FreeImage")
+if(MV_IML_USE_SYSTEM_FREEIMAGE)
+  mv_install_dependencies(${PROJECT} "FreeImage")
+else()
+  mv_install_dependencies(${PROJECT} "freeimage::FreeImage")
+endif()
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
