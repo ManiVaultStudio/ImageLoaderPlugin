@@ -170,10 +170,12 @@ install(TARGETS ${PROJECT}
     LIBRARY DESTINATION Plugins COMPONENT PLUGINS # Linux/Mac .so
 )
 
-# add the core cmake scripts - that the CI - need to do this better
+# Add the core cmake scripts - need this on the CI with vcpkg
+# Note the core is called mv-core (due tocore being a vcpkg reserved name)
+# TODO find a better mechanism
 if (DEFINED ENV{CI}) 
-  include("${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake/mv_install_dependencies_utils.cmake")
-  include("${CMAKE_CURRENT_SOURCE_DIR}/external/core/ManiVault/cmake/mv_plugin_meta_data.cmake")
+  include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_install_dependencies_utils.cmake")
+  include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_plugin_meta_data.cmake")
 endif()
 
 mv_install_dependencies(${PROJECT} "FreeImage")
