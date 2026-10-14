@@ -69,17 +69,16 @@ else()
     #    PROPERTIES 
     #    FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
     #)
-    function(dump_cmake_variables)
-      get_cmake_property(_variableNames VARIABLES)
-      list (SORT _variableNames)
-      foreach (_variableName ${_variableNames})
-          if ((NOT DEFINED ARGV0) OR _variableName MATCHES ${ARGV0})
-              message(STATUS "${_variableName}=${${_variableName}}")
-          endif()
-      endforeach()
-    endfunction()
+    macro(print_all_variables)
+        message(STATUS "print_all_variables------------------------------------------{")
+        get_cmake_property(_variableNames VARIABLES)
+        foreach (_variableName ${_variableNames})
+            message(STATUS "${_variableName}=${${_variableName}}")
+        endforeach()
+        message(STATUS "print_all_variables------------------------------------------}")
+    endmacro()
 
-    dump_cmake_variables()
+    print_all_variables()
 
 
 endif()
