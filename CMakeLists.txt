@@ -211,7 +211,7 @@ install(TARGETS ${PROJECT}
 
 
 # TODO fix the install - for some reason the 
-mv_install_dependencies(${PROJECT} "FreeImage")
+mv_install_dependencies(${PROJECT} "freeimage::FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
     COMMAND "${CMAKE_COMMAND}"
