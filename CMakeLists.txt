@@ -39,10 +39,11 @@ find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
 # TODO find a better mechanism
 if (DEFINED ENV{CI}) 
   set(ManiVault_DIR "${ManiVault_INCLUDE_DIR}/../cmake/mv")
+  message(STATUS "ManiVault core at ${ManiVault_DIR}")
   include("${ManiVault_DIR}/mv_install_dependencies_utils.cmake")
   include("${ManiVault_DIR}/mv_plugin_meta_data.cmake")
   #include("${ManiVault_DIR}/Utils.cmake") # For mv_set_version
-  set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake" CACHE INTERNAL "")
+  #set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake" CACHE INTERNAL "")
   #mv_set_version() # For MV_VERSION
 endif()
 
