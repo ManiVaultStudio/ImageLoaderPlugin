@@ -195,7 +195,10 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE freeimage::FreeImage)
+if ( freeimage_FOUND )
+  message(STATUS "FreeImage was found")
+  target_link_libraries(${PROJECT} PRIVATE freeimage::FreeImage)
+endif()
 
 # -----------------------------------------------------------------------------
 # Target installation
