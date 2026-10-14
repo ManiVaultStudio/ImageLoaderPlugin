@@ -12,8 +12,5 @@
     {
       "name": "mv-core"
     }
-  ],
-  "overrides": [
-    { "name": "freeimage", "version": "3.18.0" }
   ]
 }
