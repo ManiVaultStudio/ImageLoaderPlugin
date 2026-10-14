@@ -174,6 +174,7 @@ install(TARGETS ${PROJECT}
 # Note the core is called mv-core (due tocore being a vcpkg reserved name)
 # TODO find a better mechanism
 if (DEFINED ENV{CI}) 
+  set(ManiVault_DIR "${ManiVault_INCLUDE_DIR}/../cmake/mv")
   include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_install_dependencies_utils.cmake")
   include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_plugin_meta_data.cmake")
   include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/Utils.cmake") # For mv_set_version
