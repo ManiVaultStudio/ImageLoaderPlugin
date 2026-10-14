@@ -7,7 +7,8 @@
       "features": [ "target-desktop" ]
     },
     {
-      "name": "freeimage"
+      "name": "freeimage",
+      "version": "3.18.0"
     },
     {
       "name": "mv-core"
