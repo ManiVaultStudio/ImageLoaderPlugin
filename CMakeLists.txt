@@ -176,8 +176,10 @@ install(TARGETS ${PROJECT}
 if (DEFINED ENV{CI}) 
   include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_install_dependencies_utils.cmake")
   include("${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault/cmake/mv_plugin_meta_data.cmake")
+  set(ManiVault_CMAKE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/mv-core/ManiVault" CACHE INTERNAL "")
 endif()
 
+# TODO fix the install - for some reason the 
 mv_install_dependencies(${PROJECT} "FreeImage")
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
