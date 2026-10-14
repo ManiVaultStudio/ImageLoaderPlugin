@@ -32,7 +32,7 @@ endif()
 # Dependencies
 # -----------------------------------------------------------------------------
 find_package(Qt6 COMPONENTS Widgets WebEngineWidgets Concurrent REQUIRED)
-find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET)
+find_package(ManiVault COMPONENTS Core PointData ImageData CONFIG QUIET REQUIRED)
 
 # Add the core cmake scripts - need this on the CI with vcpkg
 # Note the core is called mv-core (due tocore being a vcpkg reserved name)
