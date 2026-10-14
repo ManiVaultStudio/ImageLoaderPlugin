@@ -28,6 +28,10 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
 endif()
 
+if (DEFINED ENV{CI})
+  message(STATUS "vcpkg search paths: ${CMAKE_PREFIX_PATH}")
+  set(VCPKG_TRACE_FIND_PACKAGE ON)
+endif()
 # -----------------------------------------------------------------------------
 # Dependencies
 # -----------------------------------------------------------------------------
