@@ -195,7 +195,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE freeimage::FreeImage)
+target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage)
 
 # -----------------------------------------------------------------------------
 # Target installation
