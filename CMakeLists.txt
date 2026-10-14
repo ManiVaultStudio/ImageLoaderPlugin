@@ -64,7 +64,7 @@ if(MV_IML_USE_SYSTEM_FREEIMAGE)
 else()
 
     find_package(freeimage CONFIG REQUIRED)
-    message(STATUS "FreeImage Version: ${FreeImage_VERSION}")
+    message(STATUS "FreeImage Version: ${freeimage_VERSION}")
     #set_target_properties(freeimage::freeimage LibJPEG LibJXR LibOpenJPEG LibPNG LibRaw LibTIFF4 LibWebP OpenEXR ZLibFreeImage 
     #    PROPERTIES 
     #    FOLDER LoaderPlugins/Dependencies/ImageLoaderPlugin
@@ -184,7 +184,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::Core)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::PointData)
 target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
-target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage-static)
+target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage)
 
 # -----------------------------------------------------------------------------
 # Target installation
