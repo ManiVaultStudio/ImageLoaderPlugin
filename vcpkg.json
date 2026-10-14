@@ -14,6 +14,6 @@
     }
   ],
   "overrides": [
-    { "name": "freeimage", "version": "3.18.0" }
+    { "name": "freeimage", "version": "3.19.0.2" }
   ]
 }
