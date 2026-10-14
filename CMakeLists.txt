@@ -30,6 +30,13 @@ endif()
 
 if (DEFINED ENV{CI})
   message(STATUS "vcpkg search paths: ${CMAKE_PREFIX_PATH}")
+  foreach(pkgpath "${CMAKE_PREFIX_PATH}")
+    file(GLOB_RECURSE ALL_FILES CONFIGURE_DEPENDS "${pkgpath}/*")
+    message(STATUS "Listing files recursively: in ${pkgpath}")
+    foreach(FILE_PATH IN LISTS ALL_FILES)
+        message(STATUS "  ${FILE_PATH}")
+    endforeach()
+  endforeach()
   set(VCPKG_TRACE_FIND_PACKAGE ON)
 endif()
 # -----------------------------------------------------------------------------
