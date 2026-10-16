@@ -11,6 +11,10 @@
     },
     {
       "name": "mv-core"
+    },
+    {
+      "name": "tbb",
+      "platform": "linux"
     }
   ]
 }
