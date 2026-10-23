@@ -173,7 +173,7 @@ target_link_libraries(${PROJECT} PRIVATE ManiVault::ImageData)
 
 if ( freeimage_FOUND )
   message(STATUS "FreeImage was found")
-  target_link_libraries(${PROJECT} PRIVATE freeimage::FreeImage)
+  target_link_libraries(${PROJECT} PRIVATE freeimage::freeimage)
 endif()
 
 # -----------------------------------------------------------------------------
