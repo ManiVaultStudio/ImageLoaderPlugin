@@ -190,7 +190,7 @@ install(TARGETS ${PROJECT}
 if(MV_IML_USE_SYSTEM_FREEIMAGE)
   mv_install_dependencies(${PROJECT} "FreeImage")
 else()
-  mv_install_dependencies(${PROJECT} "freeimage::FreeImage")
+  mv_install_dependencies(${PROJECT} "freeimage::freeimage")
 endif()
 
 add_custom_command(TARGET ${PROJECT} POST_BUILD
